@@ -198,6 +198,10 @@ def print_menu():
     print("0. Turn off")
     print("+. Temp up")
     print("-. Temp down")
+    print("C. Mode: Cool")
+    print("H. Mode: Heat")
+    print("F. Mode: Fan")
+    print("S. Mode: Sixth Sense")
     print("p. Print status")
     print("r. Restart wifi")
     print("q. Exit")
@@ -205,24 +209,33 @@ def print_menu():
   
 loop=True      
   
-while loop:    
+while loop:
     print_menu()
     choice = input("Enter your choice: ")
-     
+    
     if choice=='1':
         call_appliance_command(access_token, said, {SETTING_POWER: SET_VALUE_ON})
     elif choice=='0':
         call_appliance_command(access_token, said, {SETTING_POWER: SET_VALUE_OFF})
     elif choice=='+':
-        temp = int(get_setting_from_appliance_data(fetch_appliance(access_token, said), SETTING_TEMP))
-        temp = temp + 10
+        appl_data = fetch_appliance(access_token, said)
+        temp = int(get_setting_from_appliance_data(appl_data, SETTING_TEMP)) + 10
         call_appliance_command(access_token, said, {SETTING_TEMP: str(temp)})
     elif choice=='-':
-        temp = int(get_setting_from_appliance_data(fetch_appliance(access_token, said), SETTING_TEMP))
-        temp = temp - 10
+        appl_data = fetch_appliance(access_token, said)
+        temp = int(get_setting_from_appliance_data(appl_data, SETTING_TEMP)) - 10
         call_appliance_command(access_token, said, {SETTING_TEMP: str(temp)})
+    elif choice=='C':
+        call_appliance_command(access_token, said, {SETTING_MODE: SET_MODE_COOL})
+    elif choice=='H':
+        call_appliance_command(access_token, said, {SETTING_MODE: SET_MODE_HEAT})
+    elif choice=='F':
+        call_appliance_command(access_token, said, {SETTING_MODE: SET_MODE_FAN})
+    elif choice=='S':
+        call_appliance_command(access_token, said, {SETTING_MODE: SET_MODE_SIXTH_SENSE})
     elif choice=='p':
-        print_appliance_data(fetch_appliance(access_token, said))
+        appl_data = fetch_appliance(access_token, said)
+        print_appliance_data(appl_data)
     elif choice=='r':
         call_appliance_command(access_token, said, {SETTING_REBOOT_WIFI: SET_VALUE_ON})
     elif choice=='q':
