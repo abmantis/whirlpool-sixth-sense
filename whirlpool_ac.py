@@ -90,8 +90,10 @@ def fetch_auth_data(refresh_token=None):
     with requests.session() as s:   
         r = s.post(auth_url, data=auth_data, headers=auth_header)
         print("Auth status: " + str(r.status_code))
-
-        return json.loads(r.text)
+        if r.status_code == 200:
+            return json.loads(r.text)
+        elif refresh_token:
+            return fetch_auth_data(refresh_token=None)
 
 
 def create_headers(access_token):
@@ -137,19 +139,6 @@ def get_account_id(user_details):
 def call_appliance_command(access_token, said, settings):
     cmd_data = {
         "body": settings,
-#        "body":{
-#            #"XCat_WifiSetRebootWifiCommModule": "1",
-#            "Sys_OpSetPowerOn": "0",
-#            "Sys_OpSetTargetTemp": "180",
-#            "Sys_OpSetTargetHumidity": "40",
-#            "Sys_OpSetSleepMode": "0",
-#            "Cavity_OpSetHorzLouverSwing": "0",
-#            "Cavity_OpSetMode": "3", # 1 - Cool, 2 - Fan, 3 - Heat, 4 - Sixth sense
-#            "Cavity_OpSetFanSpeed": "2", # 1 - Auto, 2 - Low, 4 - Medium, 6 - High
-#            "Cavity_OpSetTurboMode": "0",
-#            "Sys_OpSetEcoModeEnabled": "0",
-#            "Sys_OpSetQuietModeEnabled": "0",
-#        },
         "header":{
             "said": said,
             "command": "setAttributes"
@@ -167,8 +156,6 @@ def get_setting_from_appliance_data(data, setting):
 def print_appliance_data(data):
     attrs = [
             "Online",
-            "XCat_WifiSetRebootWifiCommModule",
-            "XCat_WifiSetPublishApplianceState",
             "Sys_OpSetPowerOn", 
             "Sys_OpSetTargetTemp", 
             "Sys_OpSetTargetHumidity",
@@ -178,9 +165,10 @@ def print_appliance_data(data):
             "Cavity_OpSetFanSpeed",
             "Cavity_OpSetTurboMode",
             "Sys_OpSetEcoModeEnabled",
+            "Sys_OpSetQuietModeEnabled",
+            "Cavity_OpStatusMode",
             "Sys_OpStatusDisplayTemp",
             "Sys_OpStatusDisplayHumidity",
-            "Sys_OpSetQuietModeEnabled",
         ]
 
     for a in attrs:
@@ -203,7 +191,9 @@ def print_menu():
     print("F. Mode: Fan")
     print("S. Mode: Sixth Sense")
     print("p. Print status")
+    print("v. Print raw status")
     print("r. Restart wifi")
+    print("c. Custom command")
     print("q. Exit")
     print(67 * "-")
   
@@ -236,11 +226,23 @@ while loop:
     elif choice=='p':
         appl_data = fetch_appliance(access_token, said)
         print_appliance_data(appl_data)
+    elif choice=='v':
+        appl_data = fetch_appliance(access_token, said)
+        print(appl_data)
     elif choice=='r':
         call_appliance_command(access_token, said, {SETTING_REBOOT_WIFI: SET_VALUE_ON})
+    elif choice=='c':
+        cmd = input("Command: ")
+        val = input("Value: ")
+        call_appliance_command(access_token, said, {cmd: val})
     elif choice=='q':
         print("Bye")
         loop=False
     else:
         print("Wrong option selection. Enter any key to try again..")
+
+
+# ISSUES:
+# no recovery found yet (waiting X minutes?): { "message":"Appliance claimed successfully","status":"01" }
+# rebooting wifi works: { "message":"Error in command execution or Invalid command","status":"03" }
 
