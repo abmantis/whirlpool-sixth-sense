@@ -77,20 +77,17 @@ class Appliance():
 
     def _do_auth(self, refresh_token=None):
         auth_url = 'https://api.whrcloud.eu/oauth/token'
-        auth_header = {        
+        auth_header = {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Brand': 'Whirlpool',
             'WP-CLIENT-REGION': 'EMEA',
             'WP-CLIENT-BRAND': 'WHIRLPOOL',
-            'WP-CLIENT-COUNTRY': 'IT',
-            'Host': 'api.whrcloud.eu',
-            'User-Agent': 'okhttp/3.12.0',
-            'Pragma': 'no-cache',
-            'Cache-Control': 'no-cache',
+            'WP-CLIENT-COUNTRY': 'EN'
         }
 
         auth_data = {
-            'client_id': 'syntel',
-            'client_secret': 'syntel123$',
+            'client_id': 'whirlpool_android',
+            'client_secret': 'i-eQ8MD4jK4-9DUCbktfg-t_7gvU-SrRstPRGAYnfBPSrHHt5Mc0MFmYymU2E2qzif5cMaBYwFyFgSU6NTWjZg',
         } 
 
         if refresh_token:
