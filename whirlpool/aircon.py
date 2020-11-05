@@ -40,82 +40,14 @@ SETVAL_FAN_SPEED_MEDIUM = "4"
 SETVAL_FAN_SPEED_HIGH = "6"
 
 class Appliance():
-    def __init__(self, username, password):
-        self._auth_dict = None
+    def __init__(self, auth, said):
+        self._auth = auth
+        self._said = said
         self._data_dict = None
-        self._username = username
-        self._password = password
-        self._load_auth_data()
-
-    def _load_auth_data(self, ):
-        auth_json_file = "auth.json"
-        auth_dict = {}
-        try:
-            with open(auth_json_file, 'r') as f:
-                print("Loading auth from file\n")
-                auth_dict = json.load(f)
-        except FileNotFoundError:
-            pass
-
-        curr_timestamp = datetime.now().timestamp()
-        if "access_token" not in auth_dict or "expire_date" not in auth_dict or auth_dict["expire_date"] < curr_timestamp: 
-            refresh_token = auth_dict.get('refresh_token', None)
-            fetched_auth_data = self._do_auth(refresh_token)
-            auth_dict = {
-                "access_token": fetched_auth_data["access_token"],
-                "refresh_token": fetched_auth_data["refresh_token"],
-                "expire_date": curr_timestamp + fetched_auth_data["expires_in"],
-                "accountId": fetched_auth_data["accountId"],
-                "SAID": fetched_auth_data["SAID"],
-            }
-        
-        # Writing JSON data
-        with open(auth_json_file, 'w') as f:
-            json.dump(auth_dict, f)
-
-        self._auth_dict = auth_dict
-
-    def _do_auth(self, refresh_token=None):
-        auth_url = 'https://api.whrcloud.eu/oauth/token'
-        auth_header = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Brand': 'Whirlpool',
-            'WP-CLIENT-REGION': 'EMEA',
-            'WP-CLIENT-BRAND': 'WHIRLPOOL',
-            'WP-CLIENT-COUNTRY': 'EN'
-        }
-
-        auth_data = {
-            'client_id': 'whirlpool_android',
-            'client_secret': 'i-eQ8MD4jK4-9DUCbktfg-t_7gvU-SrRstPRGAYnfBPSrHHt5Mc0MFmYymU2E2qzif5cMaBYwFyFgSU6NTWjZg',
-        } 
-
-        if refresh_token:
-            print("Fetching auth with refresh token")
-            auth_data.update({
-                'grant_type': 'refresh_token',
-                'refresh_token': refresh_token,
-            })
-        else:
-            print("Fetching auth with user/pass")
-            auth_data.update({
-                'grant_type': 'password',
-                'username': self._username,
-                'password': self._password,
-            })
-        
-        with requests.session() as s:   
-            r = s.post(auth_url, data=auth_data, headers=auth_header)
-            print("Auth status: " + str(r.status_code))
-            if r.status_code == 200:
-                return json.loads(r.text)
-            elif refresh_token:
-                return self._do_auth(refresh_token=None)
-
 
     def _create_headers(self):
         return {
-            'Authorization': 'Bearer ' + self.get_access_token(),
+            'Authorization': 'Bearer ' + self._auth.get_access_token(),
             'Content-Type': 'application/json',
             'Host': 'api.whrcloud.eu',
             'User-Agent': 'okhttp/3.12.0',
@@ -123,23 +55,17 @@ class Appliance():
             'Cache-Control': 'no-cache',
         }
 
-    def get_said(self):
-        return self._auth_dict["SAID"][0] # TODO: support for multiple appliances
-
-    def get_access_token(self):
-        return self._auth_dict["access_token"]
-
     def send_attributes(self, attributes):
         cmd_data = {
             "body": attributes,
             "header":{
-                "said": self.get_said(),
+                "said": self._said,
                 "command": "setAttributes"
             }
         }
-        
+
         headers = self._create_headers()
-        with requests.session() as s:   
+        with requests.session() as s:
             r = s.post('https://api.whrcloud.eu/api/v1/appliance/command', headers=headers, json=cmd_data)
             print(r.text)
 
@@ -148,44 +74,43 @@ class Appliance():
             self._data_dict["attributes"][attribute]["updateTime"]
         return self._data_dict["attributes"][attribute]["value"]
 
+    def fetch_data(self):
+        headers = self._create_headers()
+        self._data_dict = None
+        with requests.session() as s:
+            r = s.get('https://api.whrcloud.eu/api/v1/appliance/{0}'.format(self._said), headers=headers)
+            self._data_dict = json.loads(r.text)
+
+    #def get_account_id(self, user_details):
+        #return user_details["accountId"]
+
     #def fetch_said(self, account_id):
         #headers = self._create_headers()
-        #with requests.session() as s:   
+        #with requests.session() as s:
             #r = s.get('https://api.whrcloud.eu/api/v1/appliancebyaccount/{0}'.format(accountId), headers=headers)
             #print(r.text)
             #device_said = json.loads(r.text)["accountId"]
 
-    def fetch_user_details(self):
-        headers = self._create_headers()
-        
-        with requests.session() as s:   
-            r = s.get('https://api.whrcloud.eu/api/v1/getUserDetails', headers=headers)
-            return json.loads(r.text)
-        return None
-
-    def fetch_data(self):
-        headers = self._create_headers()
-        self._data_dict = None
-        with requests.session() as s:   
-            r = s.get('https://api.whrcloud.eu/api/v1/appliance/{0}'.format(self.get_said()), headers=headers)
-            self._data_dict = json.loads(r.text)
-
-    def get_account_id(self, user_details):
-        return user_details["accountId"]
+    #def fetch_user_details(self):
+        #headers = self._create_headers()
+        #with requests.session() as s:
+            #r = s.get('https://api.whrcloud.eu/api/v1/getUserDetails', headers=headers)
+            #return json.loads(r.text)
+        #return None
 
 class Aircon(Appliance):
-    def __init__(self, username, password):
-        Appliance.__init__(self, username, password)
+    def __init__(self, auth, said):
+        Appliance.__init__(self, auth, said)
 
     def print_fetched_data(self):
         attrs = [
                 "Online",
-                "Sys_OpSetPowerOn", 
-                "Sys_OpSetTargetTemp", 
+                "Sys_OpSetPowerOn",
+                "Sys_OpSetTargetTemp",
                 "Sys_OpSetTargetHumidity",
-                "Sys_OpSetSleepMode", 
-                "Cavity_OpSetHorzLouverSwing", 
-                "Cavity_OpSetMode", 
+                "Sys_OpSetSleepMode",
+                "Cavity_OpSetHorzLouverSwing",
+                "Cavity_OpSetMode",
                 "Cavity_OpSetFanSpeed",
                 "Cavity_OpSetTurboMode",
                 "Sys_OpSetEcoModeEnabled",
@@ -205,4 +130,3 @@ class Aircon(Appliance):
 # ISSUES:
 # no recovery found yet (except power cycle): { "message":"Appliance claimed successfully","status":"01" }
 # rebooting wifi works: { "message":"Error in command execution or Invalid command","status":"03" }
-

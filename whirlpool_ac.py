@@ -1,6 +1,8 @@
 from whirlpool.aircon import *
+from whirlpool.auth import Auth
 
-ac = Aircon("email@provider.com", "password")
+auth = Auth("email@provider.com", "password")
+ac = Aircon(auth, auth.get_said_list()[0])
 
 def print_menu():
     print('\n')
@@ -19,13 +21,13 @@ def print_menu():
     print("c. Custom command")
     print("q. Exit")
     print(67 * "-")
-  
-loop=True      
-  
+
+loop=True
+
 while loop:
     print_menu()
     choice = input("Enter your choice: ")
-    
+
     if choice=='1':
         ac.send_attributes({SETTING_POWER: SETVAL_VALUE_ON})
     elif choice=='0':
