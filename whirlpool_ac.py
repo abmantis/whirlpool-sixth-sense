@@ -1,7 +1,14 @@
+import argparse
+
 from whirlpool.aircon import *
 from whirlpool.auth import Auth
 
-auth = Auth("email@provider.com", "password")
+parser = argparse.ArgumentParser()
+parser.add_argument('-e', '--email', help='Email address')
+parser.add_argument('-p', '--password', help='Password')
+args = parser.parse_args()
+
+auth = Auth(args.email, args.password)
 ac = Aircon(auth, auth.get_said_list()[0])
 
 def print_menu():
