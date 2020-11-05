@@ -29,25 +29,25 @@ while loop:
     choice = input("Enter your choice: ")
 
     if choice=='1':
-        ac.send_attributes({SETTING_POWER: SETVAL_VALUE_ON})
+        ac.turn_on()
     elif choice=='0':
-        ac.send_attributes({SETTING_POWER: SETVAL_VALUE_OFF})
+        ac.turn_off()
     elif choice=='+':
         ac.fetch_data()
         temp = int(ac.get_attribute_from_fetched_data(SETTING_TEMP)) + 10
-        ac.send_attributes({SETTING_TEMP: str(temp)})
+        ac.set_temp(temp)
     elif choice=='-':
         ac.fetch_data()
         temp = int(ac.get_attribute_from_fetched_data(SETTING_TEMP)) - 10
-        ac.send_attributes({SETTING_TEMP: str(temp)})
+        ac.set_temp(temp)
     elif choice=='C':
-        ac.send_attributes({SETTING_MODE: SETVAL_MODE_COOL})
+        ac.set_mode(Modes.Cool)
     elif choice=='H':
-        ac.send_attributes({SETTING_MODE: SETVAL_MODE_HEAT})
+        ac.set_mode(Modes.Heat)
     elif choice=='F':
-        ac.send_attributes({SETTING_MODE: SETVAL_MODE_FAN})
+        ac.set_mode(Modes.Fan)
     elif choice=='S':
-        ac.send_attributes({SETTING_MODE: SETVAL_MODE_SIXTH_SENSE})
+        ac.set_mode(Modes.SixthSense)
     elif choice=='p':
         ac.fetch_data()
         ac.print_fetched_data()
