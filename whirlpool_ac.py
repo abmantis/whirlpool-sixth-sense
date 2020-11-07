@@ -1,15 +1,19 @@
+import aioconsole
 import argparse
+import asyncio
+import logging
 
 from whirlpool.aircon import *
 from whirlpool.auth import Auth
+
+logging.basicConfig(format='%(asctime)s [%(name)s %(levelname)s]: %(message)s')
+logger = logging.getLogger('whirlpool')
+logger.setLevel(logging.DEBUG)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--email', help='Email address')
 parser.add_argument('-p', '--password', help='Password')
 args = parser.parse_args()
-
-auth = Auth(args.email, args.password)
-ac = Aircon(auth, auth.get_said_list()[0])
 
 def print_menu():
     print('\n')
@@ -51,59 +55,68 @@ def print_status(ac: Aircon):
     print("quiet_mode: " + str(ac.get_quiet_mode()))
     print("display_on: " + str(ac.get_display_on()))
 
-loop=True
+async def start():
+    auth = Auth(args.email, args.password)
+    said = auth.get_said_list()[0]
+    ac = Aircon(auth, said)
+    await ac.start_event_listener()
 
-while loop:
-    print_menu()
-    choice = input("Enter your choice: ")
+    loop = True
+    while(loop):
+        print_menu()
+        choice = await aioconsole.ainput("Enter your choice: ")
 
-    if choice=='1':
-        ac.set_power_on(True)
-    elif choice=='0':
-        ac.set_power_on(False)
-    elif choice=='+':
-        ac.fetch_data()
-        temp = int(ac.get_attribute(SETTING_TEMP)) + 10
-        ac.set_temp(temp)
-    elif choice=='-':
-        ac.fetch_data()
-        temp = int(ac.get_attribute(SETTING_TEMP)) - 10
-        ac.set_temp(temp)
-    elif choice=='C':
-        ac.set_mode(Mode.Cool)
-    elif choice=='H':
-        ac.set_mode(Mode.Heat)
-    elif choice=='F':
-        ac.set_mode(Mode.Fan)
-    elif choice=='S':
-        ac.set_mode(Mode.SixthSense)
-    elif choice=='2':
-        ac.set_h_louver_swing(not ac.get_h_louver_swing())
-    elif choice=='3':
-        ac.set_turbo_mode(not ac.get_turbo_mode())
-    elif choice=='4':
-        ac.set_eco_mode(not ac.get_eco_mode())
-    elif choice=='5':
-        ac.set_quiet_mode(not ac.get_quiet_mode())
-    elif choice=='6':
-        ac.set_display_on(not ac.get_display_on())
-    elif choice=='p':
-        ac.fetch_data()
-        print_status(ac)
-    elif choice=='v':
-        ac.fetch_data()
-        print(ac._data_dict)
-    elif choice=='r':
-        ac.send_attributes({SETTING_REBOOT_WIFI: SETVAL_VALUE_ON})
-    elif choice=='c':
-        cmd = input("Command: ")
-        val = input("Value: ")
-        ac.send_attributes({cmd: val})
-    elif choice=='q':
-        print("Bye")
-        loop=False
-    else:
-        print("Wrong option selection. Enter any key to try again..")
+        if choice=='1':
+            ac.set_power_on(True)
+        elif choice=='0':
+            ac.set_power_on(False)
+        elif choice=='+':
+            ac.fetch_data()
+            temp = ac.get_temp() + 1
+            ac.set_temp(temp)
+        elif choice=='-':
+            ac.fetch_data()
+            temp = ac.get_temp() - 1
+            ac.set_temp(temp)
+        elif choice=='C':
+            ac.set_mode(Mode.Cool)
+        elif choice=='H':
+            ac.set_mode(Mode.Heat)
+        elif choice=='F':
+            ac.set_mode(Mode.Fan)
+        elif choice=='S':
+            ac.set_mode(Mode.SixthSense)
+        elif choice=='2':
+            ac.set_h_louver_swing(not ac.get_h_louver_swing())
+        elif choice=='3':
+            ac.set_turbo_mode(not ac.get_turbo_mode())
+        elif choice=='4':
+            ac.set_eco_mode(not ac.get_eco_mode())
+        elif choice=='5':
+            ac.set_quiet_mode(not ac.get_quiet_mode())
+        elif choice=='6':
+            ac.set_display_on(not ac.get_display_on())
+        elif choice=='p':
+            ac.fetch_data()
+            print_status(ac)
+        elif choice=='v':
+            ac.fetch_data()
+            print(ac._data_dict)
+        elif choice=='r':
+            ac.send_attributes({SETTING_REBOOT_WIFI: SETVAL_VALUE_ON})
+        elif choice=='c':
+            cmd = aioconsole.ainput("Command: ")
+            val = aioconsole.ainput("Value: ")
+            ac.send_attributes({cmd: val})
+        elif choice=='q':
+            await ac.stop_event_listener()
+            print("Bye")
+            loop=False
+        else:
+            print("Wrong option selection. Enter any key to try again..")
+
+asyncio.get_event_loop().run_until_complete(start())
+asyncio.get_event_loop().close()
 
 
 # ISSUES:

@@ -3,6 +3,8 @@ import logging
 import json
 from datetime import datetime, timedelta, timedelta
 
+LOGGER = logging.getLogger(__name__)
+
 class Auth():
     def __init__(self, username, password):
         self._auth_dict = None
@@ -15,7 +17,7 @@ class Auth():
         auth_dict = {}
         try:
             with open(auth_json_file, 'r') as f:
-                logging.debug("Loading auth from file")
+                LOGGER.debug("Loading auth from file")
                 auth_dict = json.load(f)
         except FileNotFoundError:
             pass
@@ -54,13 +56,13 @@ class Auth():
         }
 
         if refresh_token:
-            logging.debug("Fetching auth with refresh token")
+            LOGGER.debug("Fetching auth with refresh token")
             auth_data.update({
                 'grant_type': 'refresh_token',
                 'refresh_token': refresh_token,
             })
         else:
-            logging.debug("Fetching auth with user/pass")
+            LOGGER.debug("Fetching auth with user/pass")
             auth_data.update({
                 'grant_type': 'password',
                 'username': self._username,
@@ -69,7 +71,7 @@ class Auth():
 
         with requests.session() as s:
             r = s.post(auth_url, data=auth_data, headers=auth_header)
-            logging.debug("Auth status: " + str(r.status_code))
+            LOGGER.debug("Auth status: " + str(r.status_code))
             if r.status_code == 200:
                 return json.loads(r.text)
             elif refresh_token:

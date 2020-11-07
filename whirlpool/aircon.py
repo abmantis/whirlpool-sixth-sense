@@ -3,6 +3,8 @@ from enum import Enum
 
 from .appliance import Appliance
 
+LOGGER = logging.getLogger(__name__)
+
 ATTR_ONLINE = "Online"
 ATTR_MODE = "Cavity_OpStatusMode"
 ATTR_DISPLAY_TEMP = "Sys_OpStatusDisplayTemp"
@@ -126,7 +128,7 @@ class Aircon(Appliance):
 
     def set_mode(self, mode: Mode):
         if mode not in MODES_MAP:
-            logging.error("Invalid mode")
+            LOGGER.error("Invalid mode")
         self.send_attributes({SETTING_MODE: MODES_MAP[mode]})
 
     def get_fanspeed(self):
@@ -138,7 +140,7 @@ class Aircon(Appliance):
 
     def set_fanspeed(self, speed: FanSpeed):
         if speed not in FANSPEED_MAP:
-            logging.error("Invalid fan speed")
+            LOGGER.error("Invalid fan speed")
         self.send_attributes({SETTING_MODE: FANSPEED_MAP[speed]})
 
     def get_h_louver_swing(self):

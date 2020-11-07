@@ -3,12 +3,14 @@ import base64
 import re
 import json
 from datetime import datetime, timedelta, timedelta
+from whirlpool.eventsocket import EventSocket
 
 class Appliance():
     def __init__(self, auth, said):
         self._auth = auth
         self._said = said
         self._data_dict = None
+        self._event_socked = EventSocket(auth.get_access_token(), said, "")
 
     def _create_headers(self):
         return {
@@ -43,6 +45,13 @@ class Appliance():
         with requests.session() as s:
             r = s.get('https://api.whrcloud.eu/api/v1/appliance/{0}'.format(self._said), headers=headers)
             self._data_dict = json.loads(r.text)
+
+    async def start_event_listener(self):
+        self.fetch_data()
+        self._event_socked.start()
+
+    async def stop_event_listener(self):
+        await self._event_socked.stop()
 
     #def get_account_id(self, user_details):
         #return user_details["accountId"]
