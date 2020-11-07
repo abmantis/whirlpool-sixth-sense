@@ -1,0 +1,4 @@
+aioconsole
+requests
+uuid
+websockets
