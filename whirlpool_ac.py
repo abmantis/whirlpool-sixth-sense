@@ -22,12 +22,34 @@ def print_menu():
     print("H. Mode: Heat")
     print("F. Mode: Fan")
     print("S. Mode: Sixth Sense")
+    print("2. Swing toggle")
+    print("3. Turbo toggle")
+    print("4. Eco toggle")
+    print("5. Quiet toggle")
+    print("6. Display toggle")
     print("p. Print status")
     print("v. Print raw status")
     print("r. Restart wifi")
     print("c. Custom command")
     print("q. Exit")
     print(67 * "-")
+
+
+def print_status(ac: Aircon):
+    print("online: " + str(ac.get_online()))
+    print("power_on: " + str(ac.get_power_on()))
+    print("temp: " + str(ac.get_temp()))
+    print("humidity: " + str(ac.get_humidity()))
+    print("current_temp: " + str(ac.get_current_temp()))
+    print("current_humidity: " + str(ac.get_current_humidity()))
+    print("mode: " + str(ac.get_mode()))
+    print("sixthsense_mode: " + str(ac.get_sixthsense_mode()))
+    print("fanspeed: " + str(ac.get_fanspeed()))
+    print("h_louver_swing: " + str(ac.get_h_louver_swing()))
+    print("turbo_mode: " + str(ac.get_turbo_mode()))
+    print("eco_mode: " + str(ac.get_eco_mode()))
+    print("quiet_mode: " + str(ac.get_quiet_mode()))
+    print("display_on: " + str(ac.get_display_on()))
 
 loop=True
 
@@ -36,28 +58,38 @@ while loop:
     choice = input("Enter your choice: ")
 
     if choice=='1':
-        ac.turn_on()
+        ac.set_power_on(True)
     elif choice=='0':
-        ac.turn_off()
+        ac.set_power_on(False)
     elif choice=='+':
         ac.fetch_data()
-        temp = int(ac.get_attribute_from_fetched_data(SETTING_TEMP)) + 10
+        temp = int(ac.get_attribute(SETTING_TEMP)) + 10
         ac.set_temp(temp)
     elif choice=='-':
         ac.fetch_data()
-        temp = int(ac.get_attribute_from_fetched_data(SETTING_TEMP)) - 10
+        temp = int(ac.get_attribute(SETTING_TEMP)) - 10
         ac.set_temp(temp)
     elif choice=='C':
-        ac.set_mode(Modes.Cool)
+        ac.set_mode(Mode.Cool)
     elif choice=='H':
-        ac.set_mode(Modes.Heat)
+        ac.set_mode(Mode.Heat)
     elif choice=='F':
-        ac.set_mode(Modes.Fan)
+        ac.set_mode(Mode.Fan)
     elif choice=='S':
-        ac.set_mode(Modes.SixthSense)
+        ac.set_mode(Mode.SixthSense)
+    elif choice=='2':
+        ac.set_h_louver_swing(not ac.get_h_louver_swing())
+    elif choice=='3':
+        ac.set_turbo_mode(not ac.get_turbo_mode())
+    elif choice=='4':
+        ac.set_eco_mode(not ac.get_eco_mode())
+    elif choice=='5':
+        ac.set_quiet_mode(not ac.get_quiet_mode())
+    elif choice=='6':
+        ac.set_display_on(not ac.get_display_on())
     elif choice=='p':
         ac.fetch_data()
-        ac.print_fetched_data()
+        print_status(ac)
     elif choice=='v':
         ac.fetch_data()
         print(ac._data_dict)

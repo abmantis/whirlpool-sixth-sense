@@ -34,9 +34,7 @@ class Appliance():
             r = s.post('https://api.whrcloud.eu/api/v1/appliance/command', headers=headers, json=cmd_data)
             print(r.text)
 
-    def get_attribute_from_fetched_data(self, attribute, updateTime = None):
-        if updateTime:
-            self._data_dict["attributes"][attribute]["updateTime"]
+    def get_attribute(self, attribute):
         return self._data_dict["attributes"][attribute]["value"]
 
     def fetch_data(self):
