@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 import uuid
 import websockets
 from .auth import Auth
@@ -9,10 +10,13 @@ LOGGER = logging.getLogger(__name__)
 WSURI = "wss://websocketservice.wcloud-emea.eu-gb.containers.appdomain.cloud/appliance/websocket"
 MSG_TERMINATION="\n\n\0"
 
+RECV_MSG_MATCHER = re.compile('{(.*)}\x00')
+
 class EventSocket():
     def __init__(self, access_token, said, msg_listener):
         self._access_token = access_token
         self._said = said
+        self._msg_listener = msg_listener
         self._websocket : websockets.WebSocketClientProtocol = None
         self._run_future = None
 
@@ -44,7 +48,14 @@ class EventSocket():
             await self._send_msg(websocket, self._create_subscribe_msg())
 
             while(self._websocket):
-                await self._recv_msg(websocket)
+                msg = await self._recv_msg(websocket)
+                if not msg:
+                    continue
+
+                match = RECV_MSG_MATCHER.findall(msg)
+                if not match:
+                    continue
+                self._msg_listener("{" + match[0] + "}")
 
     def start(self):
         self._run_future = asyncio.get_event_loop().create_task(self._run())

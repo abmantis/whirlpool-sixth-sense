@@ -31,6 +31,7 @@ def print_menu():
     print("4. Eco toggle")
     print("5. Quiet toggle")
     print("6. Display toggle")
+    print("u. Update status from server")
     print("p. Print status")
     print("v. Print raw status")
     print("r. Restart wifi")
@@ -97,6 +98,8 @@ async def start():
         elif choice=='6':
             ac.set_display_on(not ac.get_display_on())
         elif choice=='p':
+            print_status(ac)
+        elif choice=='u':
             ac.fetch_data()
             print_status(ac)
         elif choice=='v':
