@@ -36,6 +36,7 @@ SETVAL_MODE_COOL = "1"
 SETVAL_MODE_FAN = "2"
 SETVAL_MODE_HEAT = "3"
 SETVAL_MODE_SIXTH_SENSE = "4"
+SETVAL_FAN_SPEED_OFF = "0"
 SETVAL_FAN_SPEED_AUTO = "1"
 SETVAL_FAN_SPEED_LOW = "2"
 SETVAL_FAN_SPEED_MEDIUM = "4"
@@ -57,6 +58,7 @@ class Mode(Enum):
 
 
 class FanSpeed(Enum):
+    Off = 0
     Auto = 1
     Low = 2
     Medium = 3
@@ -69,7 +71,8 @@ MODES_MAP = {Mode.Cool: SETVAL_MODE_COOL,
              Mode.SixthSense: SETVAL_MODE_SIXTH_SENSE,
              }
 
-FANSPEED_MAP = {FanSpeed.Auto: SETVAL_FAN_SPEED_AUTO,
+FANSPEED_MAP = {FanSpeed.Off: SETVAL_FAN_SPEED_OFF,
+                FanSpeed.Auto: SETVAL_FAN_SPEED_AUTO,
                 FanSpeed.Low: SETVAL_FAN_SPEED_LOW,
                 FanSpeed.Medium: SETVAL_FAN_SPEED_MEDIUM,
                 FanSpeed.High: SETVAL_FAN_SPEED_HIGH,
