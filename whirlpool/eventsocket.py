@@ -8,20 +8,22 @@ from .auth import Auth
 LOGGER = logging.getLogger(__name__)
 
 WSURI = "wss://websocketservice.wcloud-emea.eu-gb.containers.appdomain.cloud/appliance/websocket"
-MSG_TERMINATION="\n\n\0"
+MSG_TERMINATION = "\n\n\0"
 
 RECV_MSG_MATCHER = re.compile('{(.*)}\x00')
+
 
 class EventSocket():
     def __init__(self, access_token, said, msg_listener):
         self._access_token = access_token
         self._said = said
         self._msg_listener = msg_listener
-        self._websocket : websockets.WebSocketClientProtocol = None
+        self._websocket: websockets.WebSocketClientProtocol = None
         self._run_future = None
 
     def _create_connect_msg(self):
         return f"CONNECT\nversion:1.1,1.0\nwcloudtoken:{self._access_token}"
+
     def _create_subscribe_msg(self):
         id = uuid.uuid4()
         return f"SUBSCRIBE\nid:{id}\ndestination:/topic/{self._said}\nack:auto"

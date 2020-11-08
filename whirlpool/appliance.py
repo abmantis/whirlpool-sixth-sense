@@ -7,6 +7,7 @@ from whirlpool.eventsocket import EventSocket
 
 LOGGER = logging.getLogger(__name__)
 
+
 class Appliance():
     def __init__(self, auth, said):
         self._auth = auth
@@ -36,7 +37,7 @@ class Appliance():
     def send_attributes(self, attributes):
         cmd_data = {
             "body": attributes,
-            "header":{
+            "header": {
                 "said": self._said,
                 "command": "setAttributes"
             }
@@ -44,7 +45,8 @@ class Appliance():
 
         headers = self._create_headers()
         with requests.session() as s:
-            r = s.post('https://api.whrcloud.eu/api/v1/appliance/command', headers=headers, json=cmd_data)
+            r = s.post('https://api.whrcloud.eu/api/v1/appliance/command',
+                       headers=headers, json=cmd_data)
             print(r.text)
 
     def get_attribute(self, attribute):
@@ -54,7 +56,8 @@ class Appliance():
         return attribute in self._data_dict["attributes"]
 
     def set_attribute(self, attribute, value, timestamp):
-        logging.debug(f"Updating attribute {attribute} with {value} ({timestamp})")
+        logging.debug(
+            f"Updating attribute {attribute} with {value} ({timestamp})")
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
@@ -62,7 +65,8 @@ class Appliance():
         headers = self._create_headers()
         self._data_dict = None
         with requests.session() as s:
-            r = s.get('https://api.whrcloud.eu/api/v1/appliance/{0}'.format(self._said), headers=headers)
+            r = s.get(
+                'https://api.whrcloud.eu/api/v1/appliance/{0}'.format(self._said), headers=headers)
             self._data_dict = json.loads(r.text)
 
     async def start_event_listener(self):
@@ -78,13 +82,13 @@ class Appliance():
     #def fetch_said(self, account_id):
         #headers = self._create_headers()
         #with requests.session() as s:
-            #r = s.get('https://api.whrcloud.eu/api/v1/appliancebyaccount/{0}'.format(accountId), headers=headers)
-            #print(r.text)
-            #device_said = json.loads(r.text)["accountId"]
+        #r = s.get('https://api.whrcloud.eu/api/v1/appliancebyaccount/{0}'.format(accountId), headers=headers)
+        #print(r.text)
+        #device_said = json.loads(r.text)["accountId"]
 
     #def fetch_user_details(self):
         #headers = self._create_headers()
         #with requests.session() as s:
-            #r = s.get('https://api.whrcloud.eu/api/v1/getUserDetails', headers=headers)
-            #return json.loads(r.text)
+        #r = s.get('https://api.whrcloud.eu/api/v1/getUserDetails', headers=headers)
+        #return json.loads(r.text)
         #return None

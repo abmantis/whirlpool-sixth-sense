@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timedelta
 
 LOGGER = logging.getLogger(__name__)
 
+
 class Auth():
     def __init__(self, username, password):
         self._auth_dict = None
@@ -76,7 +77,6 @@ class Auth():
                 return json.loads(r.text)
             elif refresh_token:
                 return self._do_auth(refresh_token=None)
-
 
     def get_access_token(self):
         return self._auth_dict["access_token"]
