@@ -1,18 +1,23 @@
-import requests
-import base64
+import aiohttp
+import asyncio
+import async_timeout
 import logging
 import json
 from datetime import datetime, timedelta, timedelta
-from whirlpool.eventsocket import EventSocket
+
+from .auth import Auth
+from .eventsocket import EventSocket
 
 LOGGER = logging.getLogger(__name__)
 
 
 class Appliance():
-    def __init__(self, auth, said):
+    def __init__(self, auth:Auth, said:str):
         self._auth = auth
         self._said = said
         self._data_dict = None
+
+        self._session: aiohttp.ClientSession = None
         self._event_socked = EventSocket(
             auth.get_access_token(), said, self._event_socket_handler)
 
@@ -34,7 +39,27 @@ class Appliance():
             'Cache-Control': 'no-cache',
         }
 
-    def send_attributes(self, attributes):
+    async def fetch_data(self):
+        if not self._session:
+            LOGGER.error("Session not started")
+            return False
+
+        uri = f'https://api.whrcloud.eu/api/v1/appliance/{self._said}'
+        self._data_dict = None
+        with async_timeout.timeout(30):
+            async with self._session.get(uri) as r:
+                self._data_dict = json.loads(await r.text())
+                if r.status == 200:
+                    return True
+                LOGGER.error(f"Fetching data failed ({r.status})")
+        return False
+
+    async def send_attributes(self, attributes):
+        if not self._session:
+            LOGGER.error("Session not started")
+            return False
+
+        uri = 'https://api.whrcloud.eu/api/v1/appliance/command'
         cmd_data = {
             "body": attributes,
             "header": {
@@ -42,12 +67,13 @@ class Appliance():
                 "command": "setAttributes"
             }
         }
-
-        headers = self._create_headers()
-        with requests.session() as s:
-            r = s.post('https://api.whrcloud.eu/api/v1/appliance/command',
-                       headers=headers, json=cmd_data)
-            print(r.text)
+        with async_timeout.timeout(30):
+            async with self._session.post(uri, json=cmd_data) as r:
+                LOGGER.debug(f"Reply: {await r.text()}")
+                if r.status == 200:
+                    return True
+                LOGGER.error(f"Sending attributes failed ({r.status})")
+        return False
 
     def get_attribute(self, attribute):
         return self._data_dict["attributes"][attribute]["value"]
@@ -61,16 +87,24 @@ class Appliance():
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
-    def fetch_data(self):
-        headers = self._create_headers()
-        self._data_dict = None
-        with requests.session() as s:
-            r = s.get(
-                'https://api.whrcloud.eu/api/v1/appliance/{0}'.format(self._said), headers=headers)
-            self._data_dict = json.loads(r.text)
+    async def connect(self):
+        await self.start_http_session()
+        await self.start_event_listener()
+
+    async def disconnect(self):
+        await self.stop_http_session()
+        await self.stop_event_listener()
+
+    async def start_http_session(self):
+        self._session = aiohttp.ClientSession(headers=self._create_headers())
+
+    async def stop_http_session(self):
+        if not self._session:
+            return
+        await self._session.close()
 
     async def start_event_listener(self):
-        self.fetch_data()
+        await self.fetch_data()
         self._event_socked.start()
 
     async def stop_event_listener(self):

@@ -1,4 +1,5 @@
 aioconsole
+aiohttp
 requests
 uuid
 websockets

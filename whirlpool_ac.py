@@ -62,7 +62,7 @@ async def start():
     auth = Auth(args.email, args.password)
     said = auth.get_said_list()[0]
     ac = Aircon(auth, said)
-    await ac.start_event_listener()
+    await ac.connect()
 
     loop = True
     while(loop):
@@ -70,51 +70,48 @@ async def start():
         choice = await aioconsole.ainput("Enter your choice: ")
 
         if choice == '1':
-            ac.set_power_on(True)
+            await ac.set_power_on(True)
         elif choice == '0':
-            ac.set_power_on(False)
+            await ac.set_power_on(False)
         elif choice == '+':
-            ac.fetch_data()
             temp = ac.get_temp() + 1
-            ac.set_temp(temp)
+            await ac.set_temp(temp)
         elif choice == '-':
-            ac.fetch_data()
             temp = ac.get_temp() - 1
-            ac.set_temp(temp)
+            await ac.set_temp(temp)
         elif choice == 'C':
-            ac.set_mode(Mode.Cool)
+            await ac.set_mode(Mode.Cool)
         elif choice == 'H':
-            ac.set_mode(Mode.Heat)
+            await ac.set_mode(Mode.Heat)
         elif choice == 'F':
-            ac.set_mode(Mode.Fan)
+            await ac.set_mode(Mode.Fan)
         elif choice == 'S':
-            ac.set_mode(Mode.SixthSense)
+            await ac.set_mode(Mode.SixthSense)
         elif choice == '2':
-            ac.set_h_louver_swing(not ac.get_h_louver_swing())
+            await ac.set_h_louver_swing(not ac.get_h_louver_swing())
         elif choice == '3':
-            ac.set_turbo_mode(not ac.get_turbo_mode())
+            await ac.set_turbo_mode(not ac.get_turbo_mode())
         elif choice == '4':
-            ac.set_eco_mode(not ac.get_eco_mode())
+            await ac.set_eco_mode(not ac.get_eco_mode())
         elif choice == '5':
-            ac.set_quiet_mode(not ac.get_quiet_mode())
+            await ac.set_quiet_mode(not ac.get_quiet_mode())
         elif choice == '6':
-            ac.set_display_on(not ac.get_display_on())
+            await ac.set_display_on(not ac.get_display_on())
         elif choice == 'p':
             print_status(ac)
         elif choice == 'u':
-            ac.fetch_data()
+            await ac.fetch_data()
             print_status(ac)
         elif choice == 'v':
-            ac.fetch_data()
             print(ac._data_dict)
         elif choice == 'r':
-            ac.send_attributes({SETTING_REBOOT_WIFI: SETVAL_VALUE_ON})
+            await ac.send_attributes({SETTING_REBOOT_WIFI: SETVAL_VALUE_ON})
         elif choice == 'c':
             cmd = aioconsole.ainput("Command: ")
             val = aioconsole.ainput("Value: ")
-            ac.send_attributes({cmd: val})
+            await ac.send_attributes({cmd: val})
         elif choice == 'q':
-            await ac.stop_event_listener()
+            await ac.disconnect()
             print("Bye")
             loop = False
         else:

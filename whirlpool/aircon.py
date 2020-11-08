@@ -101,21 +101,21 @@ class Aircon(Appliance):
     def get_power_on(self):
         return self._attrValueToBool(self.get_attribute(SETTING_POWER))
 
-    def set_power_on(self, on: bool):
-        self.send_attributes({SETTING_POWER: self._boolToAttrValue(on)})
+    async def set_power_on(self, on: bool):
+        await self.send_attributes({SETTING_POWER: self._boolToAttrValue(on)})
 
     def get_temp(self):
         return int(self.get_attribute(SETTING_TEMP)) / 10
 
-    def set_temp(self, temp: float):
+    async def set_temp(self, temp: float):
         tempint = int(temp * 10)
-        self.send_attributes({SETTING_TEMP: str(tempint)})
+        await self.send_attributes({SETTING_TEMP: str(tempint)})
 
     def get_humidity(self):
         return int(self.get_attribute(SETTING_HUMIDITY))
 
-    def set_humidity(self, temp: int):
-        self.send_attributes({SETTING_HUMIDITY: str(temp)})
+    async def set_humidity(self, temp: int):
+        await self.send_attributes({SETTING_HUMIDITY: str(temp)})
 
     def get_mode(self):
         mode_raw = self.get_attribute(ATTR_MODE)
@@ -129,10 +129,10 @@ class Aircon(Appliance):
     def get_sixthsense_mode(self):
         return self.get_attribute(SETTING_MODE) == SETVAL_MODE_SIXTH_SENSE
 
-    def set_mode(self, mode: Mode):
+    async def set_mode(self, mode: Mode):
         if mode not in MODES_MAP:
             LOGGER.error("Invalid mode")
-        self.send_attributes({SETTING_MODE: MODES_MAP[mode]})
+        await self.send_attributes({SETTING_MODE: MODES_MAP[mode]})
 
     def get_fanspeed(self):
         fanspeed_raw = self.get_attribute(SETTING_FAN_SPEED)
@@ -141,42 +141,42 @@ class Aircon(Appliance):
                 return k
         return None
 
-    def set_fanspeed(self, speed: FanSpeed):
+    async def set_fanspeed(self, speed: FanSpeed):
         if speed not in FANSPEED_MAP:
             LOGGER.error("Invalid fan speed")
-        self.send_attributes({SETTING_MODE: FANSPEED_MAP[speed]})
+        await self.send_attributes({SETTING_MODE: FANSPEED_MAP[speed]})
 
     def get_h_louver_swing(self):
         return self._attrValueToBool(self.get_attribute(SETTING_HORZ_LOUVER_SWING))
 
-    def set_h_louver_swing(self, swing: bool):
-        self.send_attributes(
+    async def set_h_louver_swing(self, swing: bool):
+        await self.send_attributes(
             {SETTING_HORZ_LOUVER_SWING: self._boolToAttrValue(swing)})
 
     def get_turbo_mode(self):
         return self._attrValueToBool(self.get_attribute(SETTING_TURBO_MODE))
 
-    def set_turbo_mode(self, turbo: bool):
-        self.send_attributes(
+    async def set_turbo_mode(self, turbo: bool):
+        await self.send_attributes(
             {SETTING_TURBO_MODE: self._boolToAttrValue(turbo)})
 
     def get_eco_mode(self):
         return self._attrValueToBool(self.get_attribute(SETTING_ECO_MODE))
 
-    def set_eco_mode(self, eco: bool):
-        self.send_attributes(
+    async def set_eco_mode(self, eco: bool):
+        await self.send_attributes(
             {SETTING_ECO_MODE: self._boolToAttrValue(eco)})
 
     def get_quiet_mode(self):
         return self._attrValueToBool(self.get_attribute(SETTING_QUIET_MODE))
 
-    def set_quiet_mode(self, quiet: bool):
-        self.send_attributes(
+    async def set_quiet_mode(self, quiet: bool):
+        await self.send_attributes(
             {SETTING_QUIET_MODE: self._boolToAttrValue(quiet)})
 
     def get_display_on(self):
         return self.get_attribute(SETTING_DISPLAY_BRIGHTNESS) == SETVAL_DISPLAY_BRIGHTNESS_ON
 
-    def set_display_on(self, on: bool):
+    async def set_display_on(self, on: bool):
         bri = SETVAL_DISPLAY_BRIGHTNESS_ON if on else SETVAL_DISPLAY_BRIGHTNESS_OFF
-        self.send_attributes({SETTING_DISPLAY_BRIGHTNESS: bri})
+        await self.send_attributes({SETTING_DISPLAY_BRIGHTNESS: bri})
