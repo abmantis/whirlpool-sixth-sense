@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from typing import Callable
 
 from .appliance import Appliance
 
@@ -80,8 +81,8 @@ FANSPEED_MAP = {FanSpeed.Off: SETVAL_FAN_SPEED_OFF,
 
 
 class Aircon(Appliance):
-    def __init__(self, auth, said):
-        Appliance.__init__(self, auth, said)
+    def __init__(self, auth, said, attr_changed: Callable):
+        Appliance.__init__(self, auth, said, attr_changed)
 
     def _boolToAttrValue(self, b: bool):
         return SETVAL_VALUE_ON if b else SETVAL_VALUE_OFF

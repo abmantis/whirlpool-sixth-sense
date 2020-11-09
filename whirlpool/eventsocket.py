@@ -3,6 +3,9 @@ import logging
 import re
 import uuid
 import websockets
+
+from typing import Callable
+
 from .auth import Auth
 
 LOGGER = logging.getLogger(__name__)
@@ -14,7 +17,7 @@ RECV_MSG_MATCHER = re.compile('{(.*)}\x00')
 
 
 class EventSocket():
-    def __init__(self, access_token, said, msg_listener):
+    def __init__(self, access_token, said, msg_listener: Callable[[str],None]):
         self._access_token = access_token
         self._said = said
         self._msg_listener = msg_listener

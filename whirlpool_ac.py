@@ -59,9 +59,12 @@ def print_status(ac: Aircon):
 
 
 async def start():
+    def attr_upd():
+        logger.info("Attributes updated")
+
     auth = Auth(args.email, args.password)
     said = auth.get_said_list()[0]
-    ac = Aircon(auth, said)
+    ac = Aircon(auth, said, attr_upd)
     await ac.connect()
 
     loop = True

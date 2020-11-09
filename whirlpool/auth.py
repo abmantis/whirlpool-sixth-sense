@@ -11,6 +11,7 @@ class Auth():
         self._auth_dict = None
         self._username = username
         self._password = password
+        # TODO: make async and handle http errors during auth
         self._load_auth_data()
 
     def _load_auth_data(self, ):

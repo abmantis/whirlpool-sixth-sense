@@ -4,6 +4,7 @@ import async_timeout
 import logging
 import json
 from datetime import datetime, timedelta, timedelta
+from typing import Callable
 
 from .auth import Auth
 from .eventsocket import EventSocket
@@ -12,9 +13,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Appliance():
-    def __init__(self, auth:Auth, said:str):
+    def __init__(self, auth:Auth, said:str, attr_changed: Callable):
         self._auth = auth
         self._said = said
+        self._attr_changed = attr_changed
         self._data_dict = None
 
         self._session: aiohttp.ClientSession = None
@@ -27,7 +29,10 @@ class Appliance():
         for (attr, val) in json_msg["attributeMap"].items():
             if not self.has_attribute(attr):
                 continue
-            self.set_attribute(attr, str(val), timestamp)
+            self._set_attribute(attr, str(val), timestamp)
+
+        if self._attr_changed:
+            self._attr_changed()
 
     def _create_headers(self):
         return {
@@ -38,6 +43,16 @@ class Appliance():
             'Pragma': 'no-cache',
             'Cache-Control': 'no-cache',
         }
+
+    def _set_attribute(self, attribute, value, timestamp):
+        logging.debug(
+            f"Updating attribute {attribute} with {value} ({timestamp})")
+        self._data_dict["attributes"][attribute]["value"] = value
+        self._data_dict["attributes"][attribute]["updateTime"] = timestamp
+
+    @property
+    def said(self):
+        return self.said
 
     async def fetch_data(self):
         if not self._session:
@@ -58,6 +73,8 @@ class Appliance():
         if not self._session:
             LOGGER.error("Session not started")
             return False
+
+        LOGGER.debug(f"Sending attributes: {attributes}")
 
         uri = 'https://api.whrcloud.eu/api/v1/appliance/command'
         cmd_data = {
@@ -80,12 +97,6 @@ class Appliance():
 
     def has_attribute(self, attribute):
         return attribute in self._data_dict["attributes"]
-
-    def set_attribute(self, attribute, value, timestamp):
-        logging.debug(
-            f"Updating attribute {attribute} with {value} ({timestamp})")
-        self._data_dict["attributes"][attribute]["value"] = value
-        self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
     async def connect(self):
         await self.start_http_session()
