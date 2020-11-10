@@ -1,4 +1,6 @@
-import requests
+import aiohttp
+import asyncio
+import async_timeout
 import logging
 import json
 from datetime import datetime, timedelta, timedelta
@@ -10,15 +12,19 @@ AUTH_JSON_FILE = "auth.json"
 
 class Auth:
     def __init__(self, username, password):
-        self._auth_dict = {}
         self._username = username
         self._password = password
+        self._auth_dict = {}
+        self._session: aiohttp.ClientSession = None
 
     def _save_auth_data(self):
         with open(AUTH_JSON_FILE, "w") as f:
             json.dump(self._auth_dict, f)
 
-    def _do_auth(self, refresh_token):
+    async def _do_auth(self, refresh_token):
+        if not self._session:
+            self._session = aiohttp.ClientSession()
+
         auth_url = "https://api.whrcloud.eu/oauth/token"
         auth_header = {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -51,16 +57,16 @@ class Auth:
                 }
             )
 
-        with requests.session() as s:
-            r = s.post(auth_url, data=auth_data, headers=auth_header)
-            LOGGER.debug("Auth status: " + str(r.status_code))
-            if r.status_code == 200:
-                return json.loads(r.text)
-            elif refresh_token:
-                return self._do_auth(refresh_token=None)
+        with async_timeout.timeout(30):
+            async with self._session.post(auth_url, data=auth_data, headers=auth_header) as r:
+                LOGGER.debug("Auth status: " + str(r.status))
+                if r.status == 200:
+                    return json.loads(await r.text())
+                elif refresh_token:
+                    return await self._do_auth(refresh_token=None)
 
-    def do_auth(self):
-        fetched_auth_data = self._do_auth(self._auth_dict.get("refresh_token", None))
+    async def do_auth(self):
+        fetched_auth_data = await self._do_auth(self._auth_dict.get("refresh_token", None))
         curr_timestamp = datetime.now().timestamp()
         self._auth_dict = {
             "access_token": fetched_auth_data.get("access_token", ""),
@@ -71,7 +77,7 @@ class Auth:
         }
         self._save_auth_data()
 
-    def load_auth_file(self):
+    async def load_auth_file(self):
         try:
             with open(AUTH_JSON_FILE, "r") as f:
                 LOGGER.debug("Loading auth from file")
@@ -81,7 +87,7 @@ class Auth:
 
         if not self.is_access_token_valid():
             LOGGER.debug("Access token expired. Renewing.")
-            self.do_auth()
+            await self.do_auth()
 
     def is_access_token_valid(self):
         return (

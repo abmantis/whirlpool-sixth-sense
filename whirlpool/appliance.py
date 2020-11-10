@@ -91,7 +91,7 @@ class Appliance():
                     if r.status == 200:
                         return True
                     elif r.status == 401:
-                        self._auth.do_auth()
+                        await self._auth.do_auth()
                         continue
                     LOGGER.error(f"Sending attributes failed ({r.status})")
         return False
