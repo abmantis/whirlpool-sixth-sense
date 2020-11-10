@@ -8,7 +8,7 @@ LOGGER = logging.getLogger(__name__)
 
 class Auth():
     def __init__(self, username, password):
-        self._auth_dict = None
+        self._auth_dict = {}
         self._username = username
         self._password = password
         # TODO: make async and handle http errors during auth
@@ -42,7 +42,7 @@ class Auth():
 
         self._auth_dict = auth_dict
 
-    def _do_auth(self, refresh_token=None):
+    def _do_auth(self, refresh_token):
         auth_url = 'https://api.whrcloud.eu/oauth/token'
         auth_header = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -79,8 +79,11 @@ class Auth():
             elif refresh_token:
                 return self._do_auth(refresh_token=None)
 
+    def do_auth(self):
+        self._do_auth(self._auth_dict.get("refresh_token", None))
+
     def get_access_token(self):
-        return self._auth_dict["access_token"]
+        return self._auth_dict.get("access_token", None)
 
     def get_said_list(self):
-        return self._auth_dict["SAID"]
+        return self._auth_dict.get("SAID", None)

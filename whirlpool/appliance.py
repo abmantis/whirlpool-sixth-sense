@@ -84,12 +84,16 @@ class Appliance():
                 "command": "setAttributes"
             }
         }
-        with async_timeout.timeout(30):
-            async with self._session.post(uri, json=cmd_data) as r:
-                LOGGER.debug(f"Reply: {await r.text()}")
-                if r.status == 200:
-                    return True
-                LOGGER.error(f"Sending attributes failed ({r.status})")
+        for n in range(3):
+            with async_timeout.timeout(30):
+                async with self._session.post(uri, json=cmd_data) as r:
+                    LOGGER.debug(f"Reply: {await r.text()}")
+                    if r.status == 200:
+                        return True
+                    elif r.status == 401:
+                        self._auth.do_auth()
+                        continue
+                    LOGGER.error(f"Sending attributes failed ({r.status})")
         return False
 
     def get_attribute(self, attribute):
