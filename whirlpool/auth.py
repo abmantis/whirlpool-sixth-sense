@@ -5,71 +5,51 @@ from datetime import datetime, timedelta, timedelta
 
 LOGGER = logging.getLogger(__name__)
 
+AUTH_JSON_FILE = "auth.json"
 
-class Auth():
+
+class Auth:
     def __init__(self, username, password):
         self._auth_dict = {}
         self._username = username
         self._password = password
-        # TODO: make async and handle http errors during auth
-        self._load_auth_data()
 
-    def _load_auth_data(self, ):
-        auth_json_file = "auth.json"
-        auth_dict = {}
-        try:
-            with open(auth_json_file, 'r') as f:
-                LOGGER.debug("Loading auth from file")
-                auth_dict = json.load(f)
-        except FileNotFoundError:
-            pass
-
-        curr_timestamp = datetime.now().timestamp()
-        if "access_token" not in auth_dict or "expire_date" not in auth_dict or auth_dict["expire_date"] < curr_timestamp:
-            refresh_token = auth_dict.get('refresh_token', None)
-            fetched_auth_data = self._do_auth(refresh_token)
-            auth_dict = {
-                "access_token": fetched_auth_data["access_token"],
-                "refresh_token": fetched_auth_data["refresh_token"],
-                "expire_date": curr_timestamp + fetched_auth_data["expires_in"],
-                "accountId": fetched_auth_data["accountId"],
-                "SAID": fetched_auth_data["SAID"],
-            }
-
-        # Writing JSON data
-        with open(auth_json_file, 'w') as f:
-            json.dump(auth_dict, f)
-
-        self._auth_dict = auth_dict
+    def _save_auth_data(self):
+        with open(AUTH_JSON_FILE, "w") as f:
+            json.dump(self._auth_dict, f)
 
     def _do_auth(self, refresh_token):
-        auth_url = 'https://api.whrcloud.eu/oauth/token'
+        auth_url = "https://api.whrcloud.eu/oauth/token"
         auth_header = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Brand': 'Whirlpool',
-            'WP-CLIENT-REGION': 'EMEA',
-            'WP-CLIENT-BRAND': 'WHIRLPOOL',
-            'WP-CLIENT-COUNTRY': 'EN'
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Brand": "Whirlpool",
+            "WP-CLIENT-REGION": "EMEA",
+            "WP-CLIENT-BRAND": "WHIRLPOOL",
+            "WP-CLIENT-COUNTRY": "EN",
         }
 
         auth_data = {
-            'client_id': 'whirlpool_android',
-            'client_secret': 'i-eQ8MD4jK4-9DUCbktfg-t_7gvU-SrRstPRGAYnfBPSrHHt5Mc0MFmYymU2E2qzif5cMaBYwFyFgSU6NTWjZg',
+            "client_id": "whirlpool_android",
+            "client_secret": "i-eQ8MD4jK4-9DUCbktfg-t_7gvU-SrRstPRGAYnfBPSrHHt5Mc0MFmYymU2E2qzif5cMaBYwFyFgSU6NTWjZg",
         }
 
         if refresh_token:
             LOGGER.debug("Fetching auth with refresh token")
-            auth_data.update({
-                'grant_type': 'refresh_token',
-                'refresh_token': refresh_token,
-            })
+            auth_data.update(
+                {
+                    "grant_type": "refresh_token",
+                    "refresh_token": refresh_token,
+                }
+            )
         else:
             LOGGER.debug("Fetching auth with user/pass")
-            auth_data.update({
-                'grant_type': 'password',
-                'username': self._username,
-                'password': self._password,
-            })
+            auth_data.update(
+                {
+                    "grant_type": "password",
+                    "username": self._username,
+                    "password": self._password,
+                }
+            )
 
         with requests.session() as s:
             r = s.post(auth_url, data=auth_data, headers=auth_header)
@@ -80,7 +60,34 @@ class Auth():
                 return self._do_auth(refresh_token=None)
 
     def do_auth(self):
-        self._do_auth(self._auth_dict.get("refresh_token", None))
+        fetched_auth_data = self._do_auth(self._auth_dict.get("refresh_token", None))
+        curr_timestamp = datetime.now().timestamp()
+        self._auth_dict = {
+            "access_token": fetched_auth_data.get("access_token", ""),
+            "refresh_token": fetched_auth_data.get("refresh_token", ""),
+            "expire_date": curr_timestamp + fetched_auth_data.get("expires_in", ""),
+            "accountId": fetched_auth_data.get("accountId", ""),
+            "SAID": fetched_auth_data.get("SAID", ""),
+        }
+        self._save_auth_data()
+
+    def load_auth_file(self):
+        try:
+            with open(AUTH_JSON_FILE, "r") as f:
+                LOGGER.debug("Loading auth from file")
+                self._auth_dict = json.load(f)
+        except FileNotFoundError:
+            pass
+
+        if not self.is_access_token_valid():
+            LOGGER.debug("Access token expired. Renewing.")
+            self.do_auth()
+
+    def is_access_token_valid(self):
+        return (
+            "access_token" in self._auth_dict
+            and self._auth_dict.get("expire_date", 0) > datetime.now().timestamp()
+        )
 
     def get_access_token(self):
         return self._auth_dict.get("access_token", None)

@@ -63,6 +63,7 @@ async def start():
         logger.info("Attributes updated")
 
     auth = Auth(args.email, args.password)
+    auth.load_auth_file()
     said = auth.get_said_list()[0]
     ac = Aircon(auth, said, attr_upd)
     await ac.connect()
