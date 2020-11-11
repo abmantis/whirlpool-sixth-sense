@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="whirlpool_sixth_sense",
-    version="0.1",
+    version="0.11",
     author="Abílio Costa",
     author_email="amfcalt@gmail.com",
     description="Unofficial API for Whirlpool's 6th Sense appliances",
