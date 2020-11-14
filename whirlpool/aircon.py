@@ -145,7 +145,7 @@ class Aircon(Appliance):
     async def set_fanspeed(self, speed: FanSpeed):
         if speed not in FANSPEED_MAP:
             LOGGER.error("Invalid fan speed")
-        await self.send_attributes({SETTING_MODE: FANSPEED_MAP[speed]})
+        await self.send_attributes({SETTING_FAN_SPEED: FANSPEED_MAP[speed]})
 
     def get_h_louver_swing(self):
         return self._attrValueToBool(self.get_attribute(SETTING_HORZ_LOUVER_SWING))
