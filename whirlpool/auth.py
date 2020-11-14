@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timedelta
 
 LOGGER = logging.getLogger(__name__)
 
-AUTH_JSON_FILE = "auth.json"
+AUTH_JSON_FILE = ".whirlpool_auth.json"
 
 
 class Auth:
@@ -15,16 +15,12 @@ class Auth:
         self._username = username
         self._password = password
         self._auth_dict = {}
-        self._session: aiohttp.ClientSession = None
 
     def _save_auth_data(self):
         with open(AUTH_JSON_FILE, "w") as f:
             json.dump(self._auth_dict, f)
 
     async def _do_auth(self, refresh_token):
-        if not self._session:
-            self._session = aiohttp.ClientSession()
-
         auth_url = "https://api.whrcloud.eu/oauth/token"
         auth_header = {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -57,16 +53,25 @@ class Auth:
                 }
             )
 
-        with async_timeout.timeout(30):
-            async with self._session.post(auth_url, data=auth_data, headers=auth_header) as r:
-                LOGGER.debug("Auth status: " + str(r.status))
-                if r.status == 200:
-                    return json.loads(await r.text())
-                elif refresh_token:
-                    return await self._do_auth(refresh_token=None)
+        session = aiohttp.ClientSession()
+
+        try:
+            with async_timeout.timeout(30):
+                async with session.post(
+                    auth_url, data=auth_data, headers=auth_header
+                ) as r:
+                    LOGGER.debug("Auth status: " + str(r.status))
+                    if r.status == 200:
+                        return json.loads(await r.text())
+                    elif refresh_token:
+                        return await self._do_auth(refresh_token=None)
+        finally:
+            await session.close()
 
     async def do_auth(self):
-        fetched_auth_data = await self._do_auth(self._auth_dict.get("refresh_token", None))
+        fetched_auth_data = await self._do_auth(
+            self._auth_dict.get("refresh_token", None)
+        )
         curr_timestamp = datetime.now().timestamp()
         self._auth_dict = {
             "access_token": fetched_auth_data.get("access_token", ""),

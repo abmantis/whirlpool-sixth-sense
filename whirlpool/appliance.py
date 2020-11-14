@@ -112,12 +112,14 @@ class Appliance():
         await self.stop_event_listener()
 
     async def start_http_session(self):
+        await self.stop_http_session()
         self._session = aiohttp.ClientSession(headers=self._create_headers())
 
     async def stop_http_session(self):
         if not self._session:
             return
         await self._session.close()
+        self._session = None
 
     async def start_event_listener(self):
         await self.fetch_data()
