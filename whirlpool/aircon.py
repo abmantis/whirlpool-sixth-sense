@@ -66,18 +66,20 @@ class FanSpeed(Enum):
     High = 4
 
 
-MODES_MAP = {Mode.Cool: SETVAL_MODE_COOL,
-             Mode.Heat: SETVAL_MODE_HEAT,
-             Mode.Fan: SETVAL_MODE_FAN,
-             Mode.SixthSense: SETVAL_MODE_SIXTH_SENSE,
-             }
+MODES_MAP = {
+    Mode.Cool: SETVAL_MODE_COOL,
+    Mode.Heat: SETVAL_MODE_HEAT,
+    Mode.Fan: SETVAL_MODE_FAN,
+    Mode.SixthSense: SETVAL_MODE_SIXTH_SENSE,
+}
 
-FANSPEED_MAP = {FanSpeed.Off: SETVAL_FAN_SPEED_OFF,
-                FanSpeed.Auto: SETVAL_FAN_SPEED_AUTO,
-                FanSpeed.Low: SETVAL_FAN_SPEED_LOW,
-                FanSpeed.Medium: SETVAL_FAN_SPEED_MEDIUM,
-                FanSpeed.High: SETVAL_FAN_SPEED_HIGH,
-                }
+FANSPEED_MAP = {
+    FanSpeed.Off: SETVAL_FAN_SPEED_OFF,
+    FanSpeed.Auto: SETVAL_FAN_SPEED_AUTO,
+    FanSpeed.Low: SETVAL_FAN_SPEED_LOW,
+    FanSpeed.Medium: SETVAL_FAN_SPEED_MEDIUM,
+    FanSpeed.High: SETVAL_FAN_SPEED_HIGH,
+}
 
 
 class Aircon(Appliance):
@@ -152,31 +154,32 @@ class Aircon(Appliance):
 
     async def set_h_louver_swing(self, swing: bool):
         await self.send_attributes(
-            {SETTING_HORZ_LOUVER_SWING: self._boolToAttrValue(swing)})
+            {SETTING_HORZ_LOUVER_SWING: self._boolToAttrValue(swing)}
+        )
 
     def get_turbo_mode(self):
         return self._attrValueToBool(self.get_attribute(SETTING_TURBO_MODE))
 
     async def set_turbo_mode(self, turbo: bool):
-        await self.send_attributes(
-            {SETTING_TURBO_MODE: self._boolToAttrValue(turbo)})
+        await self.send_attributes({SETTING_TURBO_MODE: self._boolToAttrValue(turbo)})
 
     def get_eco_mode(self):
         return self._attrValueToBool(self.get_attribute(SETTING_ECO_MODE))
 
     async def set_eco_mode(self, eco: bool):
-        await self.send_attributes(
-            {SETTING_ECO_MODE: self._boolToAttrValue(eco)})
+        await self.send_attributes({SETTING_ECO_MODE: self._boolToAttrValue(eco)})
 
     def get_quiet_mode(self):
         return self._attrValueToBool(self.get_attribute(SETTING_QUIET_MODE))
 
     async def set_quiet_mode(self, quiet: bool):
-        await self.send_attributes(
-            {SETTING_QUIET_MODE: self._boolToAttrValue(quiet)})
+        await self.send_attributes({SETTING_QUIET_MODE: self._boolToAttrValue(quiet)})
 
     def get_display_on(self):
-        return self.get_attribute(SETTING_DISPLAY_BRIGHTNESS) == SETVAL_DISPLAY_BRIGHTNESS_ON
+        return (
+            self.get_attribute(SETTING_DISPLAY_BRIGHTNESS)
+            == SETVAL_DISPLAY_BRIGHTNESS_ON
+        )
 
     async def set_display_on(self, on: bool):
         bri = SETVAL_DISPLAY_BRIGHTNESS_ON if on else SETVAL_DISPLAY_BRIGHTNESS_OFF
