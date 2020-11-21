@@ -3,9 +3,12 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open("requirements.txt") as fh:
+    install_requires = fh.read().splitlines()
+
 setuptools.setup(
     name="whirlpool_sixth_sense",
-    version="0.13",
+    version="0.14.2",
     author="Abílio Costa",
     author_email="amfcalt@gmail.com",
     description="Unofficial API for Whirlpool's 6th Sense appliances",
@@ -19,4 +22,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    install_requires=install_requires,
 )
