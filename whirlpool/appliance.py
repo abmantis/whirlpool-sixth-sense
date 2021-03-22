@@ -52,7 +52,7 @@ class Appliance():
 
     @property
     def said(self):
-        return self.said
+        return self._said
 
     async def fetch_data(self):
         if not self._session:
@@ -128,19 +128,20 @@ class Appliance():
     async def stop_event_listener(self):
         await self._event_socked.stop()
 
-    #def get_account_id(self, user_details):
-        #return user_details["accountId"]
+    async def fetch_name(self):
+        account_id = None
+        async with self._session.get('https://api.whrcloud.eu/api/v1/getUserDetails') as r:
+            if r.status != 200:
+                return None
+            account_id = json.loads(await r.text())["accountId"]
 
-    #def fetch_said(self, account_id):
-        #headers = self._create_headers()
-        #with requests.session() as s:
-        #r = s.get('https://api.whrcloud.eu/api/v1/appliancebyaccount/{0}'.format(accountId), headers=headers)
-        #print(r.text)
-        #device_said = json.loads(r.text)["accountId"]
+        async with self._session.get('https://api.whrcloud.eu/api/v1/appliancebyaccount/{0}'.format(account_id)) as r:
+            if r.status != 200:
+                return None
+            account_appliances = json.loads(await r.text())[str(account_id)]
 
-    #def fetch_user_details(self):
-        #headers = self._create_headers()
-        #with requests.session() as s:
-        #r = s.get('https://api.whrcloud.eu/api/v1/getUserDetails', headers=headers)
-        #return json.loads(r.text)
-        #return None
+            for appliances in account_appliances.values():
+                for appliance in appliances:
+                    if appliance["SAID"] == self.said:
+                        return appliance["APPLIANCE_NAME"]
+        return None
