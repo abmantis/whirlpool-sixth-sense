@@ -6,18 +6,18 @@ import logging
 from whirlpool.aircon import Aircon, Mode, SETTING_REBOOT_WIFI, SETVAL_VALUE_ON
 from whirlpool.auth import Auth
 
-logging.basicConfig(format='%(asctime)s [%(name)s %(levelname)s]: %(message)s')
-logger = logging.getLogger('whirlpool')
-logger.setLevel(logging.DEBUG)
+logging.basicConfig(format="%(asctime)s [%(name)s %(levelname)s]: %(message)s")
+logger = logging.getLogger("whirlpool")
+logger.setLevel(logging.INFO)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-e', '--email', help='Email address')
-parser.add_argument('-p', '--password', help='Password')
+parser.add_argument("-e", "--email", help="Email address")
+parser.add_argument("-p", "--password", help="Password")
 args = parser.parse_args()
 
 
 def print_menu():
-    print('\n')
+    print("\n")
     print(30 * "-", "MENU", 30 * "-")
     print("1. Turn on")
     print("0. Turn off")
@@ -69,58 +69,59 @@ async def start():
     await ac.connect()
 
     loop = True
-    while(loop):
+    while loop:
         print_menu()
         choice = await aioconsole.ainput("Enter your choice: ")
 
-        if choice == '1':
+        if choice == "1":
             await ac.set_power_on(True)
-        elif choice == '0':
+        elif choice == "0":
             await ac.set_power_on(False)
-        elif choice == '+':
+        elif choice == "+":
             temp = ac.get_temp() + 1
             await ac.set_temp(temp)
-        elif choice == '-':
+        elif choice == "-":
             temp = ac.get_temp() - 1
             await ac.set_temp(temp)
-        elif choice == 'C':
+        elif choice == "C":
             await ac.set_mode(Mode.Cool)
-        elif choice == 'H':
+        elif choice == "H":
             await ac.set_mode(Mode.Heat)
-        elif choice == 'F':
+        elif choice == "F":
             await ac.set_mode(Mode.Fan)
-        elif choice == 'S':
+        elif choice == "S":
             await ac.set_mode(Mode.SixthSense)
-        elif choice == '2':
+        elif choice == "2":
             await ac.set_h_louver_swing(not ac.get_h_louver_swing())
-        elif choice == '3':
+        elif choice == "3":
             await ac.set_turbo_mode(not ac.get_turbo_mode())
-        elif choice == '4':
+        elif choice == "4":
             await ac.set_eco_mode(not ac.get_eco_mode())
-        elif choice == '5':
+        elif choice == "5":
             await ac.set_quiet_mode(not ac.get_quiet_mode())
-        elif choice == '6':
+        elif choice == "6":
             await ac.set_display_on(not ac.get_display_on())
-        elif choice == 'p':
+        elif choice == "p":
             print_status(ac)
-        elif choice == 'u':
+        elif choice == "u":
             await ac.fetch_data()
             print_status(ac)
-        elif choice == 'v':
+        elif choice == "v":
             print(ac._data_dict)
-        elif choice == 'r':
+        elif choice == "r":
             await ac.send_attributes({SETTING_REBOOT_WIFI: SETVAL_VALUE_ON})
-        elif choice == 'c':
+        elif choice == "c":
             cmd = aioconsole.ainput("Command: ")
             val = aioconsole.ainput("Value: ")
             await ac.send_attributes({cmd: val})
-        elif choice == 'q':
+        elif choice == "q":
             await ac.disconnect()
             auth.cancel_auto_renewal()
             print("Bye")
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
+
 
 asyncio.get_event_loop().run_until_complete(start())
 asyncio.get_event_loop().close()
