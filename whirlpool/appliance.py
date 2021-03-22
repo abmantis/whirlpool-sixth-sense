@@ -74,7 +74,7 @@ class Appliance:
             LOGGER.error("Session not started")
             return False
 
-        LOGGER.debug(f"Sending attributes: {attributes}")
+        LOGGER.info(f"Sending attributes: {attributes}")
 
         uri = "https://api.whrcloud.eu/api/v1/appliance/command"
         cmd_data = {

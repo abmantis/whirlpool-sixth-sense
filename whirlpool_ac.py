@@ -116,6 +116,7 @@ async def start():
             await ac.send_attributes({cmd: val})
         elif choice == 'q':
             await ac.disconnect()
+            auth.cancel_auto_renewal()
             print("Bye")
             loop = False
         else:
