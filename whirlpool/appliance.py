@@ -12,8 +12,8 @@ from .eventsocket import EventSocket
 LOGGER = logging.getLogger(__name__)
 
 
-class Appliance():
-    def __init__(self, auth:Auth, said:str, attr_changed: Callable):
+class Appliance:
+    def __init__(self, auth: Auth, said: str, attr_changed: Callable):
         self._auth = auth
         self._said = said
         self._attr_changed = attr_changed
@@ -21,7 +21,8 @@ class Appliance():
 
         self._session: aiohttp.ClientSession = None
         self._event_socked = EventSocket(
-            auth.get_access_token(), said, self._event_socket_handler)
+            auth.get_access_token(), said, self._event_socket_handler
+        )
 
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
@@ -36,17 +37,16 @@ class Appliance():
 
     def _create_headers(self):
         return {
-            'Authorization': 'Bearer ' + self._auth.get_access_token(),
-            'Content-Type': 'application/json',
-            'Host': 'api.whrcloud.eu',
-            'User-Agent': 'okhttp/3.12.0',
-            'Pragma': 'no-cache',
-            'Cache-Control': 'no-cache',
+            "Authorization": "Bearer " + self._auth.get_access_token(),
+            "Content-Type": "application/json",
+            "Host": "api.whrcloud.eu",
+            "User-Agent": "okhttp/3.12.0",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
         }
 
     def _set_attribute(self, attribute, value, timestamp):
-        logging.debug(
-            f"Updating attribute {attribute} with {value} ({timestamp})")
+        logging.debug(f"Updating attribute {attribute} with {value} ({timestamp})")
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
@@ -59,7 +59,7 @@ class Appliance():
             LOGGER.error("Session not started")
             return False
 
-        uri = f'https://api.whrcloud.eu/api/v1/appliance/{self._said}'
+        uri = f"https://api.whrcloud.eu/api/v1/appliance/{self._said}"
         self._data_dict = None
         with async_timeout.timeout(30):
             async with self._session.get(uri) as r:
@@ -76,13 +76,10 @@ class Appliance():
 
         LOGGER.debug(f"Sending attributes: {attributes}")
 
-        uri = 'https://api.whrcloud.eu/api/v1/appliance/command'
+        uri = "https://api.whrcloud.eu/api/v1/appliance/command"
         cmd_data = {
             "body": attributes,
-            "header": {
-                "said": self._said,
-                "command": "setAttributes"
-            }
+            "header": {"said": self._said, "command": "setAttributes"},
         }
         for n in range(3):
             with async_timeout.timeout(30):
@@ -130,12 +127,16 @@ class Appliance():
 
     async def fetch_name(self):
         account_id = None
-        async with self._session.get('https://api.whrcloud.eu/api/v1/getUserDetails') as r:
+        async with self._session.get(
+            "https://api.whrcloud.eu/api/v1/getUserDetails"
+        ) as r:
             if r.status != 200:
                 return None
             account_id = json.loads(await r.text())["accountId"]
 
-        async with self._session.get('https://api.whrcloud.eu/api/v1/appliancebyaccount/{0}'.format(account_id)) as r:
+        async with self._session.get(
+            "https://api.whrcloud.eu/api/v1/appliancebyaccount/{0}".format(account_id)
+        ) as r:
             if r.status != 200:
                 return None
             account_appliances = json.loads(await r.text())[str(account_id)]
