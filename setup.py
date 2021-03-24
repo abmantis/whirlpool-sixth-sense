@@ -8,7 +8,7 @@ with open("requirements.txt") as fh:
 
 setuptools.setup(
     name="whirlpool_sixth_sense",
-    version="0.14.2",
+    version="0.14.3",
     author="Abílio Costa",
     author_email="amfcalt@gmail.com",
     description="Unofficial API for Whirlpool's 6th Sense appliances",
@@ -21,6 +21,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     install_requires=install_requires,
 )
