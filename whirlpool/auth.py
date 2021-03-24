@@ -28,6 +28,8 @@ class Auth:
         await self.do_auth()
 
     def _schedule_auto_renewal(self):
+        return  # disable for now and rely on on-demand renewal
+
         if not self.is_access_token_valid():
             LOGGER.warn("Access token is not valid, renewing now")
             self._renew_time = datetime.now()
