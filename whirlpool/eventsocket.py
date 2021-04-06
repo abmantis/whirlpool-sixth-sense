@@ -1,8 +1,8 @@
+import aiohttp
 import asyncio
 import logging
 import re
 import uuid
-import websockets
 
 from typing import Callable
 
@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 WSURI = "wss://websocketservice.wcloud-emea.eu-gb.containers.appdomain.cloud/appliance/websocket"
 MSG_TERMINATION = "\n\n\0"
 
-RECV_MSG_MATCHER = re.compile("{(.*)}\x00")
+RECV_MSG_MATCHER = re.compile("{(.*)}\\x00")
 
 
 class EventSocket:
@@ -21,7 +21,7 @@ class EventSocket:
         self._access_token = access_token
         self._said = said
         self._msg_listener = msg_listener
-        self._websocket: websockets.WebSocketClientProtocol = None
+        self._websocket: aiohttp.ClientWebSocketResponse = None
         self._run_future = None
 
     def _create_connect_msg(self):
@@ -31,36 +31,44 @@ class EventSocket:
         id = uuid.uuid4()
         return f"SUBSCRIBE\nid:{id}\ndestination:/topic/{self._said}\nack:auto"
 
-    async def _send_msg(self, websocket, msg):
+    async def _send_msg(self, websocket: aiohttp.ClientWebSocketResponse, msg):
         LOGGER.debug(f"> {msg}")
-        await websocket.send(msg + MSG_TERMINATION)
+        await websocket.send_str(msg + MSG_TERMINATION)
 
-    async def _recv_msg(self, websocket: websockets.WebSocketClientProtocol):
-        try:
-            msg = await websocket.recv()
-            LOGGER.debug(f"< {msg}")
-            return msg
-        except websockets.exceptions.ConnectionClosedOK:
-            pass
-
-        return None
+    async def _recv_msg(self, websocket: aiohttp.ClientWebSocketResponse):
+        msg = await websocket.receive()
+        LOGGER.debug(f"< {msg}")
+        return msg
 
     async def _run(self):
-        async with websockets.connect(WSURI) as websocket:
-            self._websocket = websocket
-            await self._send_msg(websocket, self._create_connect_msg())
-            await self._recv_msg(websocket)
-            await self._send_msg(websocket, self._create_subscribe_msg())
+        timeout = aiohttp.ClientTimeout(total=None)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.ws_connect(WSURI) as ws:
+                self._websocket = ws
+                await self._send_msg(ws, self._create_connect_msg())
+                await self._recv_msg(ws)
+                await self._send_msg(ws, self._create_subscribe_msg())
 
-            while self._websocket:
-                msg = await self._recv_msg(websocket)
-                if not msg:
-                    continue
+                while not ws.closed:
+                    msg = await self._recv_msg(ws)
+                    if not msg:
+                        continue
+                    if msg.type == aiohttp.WSMsgType.ERROR:
+                        LOGGER.error("Socket message error")
+                        break
+                    if msg.type == aiohttp.WSMsgType.CLOSING:
+                        LOGGER.debug("Socket received closing message")
+                        break
+                    if msg.type != aiohttp.WSMsgType.TEXT:
+                        LOGGER.error(f"Socket message type is invalid: {str(msg.type)}")
+                        continue
 
-                match = RECV_MSG_MATCHER.findall(msg)
-                if not match:
-                    continue
-                self._msg_listener("{" + match[0] + "}")
+                    match = RECV_MSG_MATCHER.findall(msg.data)
+                    if not match:
+                        continue
+                    self._msg_listener("{" + match[0] + "}")
+
+            self._websocket = None
 
     def start(self):
         self._run_future = asyncio.get_event_loop().create_task(self._run())
