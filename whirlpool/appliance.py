@@ -20,7 +20,7 @@ class Appliance:
         self._data_dict = None
 
         self._session: aiohttp.ClientSession = None
-        self._event_socked = EventSocket(
+        self._event_socket = EventSocket(
             auth.get_access_token(), said, self._event_socket_handler
         )
 
@@ -120,10 +120,10 @@ class Appliance:
 
     async def start_event_listener(self):
         await self.fetch_data()
-        self._event_socked.start()
+        self._event_socket.start()
 
     async def stop_event_listener(self):
-        await self._event_socked.stop()
+        await self._event_socket.stop()
 
     async def fetch_name(self):
         account_id = None
