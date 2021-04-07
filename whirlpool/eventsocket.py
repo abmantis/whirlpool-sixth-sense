@@ -21,8 +21,10 @@ class EventSocket:
         self._access_token = access_token
         self._said = said
         self._msg_listener = msg_listener
+        self._running = False
         self._websocket: aiohttp.ClientWebSocketResponse = None
         self._run_future = None
+        self._reconnect_tries = 3
 
     def _create_connect_msg(self):
         return f"CONNECT\nversion:1.1,1.0\nwcloudtoken:{self._access_token}"
@@ -41,6 +43,9 @@ class EventSocket:
         return msg
 
     async def _run(self):
+        if not self._running:
+            return
+
         timeout = aiohttp.ClientTimeout(total=None)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.ws_connect(
@@ -58,8 +63,14 @@ class EventSocket:
                     if msg.type == aiohttp.WSMsgType.ERROR:
                         LOGGER.error("Socket message error")
                         break
-                    if msg.type == aiohttp.WSMsgType.CLOSING:
-                        LOGGER.debug("Socket received closing message")
+                    if msg.type in [
+                        aiohttp.WSMsgType.CLOSE,
+                        aiohttp.WSMsgType.CLOSING,
+                        aiohttp.WSMsgType.CLOSED,
+                    ]:
+                        LOGGER.debug(
+                            f"Stopping receiving. Message type: {str(msg.type)}"
+                        )
                         break
                     if msg.type != aiohttp.WSMsgType.TEXT:
                         LOGGER.error(f"Socket message type is invalid: {str(msg.type)}")
@@ -72,10 +83,18 @@ class EventSocket:
 
             self._websocket = None
 
+        if self._running and self._reconnect_tries > 0:
+            # TODO: add a timer to reset _reconnect_tries to 3 after 1 hour or so
+            LOGGER.info("Reconnecting...")
+            self._reconnect_tries = self._reconnect_tries - 1
+            self._run_future = asyncio.get_event_loop().create_task(self._run())
+
     def start(self):
+        self._running = True
         self._run_future = asyncio.get_event_loop().create_task(self._run())
 
     async def stop(self):
+        self._running = False
         if not self._websocket:
             return
         await self._websocket.close()
