@@ -43,7 +43,9 @@ class EventSocket:
     async def _run(self):
         timeout = aiohttp.ClientTimeout(total=None)
         async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.ws_connect(WSURI) as ws:
+            async with session.ws_connect(
+                WSURI, timeout=None, autoclose=True, autoping=True, heartbeat=45
+            ) as ws:
                 self._websocket = ws
                 await self._send_msg(ws, self._create_connect_msg())
                 await self._recv_msg(ws)
