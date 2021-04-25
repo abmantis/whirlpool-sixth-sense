@@ -95,7 +95,7 @@ class Auth:
         finally:
             await session.close()
 
-    async def do_auth(self):
+    async def do_auth(self, store=True):
         fetched_auth_data = await self._do_auth(
             self._auth_dict.get("refresh_token", None)
         )
@@ -107,7 +107,8 @@ class Auth:
             "accountId": fetched_auth_data.get("accountId", ""),
             "SAID": fetched_auth_data.get("SAID", ""),
         }
-        self._save_auth_data()
+        if store:
+            self._save_auth_data()
         self._schedule_auto_renewal()
 
     async def load_auth_file(self):
