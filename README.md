@@ -2,7 +2,7 @@
 
 Unofficial API for Whirlpool's 6th Sense appliances.
 
-If a command does not work, check if it works trough the official app.
+If a command does not work, check if it works through the official app.
 
 # NOTICE
 
