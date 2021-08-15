@@ -46,7 +46,7 @@ class Appliance:
         }
 
     def _set_attribute(self, attribute, value, timestamp):
-        logging.debug(f"Updating attribute {attribute} with {value} ({timestamp})")
+        LOGGER.debug(f"Updating attribute {attribute} with {value} ({timestamp})")
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
