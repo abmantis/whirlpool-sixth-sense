@@ -92,6 +92,8 @@ class Auth:
                         return json.loads(await r.text())
                     elif refresh_token:
                         return await self._do_auth(refresh_token=None)
+                    return None
+
         finally:
             await session.close()
 
@@ -99,6 +101,12 @@ class Auth:
         fetched_auth_data = await self._do_auth(
             self._auth_dict.get("refresh_token", None)
         )
+
+        if not fetched_auth_data:
+            self._auth_dict = {}
+            LOGGER.error("Authentication failed")
+            return
+
         curr_timestamp = datetime.now().timestamp()
         self._auth_dict = {
             "access_token": fetched_auth_data.get("access_token", ""),
