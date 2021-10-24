@@ -2,6 +2,8 @@
 
 Unofficial API for Whirlpool's 6th Sense appliances.
 
+As an example on how to use this library, please check the implementation of Home Assistant's [Whirlpool Integration](https://www.home-assistant.io/integrations/whirlpool), or take a look at the `whirlpool_ac.py` file.
+
 If a command does not work, check if it works through the official app.
 
 # NOTICE
