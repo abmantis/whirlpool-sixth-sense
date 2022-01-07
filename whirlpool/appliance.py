@@ -109,6 +109,8 @@ class Appliance:
         return False
 
     def get_attribute(self, attribute):
+        if not self.has_attribute(attribute):
+            return None
         return self._data_dict["attributes"][attribute]["value"]
 
     def has_attribute(self, attribute):
@@ -118,7 +120,7 @@ class Appliance:
         return SETVAL_VALUE_ON if b else SETVAL_VALUE_OFF
 
     def attr_value_to_bool(self, val: str):
-        return val == SETVAL_VALUE_ON
+        return None if val is None else val == SETVAL_VALUE_ON
 
     def get_online(self):
         return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
