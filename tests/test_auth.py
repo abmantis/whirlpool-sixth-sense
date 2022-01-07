@@ -1,25 +1,24 @@
 import json
 import logging
 import pytest
+from tests.mock_backendselector import BackendSelectorMock
 
 from whirlpool.auth import Auth
 
 from . import MockResponse
 
-AUTH_URL = "https://api.whrcloud.eu/oauth/token"
+BACKEND_SELECTOR_MOCK = BackendSelectorMock()
+
+AUTH_URL = f"{BACKEND_SELECTOR_MOCK.base_url}/oauth/token"
 AUTH_DATA = {
-    "client_id": "whirlpool_android",
-    "client_secret": "i-eQ8MD4jK4-9DUCbktfg-t_7gvU-SrRstPRGAYnfBPSrHHt5Mc0MFmYymU2E2qzif5cMaBYwFyFgSU6NTWjZg",
+    "client_id": BACKEND_SELECTOR_MOCK.client_id,
+    "client_secret": BACKEND_SELECTOR_MOCK.client_secret,
     "grant_type": "password",
     "username": "email",
     "password": "secretpass",
 }
 AUTH_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
-    "Brand": "Whirlpool",
-    "WP-CLIENT-REGION": "EMEA",
-    "WP-CLIENT-BRAND": "WHIRLPOOL",
-    "WP-CLIENT-COUNTRY": "EN",
 }
 
 
@@ -28,7 +27,7 @@ pytestmark = pytest.mark.asyncio
 
 async def test_auth_success(caplog, aio_httpclient):
     caplog.set_level(logging.DEBUG)
-    auth = Auth("email", "secretpass")
+    auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass")
 
     mock_resp_data = {
         "access_token": "acess_token_123",
@@ -53,7 +52,7 @@ async def test_auth_success(caplog, aio_httpclient):
 
 async def test_auth_bad_credentials(caplog, aio_httpclient):
     caplog.set_level(logging.DEBUG)
-    auth = Auth("email", "secretpass")
+    auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass")
 
     mock_resp_data = {
         "error": "invalid_request",

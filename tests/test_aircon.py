@@ -2,6 +2,7 @@ import json
 import logging
 import pytest
 from unittest.mock import ANY, MagicMock
+from tests.mock_backendselector import BackendSelectorMock
 
 from whirlpool.aircon import Aircon, FanSpeed, Mode
 
@@ -89,25 +90,13 @@ def get_request_side_effect(url):
     raise Exception(f"Unexpected url: {url}")
 
 
-async def test_name(caplog, aio_httpclient):
-    caplog.set_level(logging.DEBUG)
-    auth = MagicMock()
-
-    aio_httpclient.get.side_effect = get_request_side_effect
-
-    aircon = Aircon(auth, SAID, None)
-    await aircon.connect()
-    assert await aircon.fetch_name() == AC_NAME
-    await aircon.disconnect()
-
-
 async def test_attributes(caplog, aio_httpclient):
     caplog.set_level(logging.DEBUG)
     auth = MagicMock()
 
     aio_httpclient.get.return_value = MockResponse(json.dumps(DATA1), 200)
 
-    aircon = Aircon(auth, SAID, None)
+    aircon = Aircon(BackendSelectorMock(), auth, SAID, None)
     await aircon.connect()
     assert aircon.get_online() is False
     assert aircon.get_power_on() is False
@@ -157,7 +146,7 @@ async def test_setters(caplog, aio_httpclient):
         "header": {"said": SAID, "command": "setAttributes"},
     }
 
-    aircon = Aircon(auth, SAID, None)
+    aircon = Aircon(BackendSelectorMock(), auth, SAID, None)
     await aircon.connect()
     await aircon.set_power_on(True)
     cmd_data["body"] = {"Sys_OpSetPowerOn": "1"}

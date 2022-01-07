@@ -5,6 +5,8 @@ import logging
 import json
 from datetime import datetime, timedelta, timedelta
 
+from whirlpool.backendselector import BackendSelector
+
 LOGGER = logging.getLogger(__name__)
 
 AUTH_JSON_FILE = ".whirlpool_auth.json"
@@ -12,7 +14,8 @@ AUTO_REFRESH_DELTA = timedelta(minutes=15)
 
 
 class Auth:
-    def __init__(self, username, password):
+    def __init__(self, backend_selector: BackendSelector, username, password):
+        self._backend_selector = backend_selector
         self._username = username
         self._password = password
         self._auth_dict = {}
@@ -48,18 +51,18 @@ class Auth:
             json.dump(self._auth_dict, f)
 
     async def _do_auth(self, refresh_token):
-        auth_url = "https://api.whrcloud.eu/oauth/token"
+        auth_url = f"{self._backend_selector.base_url}/oauth/token"
         auth_header = {
             "Content-Type": "application/x-www-form-urlencoded",
-            "Brand": "Whirlpool",
-            "WP-CLIENT-REGION": "EMEA",
-            "WP-CLIENT-BRAND": "WHIRLPOOL",
-            "WP-CLIENT-COUNTRY": "EN",
+            # "Brand": "Whirlpool",
+            # "WP-CLIENT-REGION": "EMEA",
+            # "WP-CLIENT-BRAND": "WHIRLPOOL",
+            # "WP-CLIENT-COUNTRY": "EN",
         }
 
         auth_data = {
-            "client_id": "whirlpool_android",
-            "client_secret": "i-eQ8MD4jK4-9DUCbktfg-t_7gvU-SrRstPRGAYnfBPSrHHt5Mc0MFmYymU2E2qzif5cMaBYwFyFgSU6NTWjZg",
+            "client_id": self._backend_selector.client_id,
+            "client_secret": self._backend_selector.client_secret,
         }
 
         if refresh_token:

@@ -6,6 +6,8 @@ import json
 from datetime import datetime, timedelta, timedelta
 from typing import Callable
 
+from whirlpool.backendselector import BackendSelector
+
 from .auth import Auth
 from .eventsocket import EventSocket
 
@@ -13,7 +15,14 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Appliance:
-    def __init__(self, auth: Auth, said: str, attr_changed: Callable):
+    def __init__(
+        self,
+        backend_selector: BackendSelector,
+        auth: Auth,
+        said: str,
+        attr_changed: Callable,
+    ):
+        self._backend_selector = backend_selector
         self._auth = auth
         self._said = said
         self._attr_changed = attr_changed
@@ -39,7 +48,7 @@ class Appliance:
         return {
             "Authorization": "Bearer " + self._auth.get_access_token(),
             "Content-Type": "application/json",
-            "Host": "api.whrcloud.eu",
+            # "Host": "api.whrcloud.eu",
             "User-Agent": "okhttp/3.12.0",
             "Pragma": "no-cache",
             "Cache-Control": "no-cache",
@@ -59,7 +68,7 @@ class Appliance:
             LOGGER.error("Session not started")
             return False
 
-        uri = f"https://api.whrcloud.eu/api/v1/appliance/{self._said}"
+        uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
         self._data_dict = None
         async with async_timeout.timeout(30):
             async with self._session.get(uri) as r:
@@ -76,7 +85,7 @@ class Appliance:
 
         LOGGER.info(f"Sending attributes: {attributes}")
 
-        uri = "https://api.whrcloud.eu/api/v1/appliance/command"
+        uri = f"{self._backend_selector.base_url}/api/v1/appliance/command"
         cmd_data = {
             "body": attributes,
             "header": {"said": self._said, "command": "setAttributes"},
