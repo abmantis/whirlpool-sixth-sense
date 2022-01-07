@@ -147,25 +147,3 @@ class Appliance:
 
     async def stop_event_listener(self):
         await self._event_socket.stop()
-
-    async def fetch_name(self):
-        account_id = None
-        async with self._session.get(
-            "https://api.whrcloud.eu/api/v1/getUserDetails"
-        ) as r:
-            if r.status != 200:
-                return None
-            account_id = json.loads(await r.text())["accountId"]
-
-        async with self._session.get(
-            "https://api.whrcloud.eu/api/v1/appliancebyaccount/{0}".format(account_id)
-        ) as r:
-            if r.status != 200:
-                return None
-            account_appliances = json.loads(await r.text())[str(account_id)]
-
-            for appliances in account_appliances.values():
-                for appliance in appliances:
-                    if appliance["SAID"] == self.said:
-                        return appliance["APPLIANCE_NAME"]
-        return None
