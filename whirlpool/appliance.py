@@ -13,6 +13,11 @@ from .eventsocket import EventSocket
 
 LOGGER = logging.getLogger(__name__)
 
+ATTR_ONLINE = "Online"
+
+SETVAL_VALUE_OFF = "0"
+SETVAL_VALUE_ON = "1"
+
 
 class Appliance:
     def __init__(
@@ -108,6 +113,15 @@ class Appliance:
 
     def has_attribute(self, attribute):
         return attribute in self._data_dict["attributes"]
+
+    def bool_to_attr_value(self, b: bool):
+        return SETVAL_VALUE_ON if b else SETVAL_VALUE_OFF
+
+    def attr_value_to_bool(self, val: str):
+        return val == SETVAL_VALUE_ON
+
+    def get_online(self):
+        return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
 
     async def connect(self):
         await self.start_http_session()

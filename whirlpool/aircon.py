@@ -6,7 +6,6 @@ from .appliance import Appliance
 
 LOGGER = logging.getLogger(__name__)
 
-ATTR_ONLINE = "Online"
 ATTR_MODE = "Cavity_OpStatusMode"
 ATTR_DISPLAY_TEMP = "Sys_OpStatusDisplayTemp"
 ATTR_DISPLAY_HUMID = "Sys_OpStatusDisplayHumidity"
@@ -31,8 +30,6 @@ ATTRVAL_MODE_SIXTH_SENSE_AIR = "5"
 ATTRVAL_MODE_SIXTH_SENSE_HEAT = "6"
 ATTRVAL_MODE_SIXTH_SENSE_COOL = "7"
 
-SETVAL_VALUE_OFF = "0"
-SETVAL_VALUE_ON = "1"
 SETVAL_MODE_COOL = "1"
 SETVAL_MODE_FAN = "2"
 SETVAL_MODE_HEAT = "3"
@@ -83,17 +80,8 @@ FANSPEED_MAP = {
 
 
 class Aircon(Appliance):
-    def __init__(self, auth, said, attr_changed: Callable):
-        Appliance.__init__(self, auth, said, attr_changed)
-
-    def _boolToAttrValue(self, b: bool):
-        return SETVAL_VALUE_ON if b else SETVAL_VALUE_OFF
-
-    def _attrValueToBool(self, val: str):
-        return val == SETVAL_VALUE_ON
-
-    def get_online(self):
-        return self._attrValueToBool(self.get_attribute(ATTR_ONLINE))
+    def __init__(self, backend_selector, auth, said, attr_changed: Callable):
+        Appliance.__init__(self, backend_selector, auth, said, attr_changed)
 
     def get_current_temp(self):
         return int(self.get_attribute(ATTR_DISPLAY_TEMP)) / 10
@@ -102,10 +90,10 @@ class Aircon(Appliance):
         return int(self.get_attribute(ATTR_DISPLAY_HUMID))
 
     def get_power_on(self):
-        return self._attrValueToBool(self.get_attribute(SETTING_POWER))
+        return self.attr_value_to_bool(self.get_attribute(SETTING_POWER))
 
     async def set_power_on(self, on: bool):
-        await self.send_attributes({SETTING_POWER: self._boolToAttrValue(on)})
+        await self.send_attributes({SETTING_POWER: self.bool_to_attr_value(on)})
 
     def get_temp(self):
         return int(self.get_attribute(SETTING_TEMP)) / 10
@@ -150,30 +138,30 @@ class Aircon(Appliance):
         await self.send_attributes({SETTING_FAN_SPEED: FANSPEED_MAP[speed]})
 
     def get_h_louver_swing(self):
-        return self._attrValueToBool(self.get_attribute(SETTING_HORZ_LOUVER_SWING))
+        return self.attr_value_to_bool(self.get_attribute(SETTING_HORZ_LOUVER_SWING))
 
     async def set_h_louver_swing(self, swing: bool):
         await self.send_attributes(
-            {SETTING_HORZ_LOUVER_SWING: self._boolToAttrValue(swing)}
+            {SETTING_HORZ_LOUVER_SWING: self.bool_to_attr_value(swing)}
         )
 
     def get_turbo_mode(self):
-        return self._attrValueToBool(self.get_attribute(SETTING_TURBO_MODE))
+        return self.attr_value_to_bool(self.get_attribute(SETTING_TURBO_MODE))
 
     async def set_turbo_mode(self, turbo: bool):
-        await self.send_attributes({SETTING_TURBO_MODE: self._boolToAttrValue(turbo)})
+        await self.send_attributes({SETTING_TURBO_MODE: self.bool_to_attr_value(turbo)})
 
     def get_eco_mode(self):
-        return self._attrValueToBool(self.get_attribute(SETTING_ECO_MODE))
+        return self.attr_value_to_bool(self.get_attribute(SETTING_ECO_MODE))
 
     async def set_eco_mode(self, eco: bool):
-        await self.send_attributes({SETTING_ECO_MODE: self._boolToAttrValue(eco)})
+        await self.send_attributes({SETTING_ECO_MODE: self.bool_to_attr_value(eco)})
 
     def get_quiet_mode(self):
-        return self._attrValueToBool(self.get_attribute(SETTING_QUIET_MODE))
+        return self.attr_value_to_bool(self.get_attribute(SETTING_QUIET_MODE))
 
     async def set_quiet_mode(self, quiet: bool):
-        await self.send_attributes({SETTING_QUIET_MODE: self._boolToAttrValue(quiet)})
+        await self.send_attributes({SETTING_QUIET_MODE: self.bool_to_attr_value(quiet)})
 
     def get_display_on(self):
         return (
