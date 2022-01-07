@@ -57,15 +57,17 @@ class AppliancesManager:
                         appliance_data = {
                             "SAID": appliance["SAID"],
                             "NAME": appliance["APPLIANCE_NAME"],
+                            "DATA_MODEL": appliance["DATA_MODEL_KEY"],
+                            "CATEGORY": appliance["CATEGORY_NAME"],
                         }
-                        category_name = appliance["CATEGORY_NAME"]
-                        if "AirConditioner" in category_name:
+                        data_model = appliance["DATA_MODEL_KEY"].lower()
+                        if "airconditioner" in data_model:
                             self._aircons.append(appliance_data)
-                        elif "FabricCare" in category_name:
+                        elif "dryer" in data_model or "washer" in data_model:
                             self._washer_dryers.append(appliance_data)
                         else:
                             LOGGER.warning(
-                                "Unsupported appliance category %s", category_name
+                                "Unsupported appliance data model %s", data_model
                             )
         return True
 
