@@ -61,7 +61,7 @@ class Appliance:
 
         uri = f"https://api.whrcloud.eu/api/v1/appliance/{self._said}"
         self._data_dict = None
-        with async_timeout.timeout(30):
+        async with async_timeout.timeout(30):
             async with self._session.get(uri) as r:
                 self._data_dict = json.loads(await r.text())
                 if r.status == 200:
@@ -82,7 +82,7 @@ class Appliance:
             "header": {"said": self._said, "command": "setAttributes"},
         }
         for n in range(3):
-            with async_timeout.timeout(30):
+            async with async_timeout.timeout(30):
                 async with self._session.post(uri, json=cmd_data) as r:
                     LOGGER.debug(f"Reply: {await r.text()}")
                     if r.status == 200:

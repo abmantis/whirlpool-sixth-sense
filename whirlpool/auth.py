@@ -83,7 +83,7 @@ class Auth:
         session = aiohttp.ClientSession()
 
         try:
-            with async_timeout.timeout(30):
+            async with async_timeout.timeout(30):
                 async with session.post(
                     auth_url, data=auth_data, headers=auth_header
                 ) as r:
