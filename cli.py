@@ -6,7 +6,7 @@ from cli_ac_menu import show_aircon_menu
 from cli_washerdryer_menu import show_washerdryer_menu
 
 from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.backendselector import BackendSelector, Brand
+from whirlpool.backendselector import BackendSelector, Brand, Region
 from whirlpool.auth import Auth
 from whirlpool.washerdryer import WasherDryer
 
@@ -23,6 +23,9 @@ parser.add_argument("-p", "--password", help="Password")
 parser.add_argument(
     "-b", "--brand", help="Brand (whirlpool/maytag)", default="whirlpool"
 )
+parser.add_argument(
+    "-r", "--region", help="Region (EU/US)", default="EU"
+)
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
 parser.add_argument("-s", "--said", help="The appliance to load")
 args = parser.parse_args()
@@ -33,12 +36,22 @@ async def start():
         logger.info("Attributes updated")
 
     if args.brand == "whirlpool":
-        backend_selector = BackendSelector(Brand.Whirlpool)
+        selected_brand = Brand.Whirlpool
     elif args.brand == "maytag":
-        backend_selector = BackendSelector(Brand.Maytag)
+        selected_brand = Brand.Maytag
     else:
         logger.error("Invalid brand argument")
         return
+
+    if args.region == "EU":
+        selected_region = Region.EU
+    elif args.region == "US":
+        selected_region = Region.US
+    else:
+        logger.error("Invalid region argument")
+        return
+
+    backend_selector = BackendSelector(selected_brand, selected_region)
 
     auth = Auth(backend_selector, args.email, args.password)
     await auth.do_auth(store=False)

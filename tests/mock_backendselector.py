@@ -4,6 +4,10 @@ class BackendSelectorMock:
         return "dummy_brand"
 
     @property
+    def region(self):
+        return "dummy_region"
+
+    @property
     def base_url(self):
         return "dummy_base_url"
 
