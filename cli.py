@@ -2,6 +2,7 @@ import aioconsole
 import argparse
 import asyncio
 import logging
+import math
 from cli_ac_menu import show_aircon_menu
 from cli_washerdryer_menu import show_washerdryer_menu
 
@@ -48,8 +49,27 @@ async def start():
         return
 
     if args.list:
-        print(appliance_manager.aircons)
-        print(appliance_manager.washer_dryers)
+        for index, cooler in enumerate(appliance_manager.aircons):
+            print(index, cooler)
+        for index, hole in enumerate(appliance_manager.washer_dryers):
+            print(index, hole)
+        applianceelementinput = input("Enter 0-" + str(index) + " for appliance details, otherwise type 'n': ")
+        try:
+            applianceelement = int(applianceelementinput)
+        except ValueError:
+            return
+        print("Appliance selected: " + str(applianceelement))
+
+        if hasattr(appliance_manager, "aircons"):
+            if applianceelement < len(appliance_manager.aircons):
+                args.said = appliance_manager.aircons[applianceelement]["SAID"]
+                await show_aircon_menu(backend_selector, auth, args.said)
+                return
+        if hasattr(appliance_manager, "washer_dryers"):
+            if applianceelement < len(appliance_manager.washer_dryers[applianceelement]["SAID"]):
+                args.said = appliance_manager.washer_dryers[applianceelement]["SAID"]
+                await show_washerdryer_menu(backend_selector, auth, args.said)
+                return
         return
 
     if not args.said:

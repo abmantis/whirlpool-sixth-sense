@@ -3,6 +3,7 @@ import asyncio
 import async_timeout
 import logging
 import json
+import math
 from datetime import datetime, timedelta, timedelta
 from typing import Callable
 
@@ -68,6 +69,11 @@ class Appliance:
     def said(self):
         return self._said
 
+    def load_from_file (self):
+        with open("APISamples/Maytag - Dryer Sensing-Wet, Bulky Items cycle, Temp 4, Dryness 3, Wrinkle prevent low, extra power.json") as file:
+            self._data_dict = json.load(file)
+        return True
+
     async def fetch_data(self):
         if not self._session:
             LOGGER.error("Session not started")
@@ -121,6 +127,21 @@ class Appliance:
 
     def attr_value_to_bool(self, val: str):
         return None if val is None else val == SETVAL_VALUE_ON
+
+    def attr_value_to_int(self, val: str):
+        value = 0
+        try:
+            value = int(val)
+        except ValueError:
+            return 0
+        return value
+
+    def attr_value_secs_to_mins_int(self, val: str):
+        val_int = self.attr_value_to_int(val)
+        mins = math.floor(val_int/60)
+        
+        return mins
+
 
     def get_online(self):
         return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
