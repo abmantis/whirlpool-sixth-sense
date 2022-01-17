@@ -4,6 +4,7 @@ import asyncio
 import logging
 from cli_ac_menu import show_aircon_menu
 from cli_washerdryer_menu import show_washerdryer_menu
+from cli_oven_menu import show_oven_menu
 
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.backendselector import BackendSelector, Brand, Region
@@ -63,6 +64,7 @@ async def start():
     if args.list:
         print(appliance_manager.aircons)
         print(appliance_manager.washer_dryers)
+        print(appliance_manager.ovens)
         return
 
     if not args.said:
@@ -77,6 +79,11 @@ async def start():
     for wd_data in appliance_manager.washer_dryers:
         if wd_data["SAID"] == args.said:
             await show_washerdryer_menu(backend_selector, auth, args.said)
+            return
+
+    for mo_data in appliance_manager.ovens:
+        if mo_data["SAID"] == args.said:
+            await show_oven_menu(backend_selector, auth, args.said)
             return
 
 
