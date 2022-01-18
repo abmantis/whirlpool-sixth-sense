@@ -1,12 +1,12 @@
 import aioconsole
-
-from whirlpool.oven import Oven
+from whirlpool.oven import Oven, Cavity
 
 async def show_oven_menu(backend_selector, auth, said):
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
         print("u. Update status from server")
+        print("l. Control lock toggle")
         print("p. Print status")
         print("v. Print raw status")
         print("c. Custom command")
@@ -15,6 +15,11 @@ async def show_oven_menu(backend_selector, auth, said):
 
     def print_status(ov: Oven):
         print("online: " + str(ov.get_online()))
+        print("meat probe: " + str(ov.get_meat_probe_status()))
+        print("display brightness (%): " + str(ov.get_display_brightness_percent()))
+        print("control lock: " + str(ov.get_control_locked()))
+        print("upper door open: " + str(ov.get_door_opened(Cavity.Upper)))
+        print("lower door open: " + str(ov.get_door_opened(Cavity.Lower)))
 
     def attr_upd():
         print("Attributes updated")
@@ -29,6 +34,8 @@ async def show_oven_menu(backend_selector, auth, said):
 
         if choice == "p":
             print_status(ov)
+        elif choice == "l":
+            await ov.set_control_locked(not ov.get_control_locked())
         elif choice == "u":
             await ov.fetch_data()
             print_status(ov)
