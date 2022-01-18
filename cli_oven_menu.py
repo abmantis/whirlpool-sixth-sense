@@ -20,6 +20,7 @@ async def show_oven_menu(backend_selector, auth, said):
         print("control lock: " + str(ov.get_control_locked()))
         print("upper door open: " + str(ov.get_door_opened(Cavity.Upper)))
         print("lower door open: " + str(ov.get_door_opened(Cavity.Lower)))
+        print("light: " + str(ov.get_light(Cavity.Upper)))
 
     def attr_upd():
         print("Attributes updated")

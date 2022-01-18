@@ -11,6 +11,7 @@ ATTR_DISPLAY_BRIGHTNESS = "Sys_DisplaySetBrightnessPercent"
 ATTR_CONTROL_LOCK = "Sys_OperationSetControlLock"
 
 ATTR_POSTFIX_DOOR_OPEN_STATUS = "OpStatusDoorOpen"
+ATTR_POSTFIX_LIGHT_STATUS = "DisplaySetLightOn"
 
 class Cavity(Enum):
     Upper = 0
@@ -43,3 +44,8 @@ class Oven(Appliance):
     async def set_control_locked(self, on: bool):
         await self.send_attributes({ATTR_CONTROL_LOCK: self.bool_to_attr_value(on)})
 
+    def get_light(self, cavity: Cavity = Cavity.Upper):
+        return self.attr_value_to_bool(self.get_attribute(CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_LIGHT_STATUS))
+
+    async def set_light(self, on: bool, cavity: Cavity = Cavity.Upper):
+        await self.send_attributes({CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_LIGHT_STATUS: self.bool_to_attr_value(on)})
