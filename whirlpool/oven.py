@@ -18,6 +18,7 @@ ATTR_POSTFIX_COOK_TIME = "TimeStatusCycleTimeElapsed"
 ATTR_POSTFIX_STATUS_STATE = "OpStatusState"
 ATTR_POSTFIX_COOK_MODE = "CycleSetCommonMode"
 ATTR_POSTFIX_MEAT_PROBE_STATUS = "AlertStatusMeatProbePluggedIn"
+ATTR_POSTFIX_MEAT_PROBE_TARGET_TEMP = "CycleSetMeatProbeTargetTemp"
 ATTR_POSTFIX_SET_OPERATION = "OpSetOperations"
 
 ATTRVAL_CAVITY_STATE_STANDBY = "0"
@@ -226,7 +227,6 @@ class Oven(Appliance):
 
     # todo:
     # - add rapid preheat
-    # - add meat probe target temp
     # - add delay cook
     async def set_cook(self, mode: CookMode = CookMode.Bake, target_temp: float = None,
                        cavity: Cavity = Cavity.Upper, rapid_preheat: bool = None,
@@ -238,6 +238,8 @@ class Oven(Appliance):
             cavity_prefix + ATTR_POSTFIX_TARGET_TEMP: round(float(target_temp) * 10),
             cavity_prefix + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[operation_type]
         }
+        if meat_probe_target_temp != None:
+            attrs[cavity_prefix + ATTR_POSTFIX_MEAT_PROBE_TARGET_TEMP] = round(float(meat_probe_target_temp) * 10)
         
         await self.send_attributes(attrs)
 
