@@ -9,7 +9,8 @@ async def show_oven_menu(backend_selector, auth, said):
         print("l. Control lock toggle")
         print("L. Light toggle")
         print("b. Set display brightness")
-        print("t. Set cooking type/temperature")
+        print("t. Set cooking mode/temp")
+        print("o. Stop/cancel cooking")
         print("k. Set kitchen timer")
         print("p. Print status")
         print("v. Print raw status")
@@ -59,24 +60,43 @@ async def show_oven_menu(backend_selector, auth, said):
         elif choice == "l":
             await ov.set_control_locked(not ov.get_control_locked())
         elif choice == "L":
-            await ov.set_light(not ov.get_get_light())
+            await ov.set_light(not ov.get_light())
         elif choice == "b":
             brightness = await aioconsole.ainput("Brightness (0-100): ")
             await ov.set_display_brightness_percent(brightness)
         elif choice == "k":
             minutes = await aioconsole.ainput("Timer minutes: ")
             await ov.get_kitchen_timer(timer_id=1).set_timer(int(float(minutes) * 60))
+        elif choice == "o":
+            await ov.stop_cook()
         elif choice == "t":
             print("""Cooking modes:
             b: Bake
+            c: Convect Bake
             r: Broil
+            o: Convect Broil
+            s: Convect Roast
+            a: Air Fry
             w: Keep Warm
             """)
             cookmode = await aioconsole.ainput("Enter cook mode: ")
             temp = await aioconsole.ainput("Enter cook temperature: ")
-            # todo: set cook modes based on the selected cookmode
-            # todo: test the cook modes
-            await ov.set_cook(mode=CookMode.Broil, target_temp=float(temp))
+            if cookmode == "b":
+                await ov.set_cook(mode=CookMode.Bake, target_temp=float(temp))
+            if cookmode == "c":
+                await ov.set_cook(mode=CookMode.ConvectBake, target_temp=float(temp))
+            if cookmode == "r":
+                await ov.set_cook(mode=CookMode.Broil, target_temp=float(temp))
+            if cookmode == "o":
+                await ov.set_cook(mode=CookMode.ConvectBroil, target_temp=float(temp))
+            if cookmode == "s":
+                await ov.set_cook(mode=CookMode.ConvectRoast, target_temp=float(temp))
+            if cookmode == "a":
+                await ov.set_cook(mode=CookMode.AirFry, target_temp=float(temp))
+            if cookmode == "w":
+                await ov.set_cook(mode=CookMode.KeepWarm, target_temp=float(temp))
+            else:
+                print("Invalid cook mode")
         elif choice == "u":
             await ov.fetch_data()
             print_status(ov)
