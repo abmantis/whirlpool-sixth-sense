@@ -1,5 +1,5 @@
 import aioconsole
-from whirlpool.oven import Oven, Cavity
+from whirlpool.oven import CookMode, Oven, Cavity, KitchenTimerState
 
 async def show_oven_menu(backend_selector, auth, said):
     def print_menu():
@@ -7,6 +7,10 @@ async def show_oven_menu(backend_selector, auth, said):
         print(30 * "-", "MENU", 30 * "-")
         print("u. Update status from server")
         print("l. Control lock toggle")
+        print("L. Light toggle")
+        print("b. Set display brightness")
+        print("t. Set cooking type/temperature")
+        print("k. Set kitchen timer")
         print("p. Print status")
         print("v. Print raw status")
         print("c. Custom command")
@@ -15,12 +19,29 @@ async def show_oven_menu(backend_selector, auth, said):
 
     def print_status(ov: Oven):
         print("online: " + str(ov.get_online()))
-        print("meat probe: " + str(ov.get_meat_probe_status()))
         print("display brightness (%): " + str(ov.get_display_brightness_percent()))
         print("control lock: " + str(ov.get_control_locked()))
-        print("upper door open: " + str(ov.get_door_opened(Cavity.Upper)))
-        print("lower door open: " + str(ov.get_door_opened(Cavity.Lower)))
-        print("light: " + str(ov.get_light(Cavity.Upper)))
+        timer = ov.get_kitchen_timer(timer_id=1)
+        timer_state = timer.get_state()
+        print("kitchen timer 1 state: " + str(timer_state))
+        if timer_state != KitchenTimerState.Standby:
+            print("kitchen timer 1 time remaining/set time: " + str(timer.get_remaining_time()) + "/" + str(timer.get_total_time()))
+        if ov.get_oven_cavity_exists(Cavity.Upper):
+            print("upper meat probe: " + str(ov.get_meat_probe_status(Cavity.Upper)))
+            print("upper light: " + str(ov.get_light(Cavity.Upper)))
+            print("upper door open: " + str(ov.get_door_opened(Cavity.Upper)))
+            print("upper temp (current/target, in C): " + str(ov.get_temp(Cavity.Upper)) + "/" + str(ov.get_target_temp(Cavity.Upper)))
+            print("upper state: " + str(ov.get_cavity_state(Cavity.Upper)))
+            print("upper cook mode: " + str(ov.get_cook_mode(Cavity.Upper)))
+            print("upper cook time (seconds): " + str(ov.get_cook_time(Cavity.Upper)))
+        if ov.get_oven_cavity_exists(Cavity.Lower):
+            print("lower meat probe: " + str(ov.get_meat_probe_status(Cavity.Upper)))
+            print("lower light: " + str(ov.get_light(Cavity.Lower)))
+            print("lower door open: " + str(ov.get_door_opened(Cavity.Lower)))
+            print("lower temp (current/target, in C): " + str(ov.get_temp(Cavity.Lower)) + "/" + str(ov.get_target_temp(Cavity.Lower)))
+            print("lower state: " + str(ov.get_cavity_state(Cavity.Lower)))
+            print("lower cook mode: " + str(ov.get_cook_mode(Cavity.Lower)))
+            print("lower cook time (seconds): " + str(ov.get_cook_time(Cavity.Lower)))
 
     def attr_upd():
         print("Attributes updated")
@@ -37,6 +58,25 @@ async def show_oven_menu(backend_selector, auth, said):
             print_status(ov)
         elif choice == "l":
             await ov.set_control_locked(not ov.get_control_locked())
+        elif choice == "L":
+            await ov.set_light(not ov.get_get_light())
+        elif choice == "b":
+            brightness = await aioconsole.ainput("Brightness (0-100): ")
+            await ov.set_display_brightness_percent(brightness)
+        elif choice == "k":
+            minutes = await aioconsole.ainput("Timer minutes: ")
+            await ov.get_kitchen_timer(timer_id=1).set_timer(int(float(minutes) * 60))
+        elif choice == "t":
+            print("""Cooking modes:
+            b: Bake
+            r: Broil
+            w: Keep Warm
+            """)
+            cookmode = await aioconsole.ainput("Enter cook mode: ")
+            temp = await aioconsole.ainput("Enter cook temperature: ")
+            # todo: set cook modes based on the selected cookmode
+            # todo: test the cook modes
+            await ov.set_cook(mode=CookMode.Broil, target_temp=float(temp))
         elif choice == "u":
             await ov.fetch_data()
             print_status(ov)
