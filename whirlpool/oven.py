@@ -27,6 +27,7 @@ ATTRVAL_CAVITY_STATE_NOT_PRESENT = "4"
 
 ATTRVAL_CAVITY_OPERATION_CANCEL = 1
 ATTRVAL_CAVITY_OPERATION_START = 2
+ATTRVAL_CAVITY_OPERATION_MODIFY = 4
 
 ATTRVAL_COOK_MODE_STANDBY = "0"
 ATTRVAL_COOK_MODE_BAKE = "2"
@@ -84,10 +85,12 @@ COOK_MODE_MAP = {
 class CookOperation(Enum):
     Cancel = 1
     Start = 2
+    Modify = 4
 
 COOK_OPERATION_MAP = {
     CookOperation.Cancel: ATTRVAL_CAVITY_OPERATION_CANCEL,
-    CookOperation.Start: ATTRVAL_CAVITY_OPERATION_START
+    CookOperation.Start: ATTRVAL_CAVITY_OPERATION_START,
+    CookOperation.Modify: ATTRVAL_CAVITY_OPERATION_MODIFY
 }
 
 # todo: figure out/plug in the other enums
@@ -227,13 +230,13 @@ class Oven(Appliance):
     # - add delay cook
     async def set_cook(self, mode: CookMode = CookMode.Bake, target_temp: float = None,
                        cavity: Cavity = Cavity.Upper, rapid_preheat: bool = None,
-                       meat_probe_target_temp = None, delay_cook: int = None):
-        # looks like we need to send OvenUpperCavity_OpSetOperations with a value of 2 at some point to start the oven cycle (as per startOvenCycleOperation)
+                       meat_probe_target_temp = None, delay_cook: int = None,
+                       operation_type: CookOperation = CookOperation.Start):
         cavity_prefix = CAVITY_PREFIX_MAP[cavity] + "_"
         attrs = {
             cavity_prefix + ATTR_POSTFIX_COOK_MODE: COOK_MODE_MAP[mode],
             cavity_prefix + ATTR_POSTFIX_TARGET_TEMP: round(float(target_temp) * 10),
-            cavity_prefix + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[CookOperation.Start]
+            cavity_prefix + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[operation_type]
         }
         
         await self.send_attributes(attrs)
