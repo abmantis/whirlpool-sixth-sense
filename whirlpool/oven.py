@@ -8,6 +8,7 @@ LOGGER = logging.getLogger(__name__)
 
 ATTR_DISPLAY_BRIGHTNESS = "Sys_DisplaySetBrightnessPercent"
 ATTR_CONTROL_LOCK = "Sys_OperationSetControlLock"
+ATTR_SABBATH_MODE = "Sys_OperationSetSabbathModeEnabled"
 
 ATTR_POSTFIX_DOOR_OPEN_STATUS = "OpStatusDoorOpen"
 ATTR_POSTFIX_LIGHT_STATUS = "DisplaySetLightOn"
@@ -234,9 +235,14 @@ class Oven(Appliance):
             cavity_prefix + ATTR_POSTFIX_TARGET_TEMP: round(float(target_temp) * 10),
             cavity_prefix + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[CookOperation.Start]
         }
-        if rapid_preheat == True:
-            
+        
         await self.send_attributes(attrs)
 
     async def stop_cook(self, cavity: Cavity = Cavity.Upper):
         await self.send_attributes({CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[CookOperation.Cancel]})
+
+    def get_sabbath_mode(self):
+        return self.attr_value_to_bool(self.get_attribute(ATTR_SABBATH_MODE))
+    
+    async def set_sabbath_mode(self, on: bool):
+        await self.send_attributes({ATTR_SABBATH_MODE: self.bool_to_attr_value(on)})

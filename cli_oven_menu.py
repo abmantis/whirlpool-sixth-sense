@@ -12,6 +12,7 @@ async def show_oven_menu(backend_selector, auth, said):
         print("t. Set cooking mode/temp")
         print("o. Stop/cancel cooking")
         print("k. Set kitchen timer")
+        print("s. Toggle Sabbath mode")
         print("p. Print status")
         print("v. Print raw status")
         print("c. Custom command")
@@ -97,6 +98,8 @@ async def show_oven_menu(backend_selector, auth, said):
                 await ov.set_cook(mode=CookMode.KeepWarm, target_temp=float(temp))
             else:
                 print("Invalid cook mode")
+        elif choice == "s":
+            await ov.set_sabbath_mode(not ov.get_sabbath_mode())
         elif choice == "u":
             await ov.fetch_data()
             print_status(ov)
