@@ -171,7 +171,7 @@ class Oven(Appliance):
         return self.attr_value_to_bool(self.get_attribute(CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_DOOR_OPEN_STATUS))
 
     def get_display_brightness_percent(self):
-        return self.get_attribute(ATTR_DISPLAY_BRIGHTNESS)
+        return int(self.get_attribute(ATTR_DISPLAY_BRIGHTNESS))
 
     async def set_display_brightness_percent(self, pct: int):
         await self.send_attributes({ATTR_DISPLAY_BRIGHTNESS: str(pct)})
