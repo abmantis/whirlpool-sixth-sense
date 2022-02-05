@@ -177,7 +177,7 @@ class Oven(Appliance):
         await self.send_attributes({ATTR_DISPLAY_BRIGHTNESS: str(pct)})
 
     def get_cook_time(self, cavity: Cavity = Cavity.Upper):
-        return self.get_attribute(CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_COOK_TIME) 
+        return int(self.get_attribute(CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_COOK_TIME))
 
     def get_control_locked(self):
         return self.attr_value_to_bool(self.get_attribute(ATTR_CONTROL_LOCK))
