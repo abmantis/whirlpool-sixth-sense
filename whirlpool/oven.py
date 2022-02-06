@@ -108,7 +108,7 @@ CAVITY_STATE_MAP = {
     CavityState.NotPresent: ATTRVAL_CAVITY_STATE_NOT_PRESENT
 }
 
-# todo: figure out/plug in what state = 1 is
+# todo: figure out/plug in what state = 2 is
 class KitchenTimerState(Enum):
     Standby = 0
     Running = 1
@@ -243,6 +243,27 @@ class Oven(Appliance):
             attrs[cavity_prefix + ATTR_POSTFIX_MEAT_PROBE_TARGET_TEMP] = round(float(meat_probe_target_temp) * 10)
         
         await self.send_attributes(attrs)
+
+    async def set_bake(self, target_temp: float = None, cavity: Cavity = Cavity.Upper):
+        await self.set_cook(mode = CookMode.Bake, target_temp = target_temp, cavity = cavity)
+
+    async def set_convect_bake(self, target_temp: float = None, cavity: Cavity = Cavity.Upper):
+        await self.set_cook(mode = CookMode.ConvectBake, target_temp = target_temp, cavity = cavity)
+
+    async def set_broil(self, target_temp: float = None, cavity: Cavity = Cavity.Upper):
+        await self.set_cook(mode = CookMode.Broil, target_temp = target_temp, cavity = cavity)
+
+    async def set_convect_broil(self, target_temp: float = None, cavity: Cavity = Cavity.Upper):
+        await self.set_cook(mode = CookMode.ConvectBroil, target_temp = target_temp, cavity = cavity)
+
+    async def set_keep_warm(self, target_temp: float = None, cavity: Cavity = Cavity.Upper):
+        await self.set_cook(mode = CookMode.KeepWarm, target_temp = target_temp, cavity = cavity)
+
+    async def set_air_fry(self, target_temp: float = None, cavity: Cavity = Cavity.Upper):
+        await self.set_cook(mode = CookMode.AirFry, target_temp = target_temp, cavity = cavity)
+
+    async def set_convect_roast(self, target_temp: float = None, cavity: Cavity = Cavity.Upper):
+        await self.set_cook(mode = CookMode.ConvectRoast, target_temp = target_temp, cavity = cavity)
 
     async def stop_cook(self, cavity: Cavity = Cavity.Upper):
         await self.send_attributes({CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[CookOperation.Cancel]})
