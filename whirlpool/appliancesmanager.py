@@ -19,6 +19,7 @@ class AppliancesManager:
         self._auth = auth
         self._aircons = None
         self._washer_dryers = None
+        self._ovens = None
 
     def _create_headers(self):
         return {
@@ -50,6 +51,7 @@ class AppliancesManager:
 
                 self._aircons = []
                 self._washer_dryers = []
+                self._ovens = []
 
                 locations = json.loads(await r.text())[str(account_id)]
                 for appliances in locations.values():
@@ -65,6 +67,8 @@ class AppliancesManager:
                             self._aircons.append(appliance_data)
                         elif "dryer" in data_model or "washer" in data_model:
                             self._washer_dryers.append(appliance_data)
+                        elif "cooking_minerva" in data_model or "cooking_vsi" in data_model:
+                            self._ovens.append(appliance_data)
                         else:
                             LOGGER.warning(
                                 "Unsupported appliance data model %s", data_model
@@ -78,3 +82,7 @@ class AppliancesManager:
     @property
     def washer_dryers(self):
         return self._washer_dryers
+
+    @property
+    def ovens(self):
+        return self._ovens
