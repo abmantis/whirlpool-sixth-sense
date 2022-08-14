@@ -10,7 +10,7 @@ from .auth import Auth
 
 LOGGER = logging.getLogger(__name__)
 
-WSURI = "wss://websocketservice.wcloud-emea.eu-gb.containers.appdomain.cloud/appliance/websocket"
+WSURI = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
 MSG_TERMINATION = "\n\n\0"
 
 RECV_MSG_MATCHER = re.compile("{(.*)}\\x00")
@@ -27,7 +27,7 @@ class EventSocket:
         self._reconnect_tries = 3
 
     def _create_connect_msg(self):
-        return f"CONNECT\nversion:1.1,1.0\nwcloudtoken:{self._access_token}"
+        return f"CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:{self._access_token}"
 
     def _create_subscribe_msg(self):
         id = uuid.uuid4()
