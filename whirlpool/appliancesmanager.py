@@ -43,7 +43,7 @@ class AppliancesManager:
                 account_id = json.loads(await r.text())["accountId"]
 
             async with session.get(
-                f"{self._backend_selector.base_url}/api/v1/appliancebyaccount/{account_id}"
+                f"{self._backend_selector.base_url}/api/v2/appliance/all/account/{account_id}"
             ) as r:
                 if r.status != 200:
                     LOGGER.error(f"Failed to get appliances: {r.status}")
