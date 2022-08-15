@@ -10,14 +10,14 @@ from .auth import Auth
 
 LOGGER = logging.getLogger(__name__)
 
-WSURI = "wss://websocketservice.wcloud-emea.eu-gb.containers.appdomain.cloud/appliance/websocket"
 MSG_TERMINATION = "\n\n\0"
 
 RECV_MSG_MATCHER = re.compile("{(.*)}\\x00")
 
 
 class EventSocket:
-    def __init__(self, access_token, said, msg_listener: Callable[[str], None]):
+    def __init__(self, url, access_token, said, msg_listener: Callable[[str], None]):
+        self._url = url
         self._access_token = access_token
         self._said = said
         self._msg_listener = msg_listener
@@ -27,7 +27,7 @@ class EventSocket:
         self._reconnect_tries = 3
 
     def _create_connect_msg(self):
-        return f"CONNECT\nversion:1.1,1.0\nwcloudtoken:{self._access_token}"
+        return f"CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:{self._access_token}"
 
     def _create_subscribe_msg(self):
         id = uuid.uuid4()
@@ -48,8 +48,9 @@ class EventSocket:
 
         timeout = aiohttp.ClientTimeout(total=None)
         async with aiohttp.ClientSession(timeout=timeout) as session:
+            LOGGER.debug(f"Connecting to {self._url}")
             async with session.ws_connect(
-                WSURI, timeout=None, autoclose=True, autoping=True, heartbeat=45
+                self._url, timeout=None, autoclose=True, autoping=True, heartbeat=45
             ) as ws:
                 self._websocket = ws
                 await self._send_msg(ws, self._create_connect_msg())

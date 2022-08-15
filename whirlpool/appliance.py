@@ -34,9 +34,6 @@ class Appliance:
         self._data_dict = None
 
         self._session: aiohttp.ClientSession = None
-        self._event_socket = EventSocket(
-            auth.get_access_token(), said, self._event_socket_handler
-        )
 
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
@@ -63,6 +60,21 @@ class Appliance:
         LOGGER.debug(f"Updating attribute {attribute} with {value} ({timestamp})")
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
+
+    async def _getWebsocketUrl(self):
+        async with aiohttp.ClientSession(headers=self._create_headers()) as session:
+            DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
+            async with session.get(
+                f"{self._backend_selector.base_url}/api/v1/client_auth/webSocketUrl"
+            ) as r:
+                if r.status != 200:
+                    LOGGER.error(f"Failed to get websocket url: {r.status}")
+                    return DEFAULT_WS_URL
+                try:
+                    return json.loads(await r.text())["url"]
+                except KeyError:
+                    LOGGER.error(f"Failed to get websocket url: {r.status}")
+                    return DEFAULT_WS_URL
 
     @property
     def said(self):
@@ -145,6 +157,12 @@ class Appliance:
 
     async def start_event_listener(self):
         await self.fetch_data()
+        self._event_socket = EventSocket(
+            await self._getWebsocketUrl(),
+            self._auth.get_access_token(),
+            self._said,
+            self._event_socket_handler,
+        )
         self._event_socket.start()
 
     async def stop_event_listener(self):

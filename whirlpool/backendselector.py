@@ -23,10 +23,10 @@ BACKEND_DATA = {
         "client_secret": "OfTy3A3rV4BHuhujkPThVDE9-SFgOymJyUrSbixjViATjCGviXucSKq2OxmPWm8DDj9D1IFno_mZezTYduP-Ig",
     },
     Region.EU: {
-        "base_url": "https://api.whrcloud.eu"
+        "base_url": "https://prod-api.whrcloud.eu"
     },
     Region.US: {
-        "base_url": "https://api.whrcloud.com"
+        "base_url": "https://prod-api.whrcloud.com"
     },
 }
 
