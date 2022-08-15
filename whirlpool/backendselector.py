@@ -8,6 +8,7 @@ class Brand(Enum):
     Whirlpool = 0
     Maytag = 1
 
+
 class Region(Enum):
     EU = 0
     US = 1
@@ -22,12 +23,8 @@ BACKEND_DATA = {
         "client_id": "maytag_ios",
         "client_secret": "OfTy3A3rV4BHuhujkPThVDE9-SFgOymJyUrSbixjViATjCGviXucSKq2OxmPWm8DDj9D1IFno_mZezTYduP-Ig",
     },
-    Region.EU: {
-        "base_url": "https://prod-api.whrcloud.eu"
-    },
-    Region.US: {
-        "base_url": "https://prod-api.whrcloud.com"
-    },
+    Region.EU: {"base_url": "https://prod-api.whrcloud.eu"},
+    Region.US: {"base_url": "https://api.whrcloud.com"},
 }
 
 
