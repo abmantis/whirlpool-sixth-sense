@@ -27,7 +27,6 @@ BACKEND_DATA = {
     Region.US: {"base_url": "https://api.whrcloud.com"},
 }
 
-
 class BackendSelector:
     def __init__(self, brand: Brand, region: Region):
         self._brand = brand
