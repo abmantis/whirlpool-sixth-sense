@@ -16,9 +16,9 @@ RECV_MSG_MATCHER = re.compile("{(.*)}\\x00")
 
 
 class EventSocket:
-    def __init__(self, url, access_token, said, msg_listener: Callable[[str], None]):
+    def __init__(self, url, auth:Auth, said, msg_listener: Callable[[str], None]):
         self._url = url
-        self._access_token = access_token
+        self._auth = auth
         self._said = said
         self._msg_listener = msg_listener
         self._running = False
@@ -27,7 +27,7 @@ class EventSocket:
         self._reconnect_tries = 3
 
     def _create_connect_msg(self):
-        return f"CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:{self._access_token}"
+        return f"CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:{self._auth.get_access_token()}"
 
     def _create_subscribe_msg(self):
         id = uuid.uuid4()
@@ -72,6 +72,8 @@ class EventSocket:
                         LOGGER.debug(
                             f"Stopping receiving. Message type: {str(msg.type)}"
                         )
+                        if self._auth.is_access_token_valid():
+                            await self._auth.do_auth()
                         break
                     if msg.type != aiohttp.WSMsgType.TEXT:
                         LOGGER.error(f"Socket message type is invalid: {str(msg.type)}")

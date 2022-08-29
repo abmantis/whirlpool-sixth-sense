@@ -159,7 +159,7 @@ class Appliance:
         await self.fetch_data()
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
-            self._auth.get_access_token(),
+            self._auth,
             self._said,
             self._event_socket_handler,
         )
