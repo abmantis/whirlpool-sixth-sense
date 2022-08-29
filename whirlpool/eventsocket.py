@@ -46,11 +46,11 @@ class EventSocket:
         if not self._running:
             return
 
-        timeout = aiohttp.ClientTimeout(total=None)
+        timeout = aiohttp.ClientTimeout(total=None,sock_connect=60)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             LOGGER.debug(f"Connecting to {self._url}")
             async with session.ws_connect(
-                self._url, timeout=None, autoclose=True, autoping=True, heartbeat=45
+                self._url, timeout=timeout, autoclose=True, autoping=True, heartbeat=45
             ) as ws:
                 self._websocket = ws
                 await self._send_msg(ws, self._create_connect_msg())
