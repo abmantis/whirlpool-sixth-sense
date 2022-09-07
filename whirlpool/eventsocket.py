@@ -72,7 +72,10 @@ class EventSocket:
                         LOGGER.debug(
                             f"Stopping receiving. Message type: {str(msg.type)}"
                         )
-                        if not self._auth.is_access_token_valid or msg.data == 1001:
+                        if msg.data == 1001: #1001 = Going Away
+                            LOGGER(f"Received Going Away Message: Waiting 5 minutes")
+                            await asyncio.sleep(60*5) # be nice and let them reboot or whatever
+                        if not self._auth.is_access_token_valid or msg.data == 3000: #3000 = Unauthroized
                             LOGGER.debug(
                                 f"auth key expired, doing reauth now"
                             )
@@ -89,11 +92,10 @@ class EventSocket:
 
             self._websocket = None
 
-        if self._running and self._reconnect_tries > 0:
-            # TODO: add a timer to reset _reconnect_tries to 3 after 1 hour or so
-            LOGGER.info("Reconnecting...")
-            self._reconnect_tries = self._reconnect_tries - 1
-            self._run_future = asyncio.get_event_loop().create_task(self._run())
+        LOGGER.info("Waiting to reconnect")
+        await asyncio.sleep(60) # be nice and wait a bit
+        LOGGER.info("Reconnecting...")
+        self._run_future = asyncio.get_event_loop().create_task(self._run())
 
     def start(self):
         self._running = True
