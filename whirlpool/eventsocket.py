@@ -72,9 +72,12 @@ class EventSocket:
                         LOGGER.debug(
                             f"Stopping receiving. Message type: {str(msg.type)}"
                         )
-                        if self._auth.is_access_token_valid():
+                        if not self._auth.is_access_token_valid or msg.data == 1001:
+                            LOGGER.debug(
+                                f"auth key expired, doing reauth now"
+                            )
                             await self._auth.do_auth()
-                        break
+                            break
                     if msg.type != aiohttp.WSMsgType.TEXT:
                         LOGGER.error(f"Socket message type is invalid: {str(msg.type)}")
                         continue
