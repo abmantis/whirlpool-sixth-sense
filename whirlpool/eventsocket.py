@@ -91,11 +91,11 @@ class EventSocket:
                             f"Stopping receiving. Message type: {str(msg.type)}"
                         )
 
-                        if msg.data == STATUS_GOING_AWAY: 
-                            LOGGER(f"Received Going Away Message: Waiting 5 minutes")
-                            await asyncio.sleep(60*5) # be nice and let them reboot or whatever
+                        if msg.data==STATUS_GOING_AWAY: 
+                            LOGGER(f"Received Going Away Message 1001: Waiting 1 minute")
+                            await asyncio.sleep(60) # be nice and let them reboot or whatever
 
-                        if not self._auth.is_access_token_valid() or msg.data == STATUS_UNAUTHORIZED: 
+                        if not self._auth.is_access_token_valid() or msg.data==STATUS_UNAUTHORIZED: 
                             LOGGER.debug(
                                 f"auth key expired, doing reauth now"
                             )
@@ -113,9 +113,11 @@ class EventSocket:
             self._websocket = None
 
         LOGGER.info("Waiting to reconnect")
-        await asyncio.sleep(60) # be nice and wait a bit
-        LOGGER.info("Reconnecting...")
-        self._run_future = asyncio.get_event_loop().create_task(self._run())
+        await asyncio.sleep(30) # be nice and wait a bit
+
+        if self._running:
+            LOGGER.info("Reconnecting...")
+            self._run_future = asyncio.get_event_loop().create_task(self._run())
 
     def start(self):
         self._running = True
