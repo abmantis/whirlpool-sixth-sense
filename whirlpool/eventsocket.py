@@ -112,10 +112,11 @@ class EventSocket:
 
             self._websocket = None
 
-        LOGGER.info("Waiting to reconnect")
-        await asyncio.sleep(30) # be nice and wait a bit
 
         if self._running:
+            LOGGER.info("Waiting to reconnect")
+            await asyncio.sleep(30) # be nice and wait a bit
+
             LOGGER.info("Reconnecting...")
             self._run_future = asyncio.get_event_loop().create_task(self._run())
 
