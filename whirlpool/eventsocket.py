@@ -72,11 +72,14 @@ class EventSocket:
                         LOGGER.debug(
                             f"Stopping receiving. Message type: {str(msg.type)}"
                         )
-                        if msg.data == '1001': #1001 = Going Away
+                        x = type(msg.data)
+                        y = type(msg)
+                        z = type(1001)
+                        if msg.data == 1001: #1001 = Going Away
                             LOGGER(f"Received Going Away Message: Waiting 5 minutes")
                             await asyncio.sleep(60*5) # be nice and let them reboot or whatever
-                            
-                        if not self._auth.is_access_token_valid or msg.data == '3000': #3000 = Unauthroized
+
+                        if not self._auth.is_access_token_valid() or msg.data == 3000: #3000 = Unauthroized
                             LOGGER.debug(
                                 f"auth key expired, doing reauth now"
                             )
