@@ -32,6 +32,8 @@ STATUS_BAD_GATEWAY = 1014
 STATUS_TLS_HANDSHAKE_ERROR = 1015
 STATUS_UNAUTHORIZED = 3000
 
+GOING_AWAY_TIMEOUT = 60
+RECONNECT_TIMEOUT = 30
 
 class EventSocket:
     def __init__(self, url, auth:Auth, said, msg_listener: Callable[[str], None]):
@@ -92,8 +94,8 @@ class EventSocket:
                         )
 
                         if msg.data==STATUS_GOING_AWAY: 
-                            LOGGER.debug("Received Going Away Message 1001: Waiting 1 minute")
-                            await asyncio.sleep(60) # be nice and let them reboot or whatever
+                            LOGGER.debug(f"Received Going Away Message 1001: Waiting {GOING_AWAY_TIMEOUT} seconds")
+                            await asyncio.sleep(GOING_AWAY_TIMEOUT) # be nice and let them reboot or whatever
 
                         if not self._auth.is_access_token_valid() or msg.data==STATUS_UNAUTHORIZED: 
                             LOGGER.debug("auth key expired, doing reauth now")
@@ -112,8 +114,8 @@ class EventSocket:
 
 
         if self._running:
-            LOGGER.info("Waiting to reconnect")
-            await asyncio.sleep(30) # be nice and wait a bit
+            LOGGER.info(f"Waiting to reconnect {RECONNECT_TIMEOUT} seconds")
+            await asyncio.sleep(RECONNECT_TIMEOUT) # be nice and wait a bit
 
             LOGGER.info("Reconnecting...")
             self._run_future = asyncio.get_event_loop().create_task(self._run())
