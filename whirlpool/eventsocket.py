@@ -92,7 +92,7 @@ class EventSocket:
                         )
 
                         if msg.data==STATUS_GOING_AWAY: 
-                            LOGGER("Received Going Away Message 1001: Waiting 1 minute")
+                            LOGGER.debug("Received Going Away Message 1001: Waiting 1 minute")
                             await asyncio.sleep(60) # be nice and let them reboot or whatever
 
                         if not self._auth.is_access_token_valid() or msg.data==STATUS_UNAUTHORIZED: 
