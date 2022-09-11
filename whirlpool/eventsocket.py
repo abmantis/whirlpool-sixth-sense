@@ -32,8 +32,9 @@ STATUS_BAD_GATEWAY = 1014
 STATUS_TLS_HANDSHAKE_ERROR = 1015
 STATUS_UNAUTHORIZED = 3000
 
-GOING_AWAY_TIMEOUT = 60
 RECONNECT_TIMEOUT = 30
+GOING_AWAY_TIMEOUT = 60*5 - RECONNECT_TIMEOUT
+
 
 class EventSocket:
     def __init__(self, url, auth:Auth, said, msg_listener: Callable[[str], None]):
@@ -93,14 +94,16 @@ class EventSocket:
                             f"Stopping receiving. Message type: {str(msg.type)}"
                         )
 
-                        if msg.data==STATUS_GOING_AWAY: 
+                        if not self._auth.is_access_token_valid() or msg.data==STATUS_UNAUTHORIZED: 
+                            LOGGER.debug("auth key expired, doing reauth now") 
+                            await self._auth.do_auth()
+
+                        elif msg.data==STATUS_GOING_AWAY: # if going away is issued without and expired key, it appears the server is going down.
                             LOGGER.debug(f"Received Going Away Message 1001: Waiting {GOING_AWAY_TIMEOUT} seconds")
                             await asyncio.sleep(GOING_AWAY_TIMEOUT) # be nice and let them reboot or whatever
 
-                        if not self._auth.is_access_token_valid() or msg.data==STATUS_UNAUTHORIZED: 
-                            LOGGER.debug("auth key expired, doing reauth now")
-                            await self._auth.do_auth()
                         break
+
                     if msg.type != aiohttp.WSMsgType.TEXT:
                         LOGGER.error(f"Socket message type is invalid: {str(msg.type)}")
                         continue
