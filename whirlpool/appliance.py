@@ -49,7 +49,7 @@ class Appliance:
             self._set_attribute(attr, str(val), timestamp)
 
         for callback in self._attr_changed:
-            callback[0]()
+            callback.value()
 
     def _create_headers(self):
         return {
