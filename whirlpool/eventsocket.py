@@ -37,7 +37,7 @@ GOING_AWAY_TIMEOUT = 60*5 - RECONNECT_TIMEOUT
 
 
 class EventSocket:
-    def __init__(self, url, auth:Auth, said, msg_listener: Callable[[str], None]):
+    def __init__(self, url, auth:Auth, said, msg_listener: Callable[[str], None],fetch_data:Callable):
         self._url = url
         self._auth = auth
         self._said = said
@@ -45,6 +45,7 @@ class EventSocket:
         self._running = False
         self._websocket: aiohttp.ClientWebSocketResponse = None
         self._run_future = None
+        self._fetch_data = fetch_data
         self._reconnect_tries = 3
 
     def _create_connect_msg(self):
@@ -66,7 +67,7 @@ class EventSocket:
     async def _run(self):
         if not self._running:
             return
-
+        await self._fetch_data()
         timeout = aiohttp.ClientTimeout(total=None,sock_connect=60)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             LOGGER.debug(f"Connecting to {self._url}")

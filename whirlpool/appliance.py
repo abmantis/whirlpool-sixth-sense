@@ -156,12 +156,13 @@ class Appliance:
         self._session = None
 
     async def start_event_listener(self):
-        await self.fetch_data()
+        #await self.fetch_data()
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
             self._auth,
             self._said,
             self._event_socket_handler,
+            self.fetch_data,
         )
         self._event_socket.start()
 
