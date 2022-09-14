@@ -86,12 +86,16 @@ class Appliance:
             return False
 
         uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        self._data_dict = None
+        #self._data_dict = None # Clearing the _dict causes HA to complain about missing attributes 
         async with async_timeout.timeout(30):
             async with self._session.get(uri) as r:
                 self._data_dict = json.loads(await r.text())
                 if r.status == 200:
                     return True
+                elif r.status == 401:
+                    await self._auth.do_auth()
+                    await self.start_http_session()
+                    
                 LOGGER.error(f"Fetching data failed ({r.status})")
         return False
 
@@ -156,7 +160,7 @@ class Appliance:
         self._session = None
 
     async def start_event_listener(self):
-        #await self.fetch_data()
+        await self.fetch_data()
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
             self._auth,
