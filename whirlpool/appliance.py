@@ -1,4 +1,3 @@
-from __future__ import annotations
 import aiohttp
 import asyncio
 import async_timeout
@@ -26,19 +25,15 @@ class Appliance:
         backend_selector: BackendSelector,
         auth: Auth,
         said: str,
+        attr_changed: Callable,
     ):
         self._backend_selector = backend_selector
         self._auth = auth
         self._said = said
-        self._attr_changed : list(Callable) = []
-     
+        self._attr_changed = attr_changed
         self._data_dict = None
 
         self._session: aiohttp.ClientSession = None
-
-    def register_callback(self,update_callback:Callable):
-        self._attr_changed.append([update_callback])
-        LOGGER.info("Registered callback")
 
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
@@ -48,8 +43,8 @@ class Appliance:
                 continue
             self._set_attribute(attr, str(val), timestamp)
 
-        for callback in self._attr_changed:
-            callback[0]()
+        if self._attr_changed:
+            self._attr_changed()
 
     def _create_headers(self):
         return {
