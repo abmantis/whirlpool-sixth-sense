@@ -164,8 +164,8 @@ class KitchenTimer():
         })
 
 class Oven(Appliance):
-    def __init__(self, backend_selector, auth, said, attr_changed: Callable):
-        Appliance.__init__(self, backend_selector, auth, said, attr_changed)
+    def __init__(self, backend_selector, auth, said):
+        Appliance.__init__(self, backend_selector, auth, said)
 
     def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper):
         return self.attr_value_to_bool(self.get_attribute(CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_MEAT_PROBE_STATUS))

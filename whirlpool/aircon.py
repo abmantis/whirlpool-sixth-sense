@@ -80,8 +80,8 @@ FANSPEED_MAP = {
 
 
 class Aircon(Appliance):
-    def __init__(self, backend_selector, auth, said, attr_changed: Callable):
-        Appliance.__init__(self, backend_selector, auth, said, attr_changed)
+    def __init__(self, backend_selector, auth, said):
+        Appliance.__init__(self, backend_selector, auth, said)
 
     def get_current_temp(self):
         return int(self.get_attribute(ATTR_DISPLAY_TEMP)) / 10
