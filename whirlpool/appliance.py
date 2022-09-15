@@ -88,7 +88,7 @@ class Appliance:
         uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
         #self._data_dict = None # Clearing the _dict causes HA to complain about missing attributes 
         async with async_timeout.timeout(30):
-            async with self._session.get(uri) as r:
+            async with self._session.get(uri,headers=self._create_headers()) as r:
                 self._data_dict = json.loads(await r.text())
                 if r.status == 200:
                     return True
