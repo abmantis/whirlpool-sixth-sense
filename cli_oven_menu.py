@@ -48,8 +48,7 @@ async def show_oven_menu(backend_selector, auth, said):
     def attr_upd():
         print("Attributes updated")
 
-    ov = Oven(backend_selector, auth, said)
-    ov.register_callback(attr_upd)
+    ov = Oven(backend_selector, auth, said, attr_upd)
     await ov.connect()
 
     loop = True
