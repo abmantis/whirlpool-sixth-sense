@@ -27,12 +27,7 @@ async def show_washerdryer_menu(backend_selector, auth, said):
     def attr_upd():
         print("Attributes updated")
 
-    def attr_upd2():
-        print("Attributes 2 called")
-
-    wd = WasherDryer(backend_selector, auth, said)
-    wd.register_callback(attr_upd)
-    wd.register_callback(attr_upd2)
+    wd = WasherDryer(backend_selector, auth, said, attr_upd)
     await wd.connect()
 
     loop = True
