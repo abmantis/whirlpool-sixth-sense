@@ -43,8 +43,8 @@ class Appliance:
                 continue
             self._set_attribute(attr, str(val), timestamp)
 
-        if self._attr_changed:
-            self._attr_changed()
+        for callback in self._attr_changed:
+            callback[0]()
 
     def _create_headers(self):
         return {
