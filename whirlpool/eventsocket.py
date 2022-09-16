@@ -125,7 +125,7 @@ class EventSocket:
                             continue
                         self._msg_listener("{" + match[0] + "}")
         except aiohttp.ClientConnectionError:
-            self._websocket = None
+            LOGGER.info("Web socket could not connect")
 
         self._websocket = None
 
