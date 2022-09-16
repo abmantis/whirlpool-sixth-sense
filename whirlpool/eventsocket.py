@@ -14,9 +14,8 @@ MSG_TERMINATION = "\n\n\0"
 
 RECV_MSG_MATCHER = re.compile("{(.*)}\\x00")
 
-# closing frame status codes for websocket.
-STATUS_GOING_AWAY = 1001
-STATUS_UNAUTHORIZED = 3000
+WS_STATUS_GOING_AWAY = 1001
+WS_STATUS_UNAUTHORIZED = 3000
 
 RECONNECT_COUNT = 3
 RECONNECT_SHORT_DELAY = 30
@@ -94,12 +93,12 @@ class EventSocket:
 
                         if (
                             not self._auth.is_access_token_valid()
-                            or msg.data == STATUS_UNAUTHORIZED
+                            or msg.data == WS_STATUS_UNAUTHORIZED
                         ):
                             LOGGER.debug("auth key expired, doing reauth now")
                             await self._auth.do_auth()
 
-                        elif msg.data == STATUS_GOING_AWAY:
+                        elif msg.data == WS_STATUS_GOING_AWAY:
                             LOGGER.debug(
                                 f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
                             )
