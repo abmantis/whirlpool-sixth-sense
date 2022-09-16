@@ -15,29 +15,24 @@ MSG_TERMINATION = "\n\n\0"
 RECV_MSG_MATCHER = re.compile("{(.*)}\\x00")
 
 # closing frame status codes for websocket.
-STATUS_NORMAL = 1000
 STATUS_GOING_AWAY = 1001
-STATUS_PROTOCOL_ERROR = 1002
-STATUS_UNSUPPORTED_DATA_TYPE = 1003
-STATUS_STATUS_NOT_AVAILABLE = 1005
-STATUS_ABNORMAL_CLOSED = 1006
-STATUS_INVALID_PAYLOAD = 1007
-STATUS_POLICY_VIOLATION = 1008
-STATUS_MESSAGE_TOO_BIG = 1009
-STATUS_INVALID_EXTENSION = 1010
-STATUS_UNEXPECTED_CONDITION = 1011
-STATUS_SERVICE_RESTART = 1012
-STATUS_TRY_AGAIN_LATER = 1013
-STATUS_BAD_GATEWAY = 1014
-STATUS_TLS_HANDSHAKE_ERROR = 1015
 STATUS_UNAUTHORIZED = 3000
 
-RECONNECT_TIMEOUT = 30
-GOING_AWAY_TIMEOUT = 60*5 - RECONNECT_TIMEOUT
+RECONNECT_COUNT = 3
+RECONNECT_SHORT_DELAY = 30
+RECONNECT_LONG_DELAY = 60 * 4
+GOING_AWAY_DELAY = (60 * 5) - RECONNECT_SHORT_DELAY
 
 
 class EventSocket:
-    def __init__(self, url, auth:Auth, said, msg_listener: Callable[[str], None],fetch_data:Callable):
+    def __init__(
+        self,
+        url,
+        auth: Auth,
+        said,
+        msg_listener: Callable[[str], None],
+        con_up_listener: Callable,
+    ):
         self._url = url
         self._auth = auth
         self._said = said
@@ -45,8 +40,8 @@ class EventSocket:
         self._running = False
         self._websocket: aiohttp.ClientWebSocketResponse = None
         self._run_future = None
-        self._fetch_data = fetch_data
-        self._reconnect_tries = 3
+        self._con_up_listener = con_up_listener
+        self._reconnect_tries = RECONNECT_COUNT
 
     def _create_connect_msg(self):
         return f"CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:{self._auth.get_access_token()}"
@@ -67,8 +62,7 @@ class EventSocket:
     async def _run(self):
         if not self._running:
             return
-        await self._fetch_data()
-        timeout = aiohttp.ClientTimeout(total=None,sock_connect=60)
+        timeout = aiohttp.ClientTimeout(total=None, sock_connect=60)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             LOGGER.debug(f"Connecting to {self._url}")
             async with session.ws_connect(
@@ -78,6 +72,9 @@ class EventSocket:
                 await self._send_msg(ws, self._create_connect_msg())
                 await self._recv_msg(ws)
                 await self._send_msg(ws, self._create_subscribe_msg())
+                await self._con_up_listener()
+
+                self._reconnect_tries = RECONNECT_COUNT
 
                 while not ws.closed:
                     msg = await self._recv_msg(ws)
@@ -95,13 +92,20 @@ class EventSocket:
                             f"Stopping receiving. Message type: {str(msg.type)}"
                         )
 
-                        if not self._auth.is_access_token_valid() or msg.data==STATUS_UNAUTHORIZED: 
-                            LOGGER.debug("auth key expired, doing reauth now") 
+                        if (
+                            not self._auth.is_access_token_valid()
+                            or msg.data == STATUS_UNAUTHORIZED
+                        ):
+                            LOGGER.debug("auth key expired, doing reauth now")
                             await self._auth.do_auth()
 
-                        elif msg.data==STATUS_GOING_AWAY: # if going away is issued without and expired key, it appears the server is going down.
-                            LOGGER.debug(f"Received Going Away Message 1001: Waiting {GOING_AWAY_TIMEOUT} seconds")
-                            await asyncio.sleep(GOING_AWAY_TIMEOUT) # be nice and let them reboot or whatever
+                        elif msg.data == STATUS_GOING_AWAY:
+                            LOGGER.debug(
+                                f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
+                            )
+                            await asyncio.sleep(
+                                GOING_AWAY_DELAY
+                            )  # be nice and let them reboot or whatever
 
                         break
 
@@ -116,10 +120,21 @@ class EventSocket:
 
             self._websocket = None
 
-
         if self._running:
-            LOGGER.info(f"Waiting to reconnect {RECONNECT_TIMEOUT} seconds")
-            await asyncio.sleep(RECONNECT_TIMEOUT) # be nice and wait a bit
+
+            self._reconnect_tries -= 1
+            if self._reconnect_tries < 0:
+                self._reconnect_tries = 0
+                LOGGER.info(
+                    f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY} seconds"
+                )
+                await asyncio.sleep(RECONNECT_LONG_DELAY)
+                # give server some time to come back up
+
+            LOGGER.info(
+                f"Waiting to reconnect short delay {RECONNECT_SHORT_DELAY} seconds"
+            )
+            await asyncio.sleep(RECONNECT_SHORT_DELAY)
 
             LOGGER.info("Reconnecting...")
             self._run_future = asyncio.get_event_loop().create_task(self._run())
