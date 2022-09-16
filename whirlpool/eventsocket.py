@@ -124,7 +124,11 @@ class EventSocket:
                         if not match:
                             continue
                         self._msg_listener("{" + match[0] + "}")
-        except aiohttp.ClientConnectionError:
+        except (
+            aiohttp.ClientConnectionError,
+            aiohttp.ClientError,
+            asyncio.TimeoutError,
+        ):
             LOGGER.info("Web socket could not connect")
 
         self._websocket = None
