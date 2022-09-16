@@ -61,7 +61,7 @@ class EventSocket:
     async def _run(self):
         if not self._running:
             return
-        timeout = aiohttp.ClientTimeout(total=None, sock_connect=60)
+        timeout = aiohttp.ClientTimeout(total=None, connect=60, sock_connect=60)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             LOGGER.debug(f"Connecting to {self._url}")
             async with session.ws_connect(
