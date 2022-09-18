@@ -86,16 +86,15 @@ class Appliance:
             return False
 
         uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        #self._data_dict = None # Clearing the _dict causes HA to complain about missing attributes 
         async with async_timeout.timeout(30):
-            async with self._session.get(uri,headers=self._create_headers()) as r:
+            async with self._session.get(uri, headers=self._create_headers()) as r:
                 self._data_dict = json.loads(await r.text())
                 if r.status == 200:
                     return True
                 elif r.status == 401:
                     await self._auth.do_auth()
                     await self.start_http_session()
-                    
+
                 LOGGER.error(f"Fetching data failed ({r.status})")
         return False
 
@@ -113,7 +112,9 @@ class Appliance:
         }
         for n in range(3):
             async with async_timeout.timeout(30):
-                async with self._session.post(uri, json=cmd_data) as r:
+                async with self._session.post(
+                    uri, json=cmd_data, headers=self._create_headers()
+                ) as r:
                     LOGGER.debug(f"Reply: {await r.text()}")
                     if r.status == 200:
                         return True
@@ -151,7 +152,7 @@ class Appliance:
 
     async def start_http_session(self):
         await self.stop_http_session()
-        self._session = aiohttp.ClientSession(headers=self._create_headers())
+        self._session = aiohttp.ClientSession()
 
     async def stop_http_session(self):
         if not self._session:
