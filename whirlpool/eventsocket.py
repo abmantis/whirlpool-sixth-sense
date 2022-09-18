@@ -105,11 +105,12 @@ class EventSocket:
                                 await self._auth.do_auth()
 
                             elif msg.data == WS_STATUS_GOING_AWAY:
-                                LOGGER.warn(
+                                LOGGER.debug(
                                     f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
                                 )
-                                # Give the server some time to come back up.
-                                await asyncio.sleep(GOING_AWAY_DELAY)
+                                await asyncio.sleep(
+                                    GOING_AWAY_DELAY
+                                )  # be nice and let them reboot or whatever
 
                             break
 
