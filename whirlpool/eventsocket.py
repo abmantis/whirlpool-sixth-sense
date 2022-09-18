@@ -93,7 +93,7 @@ class EventSocket:
                             aiohttp.WSMsgType.CLOSING,
                             aiohttp.WSMsgType.CLOSED,
                         ]:
-                            LOGGER.debug(
+                            LOGGER.warn(
                                 f"Stopping receiving. Message type: {str(msg.type)}"
                             )
 
