@@ -24,9 +24,7 @@ parser.add_argument("-p", "--password", help="Password")
 parser.add_argument(
     "-b", "--brand", help="Brand (whirlpool/maytag)", default="whirlpool"
 )
-parser.add_argument(
-    "-r", "--region", help="Region (EU/US)", default="EU"
-)
+parser.add_argument("-r", "--region", help="Region (EU/US)", default="EU")
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
 parser.add_argument("-s", "--said", help="The appliance to load")
 args = parser.parse_args()

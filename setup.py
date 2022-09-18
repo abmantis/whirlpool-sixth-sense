@@ -15,7 +15,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/abmantis/whirlpool-sixth-sense/",
-    packages=setuptools.find_packages(exclude=["tests","tests.*"]),
+    packages=setuptools.find_packages(exclude=["tests", "tests.*"]),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
