@@ -30,13 +30,13 @@ class Appliance:
         self._backend_selector = backend_selector
         self._auth = auth
         self._said = said
-        self._attr_changed : list(Callable) = []
-     
+        self._attr_changed: list(Callable) = []
+
         self._data_dict = None
 
         self._session: aiohttp.ClientSession = None
 
-    def register_callback(self,update_callback:Callable):
+    def register_callback(self, update_callback: Callable):
         self._attr_changed.append([update_callback])
         LOGGER.info("Registered callback")
 
