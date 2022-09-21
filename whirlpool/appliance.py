@@ -93,7 +93,6 @@ class Appliance:
                     return True
                 elif r.status == 401:
                     await self._auth.do_auth()
-                    await self.start_http_session()
 
                 LOGGER.error(f"Fetching data failed ({r.status})")
         return False
@@ -120,7 +119,6 @@ class Appliance:
                         return True
                     elif r.status == 401:
                         await self._auth.do_auth()
-                        await self.start_http_session()
                         continue
                     LOGGER.error(f"Sending attributes failed ({r.status})")
         return False
