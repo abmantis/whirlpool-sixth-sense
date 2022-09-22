@@ -86,12 +86,14 @@ class Appliance:
             return False
 
         uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        self._data_dict = None
         async with async_timeout.timeout(30):
-            async with self._session.get(uri) as r:
+            async with self._session.get(uri, headers=self._create_headers()) as r:
                 self._data_dict = json.loads(await r.text())
                 if r.status == 200:
                     return True
+                elif r.status == 401:
+                    await self._auth.do_auth()
+
                 LOGGER.error(f"Fetching data failed ({r.status})")
         return False
 
@@ -109,13 +111,14 @@ class Appliance:
         }
         for n in range(3):
             async with async_timeout.timeout(30):
-                async with self._session.post(uri, json=cmd_data) as r:
+                async with self._session.post(
+                    uri, json=cmd_data, headers=self._create_headers()
+                ) as r:
                     LOGGER.debug(f"Reply: {await r.text()}")
                     if r.status == 200:
                         return True
                     elif r.status == 401:
                         await self._auth.do_auth()
-                        await self.start_http_session()
                         continue
                     LOGGER.error(f"Sending attributes failed ({r.status})")
         return False
@@ -147,7 +150,7 @@ class Appliance:
 
     async def start_http_session(self):
         await self.stop_http_session()
-        self._session = aiohttp.ClientSession(headers=self._create_headers())
+        self._session = aiohttp.ClientSession()
 
     async def stop_http_session(self):
         if not self._session:
@@ -159,9 +162,10 @@ class Appliance:
         await self.fetch_data()
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
-            self._auth.get_access_token(),
+            self._auth,
             self._said,
             self._event_socket_handler,
+            self.fetch_data,
         )
         self._event_socket.start()
 
