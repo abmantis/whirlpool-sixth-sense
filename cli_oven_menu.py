@@ -1,6 +1,7 @@
 import aioconsole
 from whirlpool.oven import CookMode, Oven, Cavity, KitchenTimerState
 
+
 async def show_oven_menu(backend_selector, auth, said):
     def print_menu():
         print("\n")
@@ -27,12 +28,22 @@ async def show_oven_menu(backend_selector, auth, said):
         timer_state = timer.get_state()
         print("kitchen timer 1 state: " + str(timer_state))
         if timer_state != KitchenTimerState.Standby:
-            print("kitchen timer 1 time remaining/set time: " + str(timer.get_remaining_time()) + "/" + str(timer.get_total_time()))
+            print(
+                "kitchen timer 1 time remaining/set time: "
+                + str(timer.get_remaining_time())
+                + "/"
+                + str(timer.get_total_time())
+            )
         if ov.get_oven_cavity_exists(Cavity.Upper):
             print("upper meat probe: " + str(ov.get_meat_probe_status(Cavity.Upper)))
             print("upper light: " + str(ov.get_light(Cavity.Upper)))
             print("upper door open: " + str(ov.get_door_opened(Cavity.Upper)))
-            print("upper temp (current/target, in C): " + str(ov.get_temp(Cavity.Upper)) + "/" + str(ov.get_target_temp(Cavity.Upper)))
+            print(
+                "upper temp (current/target, in C): "
+                + str(ov.get_temp(Cavity.Upper))
+                + "/"
+                + str(ov.get_target_temp(Cavity.Upper))
+            )
             print("upper state: " + str(ov.get_cavity_state(Cavity.Upper)))
             print("upper cook mode: " + str(ov.get_cook_mode(Cavity.Upper)))
             print("upper cook time (seconds): " + str(ov.get_cook_time(Cavity.Upper)))
@@ -40,7 +51,12 @@ async def show_oven_menu(backend_selector, auth, said):
             print("lower meat probe: " + str(ov.get_meat_probe_status(Cavity.Upper)))
             print("lower light: " + str(ov.get_light(Cavity.Lower)))
             print("lower door open: " + str(ov.get_door_opened(Cavity.Lower)))
-            print("lower temp (current/target, in C): " + str(ov.get_temp(Cavity.Lower)) + "/" + str(ov.get_target_temp(Cavity.Lower)))
+            print(
+                "lower temp (current/target, in C): "
+                + str(ov.get_temp(Cavity.Lower))
+                + "/"
+                + str(ov.get_target_temp(Cavity.Lower))
+            )
             print("lower state: " + str(ov.get_cavity_state(Cavity.Lower)))
             print("lower cook mode: " + str(ov.get_cook_mode(Cavity.Lower)))
             print("lower cook time (seconds): " + str(ov.get_cook_time(Cavity.Lower)))
@@ -71,7 +87,8 @@ async def show_oven_menu(backend_selector, auth, said):
         elif choice == "o":
             await ov.stop_cook()
         elif choice == "t":
-            print("""Cooking modes:
+            print(
+                """Cooking modes:
             b: Bake
             c: Convect Bake
             r: Broil
@@ -79,7 +96,8 @@ async def show_oven_menu(backend_selector, auth, said):
             s: Convect Roast
             a: Air Fry
             w: Keep Warm
-            """)
+            """
+            )
             cookmode = await aioconsole.ainput("Enter cook mode: ")
             temp = await aioconsole.ainput("Enter cook temperature: ")
             if cookmode == "b":
