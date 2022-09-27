@@ -108,7 +108,7 @@ class EventSocket:
                                 LOGGER.warn(
                                     f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
                                 )
-                                # give server some time to come back up
+                                # Give server some time to come back up.
                                 await asyncio.sleep(GOING_AWAY_DELAY)
 
                             break
@@ -141,7 +141,7 @@ class EventSocket:
                     f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY} seconds"
                 )
 
-                # give server some time to come back up
+                # Give server some time to come back up.
                 await asyncio.sleep(RECONNECT_LONG_DELAY)
 
             LOGGER.info(
