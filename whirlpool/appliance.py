@@ -1,10 +1,7 @@
-from __future__ import annotations
 import aiohttp
-import asyncio
 import async_timeout
 import logging
 import json
-from datetime import datetime, timedelta, timedelta
 from typing import Callable
 
 from whirlpool.backendselector import BackendSelector
@@ -36,9 +33,9 @@ class Appliance:
 
         self._session: aiohttp.ClientSession = None
 
-    def register_callback(self, update_callback: Callable):
-        self._attr_changed.append([update_callback])
-        LOGGER.info("Registered callback")
+    def register_attr_callback(self, update_callback: Callable):
+        self._attr_changed.append(update_callback)
+        LOGGER.debug("Registered attr callback")
 
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
@@ -49,7 +46,7 @@ class Appliance:
             self._set_attribute(attr, str(val), timestamp)
 
         for callback in self._attr_changed:
-            callback[0]()
+            callback()
 
     def _create_headers(self):
         return {

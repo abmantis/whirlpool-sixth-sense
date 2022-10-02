@@ -47,7 +47,7 @@ async def show_aircon_menu(backend_selector, auth, said):
         print("Attributes updated")
 
     ac = Aircon(backend_selector, auth, said)
-    ac.register_callback(attr_upd)
+    ac.register_attr_callback(attr_upd)
     await ac.connect()
 
     loop = True
