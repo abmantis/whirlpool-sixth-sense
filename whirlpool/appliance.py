@@ -4,7 +4,7 @@ import logging
 import json
 from typing import Callable
 
-from whirlpool.backendselector import BackendSelector
+from .backendselector import BackendSelector
 
 from .auth import Auth
 from .eventsocket import EventSocket

@@ -3,7 +3,7 @@ import logging
 import json
 
 
-from whirlpool.backendselector import BackendSelector
+from .backendselector import BackendSelector
 
 from .auth import Auth
 

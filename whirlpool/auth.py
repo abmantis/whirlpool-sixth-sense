@@ -5,7 +5,7 @@ import logging
 import json
 from datetime import datetime, timedelta, timedelta
 
-from whirlpool.backendselector import BackendSelector
+from .backendselector import BackendSelector
 
 LOGGER = logging.getLogger(__name__)
 
