@@ -9,7 +9,7 @@ class BackendSelectorMock:
 
     @property
     def base_url(self):
-        return "dummy_base_url"
+        return "http://dummy_base_url.com"
 
     @property
     def client_id(self):

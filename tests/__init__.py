@@ -1,6 +1,3 @@
-import pytest
-
-
 class MockResponse:
     def __init__(self, text, status):
         self._text = text
