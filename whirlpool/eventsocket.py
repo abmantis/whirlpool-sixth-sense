@@ -127,8 +127,8 @@ class EventSocket:
             aiohttp.ClientConnectionError,
             aiohttp.ClientError,
             asyncio.TimeoutError,
-        ):
-            LOGGER.error("Websocket could not connect")
+        ) as e:
+            LOGGER.error(f"Websocket could not connect: {e}")
 
         self._websocket = None
 
