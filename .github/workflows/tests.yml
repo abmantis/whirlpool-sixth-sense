@@ -20,4 +20,4 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Test with pytest
         run: |
-          pytest --ignore-glob=**/test_oven.py --log-cli-level=debug
+          pytest --log-cli-level=debug
