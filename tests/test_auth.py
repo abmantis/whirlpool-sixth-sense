@@ -1,11 +1,12 @@
-import json
-import logging
+from http import HTTPStatus
+
 import pytest
-from tests.mock_backendselector import BackendSelectorMock
+from yarl import URL
 
 from whirlpool.auth import Auth
 
-from . import MockResponse
+from .aiohttp import AiohttpClientMocker
+from .mock_backendselector import BackendSelectorMock
 
 BACKEND_SELECTOR_MOCK = BackendSelectorMock()
 
@@ -25,8 +26,7 @@ AUTH_HEADERS = {
 pytestmark = pytest.mark.asyncio
 
 
-async def test_auth_success(caplog, aio_httpclient):
-    caplog.set_level(logging.DEBUG)
+async def test_auth_success(http_client_mock: AiohttpClientMocker):
     auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass")
 
     mock_resp_data = {
@@ -39,19 +39,19 @@ async def test_auth_success(caplog, aio_httpclient):
         "SAID": ["SAID1", "SAID2"],
         "jti": "?????",
     }
-    aio_httpclient.post.return_value = MockResponse(json.dumps(mock_resp_data), 200)
+    http_client_mock.post(AUTH_URL, json=mock_resp_data)
 
     await auth.do_auth(store=False)
     assert auth.is_access_token_valid()
     assert auth.get_said_list() == ["SAID1", "SAID2"]
-    aio_httpclient.post.assert_called_with(
-        AUTH_URL, data=AUTH_DATA, headers=AUTH_HEADERS
-    )
-    aio_httpclient.close.assert_called_once()
+    assert len(http_client_mock.mock_calls) == 1
+    assert http_client_mock.mock_calls[-1][0] == "POST"
+    assert http_client_mock.mock_calls[-1][1] == URL(AUTH_URL)
+    assert http_client_mock.mock_calls[-1][2] == AUTH_DATA
+    assert http_client_mock.mock_calls[-1][3] == AUTH_HEADERS
 
 
-async def test_auth_bad_credentials(caplog, aio_httpclient):
-    caplog.set_level(logging.DEBUG)
+async def test_auth_bad_credentials(http_client_mock: AiohttpClientMocker):
     auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass")
 
     mock_resp_data = {
@@ -59,12 +59,13 @@ async def test_auth_bad_credentials(caplog, aio_httpclient):
         "error_description": "Bad credentials",
         "code": "13000",
     }
-    aio_httpclient.post.return_value = MockResponse(json.dumps(mock_resp_data), 400)
+    http_client_mock.post(AUTH_URL, json=mock_resp_data, status=HTTPStatus.BAD_REQUEST)
 
     await auth.do_auth(store=False)
     assert auth.is_access_token_valid() == False
     assert auth.get_said_list() == None
-    aio_httpclient.post.assert_called_with(
-        AUTH_URL, data=AUTH_DATA, headers=AUTH_HEADERS
-    )
-    aio_httpclient.close.assert_called_once()
+    assert len(http_client_mock.mock_calls) == 1
+    assert http_client_mock.mock_calls[-1][0] == "POST"
+    assert http_client_mock.mock_calls[-1][1] == URL(AUTH_URL)
+    assert http_client_mock.mock_calls[-1][2] == AUTH_DATA
+    assert http_client_mock.mock_calls[-1][3] == AUTH_HEADERS
