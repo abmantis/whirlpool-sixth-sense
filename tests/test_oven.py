@@ -4,8 +4,11 @@ from whirlpool.oven import Cavity, CavityState, CookMode, Oven
 
 from .aiohttp import AiohttpClientMocker
 from .mock_backendselector import BackendSelectorMock
-from .utils import (assert_appliance_setter_call, mock_appliance_http_get,
-                    mock_appliance_http_post)
+from .utils import (
+    assert_appliance_setter_call,
+    mock_appliance_http_get,
+    mock_appliance_http_post,
+)
 
 ACCOUNT_ID = 111222333
 SAID = "WPR1XYZABC123"
