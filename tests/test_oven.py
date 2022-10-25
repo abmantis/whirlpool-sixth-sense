@@ -1,15 +1,14 @@
-import json
-import logging
-import pytest
 from unittest.mock import ANY, MagicMock
-from tests.mock_backendselector import BackendSelectorMock
 
-from whirlpool.oven import Oven, Cavity, CavityState, CookMode
+from whirlpool.oven import Cavity, CavityState, CookMode, Oven
 
-from . import MockResponse
-
-
-pytestmark = pytest.mark.asyncio
+from .aiohttp import AiohttpClientMocker
+from .mock_backendselector import BackendSelectorMock
+from .utils import (
+    assert_appliance_setter_call,
+    mock_appliance_http_get,
+    mock_appliance_http_post,
+)
 
 ACCOUNT_ID = 111222333
 SAID = "WPR1XYZABC123"
@@ -1629,39 +1628,17 @@ DATA3 = {
 }
 
 
-def get_request_side_effect(url):
-    if url.endswith("/getUserDetails"):
-        return MockResponse(
-            json.dumps(
-                {
-                    "accountId": ACCOUNT_ID,
-                    "firstName": "Test",
-                    "lastName": "Dummy",
-                    "email": "testdummy@testing.com",
-                }
-            ),
-            200,
-        )
-    if url.endswith(f"/appliancebyaccount/{ACCOUNT_ID}"):
-        return MockResponse(
-            json.dumps(
-                {ACCOUNT_ID: {"12345": [{"APPLIANCE_NAME": AC_NAME, "SAID": SAID}]}}
-            ),
-            200,
-        )
-    if url.endswith(f"/appliance/{SAID}"):
-        return MockResponse(json.dumps({}), 200)
+async def test_attributes(
+    appliance_http_client_mock: AiohttpClientMocker,
+    backend_selector_mock: BackendSelectorMock,
+    auth_mock: MagicMock,
+):
 
-    raise Exception(f"Unexpected url: {url}")
+    mock_appliance_http_get(
+        appliance_http_client_mock, backend_selector_mock, SAID, DATA1
+    )
 
-
-async def test_attributes(caplog, aio_httpclient):
-    caplog.set_level(logging.DEBUG)
-    auth = MagicMock()
-
-    aio_httpclient.get.return_value = MockResponse(json.dumps(DATA1), 200)
-
-    oven = Oven(BackendSelectorMock(), auth, SAID, None)
+    oven = Oven(backend_selector_mock, auth_mock, SAID)
     await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == False
@@ -1679,7 +1656,9 @@ async def test_attributes(caplog, aio_httpclient):
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Bake
     await oven.disconnect()
 
-    aio_httpclient.get.return_value = MockResponse(json.dumps(DATA2), 200)
+    mock_appliance_http_get(
+        appliance_http_client_mock, backend_selector_mock, SAID, DATA2
+    )
     await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == True
@@ -1697,7 +1676,9 @@ async def test_attributes(caplog, aio_httpclient):
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
     await oven.disconnect()
 
-    aio_httpclient.get.return_value = MockResponse(json.dumps(DATA3), 200)
+    mock_appliance_http_get(
+        appliance_http_client_mock, backend_selector_mock, SAID, DATA3
+    )
     await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == False
@@ -1716,126 +1697,174 @@ async def test_attributes(caplog, aio_httpclient):
     await oven.disconnect()
 
 
-async def test_setters(caplog, aio_httpclient):
-    caplog.set_level(logging.DEBUG)
-    auth = MagicMock()
+async def test_setters(
+    appliance_http_client_mock: AiohttpClientMocker,
+    backend_selector_mock: BackendSelectorMock,
+    auth_mock: MagicMock,
+):
 
-    aio_httpclient.get.return_value = MockResponse(json.dumps(DATA2), 200)
-    aio_httpclient.post.return_value = MockResponse("", 200)
+    mock_appliance_http_get(
+        appliance_http_client_mock, backend_selector_mock, SAID, DATA2
+    )
+    mock_appliance_http_post(appliance_http_client_mock, backend_selector_mock)
+    CONNECT_HTTP_CALLS = 2
 
-    cmd_data = {
-        "header": {"said": SAID, "command": "setAttributes"},
-    }
-
-    oven = Oven(BackendSelectorMock(), auth, SAID, None)
+    oven = Oven(backend_selector_mock, auth_mock, SAID)
     await oven.connect()
     await oven.set_control_locked(True)
-    cmd_data["body"] = {"Sys_OperationSetControlLock": "1"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {"Sys_OperationSetControlLock": "1"},
+        CONNECT_HTTP_CALLS + 1,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_control_locked(False)
-    cmd_data["body"] = {"Sys_OperationSetControlLock": "0"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {"Sys_OperationSetControlLock": "0"},
+        CONNECT_HTTP_CALLS + 2,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_light(True)
-    cmd_data["body"] = {"OvenUpperCavity_DisplaySetLightOn": "1"}
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {"OvenUpperCavity_DisplaySetLightOn": "1"},
+        CONNECT_HTTP_CALLS + 3,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_cook(mode=CookMode.Bake, cavity=Cavity.Upper, target_temp=260)
-    cmd_data["body"] = {
-        "OvenUpperCavity_CycleSetCommonMode": "2",
-        "OvenUpperCavity_CycleSetTargetTemp": 2600,
-        "OvenUpperCavity_OpSetOperations": 2,
-    }
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {
+            "OvenUpperCavity_CycleSetCommonMode": "2",
+            "OvenUpperCavity_CycleSetTargetTemp": 2600,
+            "OvenUpperCavity_OpSetOperations": 2,
+        },
+        CONNECT_HTTP_CALLS + 4,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_bake(cavity=Cavity.Upper, target_temp=260)
-    cmd_data["body"] = {
-        "OvenUpperCavity_CycleSetCommonMode": "2",
-        "OvenUpperCavity_CycleSetTargetTemp": 2600,
-        "OvenUpperCavity_OpSetOperations": 2,
-    }
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {
+            "OvenUpperCavity_CycleSetCommonMode": "2",
+            "OvenUpperCavity_CycleSetTargetTemp": 2600,
+            "OvenUpperCavity_OpSetOperations": 2,
+        },
+        CONNECT_HTTP_CALLS + 5,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_cook(mode=CookMode.Broil, cavity=Cavity.Upper, target_temp=260)
-    cmd_data["body"] = {
-        "OvenUpperCavity_CycleSetCommonMode": "8",
-        "OvenUpperCavity_CycleSetTargetTemp": 2600,
-        "OvenUpperCavity_OpSetOperations": 2,
-    }
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {
+            "OvenUpperCavity_CycleSetCommonMode": "8",
+            "OvenUpperCavity_CycleSetTargetTemp": 2600,
+            "OvenUpperCavity_OpSetOperations": 2,
+        },
+        CONNECT_HTTP_CALLS + 6,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_broil(cavity=Cavity.Upper, target_temp=260)
-    cmd_data["body"] = {
-        "OvenUpperCavity_CycleSetCommonMode": "8",
-        "OvenUpperCavity_CycleSetTargetTemp": 2600,
-        "OvenUpperCavity_OpSetOperations": 2,
-    }
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {
+            "OvenUpperCavity_CycleSetCommonMode": "8",
+            "OvenUpperCavity_CycleSetTargetTemp": 2600,
+            "OvenUpperCavity_OpSetOperations": 2,
+        },
+        CONNECT_HTTP_CALLS + 7,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_convect_broil(cavity=Cavity.Upper, target_temp=260)
-    cmd_data["body"] = {
-        "OvenUpperCavity_CycleSetCommonMode": "9",
-        "OvenUpperCavity_CycleSetTargetTemp": 2600,
-        "OvenUpperCavity_OpSetOperations": 2,
-    }
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {
+            "OvenUpperCavity_CycleSetCommonMode": "9",
+            "OvenUpperCavity_CycleSetTargetTemp": 2600,
+            "OvenUpperCavity_OpSetOperations": 2,
+        },
+        CONNECT_HTTP_CALLS + 8,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_convect_bake(cavity=Cavity.Upper, target_temp=260)
-    cmd_data["body"] = {
-        "OvenUpperCavity_CycleSetCommonMode": "6",
-        "OvenUpperCavity_CycleSetTargetTemp": 2600,
-        "OvenUpperCavity_OpSetOperations": 2,
-    }
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {
+            "OvenUpperCavity_CycleSetCommonMode": "6",
+            "OvenUpperCavity_CycleSetTargetTemp": 2600,
+            "OvenUpperCavity_OpSetOperations": 2,
+        },
+        CONNECT_HTTP_CALLS + 9,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_keep_warm(cavity=Cavity.Upper, target_temp=100)
-    cmd_data["body"] = {
-        "OvenUpperCavity_CycleSetCommonMode": "24",
-        "OvenUpperCavity_CycleSetTargetTemp": 1000,
-        "OvenUpperCavity_OpSetOperations": 2,
-    }
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {
+            "OvenUpperCavity_CycleSetCommonMode": "24",
+            "OvenUpperCavity_CycleSetTargetTemp": 1000,
+            "OvenUpperCavity_OpSetOperations": 2,
+        },
+        CONNECT_HTTP_CALLS + 10,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_air_fry(cavity=Cavity.Upper, target_temp=260)
-    cmd_data["body"] = {
-        "OvenUpperCavity_CycleSetCommonMode": "41",
-        "OvenUpperCavity_CycleSetTargetTemp": 2600,
-        "OvenUpperCavity_OpSetOperations": 2,
-    }
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {
+            "OvenUpperCavity_CycleSetCommonMode": "41",
+            "OvenUpperCavity_CycleSetTargetTemp": 2600,
+            "OvenUpperCavity_OpSetOperations": 2,
+        },
+        CONNECT_HTTP_CALLS + 11,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_convect_roast(cavity=Cavity.Upper, target_temp=260)
-    cmd_data["body"] = {
-        "OvenUpperCavity_CycleSetCommonMode": "16",
-        "OvenUpperCavity_CycleSetTargetTemp": 2600,
-        "OvenUpperCavity_OpSetOperations": 2,
-    }
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {
+            "OvenUpperCavity_CycleSetCommonMode": "16",
+            "OvenUpperCavity_CycleSetTargetTemp": 2600,
+            "OvenUpperCavity_OpSetOperations": 2,
+        },
+        CONNECT_HTTP_CALLS + 12,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.stop_cook(Cavity.Upper)
-    cmd_data["body"] = {"OvenUpperCavity_OpSetOperations": 1}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {"OvenUpperCavity_OpSetOperations": 1},
+        CONNECT_HTTP_CALLS + 13,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_sabbath_mode(True)
-    cmd_data["body"] = {"Sys_OperationSetSabbathModeEnabled": "1"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {"Sys_OperationSetSabbathModeEnabled": "1"},
+        CONNECT_HTTP_CALLS + 14,
+    )
 
-    aio_httpclient.post.reset_mock()
     await oven.set_display_brightness_percent(50)
-    cmd_data["body"] = {"Sys_DisplaySetBrightnessPercent": "50"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_appliance_setter_call(
+        appliance_http_client_mock,
+        SAID,
+        {"Sys_DisplaySetBrightnessPercent": "50"},
+        CONNECT_HTTP_CALLS + 15,
+    )
 
     await oven.disconnect()
