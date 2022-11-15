@@ -1,12 +1,9 @@
 import aiohttp
-import asyncio
-import async_timeout
 import logging
 import json
-from datetime import datetime, timedelta, timedelta
-from typing import Callable
 
-from whirlpool.backendselector import BackendSelector
+
+from .backendselector import BackendSelector
 
 from .auth import Auth
 

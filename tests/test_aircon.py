@@ -1,15 +1,9 @@
-import json
-import logging
-import pytest
-from unittest.mock import ANY, MagicMock
-from tests.mock_backendselector import BackendSelectorMock
+from unittest.mock import MagicMock
 
 from whirlpool.aircon import Aircon, FanSpeed, Mode
 
-from . import MockResponse
-
-
-pytestmark = pytest.mark.asyncio
+from .aiohttp import AiohttpClientMocker
+from .mock_backendselector import BackendSelectorMock
 
 ACCOUNT_ID = 111222333
 SAID = "WPR1XYZABC123"
@@ -64,39 +58,17 @@ DATA2 = {
 }
 
 
-def get_request_side_effect(url):
-    if url.endswith("/getUserDetails"):
-        return MockResponse(
-            json.dumps(
-                {
-                    "accountId": ACCOUNT_ID,
-                    "firstName": "Test",
-                    "lastName": "Dummy",
-                    "email": "testdummy@testing.com",
-                }
-            ),
-            200,
-        )
-    if url.endswith(f"/appliancebyaccount/{ACCOUNT_ID}"):
-        return MockResponse(
-            json.dumps(
-                {ACCOUNT_ID: {"12345": [{"APPLIANCE_NAME": AC_NAME, "SAID": SAID}]}}
-            ),
-            200,
-        )
-    if url.endswith(f"/appliance/{SAID}"):
-        return MockResponse(json.dumps({}), 200)
+async def test_attributes(
+    appliance_http_client_mock: AiohttpClientMocker,
+    backend_selector_mock: BackendSelectorMock,
+    auth_mock: MagicMock,
+):
+    appliance_http_client_mock.get(
+        f"{backend_selector_mock.base_url}/api/v1/appliance/{SAID}",
+        json=DATA1,
+    )
 
-    raise Exception(f"Unexpected url: {url}")
-
-
-async def test_attributes(caplog, aio_httpclient):
-    caplog.set_level(logging.DEBUG)
-    auth = MagicMock()
-
-    aio_httpclient.get.return_value = MockResponse(json.dumps(DATA1), 200)
-
-    aircon = Aircon(BackendSelectorMock(), auth, SAID, None)
+    aircon = Aircon(backend_selector_mock, auth_mock, SAID)
     await aircon.connect()
     assert aircon.get_online() is False
     assert aircon.get_power_on() is False
@@ -114,7 +86,10 @@ async def test_attributes(caplog, aio_httpclient):
     assert aircon.get_quiet_mode() is False
     await aircon.disconnect()
 
-    aio_httpclient.get.return_value = MockResponse(json.dumps(DATA2), 200)
+    appliance_http_client_mock.get(
+        f"{backend_selector_mock.base_url}/api/v1/appliance/{SAID}",
+        json=DATA2,
+    )
     await aircon.connect()
     assert aircon.get_online() is True
     assert aircon.get_power_on() is True
@@ -135,71 +110,65 @@ async def test_attributes(caplog, aio_httpclient):
     # TODO: update DATA with changed attributes for things that are not tested yet
 
 
-async def test_setters(caplog, aio_httpclient):
-    caplog.set_level(logging.DEBUG)
-    auth = MagicMock()
+async def test_setters(
+    appliance_http_client_mock: AiohttpClientMocker,
+    backend_selector_mock: BackendSelectorMock,
+    auth_mock: MagicMock,
+):
+    appliance_http_client_mock.get(
+        f"{backend_selector_mock.base_url}/api/v1/appliance/{SAID}",
+        json=DATA1,
+    )
+    appliance_http_client_mock.post(
+        f"{backend_selector_mock.base_url}/api/v1/appliance/command"
+    )
 
-    aio_httpclient.get.return_value = MockResponse(json.dumps(DATA1), 200)
-    aio_httpclient.post.return_value = MockResponse("", 200)
+    def assert_setter_call(expected_data_body, call_count):
+        expected_cmd_data_base = {
+            "header": {"said": SAID, "command": "setAttributes"},
+        }
+        mock_calls = appliance_http_client_mock.mock_calls
+        assert len(mock_calls) == call_count
+        assert mock_calls[-1][0] == "POST"
+        assert mock_calls[-1][1].path == "/api/v1/appliance/command"
+        assert mock_calls[-1][2] == expected_cmd_data_base | {
+            "body": expected_data_body
+        }
 
-    cmd_data = {
-        "header": {"said": SAID, "command": "setAttributes"},
-    }
-
-    aircon = Aircon(BackendSelectorMock(), auth, SAID, None)
+    aircon = Aircon(backend_selector_mock, auth_mock, SAID)
     await aircon.connect()
+
     await aircon.set_power_on(True)
-    cmd_data["body"] = {"Sys_OpSetPowerOn": "1"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Sys_OpSetPowerOn": "1"}, 3)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_power_on(False)
-    cmd_data["body"] = {"Sys_OpSetPowerOn": "0"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Sys_OpSetPowerOn": "0"}, 4)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_temp(30)
-    cmd_data["body"] = {"Sys_OpSetTargetTemp": "300"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Sys_OpSetTargetTemp": "300"}, 5)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_humidity(45)
-    cmd_data["body"] = {"Sys_OpSetTargetHumidity": "45"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Sys_OpSetTargetHumidity": "45"}, 6)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_mode(Mode.Cool)
-    cmd_data["body"] = {"Cavity_OpSetMode": "1"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Cavity_OpSetMode": "1"}, 7)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_fanspeed(FanSpeed.Auto)
-    cmd_data["body"] = {"Cavity_OpSetFanSpeed": "1"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Cavity_OpSetFanSpeed": "1"}, 8)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_h_louver_swing(True)
-    cmd_data["body"] = {"Cavity_OpSetHorzLouverSwing": "1"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Cavity_OpSetHorzLouverSwing": "1"}, 9)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_turbo_mode(False)
-    cmd_data["body"] = {"Cavity_OpSetTurboMode": "0"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Cavity_OpSetTurboMode": "0"}, 10)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_eco_mode(False)
-    cmd_data["body"] = {"Sys_OpSetEcoModeEnabled": "0"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Sys_OpSetEcoModeEnabled": "0"}, 11)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_quiet_mode(False)
-    cmd_data["body"] = {"Sys_OpSetQuietModeEnabled": "0"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Sys_OpSetQuietModeEnabled": "0"}, 12)
 
-    aio_httpclient.post.reset_mock()
     await aircon.set_display_on(True)
-    cmd_data["body"] = {"Sys_DisplaySetBrightness": "4"}
-    aio_httpclient.post.assert_called_once_with(ANY, json=cmd_data)
+    assert_setter_call({"Sys_DisplaySetBrightness": "4"}, 13)
 
     await aircon.disconnect()

@@ -108,7 +108,7 @@ class EventSocket:
                                 LOGGER.warn(
                                     f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
                                 )
-                                # Give the server some time to come back up.
+                                # Give server some time to come back up.
                                 await asyncio.sleep(GOING_AWAY_DELAY)
 
                             break
@@ -127,8 +127,8 @@ class EventSocket:
             aiohttp.ClientConnectionError,
             aiohttp.ClientError,
             asyncio.TimeoutError,
-        ):
-            LOGGER.error("Websocket could not connect")
+        ) as e:
+            LOGGER.error(f"Websocket could not connect: {e}")
 
         self._websocket = None
 
@@ -141,7 +141,7 @@ class EventSocket:
                     f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY} seconds"
                 )
 
-                # give server some time to come back up
+                # Give server some time to come back up.
                 await asyncio.sleep(RECONNECT_LONG_DELAY)
 
             LOGGER.info(

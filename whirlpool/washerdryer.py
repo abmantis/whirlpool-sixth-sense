@@ -1,6 +1,5 @@
 import logging
 from enum import Enum
-from typing import Callable
 
 from .appliance import Appliance
 
@@ -81,8 +80,8 @@ MACHINE_STATE_MAP = {
 
 
 class WasherDryer(Appliance):
-    def __init__(self, backend_selector, auth, said, attr_changed: Callable):
-        Appliance.__init__(self, backend_selector, auth, said, attr_changed)
+    def __init__(self, backend_selector, auth, said):
+        Appliance.__init__(self, backend_selector, auth, said)
 
     def get_machine_state(self):
         state_raw = self.get_attribute(ATTR_MACHINE_STATE)
