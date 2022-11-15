@@ -95,8 +95,11 @@ class Auth:
                         return json.loads(await r.text())
                     elif refresh_token:
                         return await self._do_auth(refresh_token=None)
+                    elif r.status != 200:
+                        raise aiohttp.ClientConnectionError
                     return None
-
+        except (aiohttp.ClientConnectionError, asyncio.TimeoutError) as ex:
+            raise ConnectionError("Cannot connect")
         finally:
             await session.close()
 
@@ -151,3 +154,7 @@ class Auth:
     def cancel_auto_renewal(self):
         if self._auto_renewal_task:
             self._auto_renewal_task.cancel()
+
+
+class ConnectionError(Exception):
+    pass
