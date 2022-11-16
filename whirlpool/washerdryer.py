@@ -107,6 +107,3 @@ class WasherDryer(Appliance):
 
     def get_cycle_status_spinning(self):
         return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_SPINNING))
-
-    def get_all_attributes(self):
-        return self._data_dict.get("attributes")
