@@ -15,12 +15,12 @@ language governing permissions and limitations under the License.
 
 """Aiohttp test utils."""
 import asyncio
+import re
 from asyncio.log import logger
 from contextlib import contextmanager
 from http import HTTPStatus
 from json import dumps as json_dumps
 from json import loads as json_loads
-import re
 from unittest import mock
 from urllib.parse import parse_qs
 
