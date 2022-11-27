@@ -23,6 +23,7 @@ class Appliance:
         backend_selector: BackendSelector,
         auth: Auth,
         said: str,
+        session: aiohttp.ClientSession
     ):
         self._backend_selector = backend_selector
         self._auth = auth
@@ -31,7 +32,7 @@ class Appliance:
 
         self._data_dict = None
 
-        self._session: aiohttp.ClientSession = None
+        self._session: aiohttp.ClientSession = session
 
     def register_attr_callback(self, update_callback: Callable):
         self._attr_changed.append(update_callback)
@@ -64,19 +65,20 @@ class Appliance:
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
     async def _getWebsocketUrl(self):
-        async with aiohttp.ClientSession(headers=self._create_headers()) as session:
-            DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
-            async with session.get(
-                f"{self._backend_selector.base_url}/api/v1/client_auth/webSocketUrl"
-            ) as r:
-                if r.status != 200:
-                    LOGGER.error(f"Failed to get websocket url: {r.status}")
-                    return DEFAULT_WS_URL
-                try:
-                    return json.loads(await r.text())["url"]
-                except KeyError:
-                    LOGGER.error(f"Failed to get websocket url: {r.status}")
-                    return DEFAULT_WS_URL
+        DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
+        async with self._session.get(
+            f"{self._backend_selector.base_url}/api/v1/client_auth/webSocketUrl",
+            headers=self._create_headers()
+
+        ) as r:
+            if r.status != 200:
+                LOGGER.error(f"Failed to get websocket url: {r.status}")
+                return DEFAULT_WS_URL
+            try:
+                return json.loads(await r.text())["url"]
+            except KeyError:
+                LOGGER.error(f"Failed to get websocket url: {r.status}")
+                return DEFAULT_WS_URL
 
     @property
     def said(self):
@@ -151,14 +153,16 @@ class Appliance:
         await self.stop_event_listener()
 
     async def start_http_session(self):
-        await self.stop_http_session()
-        self._session = aiohttp.ClientSession()
+        #await self.stop_http_session()
+        #self._session = aiohttp.ClientSession()
+        return
 
     async def stop_http_session(self):
         if not self._session:
             return
-        await self._session.close()
-        self._session = None
+        #await self._session.close()
+        #self._session = None
+        return
 
     async def start_event_listener(self):
         await self.fetch_data()

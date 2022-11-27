@@ -2,6 +2,7 @@ import aioconsole
 import argparse
 import asyncio
 import logging
+import aiohttp
 from cli_ac_menu import show_aircon_menu
 from cli_washerdryer_menu import show_washerdryer_menu
 from cli_oven_menu import show_oven_menu
@@ -51,38 +52,45 @@ async def start():
         return
 
     backend_selector = BackendSelector(selected_brand, selected_region)
+    session = aiohttp.ClientSession()
 
-    auth = Auth(backend_selector, args.email, args.password)
+    auth = Auth(backend_selector, args.email, args.password, session)
     await auth.do_auth(store=False)
-    appliance_manager = AppliancesManager(backend_selector, auth)
+    appliance_manager = AppliancesManager(backend_selector,auth=auth,session=session)
     if not await appliance_manager.fetch_appliances():
         logger.error("Could not fetch appliances")
+        await session.close()
         return
 
     if args.list:
         print(appliance_manager.aircons)
         print(appliance_manager.washer_dryers)
         print(appliance_manager.ovens)
+        await session.close()
         return
 
     if not args.said:
         logger.error("No appliance specified")
+        await session.close()
         return
 
     for ac_data in appliance_manager.aircons:
         if ac_data["SAID"] == args.said:
             await show_aircon_menu(backend_selector, auth, args.said)
+            await session.close()
             return
 
     for wd_data in appliance_manager.washer_dryers:
         if wd_data["SAID"] == args.said:
             await show_washerdryer_menu(backend_selector, auth, args.said)
+            await session.close()
             return
 
     for mo_data in appliance_manager.ovens:
         if mo_data["SAID"] == args.said:
             await show_oven_menu(backend_selector, auth, args.said)
+            await session.close()
             return
 
-
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 asyncio.run(start())

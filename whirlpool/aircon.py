@@ -1,6 +1,7 @@
 import logging
 from enum import Enum
 from typing import Callable
+import aiohttp
 
 from .appliance import Appliance
 
@@ -80,8 +81,8 @@ FANSPEED_MAP = {
 
 
 class Aircon(Appliance):
-    def __init__(self, backend_selector, auth, said):
-        Appliance.__init__(self, backend_selector, auth, said)
+    def __init__(self, backend_selector, auth, said, session:aiohttp.ClientSession):
+        Appliance.__init__(self, backend_selector, auth, said, session)
 
     def get_current_temp(self):
         return int(self.get_attribute(ATTR_DISPLAY_TEMP)) / 10
