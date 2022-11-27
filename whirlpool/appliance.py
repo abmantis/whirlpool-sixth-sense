@@ -23,7 +23,7 @@ class Appliance:
         backend_selector: BackendSelector,
         auth: Auth,
         said: str,
-        session: aiohttp.ClientSession
+        session: aiohttp.ClientSession,
     ):
         self._backend_selector = backend_selector
         self._auth = auth
@@ -68,8 +68,7 @@ class Appliance:
         DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
         async with self._session.get(
             f"{self._backend_selector.base_url}/api/v1/client_auth/webSocketUrl",
-            headers=self._create_headers()
-
+            headers=self._create_headers(),
         ) as r:
             if r.status != 200:
                 LOGGER.error(f"Failed to get websocket url: {r.status}")
@@ -153,15 +152,15 @@ class Appliance:
         await self.stop_event_listener()
 
     async def start_http_session(self):
-        #await self.stop_http_session()
-        #self._session = aiohttp.ClientSession()
+        # await self.stop_http_session()
+        # self._session = aiohttp.ClientSession()
         return
 
     async def stop_http_session(self):
         if not self._session:
             return
-        #await self._session.close()
-        #self._session = None
+        # await self._session.close()
+        # self._session = None
         return
 
     async def start_event_listener(self):

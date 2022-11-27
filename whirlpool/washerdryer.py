@@ -81,7 +81,7 @@ MACHINE_STATE_MAP = {
 
 
 class WasherDryer(Appliance):
-    def __init__(self, backend_selector, auth, said, session:aiohttp.ClientSession):
+    def __init__(self, backend_selector, auth, said, session: aiohttp.ClientSession):
         Appliance.__init__(self, backend_selector, auth, said, session)
 
     def get_machine_state(self):

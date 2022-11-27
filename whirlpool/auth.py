@@ -14,12 +14,18 @@ AUTO_REFRESH_DELTA = timedelta(minutes=15)
 
 
 class Auth:
-    def __init__(self, backend_selector: BackendSelector, username:str, password:str, session: aiohttp.ClientSession):
+    def __init__(
+        self,
+        backend_selector: BackendSelector,
+        username: str,
+        password: str,
+        session: aiohttp.ClientSession,
+    ):
         self._backend_selector = backend_selector
         self._username = username
         self._password = password
         self._auth_dict = {}
-        self._session:aiohttp.ClientSession= session
+        self._session: aiohttp.ClientSession = session
 
         self._renew_time: datetime = None
         self._auto_renewal_task: asyncio.Task = None
@@ -97,7 +103,7 @@ class Auth:
                     return None
         except (aiohttp.ClientConnectionError, asyncio.TimeoutError) as ex:
             raise ex
- 
+
     async def do_auth(self, store=True):
         fetched_auth_data = await self._do_auth(
             self._auth_dict.get("refresh_token", None)

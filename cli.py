@@ -56,7 +56,7 @@ async def start():
 
     auth = Auth(backend_selector, args.email, args.password, session)
     await auth.do_auth(store=False)
-    appliance_manager = AppliancesManager(backend_selector,auth=auth,session=session)
+    appliance_manager = AppliancesManager(backend_selector, auth=auth, session=session)
     if not await appliance_manager.fetch_appliances():
         logger.error("Could not fetch appliances")
         await session.close()
@@ -91,6 +91,7 @@ async def start():
             await show_oven_menu(backend_selector, auth, args.said)
             await session.close()
             return
+
 
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 asyncio.run(start())

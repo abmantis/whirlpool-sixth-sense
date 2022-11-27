@@ -27,6 +27,7 @@ async def show_washerdryer_menu(backend_selector, auth, said):
 
     def attr_upd():
         print("Attributes updated")
+
     session = aiohttp.ClientSession()
     wd = WasherDryer(backend_selector, auth, said, session)
     wd.register_attr_callback(attr_upd)

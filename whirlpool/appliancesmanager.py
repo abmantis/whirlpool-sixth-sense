@@ -11,7 +11,12 @@ LOGGER = logging.getLogger(__name__)
 
 
 class AppliancesManager:
-    def __init__(self, backend_selector: BackendSelector, auth: Auth, session: aiohttp.ClientSession):
+    def __init__(
+        self,
+        backend_selector: BackendSelector,
+        auth: Auth,
+        session: aiohttp.ClientSession,
+    ):
         self._backend_selector = backend_selector
         self._auth = auth
         self._aircons = None
@@ -34,7 +39,7 @@ class AppliancesManager:
         account_id = None
         async with self._session.get(
             f"{self._backend_selector.base_url}/api/v1/getUserDetails",
-            headers=self._create_headers()
+            headers=self._create_headers(),
         ) as r:
             if r.status != 200:
                 LOGGER.error(f"Failed to get account id: {r.status}")
@@ -43,7 +48,7 @@ class AppliancesManager:
 
         async with self._session.get(
             f"{self._backend_selector.base_url}/api/v2/appliance/all/account/{account_id}",
-            headers=self._create_headers()
+            headers=self._create_headers(),
         ) as r:
             if r.status != 200:
                 LOGGER.error(f"Failed to get appliances: {r.status}")
@@ -67,10 +72,7 @@ class AppliancesManager:
                         self._aircons.append(appliance_data)
                     elif "dryer" in data_model or "washer" in data_model:
                         self._washer_dryers.append(appliance_data)
-                    elif (
-                        "cooking_minerva" in data_model
-                        or "cooking_vsi" in data_model
-                    ):
+                    elif "cooking_minerva" in data_model or "cooking_vsi" in data_model:
                         self._ovens.append(appliance_data)
                     else:
                         LOGGER.warning(
