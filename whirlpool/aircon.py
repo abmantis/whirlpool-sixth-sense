@@ -81,7 +81,7 @@ FANSPEED_MAP = {
 
 
 class Aircon(Appliance):
-    def __init__(self, backend_selector, auth, said, session:aiohttp.ClientSession):
+    def __init__(self, backend_selector, auth, said, session: aiohttp.ClientSession):
         Appliance.__init__(self, backend_selector, auth, said, session)
 
     def get_current_temp(self):
