@@ -101,4 +101,4 @@ async def show_aircon_menu(backend_selector, auth, said):
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
-    await.session.close()
+    await session.close()
