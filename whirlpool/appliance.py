@@ -144,24 +144,10 @@ class Appliance:
         return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
 
     async def connect(self):
-        await self.start_http_session()
         await self.start_event_listener()
 
     async def disconnect(self):
-        await self.stop_http_session()
         await self.stop_event_listener()
-
-    async def start_http_session(self):
-        # await self.stop_http_session()
-        # self._session = aiohttp.ClientSession()
-        return
-
-    async def stop_http_session(self):
-        if not self._session:
-            return
-        # await self._session.close()
-        # self._session = None
-        return
 
     async def start_event_listener(self):
         await self.fetch_data()
