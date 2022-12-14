@@ -90,19 +90,16 @@ class Auth:
                 }
             )
 
-        try:
-            async with async_timeout.timeout(30):
-                async with self._session.post(
-                    auth_url, data=auth_data, headers=auth_header
-                ) as r:
-                    LOGGER.debug("Auth status: " + str(r.status))
-                    if r.status == 200:
-                        return json.loads(await r.text())
-                    elif refresh_token:
-                        return await self._do_auth(refresh_token=None)
-                    return None
-        except (aiohttp.ClientConnectionError, asyncio.TimeoutError) as ex:
-            raise ex
+        async with async_timeout.timeout(30):
+            async with self._session.post(
+                auth_url, data=auth_data, headers=auth_header
+            ) as r:
+                LOGGER.debug("Auth status: " + str(r.status))
+                if r.status == 200:
+                    return json.loads(await r.text())
+                elif refresh_token:
+                    return await self._do_auth(refresh_token=None)
+                return None
 
     async def do_auth(self, store=True):
         fetched_auth_data = await self._do_auth(
