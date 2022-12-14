@@ -120,7 +120,6 @@ async def test_setters(
     appliance_http_client_mock: AiohttpClientMocker,
     backend_selector_mock: BackendSelectorMock,
     auth_mock: MagicMock,
-    http_client_mock: AiohttpClientMocker,
 ):
     mock_appliance_http_get(
         appliance_http_client_mock, backend_selector_mock, SAID, DATA1
