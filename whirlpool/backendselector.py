@@ -7,6 +7,7 @@ LOGGER = logging.getLogger(__name__)
 class Brand(Enum):
     Whirlpool = 0
     Maytag = 1
+    KitchenAid = 2
 
 
 class Region(Enum):
@@ -22,6 +23,10 @@ BACKEND_DATA = {
     Brand.Maytag: {
         "client_id": "maytag_ios",
         "client_secret": "OfTy3A3rV4BHuhujkPThVDE9-SFgOymJyUrSbixjViATjCGviXucSKq2OxmPWm8DDj9D1IFno_mZezTYduP-Ig",
+    },
+    Brand.KitchenAid: {
+        "client_id": "Kitchenaid_iOS",
+        "client_secret": "kkdPquOHfNH-iIinccTdhAkJmaIdWBhLehhLrfoXRWbKjEpqpdu92PISF_yJEWQs72D2yeC0PdoEKeWgHR9JRA",
     },
     Region.EU: {"base_url": "https://prod-api.whrcloud.eu"},
     Region.US: {"base_url": "https://api.whrcloud.com"},
