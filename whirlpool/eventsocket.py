@@ -1,4 +1,5 @@
 import aiohttp
+from socket import gaierror
 import asyncio
 import logging
 import re
@@ -127,6 +128,7 @@ class EventSocket:
             aiohttp.ClientConnectionError,
             aiohttp.ClientError,
             asyncio.TimeoutError,
+            gaierror,
         ) as e:
             LOGGER.error(f"Websocket could not connect: {e}")
 
