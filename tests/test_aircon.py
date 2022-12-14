@@ -113,6 +113,7 @@ async def test_attributes(
     assert aircon.get_quiet_mode() is True
     await aircon.disconnect()
 
+    appliance_http_client_mock.close_session()
     # TODO: update DATA with changed attributes for things that are not tested yet
 
 
@@ -224,3 +225,4 @@ async def test_setters(
     )
 
     await aircon.disconnect()
+    appliance_http_client_mock.close_session()
