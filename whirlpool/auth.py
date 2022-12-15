@@ -14,11 +14,18 @@ AUTO_REFRESH_DELTA = timedelta(minutes=15)
 
 
 class Auth:
-    def __init__(self, backend_selector: BackendSelector, username, password):
+    def __init__(
+        self,
+        backend_selector: BackendSelector,
+        username: str,
+        password: str,
+        session: aiohttp.ClientSession,
+    ):
         self._backend_selector = backend_selector
         self._username = username
         self._password = password
         self._auth_dict = {}
+        self._session: aiohttp.ClientSession = session
 
         self._renew_time: datetime = None
         self._auto_renewal_task: asyncio.Task = None
@@ -83,22 +90,16 @@ class Auth:
                 }
             )
 
-        session = aiohttp.ClientSession()
-
-        try:
-            async with async_timeout.timeout(30):
-                async with session.post(
-                    auth_url, data=auth_data, headers=auth_header
-                ) as r:
-                    LOGGER.debug("Auth status: " + str(r.status))
-                    if r.status == 200:
-                        return json.loads(await r.text())
-                    elif refresh_token:
-                        return await self._do_auth(refresh_token=None)
-                    return None
-
-        finally:
-            await session.close()
+        async with async_timeout.timeout(30):
+            async with self._session.post(
+                auth_url, data=auth_data, headers=auth_header
+            ) as r:
+                LOGGER.debug("Auth status: " + str(r.status))
+                if r.status == 200:
+                    return json.loads(await r.text())
+                elif refresh_token:
+                    return await self._do_auth(refresh_token=None)
+                return None
 
     async def do_auth(self, store=True):
         fetched_auth_data = await self._do_auth(

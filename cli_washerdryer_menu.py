@@ -1,6 +1,7 @@
 import aioconsole
 
 from whirlpool.washerdryer import WasherDryer, MachineState
+import aiohttp
 
 
 async def show_washerdryer_menu(backend_selector, auth, said):
@@ -27,7 +28,8 @@ async def show_washerdryer_menu(backend_selector, auth, said):
     def attr_upd():
         print("Attributes updated")
 
-    wd = WasherDryer(backend_selector, auth, said)
+    session = aiohttp.ClientSession()
+    wd = WasherDryer(backend_selector, auth, said, session)
     wd.register_attr_callback(attr_upd)
     await wd.connect()
 
@@ -54,3 +56,4 @@ async def show_washerdryer_menu(backend_selector, auth, said):
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
+    await session.close()

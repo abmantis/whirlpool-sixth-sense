@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import ANY, MagicMock
 
 from whirlpool.oven import Cavity, CavityState, CookMode, Oven
@@ -1637,8 +1638,10 @@ async def test_attributes(
     mock_appliance_http_get(
         appliance_http_client_mock, backend_selector_mock, SAID, DATA1
     )
-
-    oven = Oven(backend_selector_mock, auth_mock, SAID)
+    appliance_http_client_mock.create_session(asyncio.get_event_loop())
+    oven = Oven(
+        backend_selector_mock, auth_mock, SAID, appliance_http_client_mock.session
+    )
     await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == False
@@ -1695,6 +1698,7 @@ async def test_attributes(
     assert oven.get_cavity_state(Cavity.Upper) == CavityState.Standby
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
     await oven.disconnect()
+    await appliance_http_client_mock.close_session()
 
 
 async def test_setters(
@@ -1708,8 +1712,11 @@ async def test_setters(
     )
     mock_appliance_http_post(appliance_http_client_mock, backend_selector_mock)
     CONNECT_HTTP_CALLS = 2
+    appliance_http_client_mock.create_session(asyncio.get_event_loop())
+    oven = Oven(
+        backend_selector_mock, auth_mock, SAID, appliance_http_client_mock.session
+    )
 
-    oven = Oven(backend_selector_mock, auth_mock, SAID)
     await oven.connect()
     await oven.set_control_locked(True)
     assert_appliance_setter_call(
@@ -1868,3 +1875,4 @@ async def test_setters(
     )
 
     await oven.disconnect()
+    await appliance_http_client_mock.close_session()

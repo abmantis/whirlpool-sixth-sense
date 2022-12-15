@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 from whirlpool.aircon import Aircon, FanSpeed, Mode
+import asyncio
 
 from .aiohttp import AiohttpClientMocker
 from .mock_backendselector import BackendSelectorMock
@@ -71,8 +72,10 @@ async def test_attributes(
     mock_appliance_http_get(
         appliance_http_client_mock, backend_selector_mock, SAID, DATA1
     )
-
-    aircon = Aircon(backend_selector_mock, auth_mock, SAID)
+    appliance_http_client_mock.create_session(asyncio.get_event_loop())
+    aircon = Aircon(
+        backend_selector_mock, auth_mock, SAID, appliance_http_client_mock.session
+    )
     await aircon.connect()
     assert aircon.get_online() is False
     assert aircon.get_power_on() is False
@@ -110,6 +113,7 @@ async def test_attributes(
     assert aircon.get_quiet_mode() is True
     await aircon.disconnect()
 
+    await appliance_http_client_mock.close_session()
     # TODO: update DATA with changed attributes for things that are not tested yet
 
 
@@ -122,9 +126,14 @@ async def test_setters(
         appliance_http_client_mock, backend_selector_mock, SAID, DATA1
     )
     mock_appliance_http_post(appliance_http_client_mock, backend_selector_mock)
+    appliance_http_client_mock.create_session(asyncio.get_event_loop())
     CONNECT_HTTP_CALLS = 2
-
-    aircon = Aircon(backend_selector_mock, auth_mock, SAID)
+    aircon = Aircon(
+        backend_selector_mock,
+        auth_mock,
+        SAID,
+        appliance_http_client_mock.session,
+    )
     await aircon.connect()
 
     await aircon.set_power_on(True)
@@ -216,3 +225,4 @@ async def test_setters(
     )
 
     await aircon.disconnect()
+    await appliance_http_client_mock.close_session()

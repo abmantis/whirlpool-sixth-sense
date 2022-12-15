@@ -1,5 +1,6 @@
 import aioconsole
 from whirlpool.oven import CookMode, Oven, Cavity, KitchenTimerState
+import aiohttp
 
 
 async def show_oven_menu(backend_selector, auth, said):
@@ -64,7 +65,8 @@ async def show_oven_menu(backend_selector, auth, said):
     def attr_upd():
         print("Attributes updated")
 
-    ov = Oven(backend_selector, auth, said)
+    session = aiohttp.ClientSession()
+    ov = Oven(backend_selector, auth, said, session)
     ov.register_attr_callback(attr_upd)
     await ov.connect()
 
@@ -135,3 +137,4 @@ async def show_oven_menu(backend_selector, auth, said):
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
+    await session.close()

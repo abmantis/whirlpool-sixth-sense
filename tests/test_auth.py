@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 import pytest
+import asyncio
 from yarl import URL
 
 from whirlpool.auth import Auth
@@ -27,7 +28,8 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_auth_success(http_client_mock: AiohttpClientMocker):
-    auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass")
+    http_client_mock.create_session(asyncio.get_event_loop())
+    auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", http_client_mock.session)
 
     mock_resp_data = {
         "access_token": "acess_token_123",
@@ -49,10 +51,12 @@ async def test_auth_success(http_client_mock: AiohttpClientMocker):
     assert http_client_mock.mock_calls[-1][1] == URL(AUTH_URL)
     assert http_client_mock.mock_calls[-1][2] == AUTH_DATA
     assert http_client_mock.mock_calls[-1][3] == AUTH_HEADERS
+    await http_client_mock.close_session()
 
 
 async def test_auth_bad_credentials(http_client_mock: AiohttpClientMocker):
-    auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass")
+    http_client_mock.create_session(asyncio.get_event_loop())
+    auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", http_client_mock.session)
 
     mock_resp_data = {
         "error": "invalid_request",
@@ -69,3 +73,4 @@ async def test_auth_bad_credentials(http_client_mock: AiohttpClientMocker):
     assert http_client_mock.mock_calls[-1][1] == URL(AUTH_URL)
     assert http_client_mock.mock_calls[-1][2] == AUTH_DATA
     assert http_client_mock.mock_calls[-1][3] == AUTH_HEADERS
+    await http_client_mock.close_session()
