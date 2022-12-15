@@ -1698,7 +1698,7 @@ async def test_attributes(
     assert oven.get_cavity_state(Cavity.Upper) == CavityState.Standby
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
     await oven.disconnect()
-    appliance_http_client_mock.close_session()
+    await appliance_http_client_mock.close_session()
 
 
 async def test_setters(
@@ -1875,4 +1875,4 @@ async def test_setters(
     )
 
     await oven.disconnect()
-    appliance_http_client_mock.close_session()
+    await appliance_http_client_mock.close_session()

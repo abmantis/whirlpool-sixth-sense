@@ -51,7 +51,7 @@ async def test_auth_success(http_client_mock: AiohttpClientMocker):
     assert http_client_mock.mock_calls[-1][1] == URL(AUTH_URL)
     assert http_client_mock.mock_calls[-1][2] == AUTH_DATA
     assert http_client_mock.mock_calls[-1][3] == AUTH_HEADERS
-    http_client_mock.close_session()
+    await http_client_mock.close_session()
 
 
 async def test_auth_bad_credentials(http_client_mock: AiohttpClientMocker):
@@ -73,4 +73,4 @@ async def test_auth_bad_credentials(http_client_mock: AiohttpClientMocker):
     assert http_client_mock.mock_calls[-1][1] == URL(AUTH_URL)
     assert http_client_mock.mock_calls[-1][2] == AUTH_DATA
     assert http_client_mock.mock_calls[-1][3] == AUTH_HEADERS
-    http_client_mock.close_session()
+    await http_client_mock.close_session()
