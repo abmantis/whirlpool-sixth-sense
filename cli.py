@@ -69,7 +69,6 @@ async def start():
 
         if not args.said:
             logger.error("No appliance specified")
-            await session.close()
             return
 
         for ac_data in appliance_manager.aircons:
