@@ -132,7 +132,7 @@ class Appliance:
         return self._data_dict["attributes"][attribute]["value"]
 
     def has_attribute(self, attribute):
-        return attribute in self._data_dict["attributes"]
+        return attribute in self._data_dict.get("attributes")
 
     def bool_to_attr_value(self, b: bool):
         return SETVAL_VALUE_ON if b else SETVAL_VALUE_OFF
