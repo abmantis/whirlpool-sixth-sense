@@ -38,6 +38,13 @@ class Appliance:
         self._attr_changed.append(update_callback)
         LOGGER.debug("Registered attr callback")
 
+    def unregister_attr_callback(self, update_callback: Callable):
+        try:
+            self._attr_changed.remove(update_callback)
+            LOGGER.debug("Unregistered attr callback")
+        except ValueError:
+            LOGGER.debug("Unregistered attr callback not found")
+
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
         timestamp = json_msg["timestamp"]
