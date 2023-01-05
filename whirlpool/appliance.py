@@ -29,7 +29,7 @@ class Appliance:
         self._auth = auth
         self._said = said
         self._attr_changed: list(Callable) = []
-
+        self._event_socket = None
         self._data_dict = None
 
         self._session: aiohttp.ClientSession = session
@@ -162,7 +162,7 @@ class Appliance:
             await self._event_socket.stop()
             self._event_socket.start()
             return
-        
+
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
             self._auth,
