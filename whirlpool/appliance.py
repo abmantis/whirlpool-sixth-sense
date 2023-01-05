@@ -158,6 +158,11 @@ class Appliance:
 
     async def start_event_listener(self):
         await self.fetch_data()
+        if self._event_socket != None:
+            await self._event_socket.stop()
+            self._event_socket.start()
+            return
+        
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
             self._auth,
