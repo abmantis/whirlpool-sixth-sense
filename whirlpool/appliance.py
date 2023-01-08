@@ -159,9 +159,7 @@ class Appliance:
     async def start_event_listener(self):
         await self.fetch_data()
         if self._event_socket != None:
-            await self._event_socket.stop()
-            self._event_socket.start()
-            return
+            LOGGER.warning("Event socket not None when starting event listener")
 
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
@@ -174,3 +172,4 @@ class Appliance:
 
     async def stop_event_listener(self):
         await self._event_socket.stop()
+        self._event_socket = None
