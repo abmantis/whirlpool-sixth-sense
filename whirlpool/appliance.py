@@ -43,7 +43,7 @@ class Appliance:
             self._attr_changed.remove(update_callback)
             LOGGER.debug("Unregistered attr callback")
         except ValueError:
-            LOGGER.debug("Unregistered attr callback not found")
+            LOGGER.error("Attr callback not found")
 
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
