@@ -167,6 +167,7 @@ class Appliance:
             self._said,
             self._event_socket_handler,
             self.fetch_data,
+            self._session,
         )
         self._event_socket.start()
 
