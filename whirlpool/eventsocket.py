@@ -125,7 +125,6 @@ class EventSocket:
                             continue
                         self._msg_listener("{" + match[0] + "}")
         except (
-            aiohttp.ClientConnectionError,
             aiohttp.ClientError,
             asyncio.TimeoutError,
             gaierror,

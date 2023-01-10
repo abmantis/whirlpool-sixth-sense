@@ -29,7 +29,7 @@ class Appliance:
         self._auth = auth
         self._said = said
         self._attr_changed: list(Callable) = []
-
+        self._event_socket = None
         self._data_dict = None
 
         self._session: aiohttp.ClientSession = session
@@ -37,6 +37,13 @@ class Appliance:
     def register_attr_callback(self, update_callback: Callable):
         self._attr_changed.append(update_callback)
         LOGGER.debug("Registered attr callback")
+
+    def unregister_attr_callback(self, update_callback: Callable):
+        try:
+            self._attr_changed.remove(update_callback)
+            LOGGER.debug("Unregistered attr callback")
+        except ValueError:
+            LOGGER.error("Attr callback not found")
 
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
@@ -151,6 +158,9 @@ class Appliance:
 
     async def start_event_listener(self):
         await self.fetch_data()
+        if self._event_socket != None:
+            LOGGER.warning("Event socket not None when starting event listener")
+
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
             self._auth,
@@ -162,3 +172,4 @@ class Appliance:
 
     async def stop_event_listener(self):
         await self._event_socket.stop()
+        self._event_socket = None
