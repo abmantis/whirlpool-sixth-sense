@@ -32,6 +32,7 @@ class EventSocket:
         said,
         msg_listener: Callable[[str], None],
         con_up_listener: Callable,
+        session: aiohttp.ClientSession,
     ):
         self._url = url
         self._auth = auth
@@ -42,6 +43,7 @@ class EventSocket:
         self._run_future = None
         self._con_up_listener = con_up_listener
         self._reconnect_tries = RECONNECT_COUNT
+        self._session = session
 
     def _create_connect_msg(self):
         return f"CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:{self._auth.get_access_token()}"
@@ -65,65 +67,62 @@ class EventSocket:
         timeout = aiohttp.ClientTimeout(total=None, connect=60, sock_connect=60)
 
         try:
-            async with aiohttp.ClientSession(timeout=timeout) as session:
-                LOGGER.debug(f"Connecting to {self._url}")
-                async with session.ws_connect(
-                    self._url,
-                    timeout=timeout,
-                    autoclose=True,
-                    autoping=True,
-                    heartbeat=45,
-                ) as ws:
-                    self._websocket = ws
-                    await self._send_msg(ws, self._create_connect_msg())
-                    await self._recv_msg(ws)
-                    await self._send_msg(ws, self._create_subscribe_msg())
-                    await self._con_up_listener()
+            LOGGER.debug(f"Connecting to {self._url}")
+            async with self._session.ws_connect(
+                self._url,
+                timeout=timeout,
+                autoclose=True,
+                autoping=True,
+                heartbeat=45,
+            ) as ws:
+                self._websocket = ws
+                await self._send_msg(ws, self._create_connect_msg())
+                await self._recv_msg(ws)
+                await self._send_msg(ws, self._create_subscribe_msg())
+                await self._con_up_listener()
 
-                    self._reconnect_tries = RECONNECT_COUNT
+                self._reconnect_tries = RECONNECT_COUNT
 
-                    while not ws.closed:
-                        msg = await self._recv_msg(ws)
-                        if not msg:
-                            continue
-                        if msg.type == aiohttp.WSMsgType.ERROR:
-                            LOGGER.error("Socket message error")
-                            break
-                        if msg.type in [
-                            aiohttp.WSMsgType.CLOSE,
-                            aiohttp.WSMsgType.CLOSING,
-                            aiohttp.WSMsgType.CLOSED,
-                        ]:
+                while not ws.closed:
+                    msg = await self._recv_msg(ws)
+                    if not msg:
+                        continue
+                    if msg.type == aiohttp.WSMsgType.ERROR:
+                        LOGGER.error("Socket message error")
+                        break
+                    if msg.type in [
+                        aiohttp.WSMsgType.CLOSE,
+                        aiohttp.WSMsgType.CLOSING,
+                        aiohttp.WSMsgType.CLOSED,
+                    ]:
+                        LOGGER.warn(
+                            f"Stopping receiving. Message type: {str(msg.type)}"
+                        )
+
+                        if (
+                            not self._auth.is_access_token_valid()
+                            or msg.data == WS_STATUS_UNAUTHORIZED
+                        ):
+                            LOGGER.debug("auth key expired, doing reauth now")
+                            await self._auth.do_auth()
+
+                        elif msg.data == WS_STATUS_GOING_AWAY:
                             LOGGER.warn(
-                                f"Stopping receiving. Message type: {str(msg.type)}"
+                                f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
                             )
+                            # Give server some time to come back up.
+                            await asyncio.sleep(GOING_AWAY_DELAY)
 
-                            if (
-                                not self._auth.is_access_token_valid()
-                                or msg.data == WS_STATUS_UNAUTHORIZED
-                            ):
-                                LOGGER.debug("auth key expired, doing reauth now")
-                                await self._auth.do_auth()
+                        break
 
-                            elif msg.data == WS_STATUS_GOING_AWAY:
-                                LOGGER.warn(
-                                    f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
-                                )
-                                # Give server some time to come back up.
-                                await asyncio.sleep(GOING_AWAY_DELAY)
+                    if msg.type != aiohttp.WSMsgType.TEXT:
+                        LOGGER.error(f"Socket message type is invalid: {str(msg.type)}")
+                        continue
 
-                            break
-
-                        if msg.type != aiohttp.WSMsgType.TEXT:
-                            LOGGER.error(
-                                f"Socket message type is invalid: {str(msg.type)}"
-                            )
-                            continue
-
-                        match = RECV_MSG_MATCHER.findall(msg.data)
-                        if not match:
-                            continue
-                        self._msg_listener("{" + match[0] + "}")
+                    match = RECV_MSG_MATCHER.findall(msg.data)
+                    if not match:
+                        continue
+                    self._msg_listener("{" + match[0] + "}")
         except (
             aiohttp.ClientError,
             asyncio.TimeoutError,
