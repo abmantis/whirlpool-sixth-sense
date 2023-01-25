@@ -15,7 +15,7 @@ Use this at your own risk. If, by using this software, any damage is caused to y
 
 - listing all Whirpool appliances for an account:
 
-    `python cli.py -l -b "whirlpool" -e "person@mail.com" -p "password123"`
+    `python cli.py -l -b "whirlpool" -e "person@mail.com" -p "password1234"`
 
 - viewing/controlling a single Maytag appliance:
 
