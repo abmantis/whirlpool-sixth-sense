@@ -35,15 +35,19 @@ class Appliance:
         self._session: aiohttp.ClientSession = session
 
     def register_attr_callback(self, update_callback: Callable):
+        """Register Callback function."""
         self._attr_changed.append(update_callback)
         LOGGER.debug("Registered attr callback")
 
     def unregister_attr_callback(self, update_callback: Callable):
-        try:
-            self._attr_changed.remove(update_callback)
-            LOGGER.debug("Unregistered attr callback")
-        except ValueError:
-            LOGGER.error("Attr callback not found")
+        """Unregister callback function."""
+        if self._attr_changed:
+            try:
+                self._attr_changed.remove(update_callback)
+                LOGGER.debug("Unregistered attr callback")
+            except ValueError:
+                LOGGER.error("Attr callback not found")
+        LOGGER.error("_attr_changed is None when unregistering callback")
 
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
