@@ -52,7 +52,7 @@ class Appliance:
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
         timestamp = json_msg["timestamp"]
-        for (attr, val) in json_msg["attributeMap"].items():
+        for attr, val in json_msg["attributeMap"].items():
             if not self.has_attribute(attr):
                 continue
             self._set_attribute(attr, str(val), timestamp)
