@@ -25,6 +25,8 @@ GOING_AWAY_DELAY = (60 * 5) - RECONNECT_SHORT_DELAY
 
 
 class EventSocket:
+    """Eventsocket class for whirlpool"""
+
     def __init__(
         self,
         url,
@@ -53,12 +55,12 @@ class EventSocket:
         return f"SUBSCRIBE\nid:{id}\ndestination:/topic/{self._said}\nack:auto"
 
     async def _send_msg(self, websocket: aiohttp.ClientWebSocketResponse, msg):
-        LOGGER.debug(f"> {msg}")
+        LOGGER.debug("> %s", msg)
         await websocket.send_str(msg + MSG_TERMINATION)
 
     async def _recv_msg(self, websocket: aiohttp.ClientWebSocketResponse):
         msg = await websocket.receive()
-        LOGGER.debug(f"< {msg}")
+        LOGGER.debug("< %s", msg)
         return msg
 
     async def _run(self):
@@ -67,7 +69,7 @@ class EventSocket:
         timeout = aiohttp.ClientTimeout(total=None, connect=60, sock_connect=60)
 
         try:
-            LOGGER.debug(f"Connecting to {self._url}")
+            LOGGER.debug("Connecting to %s", self._url)
             async with self._session.ws_connect(
                 self._url,
                 timeout=timeout,
@@ -95,8 +97,8 @@ class EventSocket:
                         aiohttp.WSMsgType.CLOSING,
                         aiohttp.WSMsgType.CLOSED,
                     ]:
-                        LOGGER.warn(
-                            f"Stopping receiving. Message type: {str(msg.type)}"
+                        LOGGER.info(
+                            "Stopping receiving. Message type: %s", str(msg.type)
                         )
 
                         if (
@@ -107,8 +109,9 @@ class EventSocket:
                             await self._auth.do_auth()
 
                         elif msg.data == WS_STATUS_GOING_AWAY:
-                            LOGGER.warn(
-                                f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
+                            LOGGER.info(
+                                "Received Going Away message: Waiting for %s seconds",
+                                GOING_AWAY_DELAY,
                             )
                             # Give server some time to come back up.
                             await asyncio.sleep(GOING_AWAY_DELAY)
@@ -116,7 +119,9 @@ class EventSocket:
                         break
 
                     if msg.type != aiohttp.WSMsgType.TEXT:
-                        LOGGER.error(f"Socket message type is invalid: {str(msg.type)}")
+                        LOGGER.error(
+                            "Socket message type is invalid: %s", str(msg.type)
+                        )
                         continue
 
                     match = RECV_MSG_MATCHER.findall(msg.data)
@@ -127,8 +132,8 @@ class EventSocket:
             aiohttp.ClientError,
             asyncio.TimeoutError,
             gaierror,
-        ) as e:
-            LOGGER.error(f"Websocket could not connect: {e}")
+        ) as ex:
+            LOGGER.error("Websocket could not connect: %s", ex)
 
         self._websocket = None
 
@@ -137,14 +142,14 @@ class EventSocket:
             if self._reconnect_tries < 0:
                 self._reconnect_tries = 0
                 LOGGER.info(
-                    f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY} seconds"
+                    "Waiting to reconnect long delay %s seconds", RECONNECT_LONG_DELAY
                 )
 
                 # Give server some time to come back up.
                 await asyncio.sleep(RECONNECT_LONG_DELAY)
 
             LOGGER.info(
-                f"Waiting to reconnect short delay {RECONNECT_SHORT_DELAY} seconds"
+                "Waiting to reconnect short delay %s seconds", RECONNECT_SHORT_DELAY
             )
             await asyncio.sleep(RECONNECT_SHORT_DELAY)
 
@@ -152,10 +157,12 @@ class EventSocket:
             self._run_future = asyncio.get_event_loop().create_task(self._run())
 
     def start(self):
+        """Start the event socket"""
         self._running = True
         self._run_future = asyncio.get_event_loop().create_task(self._run())
 
     async def stop(self):
+        """Stop the event socket"""
         self._running = False
         if not self._websocket:
             return
