@@ -100,15 +100,16 @@ class Appliance:
             return False
 
         uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        async with async_timeout.timeout(30):
-            async with self._session.get(uri, headers=self._create_headers()) as r:
-                self._data_dict = json.loads(await r.text())
-                if r.status == 200:
-                    return True
-                elif r.status == 401:
-                    await self._auth.do_auth()
+        for n in range(3):
+            async with async_timeout.timeout(30):
+                async with self._session.get(uri, headers=self._create_headers()) as r:
+                    if r.status == 200:
+                        self._data_dict = json.loads(await r.text())
+                        return True
+                    elif r.status == 401:
+                        await self._auth.do_auth()
 
-                LOGGER.error(f"Fetching data failed ({r.status})")
+        LOGGER.error("Fetching data failed (%s)", r.status)
         return False
 
     async def send_attributes(self, attributes):

@@ -76,10 +76,10 @@ class EventSocket:
                 heartbeat=45,
             ) as ws:
                 self._websocket = ws
+                await self._con_up_listener()
                 await self._send_msg(ws, self._create_connect_msg())
                 await self._recv_msg(ws)
                 await self._send_msg(ws, self._create_subscribe_msg())
-                await self._con_up_listener()
 
                 self._reconnect_tries = RECONNECT_COUNT
 
