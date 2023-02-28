@@ -144,7 +144,7 @@ class Appliance:
         return self._data_dict["attributes"][attribute]["value"]
 
     def has_attribute(self, attribute):
-        if self._data_dict:
+        if self._data_dict is not None:
             return attribute in self._data_dict.get("attributes")
         return None
 
