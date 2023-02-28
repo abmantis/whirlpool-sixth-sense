@@ -62,94 +62,95 @@ class EventSocket:
         return msg
 
     async def _run(self):
-        if not self._running:
-            return
-        timeout = aiohttp.ClientTimeout(total=None, connect=60, sock_connect=60)
+        while self._running:
+            timeout = aiohttp.ClientTimeout(total=None, connect=60, sock_connect=60)
 
-        try:
-            LOGGER.debug(f"Connecting to {self._url}")
-            async with self._session.ws_connect(
-                self._url,
-                timeout=timeout,
-                autoclose=True,
-                autoping=True,
-                heartbeat=45,
-            ) as ws:
-                self._websocket = ws
-                await self._con_up_listener()
-                await self._send_msg(ws, self._create_connect_msg())
-                await self._recv_msg(ws)
-                await self._send_msg(ws, self._create_subscribe_msg())
+            try:
+                LOGGER.debug(f"Connecting to {self._url}")
+                async with self._session.ws_connect(
+                    self._url,
+                    timeout=timeout,
+                    autoclose=True,
+                    autoping=True,
+                    heartbeat=45,
+                ) as ws:
+                    self._websocket = ws
+                    await self._con_up_listener()
+                    await self._send_msg(ws, self._create_connect_msg())
+                    await self._recv_msg(ws)
+                    await self._send_msg(ws, self._create_subscribe_msg())
 
-                self._reconnect_tries = RECONNECT_COUNT
+                    self._reconnect_tries = RECONNECT_COUNT
 
-                while not ws.closed:
-                    msg = await self._recv_msg(ws)
-                    if not msg:
-                        continue
-                    if msg.type == aiohttp.WSMsgType.ERROR:
-                        LOGGER.error("Socket message error")
-                        break
-                    if msg.type in [
-                        aiohttp.WSMsgType.CLOSE,
-                        aiohttp.WSMsgType.CLOSING,
-                        aiohttp.WSMsgType.CLOSED,
-                    ]:
-                        LOGGER.warn(
-                            f"Stopping receiving. Message type: {str(msg.type)}"
-                        )
-
-                        if (
-                            not self._auth.is_access_token_valid()
-                            or msg.data == WS_STATUS_UNAUTHORIZED
-                        ):
-                            LOGGER.debug("auth key expired, doing reauth now")
-                            await self._auth.do_auth()
-
-                        elif msg.data == WS_STATUS_GOING_AWAY:
+                    while not ws.closed:
+                        msg = await self._recv_msg(ws)
+                        if not msg:
+                            continue
+                        if msg.type == aiohttp.WSMsgType.ERROR:
+                            LOGGER.error("Socket message error")
+                            break
+                        if msg.type in [
+                            aiohttp.WSMsgType.CLOSE,
+                            aiohttp.WSMsgType.CLOSING,
+                            aiohttp.WSMsgType.CLOSED,
+                        ]:
                             LOGGER.warn(
-                                f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
+                                f"Stopping receiving. Message type: {str(msg.type)}"
                             )
-                            # Give server some time to come back up.
-                            await asyncio.sleep(GOING_AWAY_DELAY)
 
-                        break
+                            if (
+                                not self._auth.is_access_token_valid()
+                                or msg.data == WS_STATUS_UNAUTHORIZED
+                            ):
+                                LOGGER.debug("auth key expired, doing reauth now")
+                                await self._auth.do_auth()
 
-                    if msg.type != aiohttp.WSMsgType.TEXT:
-                        LOGGER.error(f"Socket message type is invalid: {str(msg.type)}")
-                        continue
+                            elif msg.data == WS_STATUS_GOING_AWAY:
+                                LOGGER.warn(
+                                    f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
+                                )
+                                # Give server some time to come back up.
+                                await asyncio.sleep(GOING_AWAY_DELAY)
 
-                    match = RECV_MSG_MATCHER.findall(msg.data)
-                    if not match:
-                        continue
-                    self._msg_listener("{" + match[0] + "}")
-        except (
-            aiohttp.ClientError,
-            asyncio.TimeoutError,
-            gaierror,
-        ) as e:
-            LOGGER.error(f"Websocket could not connect: {e}")
+                            break
 
-        self._websocket = None
+                        if msg.type != aiohttp.WSMsgType.TEXT:
+                            LOGGER.error(
+                                f"Socket message type is invalid: {str(msg.type)}"
+                            )
+                            continue
 
-        if self._running:
-            self._reconnect_tries -= 1
-            if self._reconnect_tries < 0:
-                self._reconnect_tries = 0
+                        match = RECV_MSG_MATCHER.findall(msg.data)
+                        if not match:
+                            continue
+                        self._msg_listener("{" + match[0] + "}")
+            except (
+                aiohttp.ClientError,
+                asyncio.TimeoutError,
+                gaierror,
+            ) as e:
+                LOGGER.error(f"Websocket could not connect: {e}")
+
+            self._websocket = None
+
+            if self._running:
+                self._reconnect_tries -= 1
+                if self._reconnect_tries < 0:
+                    self._reconnect_tries = 0
+                    LOGGER.info(
+                        f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY} seconds"
+                    )
+
+                    # Give server some time to come back up.
+                    await asyncio.sleep(RECONNECT_LONG_DELAY)
+
                 LOGGER.info(
-                    f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY} seconds"
+                    f"Waiting to reconnect short delay {RECONNECT_SHORT_DELAY} seconds"
                 )
+                await asyncio.sleep(RECONNECT_SHORT_DELAY)
 
-                # Give server some time to come back up.
-                await asyncio.sleep(RECONNECT_LONG_DELAY)
-
-            LOGGER.info(
-                f"Waiting to reconnect short delay {RECONNECT_SHORT_DELAY} seconds"
-            )
-            await asyncio.sleep(RECONNECT_SHORT_DELAY)
-
-            LOGGER.info("Reconnecting...")
-            self._run_future = asyncio.get_event_loop().create_task(self._run())
+                LOGGER.info("Reconnecting...")
+                # self._run_future = asyncio.get_event_loop().create_task(self._run())
 
     def start(self):
         self._running = True
@@ -161,5 +162,5 @@ class EventSocket:
             return
         await self._websocket.close()
         self._websocket = None
-
-        await self._run_future
+        if not self._run_future.done():
+            await self._run_future
