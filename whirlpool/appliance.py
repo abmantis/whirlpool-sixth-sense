@@ -15,6 +15,7 @@ ATTR_ONLINE = "Online"
 
 SETVAL_VALUE_OFF = "0"
 SETVAL_VALUE_ON = "1"
+RETRY_COUNT = 3
 
 
 class Appliance:
@@ -41,14 +42,11 @@ class Appliance:
 
     def unregister_attr_callback(self, update_callback: Callable):
         """Unregister callback function."""
-        if self._attr_changed:
-            try:
-                self._attr_changed.remove(update_callback)
-                LOGGER.debug("Unregistered attr callback")
-            except ValueError:
-                LOGGER.error("Attr callback not found")
-        else:
-            LOGGER.error("_attr_changed is None when unregistering callback")
+        try:
+            self._attr_changed.remove(update_callback)
+            LOGGER.debug("Unregistered attr callback")
+        except ValueError:
+            LOGGER.error("Attr callback not found")
 
     def _event_socket_handler(self, msg):
         json_msg = json.loads(msg)
@@ -101,7 +99,7 @@ class Appliance:
             return False
 
         uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        for n in range(3):
+        for n in range(RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.get(uri, headers=self._create_headers()) as r:
                     if r.status == 200:
@@ -125,7 +123,7 @@ class Appliance:
             "body": attributes,
             "header": {"said": self._said, "command": "setAttributes"},
         }
-        for n in range(3):
+        for n in range(RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.post(
                     uri, json=cmd_data, headers=self._create_headers()
