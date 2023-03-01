@@ -106,9 +106,10 @@ class Appliance:
                         self._data_dict = json.loads(await r.text())
                         return True
                     elif r.status == 401:
+                        LOGGER.error("Fetching data failed (%s). Doing reauth", r.status)
                         await self._auth.do_auth()
-
-        LOGGER.error("Fetching data failed (%s)", r.status)
+                    else:
+                        LOGGER.error("Fetching data failed (%s)", r.status)
         return False
 
     async def send_attributes(self, attributes):
