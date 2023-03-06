@@ -151,7 +151,6 @@ class EventSocket:
                 await asyncio.sleep(RECONNECT_SHORT_DELAY)
 
                 LOGGER.info("Reconnecting...")
-                # self._run_future = asyncio.get_event_loop().create_task(self._run())
 
     def start(self):
         self._running = True
