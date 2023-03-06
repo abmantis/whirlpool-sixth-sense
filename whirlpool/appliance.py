@@ -15,7 +15,7 @@ ATTR_ONLINE = "Online"
 
 SETVAL_VALUE_OFF = "0"
 SETVAL_VALUE_ON = "1"
-RETRY_COUNT = 3
+REQUEST_RETRY_COUNT = 3
 
 
 class Appliance:
