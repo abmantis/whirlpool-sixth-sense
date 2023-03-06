@@ -1,3 +1,4 @@
+from __future__ import annotations
 import aiohttp
 import asyncio
 import async_timeout
@@ -57,7 +58,7 @@ class Auth:
         with open(AUTH_JSON_FILE, "w") as f:
             json.dump(self._auth_dict, f)
 
-    async def _do_auth(self, refresh_token):
+    async def _do_auth(self, refresh_token: str) -> str | None:
         auth_url = f"{self._backend_selector.base_url}/oauth/token"
         auth_header = {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -101,7 +102,7 @@ class Auth:
                     return await self._do_auth(refresh_token=None)
                 return None
 
-    async def do_auth(self, store=True):
+    async def do_auth(self, store: bool = False) -> bool | None:
         fetched_auth_data = await self._do_auth(
             self._auth_dict.get("refresh_token", None)
         )
@@ -109,7 +110,7 @@ class Auth:
         if not fetched_auth_data:
             self._auth_dict = {}
             LOGGER.error("Authentication failed")
-            return
+            return False
 
         curr_timestamp = datetime.now().timestamp()
         self._auth_dict = {
@@ -122,6 +123,7 @@ class Auth:
         if store:
             self._save_auth_data()
         self._schedule_auto_renewal()
+        return True
 
     async def load_auth_file(self):
         try:
