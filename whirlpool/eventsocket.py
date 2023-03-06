@@ -103,7 +103,8 @@ class EventSocket:
                                 or msg.data == WS_STATUS_UNAUTHORIZED
                             ):
                                 LOGGER.debug("auth key expired, doing reauth now")
-                                await self._auth.do_auth()
+                                while not await self._auth.do_auth():
+                                    asyncio.sleep(RECONNECT_LONG_DELAY)
 
                             elif msg.data == WS_STATUS_GOING_AWAY:
                                 LOGGER.warn(
