@@ -102,7 +102,7 @@ class Auth:
                     return await self._do_auth(refresh_token=None)
                 return None
 
-    async def do_auth(self, store: bool = False) -> bool | None:
+    async def do_auth(self, store: bool = False) -> bool:
         fetched_auth_data = await self._do_auth(
             self._auth_dict.get("refresh_token", None)
         )
