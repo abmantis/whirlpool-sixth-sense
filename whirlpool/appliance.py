@@ -99,14 +99,16 @@ class Appliance:
             return False
 
         uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        for n in range(RETRY_COUNT):
+        for n in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.get(uri, headers=self._create_headers()) as r:
                     if r.status == 200:
                         self._data_dict = json.loads(await r.text())
                         return True
                     elif r.status == 401:
-                        LOGGER.error("Fetching data failed (%s). Doing reauth", r.status)
+                        LOGGER.error(
+                            "Fetching data failed (%s). Doing reauth", r.status
+                        )
                         await self._auth.do_auth()
                     else:
                         LOGGER.error("Fetching data failed (%s)", r.status)
@@ -124,7 +126,7 @@ class Appliance:
             "body": attributes,
             "header": {"said": self._said, "command": "setAttributes"},
         }
-        for n in range(RETRY_COUNT):
+        for n in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.post(
                     uri, json=cmd_data, headers=self._create_headers()
