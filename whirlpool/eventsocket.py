@@ -133,7 +133,6 @@ class EventSocket:
         self._websocket = None
 
         if self._running:
-
             self._reconnect_tries -= 1
             if self._reconnect_tries < 0:
                 self._reconnect_tries = 0

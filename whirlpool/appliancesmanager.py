@@ -35,7 +35,6 @@ class AppliancesManager:
         }
 
     async def fetch_appliances(self):
-
         account_id = None
         async with self._session.get(
             f"{self._backend_selector.base_url}/api/v1/getUserDetails",
