@@ -1634,7 +1634,6 @@ async def test_attributes(
     backend_selector_mock: BackendSelectorMock,
     auth_mock: MagicMock,
 ):
-
     mock_appliance_http_get(
         appliance_http_client_mock, backend_selector_mock, SAID, DATA1
     )
@@ -1706,7 +1705,6 @@ async def test_setters(
     backend_selector_mock: BackendSelectorMock,
     auth_mock: MagicMock,
 ):
-
     mock_appliance_http_get(
         appliance_http_client_mock, backend_selector_mock, SAID, DATA2
     )
