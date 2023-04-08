@@ -65,6 +65,8 @@ class AppliancesManager:
                         "NAME": appliance["APPLIANCE_NAME"],
                         "DATA_MODEL": appliance["DATA_MODEL_KEY"],
                         "CATEGORY": appliance["CATEGORY_NAME"],
+                        "MODEL_NUMBER": appliance.get("MODEL_NO"),
+                        "SERIAL_NUMBER": appliance.get("SERIAL"),
                     }
                     data_model = appliance["DATA_MODEL_KEY"].lower()
                     if "airconditioner" in data_model:
