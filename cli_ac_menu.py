@@ -4,7 +4,7 @@ from whirlpool.aircon import Aircon, Mode
 import aiohttp
 
 
-async def show_aircon_menu(backend_selector, auth, said):
+async def show_aircon_menu(backend_selector, auth, said, session):
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -47,8 +47,7 @@ async def show_aircon_menu(backend_selector, auth, said):
     def attr_upd():
         print("Attributes updated")
 
-    session = aiohttp.ClientSession()
-    ac = Aircon(backend_selector, auth, said)
+    ac = Aircon(backend_selector, auth, said, session)
     ac.register_attr_callback(attr_upd)
     await ac.connect()
 
@@ -103,4 +102,3 @@ async def show_aircon_menu(backend_selector, auth, said):
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
-    await session.close()
