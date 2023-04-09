@@ -98,6 +98,7 @@ class EventSocket:
                                 f"Stopping receiving. Message type: {str(msg.type)}"
                             )
 
+
                             if (
                                 not self._auth.is_access_token_valid()
                                 or msg.data == WS_STATUS_UNAUTHORIZED

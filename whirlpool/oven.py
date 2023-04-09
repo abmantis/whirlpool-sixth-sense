@@ -60,6 +60,7 @@ class Cavity(Enum):
 
 CAVITY_PREFIX_MAP = {Cavity.Upper: "OvenUpperCavity", Cavity.Lower: "OvenLowerCavity"}
 
+
 # todo: figure out/plug in the other enums
 class CookMode(Enum):
     Standby = 0
@@ -83,6 +84,7 @@ COOK_MODE_MAP = {
     CookMode.AirFry: ATTRVAL_COOK_MODE_AIR_FRY,
 }
 
+
 # todo: figure out/plug in the other enums
 class CookOperation(Enum):
     Cancel = 1
@@ -98,6 +100,7 @@ COOK_OPERATION_MAP = {
     CookOperation.Pause: ATTRVAL_CAVITY_OPERATION_PAUSE,
 }
 
+
 # todo: figure out/plug in the other enums
 class CavityState(Enum):
     Standby = 0
@@ -112,6 +115,7 @@ CAVITY_STATE_MAP = {
     CavityState.Cooking: ATTRVAL_CAVITY_STATE_COOKING,
     CavityState.NotPresent: ATTRVAL_CAVITY_STATE_NOT_PRESENT,
 }
+
 
 # todo: figure out/plug in what state = 2 is
 class KitchenTimerState(Enum):

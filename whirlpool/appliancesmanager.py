@@ -35,7 +35,6 @@ class AppliancesManager:
         }
 
     async def fetch_appliances(self):
-
         account_id = None
         async with self._session.get(
             f"{self._backend_selector.base_url}/api/v1/getUserDetails",
@@ -66,6 +65,8 @@ class AppliancesManager:
                         "NAME": appliance["APPLIANCE_NAME"],
                         "DATA_MODEL": appliance["DATA_MODEL_KEY"],
                         "CATEGORY": appliance["CATEGORY_NAME"],
+                        "MODEL_NUMBER": appliance.get("MODEL_NO"),
+                        "SERIAL_NUMBER": appliance.get("SERIAL"),
                     }
                     data_model = appliance["DATA_MODEL_KEY"].lower()
                     if "airconditioner" in data_model:
