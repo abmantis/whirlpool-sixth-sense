@@ -148,8 +148,8 @@ class Appliance:
     def has_attribute(self, attribute):
         if self._data_dict is None:
             LOGGER.error("No data available")
-            return None
-        return attribute in self._data_dict.get("attributes")
+            return False
+        return attribute in self._data_dict.get("attributes", {})
 
     def bool_to_attr_value(self, b: bool):
         return SETVAL_VALUE_ON if b else SETVAL_VALUE_OFF
