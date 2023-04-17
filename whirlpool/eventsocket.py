@@ -32,6 +32,7 @@ class EventSocket:
         said,
         msg_listener: Callable[[str], None],
         con_up_listener: Callable,
+        check_login_listener: Callable,
         session: aiohttp.ClientSession,
     ):
         self._url = url
@@ -42,6 +43,7 @@ class EventSocket:
         self._websocket: aiohttp.ClientWebSocketResponse = None
         self._run_future = None
         self._con_up_listener = con_up_listener
+        self._check_login_listener = check_login_listener
         self._reconnect_tries = RECONNECT_COUNT
         self._session = session
 
@@ -75,10 +77,11 @@ class EventSocket:
                     heartbeat=45,
                 ) as ws:
                     self._websocket = ws
-                    await self._con_up_listener()
+                    await self._check_login_listener()
                     await self._send_msg(ws, self._create_connect_msg())
                     await self._recv_msg(ws)
                     await self._send_msg(ws, self._create_subscribe_msg())
+                    await self._con_up_listener()
 
                     self._reconnect_tries = RECONNECT_COUNT
 
