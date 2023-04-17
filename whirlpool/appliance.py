@@ -114,25 +114,6 @@ class Appliance:
                         LOGGER.error("Fetching data failed (%s)", r.status)
         return False
 
-    async def check_login(self):
-        """Verify user is logged in, reauth if not logged in"""
-        if not self._session:
-            LOGGER.error("Session not started")
-            return False
-
-        uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        for retry in range(REQUEST_RETRY_COUNT):
-            async with async_timeout.timeout(30):
-                async with self._session.get(uri, headers=self._create_headers()) as r:
-                    if r.status == 200:
-                        return True
-                    elif r.status == 401:
-                        LOGGER.error("Login check failed (%s). Doing reauth", r.status)
-                        await self._auth.do_auth()
-                    else:
-                        LOGGER.error("Login failed (%s)", r.status)
-        return False
-
     async def send_attributes(self, attributes):
         if not self._session:
             LOGGER.error("Session not started")
@@ -196,7 +177,6 @@ class Appliance:
             self._said,
             self._event_socket_handler,
             self.fetch_data,
-            self.check_login,
             self._session,
         )
         self._event_socket.start()

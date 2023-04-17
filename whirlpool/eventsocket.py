@@ -13,7 +13,9 @@ LOGGER = logging.getLogger(__name__)
 
 MSG_TERMINATION = "\n\n\0"
 
-RECV_MSG_MATCHER = re.compile("{(.*)}\\x00")
+DATA_MSG_MATCHER = re.compile("{(.*)}\\x00")
+TOKEN_INVALID_MSG_MATCHER = re.compile(".*Token Invalid.*")
+
 
 WS_STATUS_GOING_AWAY = 1001
 WS_STATUS_UNAUTHORIZED = 3000
@@ -32,7 +34,6 @@ class EventSocket:
         said,
         msg_listener: Callable[[str], None],
         con_up_listener: Callable,
-        check_login_listener: Callable,
         session: aiohttp.ClientSession,
     ):
         self._url = url
@@ -43,7 +44,6 @@ class EventSocket:
         self._websocket: aiohttp.ClientWebSocketResponse = None
         self._run_future = None
         self._con_up_listener = con_up_listener
-        self._check_login_listener = check_login_listener
         self._reconnect_tries = RECONNECT_COUNT
         self._session = session
 
@@ -77,15 +77,17 @@ class EventSocket:
                     heartbeat=45,
                 ) as ws:
                     self._websocket = ws
-                    await self._check_login_listener()
-                    await self._send_msg(ws, self._create_connect_msg())
-                    await self._recv_msg(ws)
-                    await self._send_msg(ws, self._create_subscribe_msg())
-                    await self._con_up_listener()
-
                     self._reconnect_tries = RECONNECT_COUNT
 
+                    connected_msg_done = False
+                    subscribe_msg_done = False
+
                     while not ws.closed:
+                        if not connected_msg_done:
+                            await self._send_msg(ws, self._create_connect_msg())
+                        elif not subscribe_msg_done:
+                            await self._send_msg(ws, self._create_subscribe_msg())
+
                         msg = await self._recv_msg(ws)
                         if not msg:
                             continue
@@ -118,13 +120,31 @@ class EventSocket:
 
                             break
 
+                        invalid_token_match = TOKEN_INVALID_MSG_MATCHER.findall(
+                            msg.data
+                        )
+                        if invalid_token_match:
+                            LOGGER.debug("received invalid token msg, doing reauth now")
+                            while not await self._auth.do_auth():
+                                await asyncio.sleep(RECONNECT_LONG_DELAY)
+                            break
+
+                        if not connected_msg_done:
+                            connected_msg_done = True
+                            continue
+
+                        if not subscribe_msg_done:
+                            subscribe_msg_done = True
+                            await self._con_up_listener()
+                            continue
+
                         if msg.type != aiohttp.WSMsgType.TEXT:
                             LOGGER.error(
                                 f"Socket message type is invalid: {str(msg.type)}"
                             )
                             continue
 
-                        match = RECV_MSG_MATCHER.findall(msg.data)
+                        match = DATA_MSG_MATCHER.findall(msg.data)
                         if not match:
                             continue
                         self._msg_listener("{" + match[0] + "}")
