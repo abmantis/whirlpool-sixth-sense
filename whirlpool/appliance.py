@@ -1,8 +1,8 @@
-import aiohttp
-import async_timeout
 import logging
 import json
 from typing import Callable
+import async_timeout
+import aiohttp
 
 from .backendselector import BackendSelector
 
@@ -15,9 +15,12 @@ ATTR_ONLINE = "Online"
 
 SETVAL_VALUE_OFF = "0"
 SETVAL_VALUE_ON = "1"
+REQUEST_RETRY_COUNT = 3
 
 
 class Appliance:
+    """Whirlpool appliance class"""
+
     def __init__(
         self,
         backend_selector: BackendSelector,
@@ -35,10 +38,12 @@ class Appliance:
         self._session: aiohttp.ClientSession = session
 
     def register_attr_callback(self, update_callback: Callable):
+        """Register Callback function."""
         self._attr_changed.append(update_callback)
         LOGGER.debug("Registered attr callback")
 
     def unregister_attr_callback(self, update_callback: Callable):
+        """Unregister callback function."""
         try:
             self._attr_changed.remove(update_callback)
             LOGGER.debug("Unregistered attr callback")
@@ -88,26 +93,33 @@ class Appliance:
 
     @property
     def said(self):
+        """Return Appliance SAID"""
         return self._said
 
     async def fetch_data(self):
+        """Fetch appliance data from web api"""
         if not self._session:
             LOGGER.error("Session not started")
             return False
 
         uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        async with async_timeout.timeout(30):
-            async with self._session.get(uri, headers=self._create_headers()) as r:
-                self._data_dict = json.loads(await r.text())
-                if r.status == 200:
-                    return True
-                elif r.status == 401:
-                    await self._auth.do_auth()
-
-                LOGGER.error(f"Fetching data failed ({r.status})")
+        for n in range(REQUEST_RETRY_COUNT):
+            async with async_timeout.timeout(30):
+                async with self._session.get(uri, headers=self._create_headers()) as r:
+                    if r.status == 200:
+                        self._data_dict = json.loads(await r.text())
+                        return True
+                    elif r.status == 401:
+                        LOGGER.error(
+                            "Fetching data failed (%s). Doing reauth", r.status
+                        )
+                        await self._auth.do_auth()
+                    else:
+                        LOGGER.error("Fetching data failed (%s)", r.status)
         return False
 
     async def send_attributes(self, attributes):
+        """Send attributes to appliance api"""
         if not self._session:
             LOGGER.error("Session not started")
             return False
@@ -119,7 +131,7 @@ class Appliance:
             "body": attributes,
             "header": {"said": self._said, "command": "setAttributes"},
         }
-        for n in range(3):
+        for n in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.post(
                     uri, json=cmd_data, headers=self._create_headers()
@@ -134,29 +146,40 @@ class Appliance:
         return False
 
     def get_attribute(self, attribute):
+        """Get attribute from local data dictionary"""
         if not self.has_attribute(attribute):
             return None
         return self._data_dict["attributes"][attribute]["value"]
 
     def has_attribute(self, attribute):
-        return attribute in self._data_dict.get("attributes")
+        """Check for attribute in local data dictionary"""
+        if self._data_dict is None:
+            LOGGER.error("No data available")
+            return False
+        return attribute in self._data_dict.get("attributes", {})
 
     def bool_to_attr_value(self, b: bool):
+        """Convert bool to attribute value"""
         return SETVAL_VALUE_ON if b else SETVAL_VALUE_OFF
 
     def attr_value_to_bool(self, val: str):
+        """Convert attribute value to bool"""
         return None if val is None else val == SETVAL_VALUE_ON
 
     def get_online(self):
+        """Get online state for appliance"""
         return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
 
     async def connect(self):
+        """Connect to appliance event listener"""
         await self.start_event_listener()
 
     async def disconnect(self):
+        """Disconnect from appliance event listener"""
         await self.stop_event_listener()
 
     async def start_event_listener(self):
+        """Start the appliance event listener"""
         await self.fetch_data()
         if self._event_socket != None:
             LOGGER.warning("Event socket not None when starting event listener")
@@ -172,5 +195,6 @@ class Appliance:
         self._event_socket.start()
 
     async def stop_event_listener(self):
+        """Stop the appliance event listener"""
         await self._event_socket.stop()
         self._event_socket = None
