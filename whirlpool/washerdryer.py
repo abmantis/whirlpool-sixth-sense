@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+
 import aiohttp
 
 from .appliance import Appliance

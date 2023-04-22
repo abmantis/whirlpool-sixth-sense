@@ -1,7 +1,7 @@
+import asyncio
 from http import HTTPStatus
 
 import pytest
-import asyncio
 from yarl import URL
 
 from whirlpool.auth import Auth

@@ -1,6 +1,7 @@
 import aioconsole
-from whirlpool.oven import CookMode, Oven, Cavity, KitchenTimerState
 import aiohttp
+
+from whirlpool.oven import Cavity, CookMode, KitchenTimerState, Oven
 
 
 async def show_oven_menu(backend_selector, auth, said, session):

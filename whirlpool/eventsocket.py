@@ -1,11 +1,11 @@
-from socket import gaierror
-from typing import Callable
 import asyncio
 import logging
 import re
 import uuid
-import aiohttp
+from socket import gaierror
+from typing import Callable
 
+import aiohttp
 
 from .auth import Auth
 

@@ -1,7 +1,7 @@
 import aioconsole
-
-from whirlpool.washerdryer import WasherDryer, MachineState
 import aiohttp
+
+from whirlpool.washerdryer import MachineState, WasherDryer
 
 
 async def show_washerdryer_menu(backend_selector, auth, said, session):

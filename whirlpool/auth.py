@@ -1,9 +1,10 @@
-import aiohttp
 import asyncio
-import async_timeout
-import logging
 import json
-from datetime import datetime, timedelta, timedelta
+import logging
+from datetime import datetime, timedelta
+
+import aiohttp
+import async_timeout
 
 from .backendselector import BackendSelector
 

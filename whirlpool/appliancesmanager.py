@@ -1,11 +1,10 @@
-import aiohttp
-import logging
 import json
+import logging
 
-
-from .backendselector import BackendSelector
+import aiohttp
 
 from .auth import Auth
+from .backendselector import BackendSelector
 
 LOGGER = logging.getLogger(__name__)
 

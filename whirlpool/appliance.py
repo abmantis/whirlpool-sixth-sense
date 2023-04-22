@@ -1,12 +1,12 @@
-import logging
 import json
+import logging
 from typing import Callable
-import async_timeout
-import aiohttp
 
-from .backendselector import BackendSelector
+import aiohttp
+import async_timeout
 
 from .auth import Auth
+from .backendselector import BackendSelector
 from .eventsocket import EventSocket
 
 LOGGER = logging.getLogger(__name__)

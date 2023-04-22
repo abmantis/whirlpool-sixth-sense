@@ -1,7 +1,7 @@
 import aioconsole
+import aiohttp
 
 from whirlpool.aircon import Aircon, Mode
-import aiohttp
 
 
 async def show_aircon_menu(backend_selector, auth, said, session):

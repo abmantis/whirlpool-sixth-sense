@@ -1,7 +1,7 @@
+import asyncio
 from unittest.mock import MagicMock
 
 from whirlpool.aircon import Aircon, FanSpeed, Mode
-import asyncio
 
 from .aiohttp import AiohttpClientMocker
 from .mock_backendselector import BackendSelectorMock
