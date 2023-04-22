@@ -21,10 +21,7 @@ jobs:
     - name: Publish distribution 📦 to Test PyPI
       continue-on-error: true
       run: >-
-        python3 -m twine upload
-          -u __token__
-          -p ${{ secrets.TEST_PYPI_API_TOKEN }}
-          --repository testpypi dist/*
+        python3 -m twine upload -u __token__ -p ${{ secrets.TEST_PYPI_API_TOKEN }} --repository testpypi dist/*
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
       run: >-
