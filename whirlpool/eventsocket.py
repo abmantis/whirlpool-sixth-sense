@@ -53,7 +53,6 @@ class EventSocket:
         return f"CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:{self._auth.get_access_token()}"
 
     def _create_subscribe_msg(self):
-        #id = uuid.uuid4()
         return f"SUBSCRIBE\nid:{self._id}\ndestination:/topic/{self._said}\nack:auto"
 
     async def _send_msg(self, websocket: aiohttp.ClientWebSocketResponse, msg):
