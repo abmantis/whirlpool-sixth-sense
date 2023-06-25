@@ -47,13 +47,14 @@ class EventSocket:
         self._con_up_listener = con_up_listener
         self._reconnect_tries = RECONNECT_COUNT
         self._session = session
+        self._id = uuid.uuid4()
 
     def _create_connect_msg(self):
         return f"CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:{self._auth.get_access_token()}"
 
     def _create_subscribe_msg(self):
-        id = uuid.uuid4()
-        return f"SUBSCRIBE\nid:{id}\ndestination:/topic/{self._said}\nack:auto"
+        #id = uuid.uuid4()
+        return f"SUBSCRIBE\nid:{self._id}\ndestination:/topic/{self._said}\nack:auto"
 
     async def _send_msg(self, websocket: aiohttp.ClientWebSocketResponse, msg):
         LOGGER.debug(f"> {msg}")
@@ -76,6 +77,7 @@ class EventSocket:
                     autoclose=True,
                     autoping=True,
                     heartbeat=45,
+                    receive_timeout=300,
                 ) as ws:
                     self._websocket = ws
                     self._reconnect_tries = RECONNECT_COUNT
@@ -87,8 +89,11 @@ class EventSocket:
                             await self._send_msg(ws, self._create_connect_msg())
                         elif not subscribe_msg_done:
                             await self._send_msg(ws, self._create_subscribe_msg())
-
-                        msg = await self._recv_msg(ws)
+                        try:
+                            msg = await self._recv_msg(ws)
+                        except asyncio.TimeoutError:
+                            LOGGER.debug(f"I've timedout, sending a subscription")
+                            await self._send_msg(ws, self._create_subscribe_msg())
                         if not msg:
                             continue
                         if msg.type == aiohttp.WSMsgType.ERROR:
@@ -148,6 +153,7 @@ class EventSocket:
                         if not match:
                             continue
                         self._msg_listener("{" + match[0] + "}")
+                        msg = None
             except (
                 aiohttp.ClientError,
                 asyncio.TimeoutError,
@@ -177,11 +183,13 @@ class EventSocket:
 
     def start(self):
         """Start the event socket listener"""
+        LOGGER.debug("Websocket is starting.")
         self._running = True
         self._run_future = asyncio.get_event_loop().create_task(self._run())
 
     async def stop(self):
         """Stop the event socket listener"""
+        LOGGER.debug("Websocket is stopping.")
         self._running = False
         if not self._websocket:
             return
