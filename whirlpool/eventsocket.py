@@ -139,7 +139,7 @@ class EventSocket:
                             msg.data
                         )
                         if invalid_token_match:
-                            LOGGER.debug("received invalid token msg, doing reauth now")
+                            LOGGER.info("received invalid token msg, doing reauth now")
                             while not await self._auth.do_auth():
                                 await asyncio.sleep(RECONNECT_LONG_DELAY)
                             break
@@ -171,7 +171,7 @@ class EventSocket:
                 asyncio.TimeoutError,
                 gaierror,
             ) as ex:
-                LOGGER.error(f"Websocket could not connect: {ex}")
+                LOGGER.info(f"Websocket could not connect: {ex}")
 
             self._websocket = None
 
