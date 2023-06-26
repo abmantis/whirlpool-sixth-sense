@@ -96,9 +96,13 @@ class EventSocket:
                             msg = await self._recv_msg(ws)
                         except asyncio.TimeoutError as er:
                             no_msg_count = no_msg_count + 1
-                            LOGGER.debug(f"I've timed out, no message counter is {no_msg_count}")                       
+                            LOGGER.debug(
+                                f"I've timed out, no message counter is {no_msg_count}"
+                            )
                             if no_msg_count > NO_RESPONSE_COUNT:
-                                LOGGER.info(f"Web Socket has no data for {no_msg_count*RESPONSE_TIMEOUT} seconds, resetting")
+                                LOGGER.info(
+                                    f"Web Socket has no data for {no_msg_count*RESPONSE_TIMEOUT} seconds, resetting"
+                                )
                                 raise er
                         if not msg:
                             continue
