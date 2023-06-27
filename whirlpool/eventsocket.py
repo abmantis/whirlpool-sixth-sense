@@ -176,20 +176,21 @@ class EventSocket:
             self._websocket = None
 
             if self._running:
-                self._reconnect_tries -= 1
-                if self._reconnect_tries < 0:
-                    self._reconnect_tries = 0
+                if no_msg_count <= NO_RESPONSE_COUNT:
+                    self._reconnect_tries -= 1
+                    if self._reconnect_tries < 0:
+                        self._reconnect_tries = 0
+                        LOGGER.info(
+                            f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY} seconds"
+                        )
+
+                        # Give server some time to come back up.
+                        await asyncio.sleep(RECONNECT_LONG_DELAY)
+
                     LOGGER.info(
-                        f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY} seconds"
+                        f"Waiting to reconnect short delay {RECONNECT_SHORT_DELAY} seconds"
                     )
-
-                    # Give server some time to come back up.
-                    await asyncio.sleep(RECONNECT_LONG_DELAY)
-
-                LOGGER.info(
-                    f"Waiting to reconnect short delay {RECONNECT_SHORT_DELAY} seconds"
-                )
-                await asyncio.sleep(RECONNECT_SHORT_DELAY)
+                    await asyncio.sleep(RECONNECT_SHORT_DELAY)
 
                 LOGGER.info("Reconnecting...")
 
