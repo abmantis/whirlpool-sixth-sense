@@ -103,7 +103,7 @@ class EventSocket:
                                 LOGGER.info(
                                     f"Web Socket has no data for {no_msg_count*RESPONSE_TIMEOUT} seconds, resetting"
                                 )
-                                raise er
+                                await ws.close()
                         if not msg:
                             continue
                         if msg.type == aiohttp.WSMsgType.ERROR:
@@ -171,7 +171,7 @@ class EventSocket:
                 asyncio.TimeoutError,
                 gaierror,
             ) as ex:
-                LOGGER.info(f"Websocket could not connect: {ex}")
+                LOGGER.info(f"Websocket not connected: {ex}")
 
             self._websocket = None
 
