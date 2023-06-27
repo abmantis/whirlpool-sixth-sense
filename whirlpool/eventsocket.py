@@ -148,7 +148,7 @@ class EventSocket:
                             connected_msg_done = True
                             continue
 
-                        if not subscribe_msg_done:
+                        elif not subscribe_msg_done:
                             subscribe_msg_done = True
                             await self._con_up_listener()
                             self._msg_listener(None)
@@ -191,7 +191,6 @@ class EventSocket:
                         f"Waiting to reconnect short delay {RECONNECT_SHORT_DELAY} seconds"
                     )
                     await asyncio.sleep(RECONNECT_SHORT_DELAY)
-
                 LOGGER.info("Reconnecting...")
 
     def start(self):
