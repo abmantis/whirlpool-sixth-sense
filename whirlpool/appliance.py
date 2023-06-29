@@ -56,7 +56,7 @@ class Appliance:
         for attr, val in json_msg["attributeMap"].items():
             if not self.has_attribute(attr):
                 continue
-            if self._check_previous_attribute_value(attr,json_msg):
+            if self._check_previous_attribute_value(attr, json_msg):
                 self._set_attribute(attr, str(val), timestamp)
             else:
                 LOGGER.debug("Previous data mismatch - fetching new dataset")
@@ -75,10 +75,13 @@ class Appliance:
             "Cache-Control": "no-cache",
         }
 
-    def _check_previous_attribute_value(self,attr,json_msg):
+    def _check_previous_attribute_value(self, attr, json_msg):
         """Confirm current stored value is equal to expected previous value."""
-        return str(json_msg["processedValueMap"]["previousValueMap"][attr]["value"]) == self._data_dict["attributes"][attr]["value"]
-    
+        return (
+            str(json_msg["processedValueMap"]["previousValueMap"][attr])
+            == self._data_dict["attributes"][attr]["value"]
+        )
+
     def _set_attribute(self, attribute, value, timestamp):
         LOGGER.debug(f"Updating attribute {attribute} with {value} ({timestamp})")
         self._data_dict["attributes"][attribute]["value"] = value
