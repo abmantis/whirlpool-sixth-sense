@@ -51,7 +51,6 @@ class Appliance:
             LOGGER.error("Attr callback not found")
 
     def _event_socket_handler(self, msg):
-    
         json_msg = json.loads(msg)
         timestamp = json_msg["timestamp"]
         for attr, val in json_msg["attributeMap"].items():
