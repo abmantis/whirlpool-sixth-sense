@@ -51,13 +51,13 @@ class Appliance:
             LOGGER.error("Attr callback not found")
 
     def _event_socket_handler(self, msg):
-        if msg is not None:
-            json_msg = json.loads(msg)
-            timestamp = json_msg["timestamp"]
-            for attr, val in json_msg["attributeMap"].items():
-                if not self.has_attribute(attr):
-                    continue
-                self._set_attribute(attr, str(val), timestamp)
+    
+        json_msg = json.loads(msg)
+        timestamp = json_msg["timestamp"]
+        for attr, val in json_msg["attributeMap"].items():
+            if not self.has_attribute(attr):
+                continue
+            self._set_attribute(attr, str(val), timestamp)
 
         for callback in self._attr_changed:
             callback()
@@ -109,6 +109,8 @@ class Appliance:
                 async with self._session.get(uri, headers=self._create_headers()) as r:
                     if r.status == 200:
                         self._data_dict = json.loads(await r.text())
+                        for callback in self._attr_changed:
+                            callback()
                         return True
                     elif r.status == 401:
                         LOGGER.error(

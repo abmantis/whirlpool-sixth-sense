@@ -151,7 +151,6 @@ class EventSocket:
                         elif not subscribe_msg_done:
                             subscribe_msg_done = True
                             await self._con_up_listener()
-                            self._msg_listener(None)
                             continue
 
                         if msg.type != aiohttp.WSMsgType.TEXT:
