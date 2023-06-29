@@ -95,7 +95,7 @@ class EventSocket:
                         try:
                             msg = await self._recv_msg(ws)
                         except asyncio.TimeoutError as er:
-                            no_msg_count = no_msg_count + 1
+                            no_msg_count += 1
                             LOGGER.debug(
                                 f"I've timed out, no message counter is {no_msg_count}"
                             )
@@ -170,7 +170,7 @@ class EventSocket:
                 asyncio.TimeoutError,
                 gaierror,
             ) as ex:
-                LOGGER.info(f"Websocket could not connect: {ex}")
+                LOGGER.error(f"Websocket could not connect: {ex}")
 
             self._websocket = None
 
