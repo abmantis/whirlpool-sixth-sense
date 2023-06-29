@@ -170,7 +170,7 @@ class EventSocket:
                 asyncio.TimeoutError,
                 gaierror,
             ) as ex:
-                LOGGER.info(f"Websocket could no connect: {ex}")
+                LOGGER.info(f"Websocket could not connect: {ex}")
 
             self._websocket = None
 
