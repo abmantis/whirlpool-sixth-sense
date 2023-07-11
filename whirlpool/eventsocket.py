@@ -132,7 +132,7 @@ class EventSocket:
                         if not connected_msg_done:
                             connected_msg_done = True
                             continue
-                        
+
                         elif not subscribe_msg_done:
                             subscribe_msg_done = True
                             await self._con_up_listener()
