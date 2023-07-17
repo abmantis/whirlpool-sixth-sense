@@ -108,6 +108,8 @@ class Appliance:
                 async with self._session.get(uri, headers=self._create_headers()) as r:
                     if r.status == 200:
                         self._data_dict = json.loads(await r.text())
+                        for callback in self._attr_changed:
+                            callback()
                         return True
                     elif r.status == 401:
                         LOGGER.error(
