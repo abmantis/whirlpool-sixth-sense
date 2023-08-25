@@ -72,7 +72,11 @@ class AppliancesManager:
                         self._aircons.append(appliance_data)
                     elif "dryer" in data_model or "washer" in data_model:
                         self._washer_dryers.append(appliance_data)
-                    elif "cooking_minerva" in data_model or "cooking_vsi" in data_model:
+                    elif (
+                        "cooking_minerva" in data_model
+                        or "cooking_vsi" in data_model
+                        or "cooking_u2" in data_model
+                    ):
                         self._ovens.append(appliance_data)
                     else:
                         LOGGER.warning(
