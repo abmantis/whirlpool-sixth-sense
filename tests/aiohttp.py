@@ -89,7 +89,11 @@ class AiohttpClientMocker:
         )
         for i, response in enumerate(self._mocks):
             if response.match_request(method, url, params):
-                logger.debug("Replacing mock response for {} {} {}".format(method.upper(), url, params))
+                logger.debug(
+                    "Replacing mock response for {} {} {}".format(
+                        method.upper(), url, params
+                    )
+                )
                 self._mocks[i] = new_response
                 return
         self._mocks.append(new_response)
@@ -172,7 +176,9 @@ class AiohttpClientMocker:
                     raise response.exc
                 return response
 
-        assert False, "No mock registered for {} {} {}".format(method.upper(), url, params)
+        assert False, "No mock registered for {} {} {}".format(
+            method.upper(), url, params
+        )
 
 
 class AiohttpClientMockResponse:
@@ -224,7 +230,11 @@ class AiohttpClientMockResponse:
         if isinstance(self._url, RETYPE):
             return self._url.search(str(url)) is not None
 
-        if self._url.scheme != url.scheme or self._url.host != url.host or self._url.path != url.path:
+        if (
+            self._url.scheme != url.scheme
+            or self._url.host != url.host
+            or self._url.path != url.path
+        ):
             return False
 
         # Ensure all query components in matcher are present in the request
