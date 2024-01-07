@@ -15,7 +15,7 @@ classifiers = [
 requires-python = ">=3.6"
 dependencies = [
     "aioconsole>=0.3.1",
-    "aiohttp>=3.7.2",
+    "aiohttp>=3.7.2, <3.9.0", # 3.9.0 does not include async-timeout in Python > 3.10, breaking tests
     "websockets>=8.1",
 ]
 
