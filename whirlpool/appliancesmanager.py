@@ -53,7 +53,11 @@ class AppliancesManager:
             self._washer_dryers.append(appliance_data)
             return
 
-        if "cooking_minerva" in data_model or "cooking_vsi" in data_model or "cooking_u2" in data_model:
+        if (
+            "cooking_minerva" in data_model
+            or "cooking_vsi" in data_model
+            or "cooking_u2" in data_model
+        ):
             self._ovens.append(appliance_data)
             return
 
@@ -98,7 +102,8 @@ class AppliancesManager:
 
         if not account_id:
             async with self._session.get(
-                f"{self._backend_selector.base_url}/api/v1/getUserDetails", headers=self._create_headers()
+                f"{self._backend_selector.base_url}/api/v1/getUserDetails",
+                headers=self._create_headers(),
             ) as r:
                 if r.status != 200:
                     LOGGER.error(f"Failed to get account id: {r.status}")
