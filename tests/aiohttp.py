@@ -312,6 +312,9 @@ class AiohttpClientMockResponse:
     def close(self):
         """Mock close."""
 
+    async def wait_for_close(self):
+        pass
+
 
 # @contextmanager
 # def mock_aiohttp_client():
