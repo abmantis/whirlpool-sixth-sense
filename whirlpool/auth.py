@@ -60,18 +60,8 @@ class Auth:
 
     async def _do_auth(self, refresh_token: str) -> str | None:
         auth_url = f"{self._backend_selector.base_url}/oauth/token"
-        auth_header = {
-            "Content-Type": "application/x-www-form-urlencoded",
-            # "Brand": "Whirlpool",
-            # "WP-CLIENT-REGION": "EMEA",
-            # "WP-CLIENT-BRAND": "WHIRLPOOL",
-            # "WP-CLIENT-COUNTRY": "EN",
-        }
-
-        auth_data = {
-            "client_id": self._backend_selector.client_id,
-            "client_secret": self._backend_selector.client_secret,
-        }
+        auth_header = {"Content-Type": "application/x-www-form-urlencoded"}
+        auth_data: dict[str, str] = {}
 
         if refresh_token:
             LOGGER.info("Fetching auth with refresh token")
@@ -92,15 +82,21 @@ class Auth:
             )
 
         async with async_timeout.timeout(30):
-            async with self._session.post(
-                auth_url, data=auth_data, headers=auth_header
-            ) as r:
-                LOGGER.debug("Auth status: " + str(r.status))
-                if r.status == 200:
-                    return json.loads(await r.text())
-                elif refresh_token:
-                    return await self._do_auth(refresh_token=None)
-                return None
+            for creds in self._backend_selector.credentials:
+                auth_data.update(
+                    {
+                        "client_id": creds["client_id"],
+                        "client_secret": creds["client_secret"],
+                    }
+                )
+                async with self._session.post(
+                    auth_url, data=auth_data, headers=auth_header
+                ) as r:
+                    LOGGER.debug("Auth status: " + str(r.status))
+                    if r.status == 200:
+                        return await r.json()
+                    elif refresh_token:
+                        return await self._do_auth(refresh_token=None)
 
     async def do_auth(self, store: bool = False) -> bool:
         fetched_auth_data = await self._do_auth(

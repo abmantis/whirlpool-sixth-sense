@@ -13,8 +13,8 @@ BACKEND_SELECTOR_MOCK = BackendSelectorMock()
 
 AUTH_URL = f"{BACKEND_SELECTOR_MOCK.base_url}/oauth/token"
 AUTH_DATA = {
-    "client_id": BACKEND_SELECTOR_MOCK.client_id,
-    "client_secret": BACKEND_SELECTOR_MOCK.client_secret,
+    "client_id": BACKEND_SELECTOR_MOCK.credentials[0]["client_id"],
+    "client_secret": BACKEND_SELECTOR_MOCK.credentials[0]["client_secret"],
     "grant_type": "password",
     "username": "email",
     "password": "secretpass",
