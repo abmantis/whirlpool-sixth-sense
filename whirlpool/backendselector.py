@@ -69,11 +69,3 @@ class BackendSelector:
     @property
     def credentials(self) -> list[CredentialsDict]:
         return BACKEND_DATA[self._brand]
-
-    # @property
-    # def client_id(self):
-    #     return BACKEND_DATA[self._brand].get("client_id")
-
-    # @property
-    # def client_secret(self):
-    #     return BACKEND_DATA[self._brand].get("client_secret")
