@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Dict
 
 import aiohttp
 
@@ -35,7 +35,7 @@ class AppliancesManager:
             "WP-CLIENT-BRAND": self._backend_selector.brand.name,
         }
 
-    def _add_appliance(self, appliance: dict[str, Any]) -> None:
+    def _add_appliance(self, appliance: Dict[str, Any]) -> None:
         appliance_data = {
             "SAID": appliance["SAID"],
             "NAME": appliance["APPLIANCE_NAME"],
@@ -74,7 +74,7 @@ class AppliancesManager:
                 return False
 
             data = await r.json()
-            locations: dict[str, Any] = data[str(account_id)]
+            locations: Dict[str, Any] = data[str(account_id)]
             for appliances in locations.values():
                 for appliance in appliances:
                     self._add_appliance(appliance)
