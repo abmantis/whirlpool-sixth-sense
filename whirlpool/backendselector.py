@@ -69,3 +69,7 @@ class BackendSelector:
     @property
     def client_credentials(self) -> list[CredentialsDict]:
         return BACKEND_DATA[self._brand]
+
+    @property
+    def auth_url(self):
+        return f"{self.base_url}/oauth/token"
