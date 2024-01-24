@@ -1,5 +1,11 @@
+import json
+from pathlib import Path
+
 from tests.aiohttp import AiohttpClientMocker
 from tests.mock_backendselector import BackendSelectorMock
+
+CURR_DIR = Path(__file__).parent
+DATA_DIR = CURR_DIR / "data"
 
 
 def assert_appliance_setter_call(
@@ -36,4 +42,45 @@ def mock_appliance_http_post(
 ):
     appliance_http_client_mock.post(
         f"{backend_selector_mock.base_url}/api/v1/appliance/command"
+    )
+
+
+def mock_appliancesmanager_get_account_id_get(
+    http_client_mock: AiohttpClientMocker,
+    backend_selector_mock: BackendSelectorMock,
+):
+    http_client_mock.get(
+        f"{backend_selector_mock.base_url}/api/v1/getUserDetails",
+        content=json.dumps({"accountId": "12345"}).encode("utf-8"),
+    )
+
+
+def mock_appliancesmanager_get_owned_appliances_get(
+    http_client_mock: AiohttpClientMocker,
+    backend_selector_mock: BackendSelectorMock,
+    account_id,
+):
+    with open(DATA_DIR / "owned_appliances.json") as f:
+        owned_appliance_data = json.load(f)
+
+    content = json.dumps({account_id: owned_appliance_data}).encode("utf-8")
+
+    http_client_mock.get(
+        f"{backend_selector_mock.base_url}/api/v2/appliance/all/account/{account_id}",
+        content=content,
+    )
+
+
+def mock_appliancesmanager_get_shared_appliances_get(
+    http_client_mock: AiohttpClientMocker,
+    backend_selector_mock: BackendSelectorMock,
+):
+    with open(DATA_DIR / "shared_appliances.json") as f:
+        shared_appliance_data = json.load(f)
+
+    content = json.dumps(shared_appliance_data).encode("utf-8")
+
+    http_client_mock.get(
+        f"{backend_selector_mock.base_url}/api/v1/share-accounts/appliances",
+        content=content,
     )
