@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "whirlpool_sixth_sense"
 version = "0.18.5"
-authors = [{name = "Abílio Costa", email = "amfcalt@gmail.com"}]
+authors = [{ name = "Abílio Costa", email = "amfcalt@gmail.com" }]
 description = "Unofficial API for Whirlpool's 6th Sense appliances"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -17,6 +17,7 @@ dependencies = [
     "aioconsole>=0.3.1",
     "aiohttp>=3.9.1",
     "websockets>=8.1",
+    "async-timeout>=4.0.3",
 ]
 
 [project.readme]
