@@ -23,10 +23,29 @@ class BackendSelectorMock:
         return "http://dummy_base_url.com"
 
     @property
+    def auth_url(self):
+        return f"{self.base_url}/oauth/token"
+
+    @property
     def client_credentials(self) -> list[dict[str, str]]:
         return [
             {
-                "client_id": "dummy_client_id",
-                "client_secret": "dummy_client_secret",
-            }
+                "client_id": "dummy_client_id1",
+                "client_secret": "dummy_client_secret1",
+            },
+        ]
+
+
+class BackendSelectorMockMultipleCreds(BackendSelectorMock):
+    @property
+    def client_credentials(self) -> list[dict[str, str]]:
+        return [
+            {
+                "client_id": "dummy_client_id1",
+                "client_secret": "dummy_client_secret1",
+            },
+            {
+                "client_id": "dummy_client_id2",
+                "client_secret": "dummy_client_secret2",
+            },
         ]
