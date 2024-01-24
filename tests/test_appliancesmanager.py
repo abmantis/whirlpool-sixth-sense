@@ -1,5 +1,4 @@
 import asyncio
-from unittest.mock import patch
 
 import pytest
 
@@ -87,8 +86,8 @@ async def test_fetch_appliances_calls_both_get_methods(
 
     await am.fetch_appliances()
 
-    am._get_owned_appliances.assert_called()
-    am._get_shared_appliances.assert_called()
+    am._get_owned_appliances.assert_called()  # type: ignore
+    am._get_shared_appliances.assert_called()  # type: ignore
     await http_client_mock.close_session()
 
 
