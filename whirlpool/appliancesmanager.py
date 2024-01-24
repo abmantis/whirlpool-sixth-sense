@@ -86,7 +86,7 @@ class AppliancesManager:
             headers=self._create_headers(),
         ) as r:
             if r.status != 200:
-                LOGGER.error(f"Failed to get appliances: {r.status}")
+                LOGGER.error(f"Failed to get shared appliances: {r.status}")
                 return False
 
             data = await r.json()
