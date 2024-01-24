@@ -26,7 +26,7 @@ class AppliancesManager:
 
     def _create_headers(self):
         return {
-            "Authorization": "Bearer " + self._auth.get_access_token(),
+            "Authorization": "Bearer {0}".format(self._auth.get_access_token()),
             "Content-Type": "application/json",
             "User-Agent": "okhttp/3.12.0",
             "Pragma": "no-cache",
@@ -102,15 +102,15 @@ class AppliancesManager:
         if self._account_id:
             return self._account_id
 
-        if not self._account_id:
-            async with self._session.get(
-                f"{self._backend_selector.base_url}/api/v1/getUserDetails",
-                headers=self._create_headers(),
-            ) as r:
-                if r.status != 200:
-                    LOGGER.error(f"Failed to get account id: {r.status}")
-                    return False
-                self._account_id = await r.json()["accountId"]
+        async with self._session.get(
+            f"{self._backend_selector.base_url}/api/v1/getUserDetails",
+            headers=self._create_headers(),
+        ) as r:
+            if r.status != 200:
+                LOGGER.error(f"Failed to get account id: {r.status}")
+                return False
+            data = await r.json()
+            self._account_id = data["accountId"]
 
         return self._account_id
 
