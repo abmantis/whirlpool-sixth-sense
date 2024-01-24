@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Dict, List
 
 
 class DummyBrand(Enum):
@@ -27,7 +28,7 @@ class BackendSelectorMock:
         return f"{self.base_url}/oauth/token"
 
     @property
-    def client_credentials(self) -> list[dict[str, str]]:
+    def client_credentials(self) -> List[Dict[str, str]]:
         return [
             {
                 "client_id": "dummy_client_id1",
@@ -38,7 +39,7 @@ class BackendSelectorMock:
 
 class BackendSelectorMockMultipleCreds(BackendSelectorMock):
     @property
-    def client_credentials(self) -> list[dict[str, str]]:
+    def client_credentials(self) -> List[Dict[str, str]]:
         return [
             {
                 "client_id": "dummy_client_id1",

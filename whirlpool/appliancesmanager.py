@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import aiohttp
 
@@ -18,9 +18,9 @@ class AppliancesManager:
     ):
         self._backend_selector = backend_selector
         self._auth = auth
-        self._aircons: list[dict[str, Any]] = []
-        self._washer_dryers: list[dict[str, Any]] = []
-        self._ovens: list[dict[str, Any]] = []
+        self._aircons: List[Dict[str, Any]] = []
+        self._washer_dryers: List[Dict[str, Any]] = []
+        self._ovens: List[Dict[str, Any]] = []
         self._session: aiohttp.ClientSession = session
         self._account_id: str = self._auth._auth_dict.get("accountId")
 
@@ -91,7 +91,7 @@ class AppliancesManager:
                 return False
 
             data = await r.json()
-            locations: list[dict[str, Any]] = data["sharedAppliances"]
+            locations: List[Dict[str, Any]] = data["sharedAppliances"]
             for appliances in locations:
                 for appliance in appliances["appliances"]:
                     self._add_appliance(appliance)
