@@ -82,7 +82,7 @@ class Auth:
             )
 
         async with async_timeout.timeout(30):
-            for creds in self._backend_selector.credentials:
+            for creds in self._backend_selector.client_credentials:
                 auth_data.update(
                     {
                         "client_id": creds["client_id"],

@@ -12,7 +12,7 @@ class BackendSelectorMock:
         return "http://dummy_base_url.com"
 
     @property
-    def credentials(self) -> list[dict[str, str]]:
+    def client_credentials(self) -> list[dict[str, str]]:
         return [
             {
                 "client_id": "dummy_client_id",

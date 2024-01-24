@@ -67,5 +67,5 @@ class BackendSelector:
         return BACKEND_DATA[self._region].get("base_url")
 
     @property
-    def credentials(self) -> list[CredentialsDict]:
+    def client_credentials(self) -> list[CredentialsDict]:
         return BACKEND_DATA[self._brand]
