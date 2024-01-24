@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta
+from typing import Dict
 
 import aiohttp
 import async_timeout
@@ -58,37 +59,32 @@ class Auth:
         with open(AUTH_JSON_FILE, "w") as f:
             json.dump(self._auth_dict, f)
 
-    async def _do_auth(self, refresh_token: str) -> str | None:
-        auth_url = f"{self._backend_selector.base_url}/oauth/token"
-        auth_header = {"Content-Type": "application/x-www-form-urlencoded"}
-        auth_data: dict[str, str] = {}
-
+    def _get_auth_body(
+        self, refresh_token: str, creds: Dict[str, str]
+    ) -> Dict[str, str]:
         if refresh_token:
             LOGGER.info("Fetching auth with refresh token")
-            auth_data.update(
-                {
-                    "grant_type": "refresh_token",
-                    "refresh_token": refresh_token,
-                }
-            )
+            auth_data = {"grant_type": "refresh_token", "refresh_token": refresh_token}
+
         else:
             LOGGER.info("Fetching auth with user/pass")
-            auth_data.update(
-                {
-                    "grant_type": "password",
-                    "username": self._username,
-                    "password": self._password,
-                }
-            )
+            auth_data = {
+                "grant_type": "password",
+                "username": self._username,
+                "password": self._password,
+            }
 
-        async with async_timeout.timeout(30):
-            for creds in self._backend_selector.client_credentials:
-                auth_data.update(
-                    {
-                        "client_id": creds["client_id"],
-                        "client_secret": creds["client_secret"],
-                    }
-                )
+        auth_data.update(creds)
+
+        return auth_data
+
+    async def _do_auth(self, refresh_token: str) -> Dict[str, str]:
+        auth_url = self._backend_selector.auth_url
+        auth_header = {"Content-Type": "application/x-www-form-urlencoded"}
+
+        for creds in self._backend_selector.client_credentials:
+            auth_data: Dict[str, str] = self._get_auth_body(refresh_token, creds)
+            async with async_timeout.timeout(30):
                 async with self._session.post(
                     auth_url, data=auth_data, headers=auth_header
                 ) as r:
