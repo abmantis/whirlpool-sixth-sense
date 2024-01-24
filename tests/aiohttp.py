@@ -313,7 +313,6 @@ class AiohttpClientMockResponse:
         """Mock close."""
 
     async def wait_for_close(self):
-        # not needed in newly pinned aiohttp, but if we upgrade this will be necessary
         pass
 
 
