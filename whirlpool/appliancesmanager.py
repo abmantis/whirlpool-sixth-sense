@@ -24,13 +24,13 @@ class AppliancesManager:
         self._session: aiohttp.ClientSession = session
 
     def _create_headers(self):
-        # note: WP-CLIENT-BRAND is required for `share-accounts/appliances` endpoint
         return {
             "Authorization": "Bearer " + self._auth.get_access_token(),
             "Content-Type": "application/json",
             "User-Agent": "okhttp/3.12.0",
             "Pragma": "no-cache",
             "Cache-Control": "no-cache",
+            # note: WP-CLIENT-BRAND is required for `share-accounts/appliances` endpoint
             "WP-CLIENT-BRAND": self._backend_selector.brand.name,
         }
 
