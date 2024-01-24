@@ -1,11 +1,19 @@
 import json
 from pathlib import Path
+from unittest.mock import Mock
 
 from tests.aiohttp import AiohttpClientMocker
 from tests.mock_backendselector import BackendSelectorMock
 
 CURR_DIR = Path(__file__).parent
 DATA_DIR = CURR_DIR / "data"
+
+
+def get_mock_coro(return_value):
+    async def mock_coro(*args, **kwargs):
+        return return_value
+
+    return Mock(wraps=mock_coro)
 
 
 def assert_appliance_setter_call(
