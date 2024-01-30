@@ -63,7 +63,7 @@ class Auth:
         self, refresh_token: str, creds: Dict[str, str]
     ) -> Dict[str, str]:
         if refresh_token:
-            LOGGER.info("Fetching auth with refresh token")
+            LOGGER.info("Using refresh token in auth body")
             auth_data = {"grant_type": "refresh_token", "refresh_token": refresh_token}
 
         else:
