@@ -22,7 +22,6 @@ class AppliancesManager:
         self._washer_dryers: List[Dict[str, Any]] = []
         self._ovens: List[Dict[str, Any]] = []
         self._session: aiohttp.ClientSession = session
-        self._account_id: str = self._auth._auth_dict.get("accountId")
 
     def _create_headers(self):
         return {
@@ -99,8 +98,9 @@ class AppliancesManager:
             return True
 
     async def _get_account_id(self):
-        if self._account_id:
-            return self._account_id
+        """Returns the accountId from the auth object, or fetches it from the backend if not present."""
+        if self._auth.get_account_id():
+            return self._auth.get_account_id()
 
         async with self._session.get(
             f"{self._backend_selector.base_url}/api/v1/getUserDetails",
@@ -110,16 +110,14 @@ class AppliancesManager:
                 LOGGER.error(f"Failed to get account id: {r.status}")
                 return False
             data = await r.json()
-            self._account_id = data["accountId"]
-
-        return self._account_id
+            return data["accountId"]
 
     async def fetch_appliances(self):
         account_id = await self._get_account_id()
         success_owned = await self._get_owned_appliances(account_id)
         success_shared = await self._get_shared_appliances()
 
-        return success_owned and success_shared
+        return success_owned or success_shared
 
     @property
     def aircons(self):

@@ -36,13 +36,18 @@ async def test_create_headers_includes_wp_client_brand(
 async def test_account_id_set_if_populated_in_auth_dict(
     http_client_mock: AiohttpClientMocker,
 ):
+    # mock_appliancesmanager_get_account_id_get would set the acocunt_id to 12345
+    # so if _get_account_id returns 55555, that means we are using the provided value
+    # which is what we want
+    mock_appliancesmanager_get_account_id_get(http_client_mock, BACKEND_SELECTOR_MOCK)
     http_client_mock.create_session(asyncio.get_event_loop())
     auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", http_client_mock.session)
-    auth._auth_dict["accountId"] = "12345"
+    auth._auth_dict["accountId"] = "555555"
 
     am = AppliancesManager(BACKEND_SELECTOR_MOCK, auth, http_client_mock.session)
 
-    assert am._account_id == "12345"
+    account_id = await am._get_account_id()
+    assert account_id == "555555"
 
     await http_client_mock.close_session()
 
@@ -56,12 +61,11 @@ async def test_fetch_appliances_calls_get_account_id_if_not_set(
     auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", http_client_mock.session)
 
     am = AppliancesManager(BACKEND_SELECTOR_MOCK, auth, http_client_mock.session)
-    am._get_owned_appliances = get_mock_coro(True)
-    am._get_shared_appliances = get_mock_coro(False)
 
-    await am.fetch_appliances()
+    account_id = await am._get_account_id()
 
-    assert am._account_id == "12345"
+    assert account_id == "12345"
+    assert account_id != auth.get_account_id()
 
     await http_client_mock.close_session()
 
@@ -140,5 +144,5 @@ async def test_fetch_appliances_returns_false_if_either_method_returns_false(
 
     result = await am.fetch_appliances()
 
-    assert result == bool(owned_response and shared_response)
+    assert result == bool(owned_response or shared_response)
     await http_client_mock.close_session()

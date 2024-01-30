@@ -2,7 +2,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Dict
+from typing import Dict, Optional
 
 import aiohttp
 import async_timeout
@@ -60,21 +60,21 @@ class Auth:
             json.dump(self._auth_dict, f)
 
     def _get_auth_body(
-        self, refresh_token: str, creds: Dict[str, str]
+        self, refresh_token: str, client_creds: Dict[str, str]
     ) -> Dict[str, str]:
         if refresh_token:
             LOGGER.info("Using refresh token in auth body")
             auth_data = {"grant_type": "refresh_token", "refresh_token": refresh_token}
 
         else:
-            LOGGER.info("Fetching auth with user/pass")
+            LOGGER.info("Using user/pass in auth body")
             auth_data = {
                 "grant_type": "password",
                 "username": self._username,
                 "password": self._password,
             }
 
-        auth_data.update(creds)
+        auth_data.update(client_creds)
 
         return auth_data
 
@@ -82,8 +82,8 @@ class Auth:
         auth_url = self._backend_selector.auth_url
         auth_header = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        for creds in self._backend_selector.client_credentials:
-            auth_data: Dict[str, str] = self._get_auth_body(refresh_token, creds)
+        for client_creds in self._backend_selector.client_credentials:
+            auth_data: Dict[str, str] = self._get_auth_body(refresh_token, client_creds)
             async with async_timeout.timeout(30):
                 async with self._session.post(
                     auth_url, data=auth_data, headers=auth_header
@@ -141,6 +141,10 @@ class Auth:
 
     def get_access_token(self):
         return self._auth_dict.get("access_token", None)
+
+    def get_account_id(self) -> Optional[str]:
+        """Returns the accountId value from the `_auth_dict`, or None if not present."""
+        return self._auth_dict.get("accountId", None)
 
     def get_said_list(self):
         return self._auth_dict.get("SAID", None)
