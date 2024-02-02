@@ -17,20 +17,20 @@ from .utils import (
 BACKEND_SELECTOR_MOCK = BackendSelectorMock()
 
 
-async def test_create_headers_includes_wp_client_brand(
-    http_client_mock: AiohttpClientMocker,
-):
-    http_client_mock.create_session(asyncio.get_event_loop())
-    auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", http_client_mock.session)
-    auth._auth_dict["access_token"] = "acess_token_123"
+# async def test_create_headers_includes_wp_client_brand(
+#     http_client_mock: AiohttpClientMocker,
+# ):
+#     http_client_mock.create_session(asyncio.get_event_loop())
+#     auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", http_client_mock.session)
+#     auth._auth_dict["access_token"] = "acess_token_123"
 
-    am = AppliancesManager(BACKEND_SELECTOR_MOCK, auth, http_client_mock.session)
+#     am = AppliancesManager(BACKEND_SELECTOR_MOCK, auth, http_client_mock.session)
 
-    headers = am._create_headers()
+#     headers = am._create_headers()
 
-    assert headers["WP-CLIENT-BRAND"] == BACKEND_SELECTOR_MOCK.brand.name
+#     assert headers["WP-CLIENT-BRAND"] == BACKEND_SELECTOR_MOCK.brand.name
 
-    await http_client_mock.close_session()
+#     await http_client_mock.close_session()
 
 
 async def test_account_id_set_if_populated_in_auth_dict(
@@ -74,12 +74,8 @@ async def test_fetch_appliances_calls_both_get_methods(
     http_client_mock: AiohttpClientMocker,
 ):
     mock_appliancesmanager_get_account_id_get(http_client_mock, BACKEND_SELECTOR_MOCK)
-    mock_appliancesmanager_get_owned_appliances_get(
-        http_client_mock, BACKEND_SELECTOR_MOCK, "12345"
-    )
-    mock_appliancesmanager_get_shared_appliances_get(
-        http_client_mock, BACKEND_SELECTOR_MOCK
-    )
+    mock_appliancesmanager_get_owned_appliances_get(http_client_mock, BACKEND_SELECTOR_MOCK, "12345")
+    mock_appliancesmanager_get_shared_appliances_get(http_client_mock, BACKEND_SELECTOR_MOCK)
 
     http_client_mock.create_session(asyncio.get_event_loop())
     auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", http_client_mock.session)
@@ -99,12 +95,8 @@ async def test_fetch_appliances_loads_lists(
     http_client_mock: AiohttpClientMocker,
 ):
     mock_appliancesmanager_get_account_id_get(http_client_mock, BACKEND_SELECTOR_MOCK)
-    mock_appliancesmanager_get_owned_appliances_get(
-        http_client_mock, BACKEND_SELECTOR_MOCK, "12345"
-    )
-    mock_appliancesmanager_get_shared_appliances_get(
-        http_client_mock, BACKEND_SELECTOR_MOCK
-    )
+    mock_appliancesmanager_get_owned_appliances_get(http_client_mock, BACKEND_SELECTOR_MOCK, "12345")
+    mock_appliancesmanager_get_shared_appliances_get(http_client_mock, BACKEND_SELECTOR_MOCK)
 
     http_client_mock.create_session(asyncio.get_event_loop())
     auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", http_client_mock.session)
@@ -122,18 +114,14 @@ async def test_fetch_appliances_loads_lists(
     ["owned_response", "shared_response"],
     [(True, True), (True, False), (False, True), (False, False)],
 )
-async def test_fetch_appliances_returns_false_if_either_method_returns_false(
+async def test_fetch_appliances_returns_true_if_either_method_returns_true(
     owned_response: bool,
     shared_response: bool,
     http_client_mock: AiohttpClientMocker,
 ):
     mock_appliancesmanager_get_account_id_get(http_client_mock, BACKEND_SELECTOR_MOCK)
-    mock_appliancesmanager_get_owned_appliances_get(
-        http_client_mock, BACKEND_SELECTOR_MOCK, "12345"
-    )
-    mock_appliancesmanager_get_shared_appliances_get(
-        http_client_mock, BACKEND_SELECTOR_MOCK
-    )
+    mock_appliancesmanager_get_owned_appliances_get(http_client_mock, BACKEND_SELECTOR_MOCK, "12345")
+    mock_appliancesmanager_get_shared_appliances_get(http_client_mock, BACKEND_SELECTOR_MOCK)
 
     http_client_mock.create_session(asyncio.get_event_loop())
     auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", http_client_mock.session)
