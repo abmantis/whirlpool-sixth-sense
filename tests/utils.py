@@ -7,6 +7,7 @@ from tests.mock_backendselector import BackendSelectorMock
 
 CURR_DIR = Path(__file__).parent
 DATA_DIR = CURR_DIR / "data"
+ACCOUNT_ID = "12345"
 
 
 def get_mock_coro(return_value):
