@@ -57,7 +57,12 @@ async def test_auth_success(http_client_mock: AiohttpClientMocker):
 
 async def test_auth_multiple_client_credentials(http_client_mock: AiohttpClientMocker):
     http_client_mock.create_session(asyncio.get_event_loop())
-    auth = Auth(BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS, "email", "secretpass", http_client_mock.session)
+    auth = Auth(
+        BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS,
+        "email",
+        "secretpass",
+        http_client_mock.session,
+    )
     auth_data = AUTH_DATA.copy()
 
     mock_resp_data = {
@@ -74,14 +79,18 @@ async def test_auth_multiple_client_credentials(http_client_mock: AiohttpClientM
     # create mock for each client credential, all but the last one returning 404 so we can try the next
     for i in BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS.client_credentials:
         status = (
-            HTTPStatus.NOT_FOUND if i != len(BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS.client_credentials) else HTTPStatus.OK
+            HTTPStatus.NOT_FOUND
+            if i != len(BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS.client_credentials)
+            else HTTPStatus.OK
         )
         http_client_mock.post(AUTH_URL, json=mock_resp_data, status=status)
 
     await auth.do_auth(store=False)
 
     # ensure that each client credential is used
-    for i, auth_data in enumerate(BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS.client_credentials):
+    for i, auth_data in enumerate(
+        BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS.client_credentials
+    ):
         for k, v in auth_data.items():
             assert http_client_mock.mock_calls[i][2][k] == v
 
