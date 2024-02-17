@@ -1,5 +1,5 @@
-import json
 import logging
+from typing import Any, Dict, List
 
 import aiohttp
 
@@ -18,32 +18,52 @@ class AppliancesManager:
     ):
         self._backend_selector = backend_selector
         self._auth = auth
-        self._aircons = None
-        self._washer_dryers = None
-        self._ovens = None
+        self._aircons: List[Dict[str, Any]] = []
+        self._washer_dryers: List[Dict[str, Any]] = []
+        self._ovens: List[Dict[str, Any]] = []
         self._session: aiohttp.ClientSession = session
 
     def _create_headers(self):
         return {
-            "Authorization": "Bearer " + self._auth.get_access_token(),
+            "Authorization": "Bearer {0}".format(self._auth.get_access_token()),
             "Content-Type": "application/json",
-            # "Host": "api.whrcloud.eu",
             "User-Agent": "okhttp/3.12.0",
             "Pragma": "no-cache",
             "Cache-Control": "no-cache",
+            # note: WP-CLIENT-BRAND is required for `share-accounts/appliances` endpoint
+            "WP-CLIENT-BRAND": self._backend_selector.brand.name,
         }
 
-    async def fetch_appliances(self):
-        account_id = None
-        async with self._session.get(
-            f"{self._backend_selector.base_url}/api/v1/getUserDetails",
-            headers=self._create_headers(),
-        ) as r:
-            if r.status != 200:
-                LOGGER.error(f"Failed to get account id: {r.status}")
-                return False
-            account_id = json.loads(await r.text())["accountId"]
+    def _add_appliance(self, appliance: Dict[str, Any]) -> None:
+        appliance_data = {
+            "SAID": appliance["SAID"],
+            "NAME": appliance["APPLIANCE_NAME"],
+            "DATA_MODEL": appliance["DATA_MODEL_KEY"],
+            "CATEGORY": appliance["CATEGORY_NAME"],
+            "MODEL_NUMBER": appliance.get("MODEL_NO"),
+            "SERIAL_NUMBER": appliance.get("SERIAL"),
+        }
+        data_model = appliance["DATA_MODEL_KEY"].lower()
 
+        if "airconditioner" in data_model:
+            self._aircons.append(appliance_data)
+            return
+
+        if "dryer" in data_model or "washer" in data_model:
+            self._washer_dryers.append(appliance_data)
+            return
+
+        if (
+            "cooking_minerva" in data_model
+            or "cooking_vsi" in data_model
+            or "cooking_u2" in data_model
+        ):
+            self._ovens.append(appliance_data)
+            return
+
+        LOGGER.warning("Unsupported appliance data model %s", data_model)
+
+    async def _get_owned_appliances(self, account_id: str) -> bool:
         async with self._session.get(
             f"{self._backend_selector.base_url}/api/v2/appliance/all/account/{account_id}",
             headers=self._create_headers(),
@@ -52,37 +72,52 @@ class AppliancesManager:
                 LOGGER.error(f"Failed to get appliances: {r.status}")
                 return False
 
-            self._aircons = []
-            self._washer_dryers = []
-            self._ovens = []
-
-            locations = json.loads(await r.text())[str(account_id)]
+            data = await r.json()
+            locations: Dict[str, Any] = data[str(account_id)]
             for appliances in locations.values():
                 for appliance in appliances:
-                    appliance_data = {
-                        "SAID": appliance["SAID"],
-                        "NAME": appliance["APPLIANCE_NAME"],
-                        "DATA_MODEL": appliance["DATA_MODEL_KEY"],
-                        "CATEGORY": appliance["CATEGORY_NAME"],
-                        "MODEL_NUMBER": appliance.get("MODEL_NO"),
-                        "SERIAL_NUMBER": appliance.get("SERIAL"),
-                    }
-                    data_model = appliance["DATA_MODEL_KEY"].lower()
-                    if "airconditioner" in data_model:
-                        self._aircons.append(appliance_data)
-                    elif "dryer" in data_model or "washer" in data_model:
-                        self._washer_dryers.append(appliance_data)
-                    elif (
-                        "cooking_minerva" in data_model
-                        or "cooking_vsi" in data_model
-                        or "cooking_u2" in data_model
-                    ):
-                        self._ovens.append(appliance_data)
-                    else:
-                        LOGGER.warning(
-                            "Unsupported appliance data model %s", data_model
-                        )
-        return True
+                    self._add_appliance(appliance)
+
+            return True
+
+    async def _get_shared_appliances(self) -> bool:
+        async with self._session.get(
+            f"{self._backend_selector.base_url}/api/v1/share-accounts/appliances",
+            headers=self._create_headers(),
+        ) as r:
+            if r.status != 200:
+                LOGGER.error(f"Failed to get shared appliances: {r.status}")
+                return False
+
+            data = await r.json()
+            locations: List[Dict[str, Any]] = data["sharedAppliances"]
+            for appliances in locations:
+                for appliance in appliances["appliances"]:
+                    self._add_appliance(appliance)
+
+            return True
+
+    async def _get_account_id(self):
+        """Returns the accountId from the auth object, or fetches it from the backend if not present."""
+        if self._auth.get_account_id():
+            return self._auth.get_account_id()
+
+        async with self._session.get(
+            f"{self._backend_selector.base_url}/api/v1/getUserDetails",
+            headers=self._create_headers(),
+        ) as r:
+            if r.status != 200:
+                LOGGER.error(f"Failed to get account id: {r.status}")
+                return False
+            data = await r.json()
+            return data["accountId"]
+
+    async def fetch_appliances(self):
+        account_id = await self._get_account_id()
+        success_owned = await self._get_owned_appliances(account_id)
+        success_shared = await self._get_shared_appliances()
+
+        return success_owned or success_shared
 
     @property
     def aircons(self):

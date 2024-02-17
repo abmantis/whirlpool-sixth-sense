@@ -1,0 +1,36 @@
+{
+  "KEY1": [
+    {
+      "APPLIANCE_ID": 1033050,
+      "APPLIANCE_MASTER_ID": 3721,
+      "MODEL_SKU_ID": null,
+      "APPLIANCE_NAME": "Washer",
+      "SAID": "WPR4DL103WMLXV",
+      "NEST_AWAY": 0,
+      "CYCLE_HANDOFF": 0,
+      "NEST_THERMOSTAT_ID": 0,
+      "THERMOSTAT_INFLUENCE_THRESHOLD": null,
+      "THERMOSTAT_DESIRED_OFFSET": null,
+      "THERMOSTAT_OFFSET_NEEDED": null,
+      "DELETE_FLAG": 0,
+      "DISPLAY_POSITION": null,
+      "SERIAL": "CC26012420",
+      "LOCATION_ID": 15862310,
+      "MACHINE_ID": null,
+      "MACHINE_POSITION": 0,
+      "ISVOICEDEFAULT": 1,
+      "DEVICE_ID": "550e8400-e29b-41d4-a716-446655441234",
+      "APPLIANCE_TYPE_ID": null,
+      "STATUS": "CLAIMED",
+      "IS_ENROLLED": null,
+      "MACHINE_STATUS": null,
+      "APPLIANCE_MODE": 2,
+      "CREATED_AT": 1690565765000,
+      "UPDATED_AT": 1690565765000,
+      "DATA_MODEL_KEY": "DDM_LAUNDRY_VMAX20_WHIRLPOOL_WASHER8_V2",
+      "CATEGORY_NAME": "FabricCare",
+      "MODEL_NO": "WTW8127LW1",
+      "REPLENISHMENT_DEVICE_MODEL": null
+    }
+  ]
+}

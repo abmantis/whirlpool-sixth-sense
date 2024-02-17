@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta
+from typing import Dict, Optional
 
 import aiohttp
 import async_timeout
@@ -58,49 +59,42 @@ class Auth:
         with open(AUTH_JSON_FILE, "w") as f:
             json.dump(self._auth_dict, f)
 
-    async def _do_auth(self, refresh_token: str) -> str | None:
-        auth_url = f"{self._backend_selector.base_url}/oauth/token"
-        auth_header = {
-            "Content-Type": "application/x-www-form-urlencoded",
-            # "Brand": "Whirlpool",
-            # "WP-CLIENT-REGION": "EMEA",
-            # "WP-CLIENT-BRAND": "WHIRLPOOL",
-            # "WP-CLIENT-COUNTRY": "EN",
-        }
-
-        auth_data = {
-            "client_id": self._backend_selector.client_id,
-            "client_secret": self._backend_selector.client_secret,
-        }
-
+    def _get_auth_body(
+        self, refresh_token: str, client_creds: Dict[str, str]
+    ) -> Dict[str, str]:
         if refresh_token:
-            LOGGER.info("Fetching auth with refresh token")
-            auth_data.update(
-                {
-                    "grant_type": "refresh_token",
-                    "refresh_token": refresh_token,
-                }
-            )
-        else:
-            LOGGER.info("Fetching auth with user/pass")
-            auth_data.update(
-                {
-                    "grant_type": "password",
-                    "username": self._username,
-                    "password": self._password,
-                }
-            )
+            LOGGER.info("Using refresh token in auth body")
+            auth_data = {"grant_type": "refresh_token", "refresh_token": refresh_token}
 
-        async with async_timeout.timeout(30):
-            async with self._session.post(
-                auth_url, data=auth_data, headers=auth_header
-            ) as r:
-                LOGGER.debug("Auth status: " + str(r.status))
-                if r.status == 200:
-                    return json.loads(await r.text())
-                elif refresh_token:
-                    return await self._do_auth(refresh_token=None)
-                return None
+        else:
+            LOGGER.info("Using user/pass in auth body")
+            auth_data = {
+                "grant_type": "password",
+                "username": self._username,
+                "password": self._password,
+            }
+
+        auth_data.update(client_creds)
+
+        return auth_data
+
+    async def _do_auth(self, refresh_token: str) -> Dict[str, str]:
+        auth_url = self._backend_selector.auth_url
+        auth_header = {"Content-Type": "application/x-www-form-urlencoded"}
+
+        for client_creds in self._backend_selector.client_credentials:
+            auth_data: Dict[str, str] = self._get_auth_body(refresh_token, client_creds)
+            async with async_timeout.timeout(30):
+                async with self._session.post(
+                    auth_url, data=auth_data, headers=auth_header
+                ) as r:
+                    LOGGER.debug("Auth status: " + str(r.status))
+                    if r.status == 200:
+                        return await r.json()
+                    elif refresh_token:
+                        return await self._do_auth(refresh_token=None)
+
+        return None
 
     async def do_auth(self, store: bool = False) -> bool:
         fetched_auth_data = await self._do_auth(
@@ -147,6 +141,10 @@ class Auth:
 
     def get_access_token(self):
         return self._auth_dict.get("access_token", None)
+
+    def get_account_id(self) -> Optional[str]:
+        """Returns the accountId value from the `_auth_dict`, or None if not present."""
+        return self._auth_dict.get("accountId", None)
 
     def get_said_list(self):
         return self._auth_dict.get("SAID", None)
