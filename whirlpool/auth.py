@@ -83,7 +83,7 @@ class Auth:
         auth_header = {
             "Content-Type": "application/x-www-form-urlencoded",
             "User-Agent":"okhttp/3.12.0",
-            }
+        }
 
         for client_creds in self._backend_selector.client_credentials:
             auth_data: Dict[str, str] = self._get_auth_body(refresh_token, client_creds)
