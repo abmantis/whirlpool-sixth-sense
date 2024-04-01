@@ -22,7 +22,7 @@ AUTH_DATA = {
 }
 AUTH_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
-    "User-Agent":"okhttp/3.12.0",
+    "User-Agent": "okhttp/3.12.0",
 }
 
 
