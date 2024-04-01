@@ -82,7 +82,7 @@ class Auth:
         auth_url = self._backend_selector.auth_url
         auth_header = {
             "Content-Type": "application/x-www-form-urlencoded",
-            "User-Agent":"okhttp/3.12.0",
+            "User-Agent": "okhttp/3.12.0",
         }
 
         for client_creds in self._backend_selector.client_credentials:
