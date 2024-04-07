@@ -1,5 +1,4 @@
 import aioconsole
-import aiohttp
 
 from whirlpool.aircon import Aircon, Mode
 

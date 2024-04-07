@@ -2,7 +2,6 @@ import argparse
 import asyncio
 import logging
 
-import aioconsole
 import aiohttp
 
 from cli_ac_menu import show_aircon_menu
@@ -11,7 +10,6 @@ from cli_washerdryer_menu import show_washerdryer_menu
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector, Brand, Region
-from whirlpool.washerdryer import WasherDryer
 
 logging.basicConfig(format="%(asctime)s [%(name)s %(levelname)s]: %(message)s")
 logger = logging.getLogger("whirlpool")
@@ -33,9 +31,6 @@ args = parser.parse_args()
 
 
 async def start():
-    def attr_upd():
-        logger.info("Attributes updated")
-
     if args.brand == "whirlpool":
         selected_brand = Brand.Whirlpool
     elif args.brand == "maytag":

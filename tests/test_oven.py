@@ -1,5 +1,5 @@
 import asyncio
-from unittest.mock import ANY, MagicMock
+from unittest.mock import MagicMock
 
 from whirlpool.oven import Cavity, CavityState, CookMode, Oven
 
