@@ -110,8 +110,8 @@ async def test_auth_bad_credentials(http_client_mock: AiohttpClientMocker):
     http_client_mock.post(AUTH_URL, json=mock_resp_data, status=HTTPStatus.BAD_REQUEST)
 
     await auth.do_auth(store=False)
-    assert auth.is_access_token_valid() == False
-    assert auth.get_said_list() == None
+    assert auth.is_access_token_valid() is False
+    assert auth.get_said_list() is None
     assert len(http_client_mock.mock_calls) == 1
     assert http_client_mock.mock_calls[-1][0] == "POST"
     assert http_client_mock.mock_calls[-1][1] == URL(AUTH_URL)

@@ -1,7 +1,9 @@
 import asyncio
 from unittest.mock import MagicMock
 
+from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.oven import Cavity, CavityState, CookMode, Oven
+from whirlpool.types import ApplianceData
 
 from .aiohttp import AiohttpClientMocker
 from .mock_backendselector import BackendSelectorMock
@@ -1638,65 +1640,78 @@ async def test_attributes(
         appliance_http_client_mock, backend_selector_mock, SAID, DATA1
     )
     appliance_http_client_mock.create_session(asyncio.get_event_loop())
-    oven = Oven(
-        backend_selector_mock, auth_mock, SAID, appliance_http_client_mock.session
+
+    app_manager = AppliancesManager(
+        backend_selector_mock, auth_mock, appliance_http_client_mock.session
     )
-    await oven.connect()
+    app_data = ApplianceData(
+        said=SAID,
+        name="test_name",
+        data_model="oven",
+        category="oven",
+        model_number=SAID,
+        serial_number=SAID,
+    )
+
+    oven = Oven(app_manager, app_data)
+    app_manager._app_dict[SAID] = oven
+
+    await app_manager.connect()
     assert oven.get_online() is True
-    assert oven.get_door_opened() == False
-    assert oven.get_control_locked() == False
-    assert oven.get_sabbath_mode() == False
+    assert oven.get_door_opened() is False
+    assert oven.get_control_locked() is False
+    assert oven.get_sabbath_mode() is False
     assert oven.get_display_brightness_percent() == 90
-    assert oven.get_oven_cavity_exists(Cavity.Upper) == True
-    assert oven.get_oven_cavity_exists(Cavity.Lower) == False
-    assert oven.get_light(Cavity.Upper) == False
-    assert oven.get_meat_probe_status(Cavity.Upper) == False
+    assert oven.get_oven_cavity_exists(Cavity.Upper) is True
+    assert oven.get_oven_cavity_exists(Cavity.Lower) is False
+    assert oven.get_light(Cavity.Upper) is False
+    assert oven.get_meat_probe_status(Cavity.Upper) is False
     assert oven.get_cook_time(Cavity.Upper) == 81
     assert oven.get_temp(Cavity.Upper) == 37.7
     assert oven.get_target_temp(Cavity.Upper) == 176.6
     assert oven.get_cavity_state(Cavity.Upper) == CavityState.Preheating
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Bake
-    await oven.disconnect()
+    await app_manager.disconnect()
 
     mock_appliance_http_get(
         appliance_http_client_mock, backend_selector_mock, SAID, DATA2
     )
-    await oven.connect()
+    await app_manager.connect()
     assert oven.get_online() is True
-    assert oven.get_door_opened() == True
-    assert oven.get_control_locked() == True
-    assert oven.get_sabbath_mode() == False
+    assert oven.get_door_opened() is True
+    assert oven.get_control_locked() is True
+    assert oven.get_sabbath_mode() is False
     assert oven.get_display_brightness_percent() == 70
-    assert oven.get_oven_cavity_exists(Cavity.Upper) == True
-    assert oven.get_oven_cavity_exists(Cavity.Lower) == False
-    assert oven.get_light(Cavity.Upper) == False
-    assert oven.get_meat_probe_status(Cavity.Upper) == False
+    assert oven.get_oven_cavity_exists(Cavity.Upper) is True
+    assert oven.get_oven_cavity_exists(Cavity.Lower) is False
+    assert oven.get_light(Cavity.Upper) is False
+    assert oven.get_meat_probe_status(Cavity.Upper) is False
     assert oven.get_cook_time(Cavity.Upper) == 0
     assert oven.get_temp(Cavity.Upper) == 0.0
     assert oven.get_target_temp(Cavity.Upper) == 0.0
     assert oven.get_cavity_state(Cavity.Upper) == CavityState.Standby
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
-    await oven.disconnect()
+    await app_manager.disconnect()
 
     mock_appliance_http_get(
         appliance_http_client_mock, backend_selector_mock, SAID, DATA3
     )
-    await oven.connect()
+    await app_manager.connect()
     assert oven.get_online() is True
-    assert oven.get_door_opened() == False
-    assert oven.get_control_locked() == False
-    assert oven.get_sabbath_mode() == False
+    assert oven.get_door_opened() is False
+    assert oven.get_control_locked() is False
+    assert oven.get_sabbath_mode() is False
     assert oven.get_display_brightness_percent() == 90
-    assert oven.get_oven_cavity_exists(Cavity.Upper) == True
-    assert oven.get_oven_cavity_exists(Cavity.Lower) == False
-    assert oven.get_light(Cavity.Upper) == False
-    assert oven.get_meat_probe_status(Cavity.Upper) == False
+    assert oven.get_oven_cavity_exists(Cavity.Upper) is True
+    assert oven.get_oven_cavity_exists(Cavity.Lower) is False
+    assert oven.get_light(Cavity.Upper) is False
+    assert oven.get_meat_probe_status(Cavity.Upper) is False
     assert oven.get_cook_time(Cavity.Upper) == 0
     assert oven.get_temp(Cavity.Upper) == 0.0
     assert oven.get_target_temp(Cavity.Upper) == 0.0
     assert oven.get_cavity_state(Cavity.Upper) == CavityState.Standby
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
-    await oven.disconnect()
+    await app_manager.disconnect()
     await appliance_http_client_mock.close_session()
 
 
@@ -1711,11 +1726,23 @@ async def test_setters(
     mock_appliance_http_post(appliance_http_client_mock, backend_selector_mock)
     CONNECT_HTTP_CALLS = 2
     appliance_http_client_mock.create_session(asyncio.get_event_loop())
-    oven = Oven(
-        backend_selector_mock, auth_mock, SAID, appliance_http_client_mock.session
+
+    app_manager = AppliancesManager(
+        backend_selector_mock, auth_mock, appliance_http_client_mock.session
+    )
+    app_data = ApplianceData(
+        said=SAID,
+        name="test_name",
+        data_model="oven",
+        category="oven",
+        model_number=SAID,
+        serial_number=SAID,
     )
 
-    await oven.connect()
+    oven = Oven(app_manager, app_data)
+    app_manager._app_dict[SAID] = oven
+
+    await app_manager.connect()
     await oven.set_control_locked(True)
     assert_appliance_setter_call(
         appliance_http_client_mock,
@@ -1872,5 +1899,5 @@ async def test_setters(
         CONNECT_HTTP_CALLS + 15,
     )
 
-    await oven.disconnect()
+    await app_manager.disconnect()
     await appliance_http_client_mock.close_session()

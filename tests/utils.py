@@ -40,8 +40,7 @@ def mock_appliance_http_get(
     data,
 ):
     appliance_http_client_mock.get(
-        f"{backend_selector_mock.base_url}/api/v1/appliance/{said}",
-        json=data,
+        f"{backend_selector_mock.get_appliance_data_url}/{said}", json=data
     )
 
 
@@ -49,9 +48,7 @@ def mock_appliance_http_post(
     appliance_http_client_mock: AiohttpClientMocker,
     backend_selector_mock: BackendSelectorMock,
 ):
-    appliance_http_client_mock.post(
-        f"{backend_selector_mock.base_url}/api/v1/appliance/command"
-    )
+    appliance_http_client_mock.post(backend_selector_mock.post_appliance_command_url)
 
 
 def mock_appliancesmanager_get_account_id_get(
@@ -59,7 +56,7 @@ def mock_appliancesmanager_get_account_id_get(
     backend_selector_mock: BackendSelectorMock,
 ):
     http_client_mock.get(
-        f"{backend_selector_mock.base_url}/api/v1/getUserDetails",
+        backend_selector_mock.get_user_data_url,
         content=json.dumps({"accountId": "12345"}).encode("utf-8"),
     )
 
@@ -75,7 +72,7 @@ def mock_appliancesmanager_get_owned_appliances_get(
     content = json.dumps({account_id: owned_appliance_data}).encode("utf-8")
 
     http_client_mock.get(
-        f"{backend_selector_mock.base_url}/api/v2/appliance/all/account/{account_id}",
+        f"{backend_selector_mock.get_owned_appliances_url}/{account_id}",
         content=content,
     )
 
@@ -90,6 +87,5 @@ def mock_appliancesmanager_get_shared_appliances_get(
     content = json.dumps(shared_appliance_data).encode("utf-8")
 
     http_client_mock.get(
-        f"{backend_selector_mock.base_url}/api/v1/share-accounts/appliances",
-        content=content,
+        backend_selector_mock.get_shared_appliances_url, content=content
     )

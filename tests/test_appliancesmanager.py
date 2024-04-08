@@ -28,7 +28,7 @@ def assert_appliances_manager_call(
 
     call = mock_calls[call_index]
     assert call[0] == "GET"
-    assert call[1].path == path
+    assert path.endswith(call[1].path)
     # call[2] is body, which will be None
 
     if required_headers is not None:
@@ -62,20 +62,22 @@ async def test_fetch_appliances_with_set_account_id(
 
     if account_id is None:
         # make sure that the first call in this case is to get the account id
-        assert_appliances_manager_call(http_client_mock, 0, "/api/v1/getUserDetails")
+        assert_appliances_manager_call(
+            http_client_mock, 0, BACKEND_SELECTOR_MOCK.get_user_data_url
+        )
 
     # this should always be called
     assert_appliances_manager_call(
         http_client_mock,
         get_appliances_idx,
-        f"/api/v2/appliance/all/account/{ACCOUNT_ID}",
+        f"{BACKEND_SELECTOR_MOCK.get_owned_appliances_url}/{ACCOUNT_ID}",
     )
 
     # this should always be called and requires the WP-CLIENT-BRAND header
     assert_appliances_manager_call(
         http_client_mock,
         get_appliances_idx + 1,
-        "/api/v1/share-accounts/appliances",
+        BACKEND_SELECTOR_MOCK.get_shared_appliances_url,
         {"WP-CLIENT-BRAND": "DUMMY_BRAND"},
     )
 
