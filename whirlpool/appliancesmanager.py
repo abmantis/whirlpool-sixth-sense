@@ -30,8 +30,6 @@ class AppliancesManager:
             "User-Agent": "okhttp/3.12.0",
             "Pragma": "no-cache",
             "Cache-Control": "no-cache",
-            # note: WP-CLIENT-BRAND is required for `share-accounts/appliances` endpoint
-            "WP-CLIENT-BRAND": self._backend_selector.brand.name,
         }
 
     def _add_appliance(self, appliance: dict[str, Any]) -> None:
@@ -81,9 +79,12 @@ class AppliancesManager:
             return True
 
     async def _get_shared_appliances(self) -> bool:
+        headers = self._create_headers()
+        headers["WP-CLIENT-BRAND"] = self._backend_selector.brand.name
+
         async with self._session.get(
             f"{self._backend_selector.base_url}/api/v1/share-accounts/appliances",
-            headers=self._create_headers(),
+            headers=headers,
         ) as r:
             if r.status != 200:
                 LOGGER.error(f"Failed to get shared appliances: {r.status}")
