@@ -1,27 +1,10 @@
 import logging
-from enum import Enum
-from typing import TypedDict
+
+from .types import Brand, CredentialsDict, Region
 
 LOGGER = logging.getLogger(__name__)
 
-
-class CredentialsDict(TypedDict):
-    client_id: str
-    client_secret: str
-
-
-class Brand(Enum):
-    Whirlpool = 0
-    Maytag = 1
-    KitchenAid = 2
-
-
-class Region(Enum):
-    EU = 0
-    US = 1
-
-
-BACKEND_DATA = {
+CREDENTIALS: dict[Brand, list[CredentialsDict]] = {
     Brand.Whirlpool: [
         {
             "client_id": "whirlpool_android",
@@ -44,9 +27,14 @@ BACKEND_DATA = {
             "client_secret": "kkdPquOHfNH-iIinccTdhAkJmaIdWBhLehhLrfoXRWbKjEpqpdu92PISF_yJEWQs72D2yeC0PdoEKeWgHR9JRA",
         }
     ],
-    Region.EU: {"base_url": "https://prod-api.whrcloud.eu"},
-    Region.US: {"base_url": "https://api.whrcloud.com"},
 }
+
+URLS: dict[Region, str] = {
+    Region.EU: "https://prod-api.whrcloud.eu",
+    Region.US: "https://api.whrcloud.com",
+}
+
+BACKEND_DATA = CREDENTIALS | URLS
 
 
 class BackendSelector:
@@ -64,12 +52,36 @@ class BackendSelector:
 
     @property
     def base_url(self):
-        return BACKEND_DATA[self._region].get("base_url")
+        return URLS[self._region]
 
     @property
     def client_credentials(self) -> list[CredentialsDict]:
-        return BACKEND_DATA[self._brand]
+        return CREDENTIALS[self._brand]
 
     @property
     def auth_url(self):
         return f"{self.base_url}/oauth/token"
+
+    @property
+    def ws_url(self):
+        return f"{self.base_url}/api/v1/client_auth/webSocketUrl"
+
+    @property
+    def post_appliance_command_url(self):
+        return f"{self.base_url}/api/v1/appliance/command"
+
+    @property
+    def get_appliance_data_url(self):
+        return f"{self.base_url}/api/v1/appliance"
+
+    @property
+    def get_user_data_url(self):
+        return f"{self.base_url}/api/v1/getUserDetails"
+
+    @property
+    def get_shared_appliances_url(self):
+        return f"{self.base_url}/api/v1/share-accounts/appliances"
+
+    @property
+    def get_owned_appliances_url(self):
+        return f"{self.base_url}/api/v2/appliance/all/account"
