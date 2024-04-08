@@ -38,7 +38,7 @@ class Appliance:
         self._session: aiohttp.ClientSession = session
 
     @property
-    def said(self):
+    def said(self) -> str:
         """Return Appliance SAID"""
         return self._said
 
@@ -60,7 +60,7 @@ class Appliance:
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
-    def get_attribute(self, attribute: str) -> None | str:
+    def get_attribute(self, attribute: str) -> str | None:
         """Get attribute from local data dictionary"""
         if not self.has_attribute(attribute):
             return None
@@ -178,7 +178,7 @@ class Appliance:
 
     def _create_headers(self) -> dict[str, str]:
         return {
-            "Authorization": "Bearer " + self._auth.get_access_token(),
+            "Authorization": "Bearer {0}".format(self._auth.get_access_token()),
             "Content-Type": "application/json",
             "User-Agent": "okhttp/3.12.0",
             "Pragma": "no-cache",
