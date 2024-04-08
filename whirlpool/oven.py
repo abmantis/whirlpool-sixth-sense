@@ -1,8 +1,6 @@
 import logging
 from enum import Enum
 
-import aiohttp
-
 from .appliance import Appliance
 
 LOGGER = logging.getLogger(__name__)
@@ -193,9 +191,6 @@ class KitchenTimer:
 
 
 class Oven(Appliance):
-    def __init__(self, backend_selector, auth, said, session: aiohttp.ClientSession):
-        Appliance.__init__(self, backend_selector, auth, said, session)
-
     def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper):
         return self.attr_value_to_bool(
             self.get_attribute(
