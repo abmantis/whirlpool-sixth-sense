@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 from datetime import datetime
@@ -29,13 +28,6 @@ class Auth:
         self._session: aiohttp.ClientSession = session
 
         self._renew_time: datetime = None
-
-    async def _do_auto_renewal(self):
-        if self._renew_time > datetime.now():
-            time_to = (self._renew_time - datetime.now()).seconds
-            LOGGER.info("Renewing in %ds", time_to)
-            await asyncio.sleep(time_to)
-        await self.do_auth()
 
     def _save_auth_data(self):
         with open(AUTH_JSON_FILE, "w") as f:
