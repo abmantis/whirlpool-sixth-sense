@@ -1,4 +1,5 @@
 import json
+
 import aioconsole
 
 from whirlpool.oven import Cavity, CookMode, KitchenTimerState, Oven
