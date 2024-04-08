@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -18,9 +18,9 @@ class AppliancesManager:
     ):
         self._backend_selector = backend_selector
         self._auth = auth
-        self._aircons: List[Dict[str, Any]] = []
-        self._washer_dryers: List[Dict[str, Any]] = []
-        self._ovens: List[Dict[str, Any]] = []
+        self._aircons: list[dict[str, Any]] = []
+        self._washer_dryers: list[dict[str, Any]] = []
+        self._ovens: list[dict[str, Any]] = []
         self._session: aiohttp.ClientSession = session
 
     def _create_headers(self):
@@ -34,7 +34,7 @@ class AppliancesManager:
             "WP-CLIENT-BRAND": self._backend_selector.brand.name,
         }
 
-    def _add_appliance(self, appliance: Dict[str, Any]) -> None:
+    def _add_appliance(self, appliance: dict[str, Any]) -> None:
         appliance_data = {
             "SAID": appliance["SAID"],
             "NAME": appliance["APPLIANCE_NAME"],
@@ -73,7 +73,7 @@ class AppliancesManager:
                 return False
 
             data = await r.json()
-            locations: Dict[str, Any] = data[str(account_id)]
+            locations: dict[str, Any] = data[str(account_id)]
             for appliances in locations.values():
                 for appliance in appliances:
                     self._add_appliance(appliance)
@@ -90,7 +90,7 @@ class AppliancesManager:
                 return False
 
             data = await r.json()
-            locations: List[Dict[str, Any]] = data["sharedAppliances"]
+            locations: list[dict[str, Any]] = data["sharedAppliances"]
             for appliances in locations:
                 for appliance in appliances["appliances"]:
                     self._add_appliance(appliance)

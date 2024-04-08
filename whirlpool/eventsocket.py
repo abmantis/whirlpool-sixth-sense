@@ -30,9 +30,9 @@ class EventSocket:
 
     def __init__(
         self,
-        url,
+        url: str,
         auth: Auth,
-        said,
+        said: str,
         msg_listener: Callable[[str], None],
         con_up_listener: Callable,
         session: aiohttp.ClientSession,

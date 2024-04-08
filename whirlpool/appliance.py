@@ -31,9 +31,9 @@ class Appliance:
         self._backend_selector = backend_selector
         self._auth = auth
         self._said = said
-        self._attr_changed: list(Callable) = []
-        self._event_socket = None
-        self._data_dict = None
+        self._attr_changed: list[Callable] = []
+        self._event_socket: EventSocket = None
+        self._data_dict: dict = {}
 
         self._session: aiohttp.ClientSession = session
 
@@ -50,7 +50,7 @@ class Appliance:
         except ValueError:
             LOGGER.error("Attr callback not found")
 
-    def _event_socket_handler(self, msg):
+    def _event_socket_handler(self, msg: str):
         json_msg = json.loads(msg)
         timestamp = json_msg["timestamp"]
         for attr, val in json_msg["attributeMap"].items():
@@ -76,7 +76,7 @@ class Appliance:
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
-    async def _getWebsocketUrl(self):
+    async def _getWebsocketUrl(self) -> str:
         DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
         async with self._session.get(
             f"{self._backend_selector.base_url}/api/v1/client_auth/webSocketUrl",
@@ -103,7 +103,7 @@ class Appliance:
             return False
 
         uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        for n in range(REQUEST_RETRY_COUNT):
+        for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.get(uri, headers=self._create_headers()) as r:
                     if r.status == 200:
@@ -133,7 +133,7 @@ class Appliance:
             "body": attributes,
             "header": {"said": self._said, "command": "setAttributes"},
         }
-        for n in range(REQUEST_RETRY_COUNT):
+        for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.post(
                     uri, json=cmd_data, headers=self._create_headers()
