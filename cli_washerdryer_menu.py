@@ -51,7 +51,6 @@ async def show_washerdryer_menu(backend_selector, auth, said, session):
             await wd.send_attributes({cmd: val})
         elif choice == "q":
             await wd.disconnect()
-            auth.cancel_auto_renewal()
             print("Bye")
             loop = False
         else:

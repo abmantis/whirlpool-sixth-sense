@@ -1,3 +1,5 @@
+import json
+
 import aioconsole
 
 from whirlpool.aircon import Aircon, Mode
@@ -89,14 +91,13 @@ async def show_aircon_menu(backend_selector, auth, said, session):
             await ac.fetch_data()
             print_status(ac)
         elif choice == "v":
-            print(ac._data_dict)
+            print(json.dumps(ac._data_dict, indent=4, sort_keys=True, default=str))
         elif choice == "c":
             cmd = aioconsole.ainput("Command: ")
             val = aioconsole.ainput("Value: ")
             await ac.send_attributes({cmd: val})
         elif choice == "q":
             await ac.disconnect()
-            auth.cancel_auto_renewal()
             print("Bye")
             loop = False
         else:

@@ -1,3 +1,4 @@
+import json
 import aioconsole
 
 from whirlpool.oven import Cavity, CookMode, KitchenTimerState, Oven
@@ -124,14 +125,13 @@ async def show_oven_menu(backend_selector, auth, said, session):
             await ov.fetch_data()
             print_status(ov)
         elif choice == "v":
-            print(ov._data_dict)
+            print(json.dumps(ov._data_dict, indent=4, sort_keys=True, default=str))
         elif choice == "c":
             cmd = aioconsole.ainput("Command: ")
             val = aioconsole.ainput("Value: ")
             await ov.send_attributes({cmd: val})
         elif choice == "q":
             await ov.disconnect()
-            auth.cancel_auto_renewal()
             print("Bye")
             loop = False
         else:
