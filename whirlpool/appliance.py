@@ -37,6 +37,11 @@ class Appliance:
 
         self._session: aiohttp.ClientSession = session
 
+    @property
+    def said(self):
+        """Return Appliance SAID"""
+        return self._said
+
     def register_attr_callback(self, update_callback: Callable):
         """Register Callback function."""
         self._attr_changed.append(update_callback)
@@ -50,53 +55,37 @@ class Appliance:
         except ValueError:
             LOGGER.error("Attr callback not found")
 
-    def _event_socket_handler(self, msg: str):
-        json_msg = json.loads(msg)
-        timestamp = json_msg["timestamp"]
-        for attr, val in json_msg["attributeMap"].items():
-            if not self.has_attribute(attr):
-                continue
-            self._set_attribute(attr, str(val), timestamp)
-
-        for callback in self._attr_changed:
-            callback()
-
-    def _create_headers(self):
-        return {
-            "Authorization": "Bearer " + self._auth.get_access_token(),
-            "Content-Type": "application/json",
-            # "Host": "api.whrcloud.eu",
-            "User-Agent": "okhttp/3.12.0",
-            "Pragma": "no-cache",
-            "Cache-Control": "no-cache",
-        }
-
-    def _set_attribute(self, attribute, value, timestamp):
+    def _set_attribute(self, attribute: str, value: str, timestamp: int):
         LOGGER.debug(f"Updating attribute {attribute} with {value} ({timestamp})")
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
-    async def _getWebsocketUrl(self) -> str:
-        DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
-        async with self._session.get(
-            f"{self._backend_selector.base_url}/api/v1/client_auth/webSocketUrl",
-            headers=self._create_headers(),
-        ) as r:
-            if r.status != 200:
-                LOGGER.error(f"Failed to get websocket url: {r.status}")
-                return DEFAULT_WS_URL
-            try:
-                return json.loads(await r.text())["url"]
-            except KeyError:
-                LOGGER.error(f"Failed to get websocket url: {r.status}")
-                return DEFAULT_WS_URL
+    def get_attribute(self, attribute: str) -> None | str:
+        """Get attribute from local data dictionary"""
+        if not self.has_attribute(attribute):
+            return None
+        return self._data_dict["attributes"][attribute]["value"]
 
-    @property
-    def said(self):
-        """Return Appliance SAID"""
-        return self._said
+    def has_attribute(self, attribute: str) -> bool:
+        """Check for attribute in local data dictionary"""
+        if not self._data_dict:
+            LOGGER.error("No data available")
+            return False
+        return attribute in self._data_dict.get("attributes", {})
 
-    async def fetch_data(self):
+    def bool_to_attr_value(self, b: bool) -> str:
+        """Convert bool to attribute value"""
+        return SETVAL_VALUE_ON if b else SETVAL_VALUE_OFF
+
+    def attr_value_to_bool(self, val: str | None) -> bool | None:
+        """Convert attribute value to bool"""
+        return None if val is None else val == SETVAL_VALUE_ON
+
+    def get_online(self) -> bool | None:
+        """Get online state for appliance"""
+        return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
+
+    async def fetch_data(self) -> bool:
         """Fetch appliance data from web api"""
         if not self._session:
             LOGGER.error("Session not started")
@@ -120,7 +109,7 @@ class Appliance:
                         LOGGER.error("Fetching data failed (%s)", r.status)
         return False
 
-    async def send_attributes(self, attributes):
+    async def send_attributes(self, attributes: str) -> bool:
         """Send attributes to appliance api"""
         if not self._session:
             LOGGER.error("Session not started")
@@ -146,31 +135,6 @@ class Appliance:
                         continue
                     LOGGER.error(f"Sending attributes failed ({r.status})")
         return False
-
-    def get_attribute(self, attribute):
-        """Get attribute from local data dictionary"""
-        if not self.has_attribute(attribute):
-            return None
-        return self._data_dict["attributes"][attribute]["value"]
-
-    def has_attribute(self, attribute):
-        """Check for attribute in local data dictionary"""
-        if self._data_dict is None:
-            LOGGER.error("No data available")
-            return False
-        return attribute in self._data_dict.get("attributes", {})
-
-    def bool_to_attr_value(self, b: bool):
-        """Convert bool to attribute value"""
-        return SETVAL_VALUE_ON if b else SETVAL_VALUE_OFF
-
-    def attr_value_to_bool(self, val: str):
-        """Convert attribute value to bool"""
-        return None if val is None else val == SETVAL_VALUE_ON
-
-    def get_online(self):
-        """Get online state for appliance"""
-        return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
 
     async def connect(self):
         """Connect to appliance event listener"""
@@ -200,3 +164,38 @@ class Appliance:
         """Stop the appliance event listener"""
         await self._event_socket.stop()
         self._event_socket = None
+
+    def _event_socket_handler(self, msg: str):
+        json_msg = json.loads(msg)
+        timestamp = json_msg["timestamp"]
+        for attr, val in json_msg["attributeMap"].items():
+            if not self.has_attribute(attr):
+                continue
+            self._set_attribute(attr, str(val), timestamp)
+
+        for callback in self._attr_changed:
+            callback()
+
+    def _create_headers(self) -> dict[str, str]:
+        return {
+            "Authorization": "Bearer " + self._auth.get_access_token(),
+            "Content-Type": "application/json",
+            "User-Agent": "okhttp/3.12.0",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+        }
+
+    async def _getWebsocketUrl(self) -> str:
+        DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
+        async with self._session.get(
+            f"{self._backend_selector.base_url}/api/v1/client_auth/webSocketUrl",
+            headers=self._create_headers(),
+        ) as r:
+            if r.status != 200:
+                LOGGER.error(f"Failed to get websocket url: {r.status}")
+                return DEFAULT_WS_URL
+            try:
+                return json.loads(await r.text())["url"]
+            except KeyError:
+                LOGGER.error(f"Failed to get websocket url: {r.status}")
+                return DEFAULT_WS_URL
