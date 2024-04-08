@@ -1,3 +1,5 @@
+import json
+
 import aioconsole
 
 from whirlpool.washerdryer import WasherDryer
@@ -42,7 +44,7 @@ async def show_washerdryer_menu(backend_selector, auth, said, session):
             await wd.fetch_data()
             print_status(wd)
         elif choice == "v":
-            print(wd._data_dict)
+            print(json.dumps(wd._data_dict, indent=4, sort_keys=True, default=str))
         elif choice == "c":
             cmd = aioconsole.ainput("Command: ")
             val = aioconsole.ainput("Value: ")
