@@ -33,6 +33,14 @@ class Appliance:
         """Return Appliance SAID"""
         return self._appliance_data.said
 
+    @property
+    def name(self) -> str:
+        """Return Appliance name"""
+        return self._appliance_data.name
+
+    async def fetch_data(self):
+        await self._app_manager.fetch_appliance_data(self)
+
     def register_attr_callback(self, update_callback: Callable):
         """Register Callback function."""
         self._attr_changed.append(update_callback)
