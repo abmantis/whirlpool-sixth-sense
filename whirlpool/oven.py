@@ -1,7 +1,11 @@
 import logging
+import typing
 from enum import Enum
 
 from .appliance import Appliance
+
+if typing.TYPE_CHECKING:
+    from .appliancesmanager import AppliancesManager
 
 LOGGER = logging.getLogger(__name__)
 
@@ -142,8 +146,11 @@ KITCHEN_TIMER_OPERATIONS_MAP = {
 
 
 class KitchenTimer:
-    def __init__(self, appliance: Appliance, timer_id: int = 1):
+    def __init__(
+        self, app_manager: "AppliancesManager", appliance: Appliance, timer_id: int = 1
+    ):
         self._timer_id = timer_id
+        self._app_manager = app_manager
         self._appliance = appliance
         self._attr_prefix = "KitchenTimer{:02d}_".format(timer_id)
 
@@ -168,7 +175,8 @@ class KitchenTimer:
         return None
 
     async def set_timer(self, timer_time: int, operation=KitchenTimerOperations.Start):
-        await self._appliance.send_attributes(
+        await self._app_manager.send_attributes(
+            self._appliance,
             {
                 self._attr_prefix
                 + ATTR_POSTFIX_KITCHEN_TIMER_SET_TIME: int(timer_time),
@@ -176,17 +184,18 @@ class KitchenTimer:
                 + ATTR_POSTFIX_KITCHEN_TIMER_SET_OPS: KITCHEN_TIMER_OPERATIONS_MAP[
                     operation
                 ],
-            }
+            },
         )
 
     async def cancel_timer(self):
-        await self._appliance.send_attributes(
+        await self._app_manager.send_attributes(
+            self._appliance,
             {
                 self._attr_prefix
                 + ATTR_POSTFIX_KITCHEN_TIMER_SET_OPS: KITCHEN_TIMER_OPERATIONS_MAP[
                     KitchenTimerOperations.Cancel
                 ]
-            }
+            },
         )
 
 
@@ -209,7 +218,9 @@ class Oven(Appliance):
         return int(self.get_attribute(ATTR_DISPLAY_BRIGHTNESS))
 
     async def set_display_brightness_percent(self, pct: int):
-        await self.send_attributes({ATTR_DISPLAY_BRIGHTNESS: str(pct)})
+        await self._app_manager.send_attributes(
+            self, {ATTR_DISPLAY_BRIGHTNESS: str(pct)}
+        )
 
     def get_cook_time(self, cavity: Cavity = Cavity.Upper):
         return int(
@@ -220,7 +231,9 @@ class Oven(Appliance):
         return self.attr_value_to_bool(self.get_attribute(ATTR_CONTROL_LOCK))
 
     async def set_control_locked(self, on: bool):
-        await self.send_attributes({ATTR_CONTROL_LOCK: self.bool_to_attr_value(on)})
+        await self._app_manager.send_attributes(
+            self, {ATTR_CONTROL_LOCK: self.bool_to_attr_value(on)}
+        )
 
     def get_light(self, cavity: Cavity = Cavity.Upper):
         return self.attr_value_to_bool(
@@ -230,12 +243,13 @@ class Oven(Appliance):
         )
 
     async def set_light(self, on: bool, cavity: Cavity = Cavity.Upper):
-        await self.send_attributes(
+        await self._app_manager.send_attributes(
+            self,
             {
                 CAVITY_PREFIX_MAP[cavity]
                 + "_"
                 + ATTR_POSTFIX_LIGHT_STATUS: self.bool_to_attr_value(on)
-            }
+            },
         )
 
     def get_temp(self, cavity: Cavity = Cavity.Upper):
@@ -264,11 +278,13 @@ class Oven(Appliance):
 
     def get_oven_cavity_exists(self, cavity: Cavity):
         cavity_state = self.get_cavity_state(cavity=cavity)
-        return cavity_state != None and cavity_state != CavityState.NotPresent
+        return cavity_state is not None and cavity_state != CavityState.NotPresent
 
     # todo: persist the kitchen timer objects in the object
     def get_kitchen_timer(self, timer_id=1):
-        timer = KitchenTimer(appliance=self, timer_id=timer_id)
+        timer = KitchenTimer(
+            appliance=self, app_manager=self._app_manager, timer_id=timer_id
+        )
         return timer
 
     def get_cook_mode(self, cavity: Cavity = Cavity.Upper):
@@ -301,12 +317,12 @@ class Oven(Appliance):
             cavity_prefix
             + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[operation_type],
         }
-        if meat_probe_target_temp != None:
+        if meat_probe_target_temp is not None:
             attrs[cavity_prefix + ATTR_POSTFIX_MEAT_PROBE_TARGET_TEMP] = round(
                 float(meat_probe_target_temp) * 10
             )
 
-        await self.send_attributes(attrs)
+        await self._app_manager.send_attributes(self, attrs)
 
     async def set_bake(self, target_temp: float = None, cavity: Cavity = Cavity.Upper):
         await self.set_cook(mode=CookMode.Bake, target_temp=target_temp, cavity=cavity)
@@ -350,16 +366,19 @@ class Oven(Appliance):
         )
 
     async def stop_cook(self, cavity: Cavity = Cavity.Upper):
-        await self.send_attributes(
+        await self._app_manager.send_attributes(
+            self,
             {
                 CAVITY_PREFIX_MAP[cavity]
                 + "_"
                 + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[CookOperation.Cancel]
-            }
+            },
         )
 
     def get_sabbath_mode(self):
         return self.attr_value_to_bool(self.get_attribute(ATTR_SABBATH_MODE))
 
     async def set_sabbath_mode(self, on: bool):
-        await self.send_attributes({ATTR_SABBATH_MODE: self.bool_to_attr_value(on)})
+        await self._app_manager.send_attributes(
+            self, {ATTR_SABBATH_MODE: self.bool_to_attr_value(on)}
+        )
