@@ -89,7 +89,7 @@ class Auth:
             "refresh_token": fetched_auth_data.get("refresh_token", ""),
             "expire_date": curr_timestamp + fetched_auth_data.get("expires_in", 0),
             "accountId": fetched_auth_data.get("accountId", ""),
-            "SAID": fetched_auth_data.get("SAID", ""),
+            "SAID": fetched_auth_data.get("SAID", []),
         }
         if store:
             self._save_auth_data()
