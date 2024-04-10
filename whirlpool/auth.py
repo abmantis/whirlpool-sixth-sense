@@ -30,30 +30,6 @@ class Auth:
         self._session: aiohttp.ClientSession = session
 
         self._renew_time: datetime = None
-        self._auto_renewal_task: asyncio.Task = None
-
-    async def _do_auto_renewal(self):
-        if self._renew_time > datetime.now():
-            time_to = (self._renew_time - datetime.now()).seconds
-            LOGGER.info("Renewing in %ds", time_to)
-            await asyncio.sleep(time_to)
-        await self.do_auth()
-
-    def _schedule_auto_renewal(self):
-        return  # disable for now and rely on on-demand renewal
-
-        if not self.is_access_token_valid():
-            LOGGER.warn("Access token is not valid, renewing now")
-            self._renew_time = datetime.now()
-        else:
-            expire_date = datetime.fromtimestamp(self._auth_dict.get("expire_date", 0))
-            self._renew_time = expire_date - AUTO_REFRESH_DELTA
-            LOGGER.info(
-                "Expire date is %s, renewing at %s", expire_date, self._renew_time
-            )
-
-        self.cancel_auto_renewal()
-        self._auto_renewal_task = asyncio.create_task(self._do_auto_renewal())
 
     def _save_auth_data(self):
         with open(AUTH_JSON_FILE, "w") as f:
@@ -119,7 +95,6 @@ class Auth:
         }
         if store:
             self._save_auth_data()
-        self._schedule_auto_renewal()
         return True
 
     async def load_auth_file(self):
@@ -130,9 +105,7 @@ class Auth:
         except FileNotFoundError:
             pass
 
-        if self.is_access_token_valid():
-            self._schedule_auto_renewal()
-        else:
+        if not self.is_access_token_valid():
             LOGGER.info("Access token expired. Renewing.")
             await self.do_auth()
 
@@ -151,7 +124,3 @@ class Auth:
 
     def get_said_list(self):
         return self._auth_dict.get("SAID", None)
-
-    def cancel_auto_renewal(self):
-        if self._auto_renewal_task:
-            self._auto_renewal_task.cancel()
