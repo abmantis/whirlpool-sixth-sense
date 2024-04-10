@@ -31,7 +31,7 @@ Homepage = "https://github.com/abmantis/whirlpool-sixth-sense/"
 include-package-data = false
 
 [tool.setuptools.packages.find]
-exclude = ["tests"] # tests.*
+exclude = ["tests"]
 namespaces = false
 
 [tool.isort]
