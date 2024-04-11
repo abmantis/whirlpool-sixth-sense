@@ -54,7 +54,7 @@ class Auth:
         return auth_data
 
     async def _do_auth(self, refresh_token: str) -> dict[str, str]:
-        auth_url = self._backend_selector.auth_url
+        auth_url = self._backend_selector.oauth_token_url
         auth_header = {
             "Content-Type": "application/x-www-form-urlencoded",
             "User-Agent": "okhttp/3.12.0",

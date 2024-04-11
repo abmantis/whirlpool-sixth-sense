@@ -79,8 +79,7 @@ class Appliance:
     async def _getWebsocketUrl(self):
         DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
         async with self._session.get(
-            f"{self._backend_selector.base_url}/api/v1/client_auth/webSocketUrl",
-            headers=self._create_headers(),
+            self._backend_selector.websocket_url, headers=self._create_headers()
         ) as r:
             if r.status != 200:
                 LOGGER.error(f"Failed to get websocket url: {r.status}")
@@ -102,8 +101,8 @@ class Appliance:
             LOGGER.error("Session not started")
             return False
 
-        uri = f"{self._backend_selector.base_url}/api/v1/appliance/{self._said}"
-        for n in range(REQUEST_RETRY_COUNT):
+        uri = self._backend_selector.get_appliance_data_url(self._said)
+        for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.get(uri, headers=self._create_headers()) as r:
                     if r.status == 200:
@@ -128,15 +127,16 @@ class Appliance:
 
         LOGGER.info(f"Sending attributes: {attributes}")
 
-        uri = f"{self._backend_selector.base_url}/api/v1/appliance/command"
         cmd_data = {
             "body": attributes,
             "header": {"said": self._said, "command": "setAttributes"},
         }
-        for n in range(REQUEST_RETRY_COUNT):
+        for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.post(
-                    uri, json=cmd_data, headers=self._create_headers()
+                    self._backend_selector.appliance_command_url,
+                    json=cmd_data,
+                    headers=self._create_headers(),
                 ) as r:
                     LOGGER.debug(f"Reply: {await r.text()}")
                     if r.status == 200:
