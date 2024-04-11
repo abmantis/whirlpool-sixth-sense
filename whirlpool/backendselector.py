@@ -43,15 +43,15 @@ class BackendSelector:
         self._region = region
 
     @property
-    def brand(self):
+    def brand(self) -> Brand:
         return self._brand
 
     @property
-    def region(self):
+    def region(self) -> Region:
         return self._region
 
     @property
-    def base_url(self):
+    def base_url(self) -> str:
         return URLS[self._region]
 
     @property
@@ -59,27 +59,27 @@ class BackendSelector:
         return CREDENTIALS[self._brand]
 
     @property
-    def appliance_command_url(self):
+    def appliance_command_url(self) -> str:
         return f"{self.base_url}/api/v1/appliance/command"
 
     @property
-    def oauth_token_url(self):
+    def oauth_token_url(self) -> str:
         return f"{self.base_url}/oauth/token"
 
     @property
-    def websocket_url(self):
+    def websocket_url(self) -> str:
         return f"{self.base_url}/api/v1/client_auth/webSocketUrl"
 
     @property
-    def user_details_url(self):
+    def user_details_url(self) -> str:
         return f"{self.base_url}/api/v1/getUserDetails"
 
     @property
-    def shared_appliances_url(self):
+    def shared_appliances_url(self) -> str:
         return f"{self.base_url}/api/v1/share-accounts/appliances"
 
-    def get_appliance_data_url(self, said: str):
+    def get_appliance_data_url(self, said: str) -> str:
         return f"{self.base_url}/api/v1/appliance/{said}"
 
-    def get_owned_appliances_url(self, account_id: str):
+    def get_owned_appliances_url(self, account_id: str) -> str:
         return f"{self.base_url}/api/v2/appliance/all/account/{account_id}"
