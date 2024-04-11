@@ -1,13 +1,7 @@
 import logging
 from enum import Enum
-from typing import List, TypedDict
 
 LOGGER = logging.getLogger(__name__)
-
-
-class CredentialsDict(TypedDict):
-    client_id: str
-    client_secret: str
 
 
 class Brand(Enum):
@@ -67,7 +61,7 @@ class BackendSelector:
         return BACKEND_DATA[self._region].get("base_url")
 
     @property
-    def client_credentials(self) -> List[CredentialsDict]:
+    def client_credentials(self) -> list[dict[str, str]]:
         return BACKEND_DATA[self._brand]
 
     @property
