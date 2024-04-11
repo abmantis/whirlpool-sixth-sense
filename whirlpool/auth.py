@@ -1,8 +1,7 @@
-import asyncio
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, Optional
+from typing import Any
 
 import aiohttp
 import async_timeout
@@ -26,18 +25,18 @@ class Auth:
         self._backend_selector = backend_selector
         self._username = username
         self._password = password
-        self._auth_dict = {}
+        self._auth_dict: dict[str, Any] = {}
         self._session: aiohttp.ClientSession = session
 
-        self._renew_time: datetime = None
+        self._renew_time: datetime | None = None
 
     def _save_auth_data(self):
         with open(AUTH_JSON_FILE, "w") as f:
             json.dump(self._auth_dict, f)
 
     def _get_auth_body(
-        self, refresh_token: str, client_creds: Dict[str, str]
-    ) -> Dict[str, str]:
+        self, refresh_token: str, client_creds: dict[str, str]
+    ) -> dict[str, str]:
         if refresh_token:
             LOGGER.info("Using refresh token in auth body")
             auth_data = {"grant_type": "refresh_token", "refresh_token": refresh_token}
@@ -54,7 +53,7 @@ class Auth:
 
         return auth_data
 
-    async def _do_auth(self, refresh_token: str) -> Dict[str, str]:
+    async def _do_auth(self, refresh_token: str) -> dict[str, str]:
         auth_url = self._backend_selector.auth_url
         auth_header = {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -62,7 +61,7 @@ class Auth:
         }
 
         for client_creds in self._backend_selector.client_credentials:
-            auth_data: Dict[str, str] = self._get_auth_body(refresh_token, client_creds)
+            auth_data: dict[str, str] = self._get_auth_body(refresh_token, client_creds)
             async with async_timeout.timeout(30):
                 async with self._session.post(
                     auth_url, data=auth_data, headers=auth_header
@@ -99,7 +98,7 @@ class Auth:
 
     async def load_auth_file(self):
         try:
-            with open(AUTH_JSON_FILE, "r") as f:
+            with open(AUTH_JSON_FILE) as f:
                 LOGGER.info("Loading auth from file")
                 self._auth_dict = json.load(f)
         except FileNotFoundError:
@@ -118,7 +117,7 @@ class Auth:
     def get_access_token(self):
         return self._auth_dict.get("access_token", None)
 
-    def get_account_id(self) -> Optional[str]:
+    def get_account_id(self) -> str | None:
         """Returns the accountId value from the `_auth_dict`, or None if not present."""
         return self._auth_dict.get("accountId", None)
 

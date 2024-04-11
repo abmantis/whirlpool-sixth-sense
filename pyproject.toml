@@ -12,7 +12,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.11"
 dependencies = [
     "aioconsole>=0.3.1",
     "aiohttp>=3.9.1",

@@ -2,8 +2,8 @@ import asyncio
 import logging
 import re
 import uuid
+from collections.abc import Callable
 from socket import gaierror
-from typing import Callable
 
 import aiohttp
 
@@ -148,11 +148,7 @@ class EventSocket:
                         if not match:
                             continue
                         self._msg_listener("{" + match[0] + "}")
-            except (
-                aiohttp.ClientError,
-                asyncio.TimeoutError,
-                gaierror,
-            ) as ex:
+            except (aiohttp.ClientError, TimeoutError, gaierror) as ex:
                 LOGGER.error(f"Websocket could not connect: {ex}")
 
             self._websocket = None

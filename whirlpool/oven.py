@@ -147,7 +147,7 @@ class KitchenTimer:
     def __init__(self, appliance: Appliance, timer_id: int = 1):
         self._timer_id = timer_id
         self._appliance = appliance
-        self._attr_prefix = "KitchenTimer{:02d}_".format(timer_id)
+        self._attr_prefix = f"KitchenTimer{timer_id:02d}_"
 
     def get_total_time(self):
         return self._appliance.get_attribute(
