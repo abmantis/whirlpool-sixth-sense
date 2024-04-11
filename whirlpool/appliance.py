@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Callable
+from collections.abc import Callable
 
 import aiohttp
 import async_timeout
@@ -31,7 +31,7 @@ class Appliance:
         self._backend_selector = backend_selector
         self._auth = auth
         self._said = said
-        self._attr_changed: list(Callable) = []
+        self._attr_changed: list[Callable] = []
         self._event_socket = None
         self._data_dict = None
 
