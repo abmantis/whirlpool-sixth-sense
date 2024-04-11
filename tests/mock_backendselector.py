@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Dict, List
 
 from whirlpool.backendselector import BackendSelector
 
@@ -29,7 +28,7 @@ class BackendSelectorMock(BackendSelector):
         return "http://dummy_base_url.com"
 
     @property
-    def client_credentials(self) -> List[Dict[str, str]]:
+    def client_credentials(self) -> list[dict[str, str]]:
         return [
             {
                 "client_id": "dummy_client_id1",
@@ -40,7 +39,7 @@ class BackendSelectorMock(BackendSelector):
 
 class BackendSelectorMockMultipleCreds(BackendSelectorMock):
     @property
-    def client_credentials(self) -> List[Dict[str, str]]:
+    def client_credentials(self) -> list[dict[str, str]]:
         return [
             {
                 "client_id": "dummy_client_id1",
