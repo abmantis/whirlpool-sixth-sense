@@ -29,7 +29,7 @@ def assert_appliances_manager_call(
 
     call = mock_calls[call_index]
     assert call[0] == "GET"
-    assert path.endswith(call[1].path)
+    assert BACKEND_SELECTOR_MOCK.base_url + call[1].path == path
     # call[2] is body, which will be None
 
     if required_headers is not None:
