@@ -23,17 +23,22 @@ def assert_appliances_manager_call(
     call_index: int,
     path: str,
     required_headers: dict = None,
+    forbidden_headers: list = None,
 ):
     mock_calls = http_client_mock.mock_calls
 
     call = mock_calls[call_index]
     assert call[0] == "GET"
-    assert call[1].path == path
+    assert BACKEND_SELECTOR_MOCK.base_url + call[1].path == path
     # call[2] is body, which will be None
 
     if required_headers is not None:
         for k, v in required_headers.items():
             assert call[3][k] == v
+
+    if forbidden_headers is not None:
+        for k in forbidden_headers:
+            assert k not in call[3]
 
 
 @pytest.mark.parametrize("account_id", [None, ACCOUNT_ID])
@@ -62,20 +67,23 @@ async def test_fetch_appliances_with_set_account_id(
 
     if account_id is None:
         # make sure that the first call in this case is to get the account id
-        assert_appliances_manager_call(http_client_mock, 0, "/api/v1/getUserDetails")
+        assert_appliances_manager_call(
+            http_client_mock, 0, BACKEND_SELECTOR_MOCK.user_details_url
+        )
 
     # this should always be called
     assert_appliances_manager_call(
         http_client_mock,
         get_appliances_idx,
-        f"/api/v2/appliance/all/account/{ACCOUNT_ID}",
+        BACKEND_SELECTOR_MOCK.get_owned_appliances_url(ACCOUNT_ID),
+        forbidden_headers=["WP-CLIENT-BRAND"],
     )
 
     # this should always be called and requires the WP-CLIENT-BRAND header
     assert_appliances_manager_call(
         http_client_mock,
         get_appliances_idx + 1,
-        "/api/v1/share-accounts/appliances",
+        BACKEND_SELECTOR_MOCK.shared_appliances_url,
         {"WP-CLIENT-BRAND": "DUMMY_BRAND"},
     )
 

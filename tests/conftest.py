@@ -21,38 +21,12 @@ def http_client_mock(mocker, backend_selector_mock):
 
 
 @pytest.fixture
-def appliance_http_client_mock(http_client_mock, backend_selector_mock):
+def appliance_http_client_mock(
+    http_client_mock, backend_selector_mock: BackendSelectorMock
+):
     http_client_mock.get(
-        f"{backend_selector_mock.base_url}/api/v1/client_auth/webSocketUrl",
-        json={"url": "wss://something"},
+        backend_selector_mock.websocket_url, json={"url": "wss://something"}
     )
-
-    # async def ws_get_side_effect(method, url, data, headers):
-    #     ws_key: str = headers[hdrs.SEC_WEBSOCKET_KEY]
-    #     accept_key = base64.b64encode(
-    #         hashlib.sha1(ws_key.encode("utf-8") + http_websocket.WS_KEY).digest()
-    #     ).decode()
-    #     return AiohttpClientMockResponse(
-    #         method=method,
-    #         url=url,
-    #         status=HTTPStatus.SWITCHING_PROTOCOLS,
-    #         headers={
-    #             hdrs.UPGRADE: "websocket",
-    #             hdrs.CONNECTION: "upgrade",
-    #             hdrs.SEC_WEBSOCKET_ACCEPT: accept_key,
-    #         },
-    #     )
-    # appliance_httpclient.get(
-    #     "wss://something",
-    #     json={},
-    #     status=HTTPStatus.SWITCHING_PROTOCOLS,
-    #     headers={
-    #         hdrs.UPGRADE: "websocket",
-    #         hdrs.CONNECTION: "upgrade",
-    #         hdrs.SEC_WEBSOCKET_ACCEPT: "s3pPLMBiTxaQ9kYGzzhZRbK",
-    #     },
-    #     side_effect=ws_get_side_effect,
-    # )
 
     return http_client_mock
 

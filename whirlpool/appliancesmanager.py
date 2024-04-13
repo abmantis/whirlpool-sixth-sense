@@ -63,7 +63,7 @@ class AppliancesManager:
 
     async def _get_owned_appliances(self, account_id: str) -> bool:
         async with self._session.get(
-            f"{self._backend_selector.base_url}/api/v2/appliance/all/account/{account_id}",
+            self._backend_selector.get_owned_appliances_url(account_id),
             headers=self._create_headers(),
         ) as r:
             if r.status != 200:
@@ -82,8 +82,7 @@ class AppliancesManager:
         headers = self._create_headers()
         headers["WP-CLIENT-BRAND"] = self._backend_selector.brand.name
         async with self._session.get(
-            f"{self._backend_selector.base_url}/api/v1/share-accounts/appliances",
-            headers=headers,
+            self._backend_selector.shared_appliances_url, headers=headers
         ) as r:
             if r.status != 200:
                 LOGGER.error(f"Failed to get shared appliances: {r.status}")
@@ -103,7 +102,7 @@ class AppliancesManager:
             return self._auth.get_account_id()
 
         async with self._session.get(
-            f"{self._backend_selector.base_url}/api/v1/getUserDetails",
+            self._backend_selector.user_details_url,
             headers=self._create_headers(),
         ) as r:
             if r.status != 200:
