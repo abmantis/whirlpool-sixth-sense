@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 
 import aiohttp
@@ -91,7 +92,12 @@ async def test_auth_multiple_client_credentials(caplog):
 
         # assert we get the expected status codes in the correct order in the logs
         for i, rec in enumerate(expected):
-            assert str(rec["status"].value) in status_logs[i]
+            status_val = (
+                str(rec["status"].value)
+                if sys.version_info >= (3, 11)
+                else str(rec["status"])
+            )
+            assert status_val in status_logs[i]
 
     await session.close()
 
