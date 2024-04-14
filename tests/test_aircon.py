@@ -28,7 +28,8 @@ DATA1 = aircon_data["DATA1"]
 DATA2 = aircon_data["DATA2"]
 
 
-async def test_attributes(backend_selector_mock: BackendSelectorMock):
+async def test_attributes():
+    backend_selector_mock = BackendSelectorMock()
     session = aiohttp.ClientSession()
     aircon = Aircon(
         backend_selector_mock,
@@ -99,12 +100,8 @@ async def test_attributes(backend_selector_mock: BackendSelectorMock):
         (Aircon.set_display_on, True, {"Sys_DisplaySetBrightness": "4"}),
     ],
 )
-async def test_setters(
-    backend_selector_mock: BackendSelectorMock,
-    method: Callable,
-    argument: Any,
-    expected: dict,
-):
+async def test_setters(method: Callable, argument: Any, expected: dict):
+    backend_selector_mock = BackendSelectorMock()
     expected_template = {
         "json": {
             "body": expected,

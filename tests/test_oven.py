@@ -27,7 +27,8 @@ DATA2 = oven_data["DATA2"]
 DATA3 = oven_data["DATA3"]
 
 
-async def test_attributes(backend_selector_mock: BackendSelectorMock):
+async def test_attributes():
+    backend_selector_mock = BackendSelectorMock()
     session = aiohttp.ClientSession()
     oven = Oven(
         backend_selector_mock,
@@ -203,12 +204,8 @@ async def test_attributes(backend_selector_mock: BackendSelectorMock):
         ),
     ],
 )
-async def test_setters(
-    backend_selector_mock: BackendSelectorMock,
-    method: Callable,
-    arguments: dict,
-    expected: dict,
-):
+async def test_setters(method: Callable, arguments: dict, expected: dict):
+    backend_selector_mock = BackendSelectorMock()
     expected_template = {
         "json": {
             "body": expected,
