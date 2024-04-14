@@ -88,7 +88,7 @@ class Auth:
         self._auth_dict = {
             "access_token": fetched_auth_data.get("access_token", ""),
             "refresh_token": fetched_auth_data.get("refresh_token", ""),
-            "expire_date": curr_timestamp + fetched_auth_data.get("expires_in", ""),
+            "expire_date": curr_timestamp + fetched_auth_data.get("expires_in", 0),
             "accountId": fetched_auth_data.get("accountId", ""),
             "SAID": fetched_auth_data.get("SAID", ""),
         }
