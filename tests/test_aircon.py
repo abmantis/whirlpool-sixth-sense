@@ -1,3 +1,7 @@
+import json
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import aiohttp
@@ -12,58 +16,19 @@ from .mock_backendselector import BackendSelectorMock
 ACCOUNT_ID = 111222333
 SAID = "WPR1XYZABC123"
 AC_NAME = "TestAc"
-DATA1 = {
-    "_id": SAID,
-    "applianceId": SAID,
-    "lastFullSyncTime": 1604500393149,
-    "lastModified": 1641436766989,
-    "attributes": {
-        "Cavity_OpSetFanSpeed": {"value": "0", "updateTime": 1626535975892},
-        "Cavity_OpSetHorzLouverSwing": {"value": "1", "updateTime": 1626517992782},
-        "Cavity_OpSetMode": {"value": "3", "updateTime": 1626535966896},
-        "Cavity_OpSetTurboMode": {"value": "0", "updateTime": 1626517785042},
-        "Cavity_OpStatusMode": {"value": "3", "updateTime": 1626535966896},
-        "Online": {"value": "0", "updateTime": 1626536325968},
-        "SAID": {"value": SAID, "updateTime": 1626517782012},
-        "Sys_DisplaySetBrightness": {"value": "0", "updateTime": 1626535966896},
-        "Sys_OpSetEcoModeEnabled": {"value": "0", "updateTime": 1626517785042},
-        "Sys_OpSetPowerOn": {"value": "0", "updateTime": 1626535966896},
-        "Sys_OpSetQuietModeEnabled": {"value": "0", "updateTime": 1626517785042},
-        "Sys_OpSetSleepMode": {"value": "0", "updateTime": 1626517785042},
-        "Sys_OpSetTargetHumidity": {"value": "40", "updateTime": 1626517785042},
-        "Sys_OpSetTargetTemp": {"value": "300", "updateTime": 1626535966896},
-        "Sys_OpStatusDisplayHumidity": {"value": "56", "updateTime": 1626536203199},
-        "Sys_OpStatusDisplayTemp": {"value": "230", "updateTime": 1626535909593},
-    },
-}
-DATA2 = {
-    "_id": SAID,
-    "applianceId": SAID,
-    "lastFullSyncTime": 1604500393149,
-    "lastModified": 1641436766989,
-    "attributes": {
-        "Cavity_OpSetFanSpeed": {"value": "1", "updateTime": 1626535975892},
-        "Cavity_OpSetHorzLouverSwing": {"value": "0", "updateTime": 1626517992782},
-        "Cavity_OpSetMode": {"value": "4", "updateTime": 1626535966896},
-        "Cavity_OpSetTurboMode": {"value": "1", "updateTime": 1626517785042},
-        "Cavity_OpStatusMode": {"value": "2", "updateTime": 1626535966896},
-        "Online": {"value": "1", "updateTime": 1626536325968},
-        "SAID": {"value": SAID, "updateTime": 1626517782012},
-        "Sys_DisplaySetBrightness": {"value": "4", "updateTime": 1626535966896},
-        "Sys_OpSetEcoModeEnabled": {"value": "1", "updateTime": 1626517785042},
-        "Sys_OpSetPowerOn": {"value": "1", "updateTime": 1626535966896},
-        "Sys_OpSetQuietModeEnabled": {"value": "1", "updateTime": 1626517785042},
-        "Sys_OpSetSleepMode": {"value": "1", "updateTime": 1626517785042},
-        "Sys_OpSetTargetHumidity": {"value": "45", "updateTime": 1626517785042},
-        "Sys_OpSetTargetTemp": {"value": "290", "updateTime": 1626535966896},
-        "Sys_OpStatusDisplayHumidity": {"value": "31", "updateTime": 1626536203199},
-        "Sys_OpStatusDisplayTemp": {"value": "300", "updateTime": 1626535909593},
-    },
-}
+
+
+CURR_DIR = Path(__file__).parent
+DATA_DIR = CURR_DIR / "data"
+
+aircon_data_file = DATA_DIR / "aircon_data.json"
+aircon_data = json.loads(aircon_data_file.read_text())
+
+DATA1 = aircon_data["DATA1"]
+DATA2 = aircon_data["DATA2"]
 
 
 async def test_attributes(backend_selector_mock: BackendSelectorMock):
-
     session = aiohttp.ClientSession()
     aircon = Aircon(
         backend_selector_mock,
@@ -121,21 +86,24 @@ async def test_attributes(backend_selector_mock: BackendSelectorMock):
 @pytest.mark.parametrize(
     ["method", "argument", "expected"],
     [
-        ("set_power_on", True, {"Sys_OpSetPowerOn": "1"}),
-        ("set_power_on", False, {"Sys_OpSetPowerOn": "0"}),
-        ("set_temp", 30, {"Sys_OpSetTargetTemp": "300"}),
-        ("set_humidity", 45, {"Sys_OpSetTargetHumidity": "45"}),
-        ("set_mode", Mode.Cool, {"Cavity_OpSetMode": "1"}),
-        ("set_fanspeed", FanSpeed.Auto, {"Cavity_OpSetFanSpeed": "1"}),
-        ("set_h_louver_swing", True, {"Cavity_OpSetHorzLouverSwing": "1"}),
-        ("set_turbo_mode", False, {"Cavity_OpSetTurboMode": "0"}),
-        ("set_eco_mode", False, {"Sys_OpSetEcoModeEnabled": "0"}),
-        ("set_quiet_mode", False, {"Sys_OpSetQuietModeEnabled": "0"}),
-        ("set_display_on", True, {"Sys_DisplaySetBrightness": "4"}),
+        (Aircon.set_power_on, True, {"Sys_OpSetPowerOn": "1"}),
+        (Aircon.set_power_on, False, {"Sys_OpSetPowerOn": "0"}),
+        (Aircon.set_temp, 30, {"Sys_OpSetTargetTemp": "300"}),
+        (Aircon.set_humidity, 45, {"Sys_OpSetTargetHumidity": "45"}),
+        (Aircon.set_mode, Mode.Cool, {"Cavity_OpSetMode": "1"}),
+        (Aircon.set_fanspeed, FanSpeed.Auto, {"Cavity_OpSetFanSpeed": "1"}),
+        (Aircon.set_h_louver_swing, True, {"Cavity_OpSetHorzLouverSwing": "1"}),
+        (Aircon.set_turbo_mode, False, {"Cavity_OpSetTurboMode": "0"}),
+        (Aircon.set_eco_mode, False, {"Sys_OpSetEcoModeEnabled": "0"}),
+        (Aircon.set_quiet_mode, False, {"Sys_OpSetQuietModeEnabled": "0"}),
+        (Aircon.set_display_on, True, {"Sys_DisplaySetBrightness": "4"}),
     ],
 )
 async def test_setters(
-    backend_selector_mock: BackendSelectorMock, method, argument, expected
+    backend_selector_mock: BackendSelectorMock,
+    method: Callable,
+    argument: Any,
+    expected: dict,
 ):
     expected_template = {
         "json": {
@@ -168,7 +136,7 @@ async def test_setters(
 
             # add call, call method
             m.post(url, payload=expected_template)
-            await getattr(aircon, method)(argument)
+            await method(aircon, argument)
 
             # assert args and length
             m.assert_called_with(**call_kwargs)
