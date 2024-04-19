@@ -1,12 +1,8 @@
 import sys
 from http import HTTPStatus
 
-import aiohttp
 import pytest
-from aioresponses import aioresponses
 from yarl import URL
-
-from whirlpool.auth import Auth
 
 from .mock_backendselector import BackendSelectorMock, BackendSelectorMockMultipleCreds
 
@@ -30,10 +26,7 @@ AUTH_HEADERS = {
 pytestmark = pytest.mark.asyncio
 
 
-async def test_auth_success():
-    session = aiohttp.ClientSession()
-    auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", session)
-
+async def test_auth_success(auth_mock, aioresponses_mock):
     mock_resp_data = {
         "access_token": "acess_token_123",
         "token_type": "bearer",
@@ -44,85 +37,74 @@ async def test_auth_success():
         "SAID": ["SAID1", "SAID2"],
         "jti": "?????",
     }
-    with aioresponses() as m:
-        m.post(AUTH_URL, payload=mock_resp_data)
 
-        await auth.do_auth(store=False)
-        assert auth.is_access_token_valid()
-        assert auth.get_said_list() == ["SAID1", "SAID2"]
+    # don't need repeat here because the first one will succeed
+    # so we will only call this url once
+    aioresponses_mock.post(AUTH_URL, payload=mock_resp_data)
 
-        # assert that the proper method and url were used
-        assert ("POST", URL(AUTH_URL)) in m.requests
+    await auth_mock.do_auth(store=False)
+    assert auth_mock.is_access_token_valid()
+    assert auth_mock.get_said_list() == ["SAID1", "SAID2"]
 
-        # get the calls for the method/url and assert length
-        calls = m.requests[("POST", URL(AUTH_URL))]
-        assert len(calls) == 1
+    # assert that the proper method and url were used
+    assert ("POST", URL(AUTH_URL)) in aioresponses_mock.requests
 
-        # actual call, as a tuple
-        call = calls[0]
-        assert call[1]["data"] == AUTH_DATA
-        assert call[1]["headers"] == AUTH_HEADERS
-        await session.close()
+    # get the calls for the method/url and assert length
+    calls = aioresponses_mock.requests[("POST", URL(AUTH_URL))]
+    assert len(calls) == 1
+
+    # actual call, as a tuple
+    call = calls[0]
+    assert call[1]["data"] == AUTH_DATA
+    assert call[1]["headers"] == AUTH_HEADERS
 
 
-async def test_auth_multiple_client_credentials(caplog):
+async def test_auth_will_check_all_client_creds(auth_mock, aioresponses_mock, caplog):
     # need to capture at debug level to get status - we don't return status or have any
     # other good way to check it
     caplog.set_level("DEBUG")
 
-    session = aiohttp.ClientSession()
-    auth = Auth(BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS, "email", "secretpass", session)
+    client_creds = auth_mock._backend_selector.client_credentials
+    expected = []
 
-    client_creds = BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS.client_credentials
-    with aioresponses() as m:
-        expected = []
+    for i in range(len(client_creds)):
+        # all but the last one should return 404, as we keep checking until we get a 200 (or run out)
+        status = HTTPStatus.NOT_FOUND if i != len(client_creds) else HTTPStatus.OK
+        expected.append({"status": status})
+        aioresponses_mock.post(AUTH_URL, status=status)
 
-        for i in range(len(client_creds)):
-            # all but the last one should return 404, as we keep checking until we get a 200 (or run out)
-            status = HTTPStatus.NOT_FOUND if i != len(client_creds) else HTTPStatus.OK
-            expected.append({"status": status})
-            m.post(AUTH_URL, status=status)
+    await auth_mock.do_auth(store=False)
 
-        await auth.do_auth(store=False)
+    # filter down to just the lines that contain the auth status
+    status_logs = [line for line in caplog.text.splitlines() if "Auth status" in line]
 
-        # filter down to just the lines that contain the auth status
-        status_logs = [
-            line for line in caplog.text.splitlines() if "Auth status" in line
-        ]
-
-        # assert we get the expected status codes in the correct order in the logs
-        for i, rec in enumerate(expected):
-            status_val = (
-                str(rec["status"].value)
-                if sys.version_info >= (3, 11)
-                else str(rec["status"])
-            )
-            assert status_val in status_logs[i]
-
-    await session.close()
+    # assert we get the expected status codes in the correct order in the logs
+    for i, rec in enumerate(expected):
+        status_val = (
+            str(rec["status"].value)
+            if sys.version_info >= (3, 11)
+            else str(rec["status"])
+        )
+        assert status_val in status_logs[i]
 
 
-async def test_auth_bad_credentials():
-    session = aiohttp.ClientSession()
-    auth = Auth(BACKEND_SELECTOR_MOCK, "email", "secretpass", session)
+async def test_auth_bad_credentials(auth_mock, aioresponses_mock):
+    # need to repeat for the multiple client credentials mock
+    aioresponses_mock.post(AUTH_URL, status=HTTPStatus.BAD_REQUEST, repeat=True)
 
-    with aioresponses() as m:
-        m.post(AUTH_URL, status=HTTPStatus.BAD_REQUEST)
+    await auth_mock.do_auth(store=False)
 
-        await auth.do_auth(store=False)
+    # with bad request we should not get an access token and not have a SAID list
+    assert auth_mock.is_access_token_valid() is False
+    assert auth_mock.get_said_list() is None
 
-        # with bad request we should not get an access token and not have a SAID list
-        assert auth.is_access_token_valid() is False
-        assert auth.get_said_list() is None
+    # assert that the proper method and url were used
+    assert ("POST", URL(AUTH_URL)) in aioresponses_mock.requests
 
-        # assert that the proper method and url were used
-        assert ("POST", URL(AUTH_URL)) in m.requests
+    # get the calls for the method/url and assert length - should be the same as the number of client credentials
+    calls = aioresponses_mock.requests[("POST", URL(AUTH_URL))]
+    assert len(calls) == len(auth_mock._backend_selector.client_credentials)
 
-        # get the calls for the method/url and assert length
-        calls = m.requests[("POST", URL(AUTH_URL))]
-        assert len(calls) == 1
-
-        call = calls[0]
-        assert call[1]["data"] == AUTH_DATA
-        assert call[1]["headers"] == AUTH_HEADERS
-        await session.close()
+    call = calls[0]
+    assert call[1]["data"] == AUTH_DATA
+    assert call[1]["headers"] == AUTH_HEADERS
