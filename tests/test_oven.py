@@ -1,7 +1,7 @@
 import json
 from collections.abc import Callable
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from yarl import URL
@@ -35,7 +35,8 @@ async def test_attributes(auth_mock, aioresponses_mock):
     aioresponses_mock.get(
         auth_mock._backend_selector.get_appliance_data_url(SAID), payload=DATA1
     )
-    await oven.connect()
+    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+        await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == False
     assert oven.get_control_locked() == False
@@ -55,7 +56,9 @@ async def test_attributes(auth_mock, aioresponses_mock):
     aioresponses_mock.get(
         auth_mock._backend_selector.get_appliance_data_url(SAID), payload=DATA2
     )
-    await oven.connect()
+
+    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+        await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == True
     assert oven.get_control_locked() == True
@@ -75,7 +78,8 @@ async def test_attributes(auth_mock, aioresponses_mock):
     aioresponses_mock.get(
         auth_mock._backend_selector.get_appliance_data_url(SAID), payload=DATA3
     )
-    await oven.connect()
+    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+        await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == False
     assert oven.get_control_locked() == False
