@@ -207,7 +207,7 @@ async def test_setters(
         }
     }
 
-    call_kwargs = {
+    post_request_call_kwargs = {
         "url": auth_mock._backend_selector.appliance_command_url,
         "method": "POST",
         "data": None,
@@ -235,7 +235,7 @@ async def test_setters(
         await method(oven, **arguments)
 
         # assert args and length
-        aioresponses_mock.assert_called_with(**call_kwargs)
+        aioresponses_mock.assert_called_with(**post_request_call_kwargs)
         assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
 
         await oven.disconnect()
