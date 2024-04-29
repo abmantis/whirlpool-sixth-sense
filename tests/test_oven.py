@@ -1,42 +1,40 @@
 import json
 from collections.abc import Callable
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 from yarl import URL
 
+from whirlpool.backendselector import BackendSelector
 from whirlpool.oven import Cavity, CavityState, CookMode, Oven
 
 ACCOUNT_ID = 111222333
-SAID = "WPR1XYZABC123"
 AC_NAME = "TestOv"
 
 CURR_DIR = Path(__file__).parent
 DATA_DIR = CURR_DIR / "data"
 
-oven_data_file = DATA_DIR / "oven_data.json"
-oven_data = json.loads(oven_data_file.read_text())
+OVEN_DATA = json.loads((DATA_DIR / "oven_data.json").read_text())
 
-DATA1 = oven_data["DATA1"]
-DATA2 = oven_data["DATA2"]
-DATA3 = oven_data["DATA3"]
+DATA1 = OVEN_DATA["DATA1"]
+DATA2 = OVEN_DATA["DATA2"]
+DATA3 = OVEN_DATA["DATA3"]
 
 
-async def test_attributes(auth_mock, aioresponses_mock):
-    oven = Oven(auth_mock._backend_selector, auth_mock, SAID, auth_mock._session)
-
+async def test_attributes(
+    oven: Oven, backend_selector_mock: BackendSelector, aioresponses_mock
+):
     aioresponses_mock.get(
-        auth_mock._backend_selector.websocket_url,
+        backend_selector_mock.websocket_url,
         payload={"url": "wss://something"},
         repeat=True,
     )
 
     aioresponses_mock.get(
-        auth_mock._backend_selector.get_appliance_data_url(SAID), payload=DATA1
+        backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA1
     )
-    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
-        await oven.connect()
+
+    await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == False
     assert oven.get_control_locked() == False
@@ -54,11 +52,10 @@ async def test_attributes(auth_mock, aioresponses_mock):
     await oven.disconnect()
 
     aioresponses_mock.get(
-        auth_mock._backend_selector.get_appliance_data_url(SAID), payload=DATA2
+        backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA2
     )
 
-    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
-        await oven.connect()
+    await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == True
     assert oven.get_control_locked() == True
@@ -76,10 +73,10 @@ async def test_attributes(auth_mock, aioresponses_mock):
     await oven.disconnect()
 
     aioresponses_mock.get(
-        auth_mock._backend_selector.get_appliance_data_url(SAID), payload=DATA3
+        backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA3
     )
-    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
-        await oven.connect()
+
+    await oven.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() == False
     assert oven.get_control_locked() == False
@@ -202,17 +199,22 @@ async def test_attributes(auth_mock, aioresponses_mock):
     ],
 )
 async def test_setters(
-    auth_mock, aioresponses_mock, method: Callable, arguments: dict, expected_json: dict
+    oven: Oven,
+    backend_selector_mock: BackendSelector,
+    aioresponses_mock,
+    method: Callable,
+    arguments: dict,
+    expected_json: dict,
 ):
     expected_payload = {
         "json": {
             "body": expected_json,
-            "header": {"said": SAID, "command": "setAttributes"},
+            "header": {"said": oven.said, "command": "setAttributes"},
         }
     }
 
     post_request_call_kwargs = {
-        "url": auth_mock._backend_selector.appliance_command_url,
+        "url": backend_selector_mock.appliance_command_url,
         "method": "POST",
         "data": None,
         "json": expected_payload["json"],
@@ -220,26 +222,24 @@ async def test_setters(
         "headers": {},
     }
 
-    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
-        oven = Oven(auth_mock._backend_selector, auth_mock, SAID, auth_mock._session)
-        url = auth_mock._backend_selector.appliance_command_url
+    url = backend_selector_mock.appliance_command_url
 
-        aioresponses_mock.get(
-            auth_mock._backend_selector.websocket_url,
-            payload={"url": "wss://something"},
-        )
-        aioresponses_mock.get(
-            auth_mock._backend_selector.get_appliance_data_url(SAID), payload=DATA2
-        )
+    aioresponses_mock.get(
+        backend_selector_mock.websocket_url,
+        payload={"url": "wss://something"},
+    )
+    aioresponses_mock.get(
+        backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA2
+    )
 
-        await oven.connect()
+    await oven.connect()
 
-        # add call, call method
-        aioresponses_mock.post(url, payload=expected_payload)
-        await method(oven, **arguments)
+    # add call, call method
+    aioresponses_mock.post(url, payload=expected_payload)
+    await method(oven, **arguments)
 
-        # assert args and length
-        aioresponses_mock.assert_called_with(**post_request_call_kwargs)
-        assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
+    # assert args and length
+    aioresponses_mock.assert_called_with(**post_request_call_kwargs)
+    assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
 
-        await oven.disconnect()
+    await oven.disconnect()

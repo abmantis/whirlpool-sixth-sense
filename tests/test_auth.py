@@ -1,8 +1,10 @@
 import sys
 from http import HTTPStatus
 
-import pytest
 from yarl import URL
+
+from whirlpool.auth import Auth
+from whirlpool.backendselector import BackendSelector
 
 from .mock_backendselector import BackendSelectorMock, BackendSelectorMockMultipleCreds
 
@@ -23,10 +25,7 @@ AUTH_HEADERS = {
 }
 
 
-pytestmark = pytest.mark.asyncio
-
-
-async def test_auth_success(auth_mock, aioresponses_mock):
+async def test_auth_success(auth_mock: Auth, aioresponses_mock):
     mock_resp_data = {
         "access_token": "acess_token_123",
         "token_type": "bearer",
@@ -59,12 +58,14 @@ async def test_auth_success(auth_mock, aioresponses_mock):
     assert call[1]["headers"] == AUTH_HEADERS
 
 
-async def test_auth_will_check_all_client_creds(auth_mock, aioresponses_mock, caplog):
+async def test_auth_will_check_all_client_creds(
+    auth_mock: Auth, backend_selector_mock: BackendSelector, aioresponses_mock, caplog
+):
     # need to capture at debug level to get status - we don't return status or have any
     # other good way to check it
     caplog.set_level("DEBUG")
 
-    client_creds = auth_mock._backend_selector.client_credentials
+    client_creds = backend_selector_mock.client_credentials
     expected = []
 
     for i in range(len(client_creds)):
@@ -88,7 +89,9 @@ async def test_auth_will_check_all_client_creds(auth_mock, aioresponses_mock, ca
         assert status_val in status_logs[i]
 
 
-async def test_auth_bad_credentials(auth_mock, aioresponses_mock):
+async def test_auth_bad_credentials(
+    auth_mock: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
+):
     # need to repeat for the multiple client credentials mock
     aioresponses_mock.post(AUTH_URL, status=HTTPStatus.BAD_REQUEST, repeat=True)
 
@@ -103,7 +106,7 @@ async def test_auth_bad_credentials(auth_mock, aioresponses_mock):
 
     # get the calls for the method/url and assert length - should be the same as the number of client credentials
     calls = aioresponses_mock.requests[("POST", URL(AUTH_URL))]
-    assert len(calls) == len(auth_mock._backend_selector.client_credentials)
+    assert len(calls) == len(backend_selector_mock.client_credentials)
 
     call = calls[0]
     assert call[1]["data"] == AUTH_DATA
