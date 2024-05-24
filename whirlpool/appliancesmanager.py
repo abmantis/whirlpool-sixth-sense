@@ -50,12 +50,13 @@ class AppliancesManager:
         if "dryer" in data_model or "washer" in data_model:
             self._washer_dryers.append(appliance_data)
             return
-
-        if (
-            "cooking_minerva" in data_model
-            or "cooking_vsi" in data_model
-            or "cooking_u2" in data_model
-        ):
+        oven_models = [
+            "cooking_minerva",
+            "cooking_vsi",
+            "cooking_u2",
+            "ddm_cooking_bio_self_clean_tourmaline_v2",
+        ]
+        if any(model in data_model for model in oven_models):
             self._ovens.append(appliance_data)
             return
 
