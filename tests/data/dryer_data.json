@@ -1,0 +1,414 @@
+{
+  "DATA1": {
+    "_id": "WPR1XYZABC123",
+    "applianceId": "WPR1XYZABC123",
+    "lastFullSyncTime": 1690651984908,
+    "lastModified": 1713106892579,
+    "attributes": {
+      "Zip": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "XCat_ApplianceInfoSetSerialNumber": {
+        "value": "xxxxxxxxx",
+        "updateTime": 1712830905888
+      },
+      "DryCavity_CycleStatusStaticReduce": {
+        "value": "0",
+        "updateTime": 1712345700959
+      },
+      "DryCavity_ChangeStatusWrinkleShield": {
+        "value": "1",
+        "updateTime": 1712187226546
+      },
+      "Cavity_OpStatusDoorOpen": {
+        "value": "0",
+        "updateTime": 1712973939672
+      },
+      "Cavity_CycleSetSpecialtyCycleId": {
+        "value": "0",
+        "updateTime": 1691704142274
+      },
+      "Cavity_CycleStatusMachineState": {
+        "value": "0",
+        "updateTime": 1712800427959
+      },
+      "trid_result": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "ISPReasonCode": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "UtilityID": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "DryCavity_ChangeStatusManualDryTime": {
+        "value": "1",
+        "updateTime": 1712830905888
+      },
+      "DryCavity_ChangeStatusDryness": {
+        "value": "1",
+        "updateTime": 1712800125837
+      },
+      "ISP_PART_NUMBER": {
+        "value": "W11658778",
+        "updateTime": 1712830903000
+      },
+      "sys-parser-type": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "DryCavity_ChangeStatusCycleSelect": {
+        "value": "0",
+        "updateTime": 1712830905888
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "0",
+        "updateTime": 1691704142275
+      },
+      "ISP_DownloadEnd": {
+        "value": "0",
+        "updateTime": 1691704220362
+      },
+      "version": {
+        "value": "1",
+        "updateTime": 1712830904878
+      },
+      "XCat_PersistentInfoVersion": {
+        "value": "18",
+        "updateTime": 1712830905888
+      },
+      "trid": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "ISP_UpdateNotification": {
+        "value": "1691704156",
+        "updateTime": 1691704220362
+      },
+      "SetDNSNames": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "XCat_SmartGridStatusSmartGridCompliant": {
+        "value": "2",
+        "updateTime": 1712830905888
+      },
+      "ISP_RebootTime": {
+        "value": "0",
+        "updateTime": 1691704220362
+      },
+      "Relational_to_Appliance": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "XCat_OdometerStatusTotalHours": {
+        "value": "6302",
+        "updateTime": 1713106892197
+      },
+      "ISP_InstallEnd": {
+        "value": "0",
+        "updateTime": 1691704220362
+      },
+      "DryCavity_CycleSetDryness": {
+        "value": "10",
+        "updateTime": 1712798315646
+      },
+      "ISP_TotalProcessInModule": {
+        "value": "0",
+        "updateTime": 1691704220362
+      },
+      "XCat_SmartGridSetSmartGridEnable": {
+        "value": "0",
+        "updateTime": 1712830905888
+      },
+      "ISP_CurrentProcessInModule": {
+        "value": "0",
+        "updateTime": 1691704220362
+      },
+      "XCat_PersistentInfoSaid": {
+        "value": "WPR1XYZABC123",
+        "updateTime": 1712830905888
+      },
+      "Cavity_DisplaySetDrumLightOn": {
+        "value": "0",
+        "updateTime": 1712973939696
+      },
+      "XCat_RemoteSetRemoteControlEnable": {
+        "value": "0",
+        "updateTime": 1712803846332
+      },
+      "UtcOffset": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "uid": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "Cavity_TimeStatusEstTimeRemaining": {
+        "value": "1800",
+        "updateTime": 1712800427968
+      },
+      "PushTrigger": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "XCat_RemoteSetRebootAppliance": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "DryCavity_CycleStatusWet": {
+        "value": "0",
+        "updateTime": 1694302423032
+      },
+      "InServiceDate": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "DryCavity_CycleSetManualDryTime": {
+        "value": "1800",
+        "updateTime": 1712798321658
+      },
+      "DryCavity_CycleSetStaticGuardEnable": {
+        "value": "0",
+        "updateTime": 1694693020369
+      },
+      "DryCavity_CycleSetWrinkleShield": {
+        "value": "0",
+        "updateTime": 1712197841430
+      },
+      "ISP_CurrentModule": {
+        "value": "0",
+        "updateTime": 1691704220362
+      },
+      "DryCavity_ChangeStatusEcoBoost": {
+        "value": "0",
+        "updateTime": 1712798315646
+      },
+      "XCat_PersistentInfoMacAddress": {
+        "value": "A4:E5:7C:43:42:50",
+        "updateTime": 1712830905888
+      },
+      "M2MSubList": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "DryCavity_CycleStatusAirFlowStatus": {
+        "value": "0",
+        "updateTime": 1711637765918
+      },
+      "XCat_OdometerStatusCycleCount": {
+        "value": "195",
+        "updateTime": 1712830905888
+      },
+      "DryCavity_CycleStatusDrying": {
+        "value": "0",
+        "updateTime": 1712799945465
+      },
+      "MAC_Address": {
+        "value": "A4:E5:7C:43:42:50",
+        "updateTime": 1712830903000
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1712830903274
+      },
+      "Cavity_ChangeStatusSteamChangeable": {
+        "value": "1",
+        "updateTime": 1712800125837
+      },
+      "ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "ISPStep": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "F0,E0,0",
+        "updateTime": 1691704142291
+      },
+      "EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "ControlLockChangedByAppliance": {
+        "value": "false",
+        "updateTime": 1690400772218
+      },
+      "GetSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "DryCavity_ChangeStatusStaticGuard": {
+        "value": "1",
+        "updateTime": 1712800125837
+      },
+      "ModelNumber": {
+        "value": "WED8127LW1",
+        "updateTime": 1712830903000
+      },
+      "XCat_OdometerStatusRunningHours": {
+        "value": "148",
+        "updateTime": 1712830905888
+      },
+      "DryCavity_CycleSetCycleSelect": {
+        "value": "11",
+        "updateTime": 1712798315646
+      },
+      "ProjectReleaseNumber": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "ApplianceVersionNumber": {
+        "value": "7",
+        "updateTime": 1712830903000
+      },
+      "ccuri": {
+        "value": "API144_LAUNDRY_V18",
+        "updateTime": 1712830903000
+      },
+      "Cavity_CycleSetSteamEnable": {
+        "value": "1",
+        "updateTime": 1711637773427
+      },
+      "SerialNumber": {
+        "value": "xxxxxxxxx",
+        "updateTime": 1712830903000
+      },
+      "SmartID": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "XCat_WifiStatusRssiAntennaDiversity": {
+        "value": "-51",
+        "updateTime": 1712830905888
+      },
+      "XCat_PowerStatusPowerOutage": {
+        "value": "0",
+        "updateTime": 1712830905888
+      },
+      "Cavity_CycleSetCycleName": {
+        "value": "",
+        "updateTime": 1712830905888
+      },
+      "DryCavity_CycleStatusDamp": {
+        "value": "0",
+        "updateTime": 1712346213529
+      },
+      "XCat_WifiSetPublishApplianceState": {
+        "value": "false",
+        "updateTime": 1690400772218
+      },
+      "DryCavity_CycleSetTemperature": {
+        "value": "2",
+        "updateTime": 1712798315646
+      },
+      "DryCavity_CycleSetEcoBoostEnable": {
+        "value": "0",
+        "updateTime": 1712798315646
+      },
+      "SAID": {
+        "value": "WPR1XYZABC123",
+        "updateTime": 1712830903000
+      },
+      "RatePlanID": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "Cavity_OpSetOperations": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "XCat_SmartGridSetSmartGridMode": {
+        "value": "0,0,0,0,0",
+        "updateTime": 1712830905888
+      },
+      "Sys_OpSetAlertToneVolume": {
+        "value": "0",
+        "updateTime": 1700331823074
+      },
+      "DstOffset": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "XCat_ApplianceInfoSetModelNumber": {
+        "value": "WED8127LW1",
+        "updateTime": 1712830905888
+      },
+      "DateTimeMode": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "CustomerFaultCodeNotification": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "XCat_ConfigSetMaxCustomCycles": {
+        "value": "1",
+        "updateTime": 1712830905888
+      },
+      "DrySys_OpSetDampNotificationToneVolume": {
+        "value": "0",
+        "updateTime": 1712542717253
+      },
+      "DryCavity_CycleStatusSteaming": {
+        "value": "0",
+        "updateTime": 1710876083750
+      },
+      "DryCavity_CycleStatusSensing": {
+        "value": "0",
+        "updateTime": 1712542715717
+      },
+      "M2MSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1690400772218
+      },
+      "DryCavity_CycleStatusCoolDown": {
+        "value": "0",
+        "updateTime": 1712800125831
+      },
+      "ISP_WIFI_VERSION": {
+        "value": "8.0.0",
+        "updateTime": 1712830903000
+      },
+      "Cavity_CycleSetDownloadAndGo": {
+        "value": "0",
+        "updateTime": 1712830905888
+      },
+      "DryCavity_CycleStatusLimitedCycle": {
+        "value": "0",
+        "updateTime": 1691704142289
+      },
+      "DryCavity_ChangeStatusTemperature": {
+        "value": "1",
+        "updateTime": 1712800125837
+      },
+      "ISP_DownloadStart": {
+        "value": "0",
+        "updateTime": 1691704220362
+      },
+      "TimeZoneId": {
+        "value": "America/Chicago",
+        "updateTime": 1712830904880
+      },
+      "ISP_WIFI_PART_NUMBER": {
+        "value": "W11657253",
+        "updateTime": 1712830903000
+      },
+      "ISP_InstallStart": {
+        "value": "63",
+        "updateTime": 1691704220362
+      },
+      "GetApplianceVersionNumber": {
+        "value": "false",
+        "updateTime": 1690400772218
+      }
+    }
+  }
+}

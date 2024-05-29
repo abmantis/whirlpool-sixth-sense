@@ -1,0 +1,462 @@
+{
+  "DATA1": {
+    "_id": "WPR1XYZABC123",
+    "applianceId": "WPR1XYZABC123",
+    "lastFullSyncTime": 1690565765080,
+    "lastModified": 1713107389393,
+    "attributes": {
+      "Zip": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "XCat_ApplianceInfoSetSerialNumber": {
+        "value": "xxxxxxxxx",
+        "updateTime": 1713071694116
+      },
+      "WashCavity_ChangeStatusExtraRinse": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "Cavity_OpStatusDoorOpen": {
+        "value": "1",
+        "updateTime": 1712798203920
+      },
+      "Cavity_CycleSetSpecialtyCycleId": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "Cavity_CycleStatusMachineState": {
+        "value": "0",
+        "updateTime": 1712723543238
+      },
+      "WashCavity_ChangeStatusCycleSelect": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "trid_result": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "ISPReasonCode": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "UtilityID": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "ISP_PART_NUMBER": {
+        "value": "W11658998",
+        "updateTime": 1713071691000
+      },
+      "sys-parser-type": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_CycleStatusCleanReminder": {
+        "value": "0",
+        "updateTime": 1708134621725
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "Cavity_TimeSetDelayTime": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "ISP_DownloadEnd": {
+        "value": "0",
+        "updateTime": 1691643851384
+      },
+      "version": {
+        "value": "1",
+        "updateTime": 1713071692723
+      },
+      "XCat_PersistentInfoVersion": {
+        "value": "32",
+        "updateTime": 1713071694116
+      },
+      "trid": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "ISP_UpdateNotification": {
+        "value": "1691643632",
+        "updateTime": 1691643851384
+      },
+      "WashCavity_ChangeStatusDeepFill": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "SetDNSNames": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "XCat_SmartGridStatusSmartGridCompliant": {
+        "value": "2",
+        "updateTime": 1713071694116
+      },
+      "WashCavity_CycleSetFabricSoftenerEnable": {
+        "value": "0",
+        "updateTime": 1712719365336
+      },
+      "WashCavity_CycleStatusDraining": {
+        "value": "0",
+        "updateTime": 1706918230361
+      },
+      "ISP_RebootTime": {
+        "value": "0",
+        "updateTime": 1691643851384
+      },
+      "Relational_to_Appliance": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_CycleStatusRinsing": {
+        "value": "0",
+        "updateTime": 1712722546190
+      },
+      "XCat_OdometerStatusTotalHours": {
+        "value": "6305",
+        "updateTime": 1713107389054
+      },
+      "ISP_InstallEnd": {
+        "value": "219",
+        "updateTime": 1691643851384
+      },
+      "ISP_TotalProcessInModule": {
+        "value": "0",
+        "updateTime": 1691643851384
+      },
+      "XCat_SmartGridSetSmartGridEnable": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "ISP_CurrentProcessInModule": {
+        "value": "0",
+        "updateTime": 1691643851384
+      },
+      "Cavity_TimeStatusDelayTimeRemaining": {
+        "value": "0",
+        "updateTime": 1706918230361
+      },
+      "XCat_PersistentInfoSaid": {
+        "value": "WPR1XYZABC123",
+        "updateTime": 1713071694116
+      },
+      "XCat_RemoteSetRemoteControlEnable": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "UtcOffset": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "uid": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "Cavity_TimeStatusEstTimeRemaining": {
+        "value": "4080",
+        "updateTime": 1712723549245
+      },
+      "PushTrigger": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_CycleSetPresoakTimed": {
+        "value": "0",
+        "updateTime": 1710213050642
+      },
+      "XCat_RemoteSetRebootAppliance": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "Cavity_OpStatusDoorLocked": {
+        "value": "0",
+        "updateTime": 1712723239900
+      },
+      "XCat_WifiStatusIspCheck": {
+        "value": "1",
+        "updateTime": 1691574840589
+      },
+      "InServiceDate": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "ISP_CurrentModule": {
+        "value": "0",
+        "updateTime": 1691643851384
+      },
+      "XCat_PersistentInfoMacAddress": {
+        "value": "94:B5:55:B1:B1:78",
+        "updateTime": 1713071694116
+      },
+      "M2MSubList": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_ChangeStatusBulkDispense1": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "XCat_OdometerStatusCycleCount": {
+        "value": "98",
+        "updateTime": 1713071694116
+      },
+      "MAC_Address": {
+        "value": "94:B5:55:B1:B1:78",
+        "updateTime": 1713071691000
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1713071690984
+      },
+      "ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_CycleSetSoilLevel": {
+        "value": "3",
+        "updateTime": 1712719374389
+      },
+      "ISPStep": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_CycleStatusAddGarment": {
+        "value": "0",
+        "updateTime": 1712719408953
+      },
+      "WashCavity_CycleStatusFilling": {
+        "value": "0",
+        "updateTime": 1712719874583
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "F0,E0,0",
+        "updateTime": 1706918230361
+      },
+      "EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "ControlLockChangedByAppliance": {
+        "value": "false",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_CycleSetExtraRinseSelect": {
+        "value": "0",
+        "updateTime": 1710213050642
+      },
+      "WashCavity_CycleSetDeepFillEnable": {
+        "value": "2",
+        "updateTime": 1712103493370
+      },
+      "WashCavity_ChangeStatusFabricSoftener": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "WashCavity_ChangeStatusBulkDispense1Concentration": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "GetSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "ModelNumber": {
+        "value": "WTW8127LW1",
+        "updateTime": 1713071691000
+      },
+      "WashCavity_CycleStatusSpinning": {
+        "value": "0",
+        "updateTime": 1712723220322
+      },
+      "XCat_OdometerStatusRunningHours": {
+        "value": "98",
+        "updateTime": 1713071694116
+      },
+      "ProjectReleaseNumber": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "ApplianceVersionNumber": {
+        "value": "7",
+        "updateTime": 1713071691000
+      },
+      "ccuri": {
+        "value": "API144_LAUNDRY_V32",
+        "updateTime": 1713071691000
+      },
+      "WashCavity_CycleSetBulkDispense1Enable": {
+        "value": "1",
+        "updateTime": 1710213050642
+      },
+      "WashCavity_CycleSetSpinSpeed": {
+        "value": "4",
+        "updateTime": 1712719365336
+      },
+      "WashCavity_OpStatusDispenserDrawerOpen": {
+        "value": "0",
+        "updateTime": 1712173611872
+      },
+      "WashCavity_CycleSetTemperature": {
+        "value": "5",
+        "updateTime": 1712719365336
+      },
+      "SerialNumber": {
+        "value": "xxxxxxxxx",
+        "updateTime": 1713071691000
+      },
+      "SmartID": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "XCat_WifiStatusRssiAntennaDiversity": {
+        "value": "-50",
+        "updateTime": 1713071694116
+      },
+      "WashCavity_ChangeStatusSpinSpeed": {
+        "value": "1",
+        "updateTime": 1712723241368
+      },
+      "WashCavity_CycleStatusCleanDetection": {
+        "value": "0",
+        "updateTime": 1712723241372
+      },
+      "XCat_PowerStatusPowerOutage": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "Cavity_CycleSetCycleName": {
+        "value": "",
+        "updateTime": 1713071694116
+      },
+      "WashCavity_CycleStatusSoaking": {
+        "value": "0",
+        "updateTime": 1706918230361
+      },
+      "WashCavity_ChangeStatusPresoakTimed": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "XCat_WifiSetPublishApplianceState": {
+        "value": "false",
+        "updateTime": 1690565765080
+      },
+      "SAID": {
+        "value": "WPR1XYZABC123",
+        "updateTime": 1713071691000
+      },
+      "RatePlanID": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "Cavity_OpSetOperations": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "XCat_SmartGridSetSmartGridMode": {
+        "value": "0,0,0,0,0",
+        "updateTime": 1713071694116
+      },
+      "Sys_OpSetAlertToneVolume": {
+        "value": "2",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_ChangeStatusSoilLevel": {
+        "value": "1",
+        "updateTime": 1712723241368
+      },
+      "DstOffset": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "XCat_ApplianceInfoSetModelNumber": {
+        "value": "WTW8127LW1",
+        "updateTime": 1713071694116
+      },
+      "DateTimeMode": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "CustomerFaultCodeNotification": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_ChangeStatusTemperature": {
+        "value": "1",
+        "updateTime": 1712723241368
+      },
+      "XCat_ConfigSetMaxCustomCycles": {
+        "value": "1",
+        "updateTime": 1713071694116
+      },
+      "WashCavity_OpStatusBulkDispense1Level": {
+        "value": "4",
+        "updateTime": 1712173611872
+      },
+      "ISP_REASON_CODE": {
+        "value": "0",
+        "updateTime": 1691643851378
+      },
+      "WashCavity_OpSetBulkDispense1Concentration": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "WashCavity_CycleStatusSensing": {
+        "value": "0",
+        "updateTime": 1712719478106
+      },
+      "WashCavity_CycleStatusDispensing": {
+        "value": "0",
+        "updateTime": 1706918230361
+      },
+      "M2MSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1690565765080
+      },
+      "ISP_WIFI_VERSION": {
+        "value": "8.0.0",
+        "updateTime": 1713071691000
+      },
+      "WashCavity_CycleStatusWashing": {
+        "value": "0",
+        "updateTime": 1712721460304
+      },
+      "Cavity_CycleSetDownloadAndGo": {
+        "value": "0",
+        "updateTime": 1713071694116
+      },
+      "WashCavity_CycleSetCycleSelect": {
+        "value": "88",
+        "updateTime": 1712719365336
+      },
+      "ISP_DownloadStart": {
+        "value": "0",
+        "updateTime": 1691643851384
+      },
+      "TimeZoneId": {
+        "value": "America/Chicago",
+        "updateTime": 1713071692725
+      },
+      "ISP_WIFI_PART_NUMBER": {
+        "value": "W11657249",
+        "updateTime": 1713071691000
+      },
+      "Cavity_TelemetryDataProductDev1": {
+        "value": "WTW8127LW1,CC2601005,8.0.0,98,WHITESCOLD_WASH,TAP_COLD,HIGH,EXTRA_HEAVY,0,0,0,0,14325,53688,10928,0,0,0,356",
+        "updateTime": 1712723241383
+      },
+      "ISP_InstallStart": {
+        "value": "178",
+        "updateTime": 1691643851384
+      },
+      "GetApplianceVersionNumber": {
+        "value": "false",
+        "updateTime": 1690565765080
+      }
+    }
+  }
+}

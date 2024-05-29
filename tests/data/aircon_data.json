@@ -1,0 +1,68 @@
+{
+  "DATA1": {
+    "_id": "WPR1XYZABC123",
+    "applianceId": "WPR1XYZABC123",
+    "lastFullSyncTime": 1604500393149,
+    "lastModified": 1641436766989,
+    "attributes": {
+      "Cavity_OpSetFanSpeed": { "value": "0", "updateTime": 1626535975892 },
+      "Cavity_OpSetHorzLouverSwing": {
+        "value": "1",
+        "updateTime": 1626517992782
+      },
+      "Cavity_OpSetMode": { "value": "3", "updateTime": 1626535966896 },
+      "Cavity_OpSetTurboMode": { "value": "0", "updateTime": 1626517785042 },
+      "Cavity_OpStatusMode": { "value": "3", "updateTime": 1626535966896 },
+      "Online": { "value": "0", "updateTime": 1626536325968 },
+      "SAID": { "value": "WPR1XYZABC123", "updateTime": 1626517782012 },
+      "Sys_DisplaySetBrightness": { "value": "0", "updateTime": 1626535966896 },
+      "Sys_OpSetEcoModeEnabled": { "value": "0", "updateTime": 1626517785042 },
+      "Sys_OpSetPowerOn": { "value": "0", "updateTime": 1626535966896 },
+      "Sys_OpSetQuietModeEnabled": {
+        "value": "0",
+        "updateTime": 1626517785042
+      },
+      "Sys_OpSetSleepMode": { "value": "0", "updateTime": 1626517785042 },
+      "Sys_OpSetTargetHumidity": { "value": "40", "updateTime": 1626517785042 },
+      "Sys_OpSetTargetTemp": { "value": "300", "updateTime": 1626535966896 },
+      "Sys_OpStatusDisplayHumidity": {
+        "value": "56",
+        "updateTime": 1626536203199
+      },
+      "Sys_OpStatusDisplayTemp": { "value": "230", "updateTime": 1626535909593 }
+    }
+  },
+  "DATA2": {
+    "_id": "WPR1XYZABC123",
+    "applianceId": "WPR1XYZABC123",
+    "lastFullSyncTime": 1604500393149,
+    "lastModified": 1641436766989,
+    "attributes": {
+      "Cavity_OpSetFanSpeed": { "value": "1", "updateTime": 1626535975892 },
+      "Cavity_OpSetHorzLouverSwing": {
+        "value": "0",
+        "updateTime": 1626517992782
+      },
+      "Cavity_OpSetMode": { "value": "4", "updateTime": 1626535966896 },
+      "Cavity_OpSetTurboMode": { "value": "1", "updateTime": 1626517785042 },
+      "Cavity_OpStatusMode": { "value": "2", "updateTime": 1626535966896 },
+      "Online": { "value": "1", "updateTime": 1626536325968 },
+      "SAID": { "value": "WPR1XYZABC123", "updateTime": 1626517782012 },
+      "Sys_DisplaySetBrightness": { "value": "4", "updateTime": 1626535966896 },
+      "Sys_OpSetEcoModeEnabled": { "value": "1", "updateTime": 1626517785042 },
+      "Sys_OpSetPowerOn": { "value": "1", "updateTime": 1626535966896 },
+      "Sys_OpSetQuietModeEnabled": {
+        "value": "1",
+        "updateTime": 1626517785042
+      },
+      "Sys_OpSetSleepMode": { "value": "1", "updateTime": 1626517785042 },
+      "Sys_OpSetTargetHumidity": { "value": "45", "updateTime": 1626517785042 },
+      "Sys_OpSetTargetTemp": { "value": "290", "updateTime": 1626535966896 },
+      "Sys_OpStatusDisplayHumidity": {
+        "value": "31",
+        "updateTime": 1626536203199
+      },
+      "Sys_OpStatusDisplayTemp": { "value": "300", "updateTime": 1626535909593 }
+    }
+  }
+}

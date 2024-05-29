@@ -91,8 +91,8 @@ async def show_aircon_menu(backend_selector, auth, said, session):
         elif choice == "v":
             print(ac._data_dict)
         elif choice == "c":
-            cmd = aioconsole.ainput("Command: ")
-            val = aioconsole.ainput("Value: ")
+            cmd = await aioconsole.ainput("Command: ")
+            val = await aioconsole.ainput("Value: ")
             await ac.send_attributes({cmd: val})
         elif choice == "q":
             await ac.disconnect()
