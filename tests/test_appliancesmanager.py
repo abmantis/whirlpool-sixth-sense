@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from unittest.mock import Mock
 
 import pytest
 
@@ -10,13 +9,6 @@ from whirlpool.backendselector import BackendSelector
 CURR_DIR = Path(__file__).parent
 DATA_DIR = CURR_DIR / "data"
 ACCOUNT_ID = "12345"
-
-
-def get_mock_coro(return_value):
-    async def mock_coro(*args, **kwargs):
-        return return_value
-
-    return Mock(wraps=mock_coro)
 
 
 @pytest.fixture(autouse=True)
