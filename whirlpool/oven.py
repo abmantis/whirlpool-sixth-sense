@@ -269,7 +269,7 @@ class Oven(Appliance):
 
     def get_oven_cavity_exists(self, cavity: Cavity):
         cavity_state = self.get_cavity_state(cavity=cavity)
-        return cavity_state != None and cavity_state != CavityState.NotPresent
+        return cavity_state is not None and cavity_state != CavityState.NotPresent
 
     # todo: persist the kitchen timer objects in the object
     def get_kitchen_timer(self, timer_id=1):
@@ -306,7 +306,7 @@ class Oven(Appliance):
             cavity_prefix
             + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[operation_type],
         }
-        if meat_probe_target_temp != None:
+        if meat_probe_target_temp is not None:
             attrs[cavity_prefix + ATTR_POSTFIX_MEAT_PROBE_TARGET_TEMP] = round(
                 float(meat_probe_target_temp) * 10
             )

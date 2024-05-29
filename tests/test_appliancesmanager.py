@@ -89,6 +89,8 @@ async def test_fetch_appliances_with_set_account_id(
 
     # ensure that the washer_dryers list is populated
     assert len(am.washer_dryers) == 2
+    # ensure that the oven list is populated
+    assert len(am.ovens) == 1
 
     await http_client_mock.close_session()
 
