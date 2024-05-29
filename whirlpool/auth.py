@@ -117,7 +117,7 @@ class Auth:
     def get_access_token(self):
         return self._auth_dict.get("access_token", None)
 
-    async def get_account_id(self) -> str | None:
+    async def get_account_id(self) -> str | None | bool:
         """Returns the accountId value from the `_auth_dict`, or None if not present."""
         if self._auth_dict.get("accountId"):
             return self._auth_dict.get("accountId")
