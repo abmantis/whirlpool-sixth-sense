@@ -103,6 +103,8 @@ class AppliancesManager:
 
     async def fetch_appliances(self):
         account_id = await self._auth.get_account_id()
+        if account_id is False:
+            return False
         success_owned = await self._get_owned_appliances(account_id)
         success_shared = await self._get_shared_appliances()
 
