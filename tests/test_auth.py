@@ -1,6 +1,8 @@
 import sys
 from http import HTTPStatus
 
+import pytest
+from aiohttp.client_exceptions import ClientConnectionError
 from yarl import URL
 
 from whirlpool.auth import Auth
@@ -8,6 +10,7 @@ from whirlpool.backendselector import BackendSelector
 
 from .mock_backendselector import BackendSelectorMock, BackendSelectorMockMultipleCreds
 
+ACCOUNT_ID = "12345"
 BACKEND_SELECTOR_MOCK = BackendSelectorMock()
 BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS = BackendSelectorMockMultipleCreds()
 
@@ -111,3 +114,35 @@ async def test_auth_bad_credentials(
     call = calls[0]
     assert call[1]["data"] == AUTH_DATA
     assert call[1]["headers"] == AUTH_HEADERS
+
+
+async def test_user_details_requested_only_once(
+    auth_mock: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
+):
+    aioresponses_mock.get(
+        backend_selector_mock.user_details_url, payload={"accountId": ACCOUNT_ID}
+    )
+
+    headers = {
+        "Authorization": f"Bearer {auth_mock.get_access_token()}",
+        "Content-Type": "application/json",
+        "User-Agent": "okhttp/3.12.0",
+        "Pragma": "no-cache",
+        "Cache-Control": "no-cache",
+    }
+
+    await auth_mock.get_account_id()
+
+    aioresponses_mock.assert_called_with(
+        backend_selector_mock.user_details_url, "GET", headers=headers
+    )
+
+    assert auth_mock._auth_dict["accountId"] == ACCOUNT_ID
+
+    try:
+        # assuming the last call succeeded and we now have the acccount id, this will
+        # succeed because no call is made. if a call is made it will fail, as we already
+        # exhausted the responses
+        await auth_mock.get_account_id()
+    except ClientConnectionError:
+        pytest.fail("Attempted to call user details when it should not have")
