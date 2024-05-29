@@ -21,13 +21,6 @@ def get_mock_coro(return_value):
     return Mock(wraps=mock_coro)
 
 
-with open(DATA_DIR / "owned_appliances.json") as f:
-    owned_appliance_data = json.load(f)
-
-with open(DATA_DIR / "shared_appliances.json") as f:
-    shared_appliance_data = json.load(f)
-
-
 @pytest.fixture(autouse=True)
 def account_id_calls_fixture(aioresponses_mock, backend_selector_mock):
     """Mock the calls to get the user details and owned appliances.
@@ -35,6 +28,12 @@ def account_id_calls_fixture(aioresponses_mock, backend_selector_mock):
     This is required by all of the tests in this file, so we use the autouse=True
     parameter to ensure that this fixture is always run.
     """
+    with open(DATA_DIR / "owned_appliances.json") as f:
+        owned_appliance_data = json.load(f)
+
+    with open(DATA_DIR / "shared_appliances.json") as f:
+        shared_appliance_data = json.load(f)
+
     aioresponses_mock.get(
         backend_selector_mock.user_details_url, payload={"accountId": ACCOUNT_ID}
     )
