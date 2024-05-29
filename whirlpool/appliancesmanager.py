@@ -23,14 +23,19 @@ class AppliancesManager:
         self._ovens: list[dict[str, Any]] = []
         self._session: aiohttp.ClientSession = session
 
-    def _create_headers(self):
-        return {
+    def _create_headers(self, include_wp_brand_name: bool = False):
+        headers = {
             "Authorization": f"Bearer {self._auth.get_access_token()}",
             "Content-Type": "application/json",
             "User-Agent": "okhttp/3.12.0",
             "Pragma": "no-cache",
             "Cache-Control": "no-cache",
         }
+
+        if include_wp_brand_name:
+            headers["WP-CLIENT-BRAND"] = self._backend_selector.brand.name
+
+        return headers
 
     def _add_appliance(self, appliance: dict[str, Any]) -> None:
         appliance_data = {
@@ -79,8 +84,8 @@ class AppliancesManager:
             return True
 
     async def _get_shared_appliances(self) -> bool:
-        headers = self._create_headers()
-        headers["WP-CLIENT-BRAND"] = self._backend_selector.brand.name
+        headers = self._create_headers(include_wp_brand_name=True)
+
         async with self._session.get(
             self._backend_selector.shared_appliances_url, headers=headers
         ) as r:
@@ -96,23 +101,8 @@ class AppliancesManager:
 
             return True
 
-    async def _get_account_id(self):
-        """Returns the accountId from the auth object, or fetches it from the backend if not present."""
-        if self._auth.get_account_id():
-            return self._auth.get_account_id()
-
-        async with self._session.get(
-            self._backend_selector.user_details_url,
-            headers=self._create_headers(),
-        ) as r:
-            if r.status != 200:
-                LOGGER.error(f"Failed to get account id: {r.status}")
-                return False
-            data = await r.json()
-            return data["accountId"]
-
     async def fetch_appliances(self):
-        account_id = await self._get_account_id()
+        account_id = await self._auth.get_account_id()
         success_owned = await self._get_owned_appliances(account_id)
         success_shared = await self._get_shared_appliances()
 
