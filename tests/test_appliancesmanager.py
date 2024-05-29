@@ -46,8 +46,8 @@ def account_id_calls_fixture(aioresponses_mock, backend_selector_mock):
     )
 
 
-async def test_uer_details_not_called_if_account_id_is_known(
 async def test_user_details_not_requested_if_account_id_is_known(
+    auth_mock: Auth,
     backend_selector_mock: BackendSelector,
     appliances_manager: AppliancesManager,
     aioresponses_mock,
