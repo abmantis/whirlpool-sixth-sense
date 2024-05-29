@@ -45,7 +45,6 @@ def account_id_calls_fixture(aioresponses_mock, backend_selector_mock):
     aioresponses_mock.get(
         backend_selector_mock.shared_appliances_url, payload=shared_appliance_data
     )
-    yield
 
 
 async def test_uer_details_not_called_if_account_id_is_known(
