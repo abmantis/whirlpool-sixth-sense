@@ -52,6 +52,9 @@ async def test_fetch_appliances_returns_owned_and_shared_appliances(
     # so if this is 2 then we have both
     assert len(appliances_manager.washer_dryers) == 2
 
+    # ensure oven list is populated
+    assert len(appliances_manager.ovens) == 1
+
 
 async def test_fetch_appliances_calls_owned_and_shared_methods(
     appliances_manager: AppliancesManager,
