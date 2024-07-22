@@ -9,7 +9,6 @@ from whirlpool.backendselector import BackendSelector
 from whirlpool.oven import Cavity, CavityState, CookMode, Oven
 
 ACCOUNT_ID = 111222333
-AC_NAME = "TestOv"
 
 CURR_DIR = Path(__file__).parent
 DATA_DIR = CURR_DIR / "data"

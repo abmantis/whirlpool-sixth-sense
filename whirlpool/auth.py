@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any
 
 import aiohttp
@@ -11,7 +11,6 @@ from .backendselector import BackendSelector
 LOGGER = logging.getLogger(__name__)
 
 AUTH_JSON_FILE = ".whirlpool_auth.json"
-AUTO_REFRESH_DELTA = timedelta(minutes=15)
 
 
 class Auth:

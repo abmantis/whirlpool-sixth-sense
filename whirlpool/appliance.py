@@ -65,7 +65,6 @@ class Appliance:
         return {
             "Authorization": "Bearer " + self._auth.get_access_token(),
             "Content-Type": "application/json",
-            # "Host": "api.whrcloud.eu",
             "User-Agent": "okhttp/3.12.0",
             "Pragma": "no-cache",
             "Cache-Control": "no-cache",

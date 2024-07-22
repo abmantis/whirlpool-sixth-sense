@@ -10,7 +10,6 @@ from whirlpool.aircon import Aircon, FanSpeed, Mode
 from whirlpool.backendselector import BackendSelector
 
 ACCOUNT_ID = 111222333
-AC_NAME = "TestAc"
 
 
 CURR_DIR = Path(__file__).parent
