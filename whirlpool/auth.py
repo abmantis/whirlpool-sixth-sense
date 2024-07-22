@@ -117,8 +117,10 @@ class Auth:
     def get_access_token(self):
         return self._auth_dict.get("access_token", None)
 
-    async def get_account_id(self) -> str | None | bool:
-        """Returns the accountId value from the `_auth_dict`, or None if not present."""
+    async def get_account_id(self) -> str | None:
+        """Returns the accountId value from the `_auth_dict` if it exists,
+        otherwise fetches it from the backend and returns it.
+        """
         if self._auth_dict.get("accountId"):
             return self._auth_dict.get("accountId")
 
@@ -135,7 +137,7 @@ class Auth:
         ) as r:
             if r.status != 200:
                 LOGGER.error(f"Failed to get account id: {r.status}")
-                return False
+                return None
             data = await r.json()
             self._auth_dict["accountId"] = data["accountId"]
             return self._auth_dict["accountId"]
