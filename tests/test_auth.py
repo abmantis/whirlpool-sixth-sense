@@ -1,8 +1,6 @@
 import sys
 from http import HTTPStatus
 
-import pytest
-from aiohttp.client_exceptions import ClientConnectionError
 from yarl import URL
 
 from whirlpool.auth import Auth
@@ -142,10 +140,11 @@ async def test_user_details_requested_only_once(
 
     assert auth_fixture._auth_dict["accountId"] == ACCOUNT_ID
 
-    try:
-        # assuming the last call succeeded and we now have the acccount id, this will
-        # succeed because no call is made. if a call is made it will fail, as we already
-        # exhausted the responses
-        await auth_mock.get_account_id()
-    except ClientConnectionError:
-        pytest.fail("Attempted to call user details when it should not have")
+    # aioresponses_mock.clear does not reset the requests list, so I'm
+    # just checking that the length doesn't change instead
+
+    curr_request_count = len(aioresponses_mock.requests)
+
+    await auth_fixture.get_account_id()
+
+    assert len(aioresponses_mock.requests) == curr_request_count
