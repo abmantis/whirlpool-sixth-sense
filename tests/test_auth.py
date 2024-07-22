@@ -45,6 +45,7 @@ async def test_auth_success(auth_fixture: Auth, aioresponses_mock):
     await auth_fixture.do_auth(store=False)
     assert auth_fixture.is_access_token_valid()
     assert auth_fixture.get_said_list() == ["SAID1", "SAID2"]
+    assert str(await auth_fixture.get_account_id()) == ACCOUNT_ID
 
     # assert that the proper method and url were used
     assert ("POST", URL(AUTH_URL)) in aioresponses_mock.requests
