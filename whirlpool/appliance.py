@@ -183,7 +183,7 @@ class Appliance:
     async def start_event_listener(self):
         """Start the appliance event listener"""
         await self.fetch_data()
-        if self._event_socket != None:
+        if self._event_socket is not None:
             LOGGER.warning("Event socket not None when starting event listener")
 
         self._event_socket = EventSocket(

@@ -42,7 +42,7 @@ class EventSocket:
         self._said = said
         self._msg_listener = msg_listener
         self._running = False
-        self._websocket: aiohttp.ClientWebSocketResponse = None
+        self._websocket: aiohttp.ClientWebSocketResponse | None = None
         self._run_future = None
         self._con_up_listener = con_up_listener
         self._reconnect_tries = RECONNECT_COUNT
