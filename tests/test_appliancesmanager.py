@@ -19,7 +19,7 @@ HEADERS = {
 
 
 @pytest.fixture(autouse=True)
-def account_id_calls_fixture(aioresponses_mock, backend_selector_mock):
+def common_http_calls_fixture(aioresponses_mock, backend_selector_mock):
     """Mock the calls to get the user details and owned appliances.
 
     This is required by all of the tests in this file, so we use the autouse=True
