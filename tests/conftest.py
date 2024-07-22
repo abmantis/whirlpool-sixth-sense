@@ -37,34 +37,38 @@ def backend_selector_mock(request):
 
 
 @pytest.fixture
-def auth_mock(backend_selector_mock, client_session_fixture):
+def auth_fixture(backend_selector_mock, client_session_fixture):
     auth = Auth(backend_selector_mock, "email", "secretpass", client_session_fixture)
     yield auth
 
 
 @pytest.fixture(name="oven")
-def oven_mock(backend_selector_mock, auth_mock, client_session_fixture):
+def oven_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
     with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
-        oven = Oven(backend_selector_mock, auth_mock, SAID, client_session_fixture)
+        oven = Oven(backend_selector_mock, auth_fixture, SAID, client_session_fixture)
         yield oven
 
 
 @pytest.fixture(name="washer_dryer")
-def washer_dryer_mock(backend_selector_mock, auth_mock, client_session_fixture):
+def washer_dryer_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
     with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
         washer_dryer = WasherDryer(
-            backend_selector_mock, auth_mock, SAID, client_session_fixture
+            backend_selector_mock, auth_fixture, SAID, client_session_fixture
         )
         yield washer_dryer
 
 
 @pytest.fixture(name="aircon")
-def aircon_mock(backend_selector_mock, auth_mock, client_session_fixture):
+def aircon_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
     with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
-        aircon = Aircon(backend_selector_mock, auth_mock, SAID, client_session_fixture)
+        aircon = Aircon(
+            backend_selector_mock, auth_fixture, SAID, client_session_fixture
+        )
         yield aircon
 
 
 @pytest.fixture(name="appliances_manager")
-def appliances_manager_mock(backend_selector_mock, auth_mock, client_session_fixture):
-    yield AppliancesManager(backend_selector_mock, auth_mock, client_session_fixture)
+def appliances_manager_fixture(
+    backend_selector_mock, auth_fixture, client_session_fixture
+):
+    yield AppliancesManager(backend_selector_mock, auth_fixture, client_session_fixture)

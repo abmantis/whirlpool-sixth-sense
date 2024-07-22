@@ -28,7 +28,7 @@ AUTH_HEADERS = {
 }
 
 
-async def test_auth_success(auth_mock: Auth, aioresponses_mock):
+async def test_auth_success(auth_fixture: Auth, aioresponses_mock):
     mock_resp_data = {
         "access_token": "acess_token_123",
         "token_type": "bearer",
@@ -44,9 +44,9 @@ async def test_auth_success(auth_mock: Auth, aioresponses_mock):
     # so we will only call this url once
     aioresponses_mock.post(AUTH_URL, payload=mock_resp_data)
 
-    await auth_mock.do_auth(store=False)
-    assert auth_mock.is_access_token_valid()
-    assert auth_mock.get_said_list() == ["SAID1", "SAID2"]
+    await auth_fixture.do_auth(store=False)
+    assert auth_fixture.is_access_token_valid()
+    assert auth_fixture.get_said_list() == ["SAID1", "SAID2"]
 
     # assert that the proper method and url were used
     assert ("POST", URL(AUTH_URL)) in aioresponses_mock.requests
@@ -62,7 +62,10 @@ async def test_auth_success(auth_mock: Auth, aioresponses_mock):
 
 
 async def test_auth_will_check_all_client_creds(
-    auth_mock: Auth, backend_selector_mock: BackendSelector, aioresponses_mock, caplog
+    auth_fixture: Auth,
+    backend_selector_mock: BackendSelector,
+    aioresponses_mock,
+    caplog,
 ):
     # need to capture at debug level to get status - we don't return status or have any
     # other good way to check it
@@ -77,7 +80,7 @@ async def test_auth_will_check_all_client_creds(
         expected.append({"status": status})
         aioresponses_mock.post(AUTH_URL, status=status)
 
-    await auth_mock.do_auth(store=False)
+    await auth_fixture.do_auth(store=False)
 
     # filter down to just the lines that contain the auth status
     status_logs = [line for line in caplog.text.splitlines() if "Auth status" in line]
@@ -93,16 +96,16 @@ async def test_auth_will_check_all_client_creds(
 
 
 async def test_auth_bad_credentials(
-    auth_mock: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
+    auth_fixture: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
 ):
     # need to repeat for the multiple client credentials mock
     aioresponses_mock.post(AUTH_URL, status=HTTPStatus.BAD_REQUEST, repeat=True)
 
-    await auth_mock.do_auth(store=False)
+    await auth_fixture.do_auth(store=False)
 
     # with bad request we should not get an access token and not have a SAID list
-    assert auth_mock.is_access_token_valid() is False
-    assert auth_mock.get_said_list() is None
+    assert auth_fixture.is_access_token_valid() is False
+    assert auth_fixture.get_said_list() is None
 
     # assert that the proper method and url were used
     assert ("POST", URL(AUTH_URL)) in aioresponses_mock.requests
@@ -117,27 +120,27 @@ async def test_auth_bad_credentials(
 
 
 async def test_user_details_requested_only_once(
-    auth_mock: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
+    auth_fixture: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
 ):
     aioresponses_mock.get(
         backend_selector_mock.user_details_url, payload={"accountId": ACCOUNT_ID}
     )
 
     headers = {
-        "Authorization": f"Bearer {auth_mock.get_access_token()}",
+        "Authorization": f"Bearer {auth_fixture.get_access_token()}",
         "Content-Type": "application/json",
         "User-Agent": "okhttp/3.12.0",
         "Pragma": "no-cache",
         "Cache-Control": "no-cache",
     }
 
-    await auth_mock.get_account_id()
+    await auth_fixture.get_account_id()
 
     aioresponses_mock.assert_called_with(
         backend_selector_mock.user_details_url, "GET", headers=headers
     )
 
-    assert auth_mock._auth_dict["accountId"] == ACCOUNT_ID
+    assert auth_fixture._auth_dict["accountId"] == ACCOUNT_ID
 
     try:
         # assuming the last call succeeded and we now have the acccount id, this will
