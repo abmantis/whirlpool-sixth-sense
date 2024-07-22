@@ -9,6 +9,13 @@ from whirlpool.backendselector import BackendSelector
 CURR_DIR = Path(__file__).parent
 DATA_DIR = CURR_DIR / "data"
 ACCOUNT_ID = "12345"
+HEADERS = {
+    "Authorization": "Bearer None",
+    "Content-Type": "application/json",
+    "User-Agent": "okhttp/3.12.0",
+    "Pragma": "no-cache",
+    "Cache-Control": "no-cache",
+}
 
 
 @pytest.fixture(autouse=True)
@@ -36,40 +43,6 @@ def account_id_calls_fixture(aioresponses_mock, backend_selector_mock):
     )
 
 
-async def test_get_owned_appliances_call_does_not_contain_wp_client_brand_header(
-    backend_selector_mock: BackendSelector,
-    appliances_manager: AppliancesManager,
-    aioresponses_mock,
-):
-    await appliances_manager.fetch_appliances()
-
-    headers = appliances_manager._create_headers()
-
-    aioresponses_mock.assert_called_with(
-        backend_selector_mock.get_owned_appliances_url(ACCOUNT_ID),
-        "GET",
-        headers=headers,
-    )
-
-    assert "WP-CLIENT-BRAND" not in headers
-
-
-async def test_get_shared_appliances_call_contains_wp_client_brand_header(
-    backend_selector_mock: BackendSelector,
-    appliances_manager: AppliancesManager,
-    aioresponses_mock,
-):
-    await appliances_manager.fetch_appliances()
-
-    headers = appliances_manager._create_headers(include_wp_brand_name=True)
-
-    aioresponses_mock.assert_called_with(
-        backend_selector_mock.shared_appliances_url, "GET", headers=headers
-    )
-
-    assert headers["WP-CLIENT-BRAND"] == backend_selector_mock.brand.name
-
-
 async def test_fetch_appliances_returns_owned_and_shared_appliances(
     appliances_manager: AppliancesManager,
 ):
@@ -85,15 +58,14 @@ async def test_fetch_appliances_calls_owned_and_shared_methods(
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
 ):
-    owned_headers = appliances_manager._create_headers()
-    shared_headers = appliances_manager._create_headers(include_wp_brand_name=True)
+    shared_headers = {**HEADERS, "WP-CLIENT-BRAND": backend_selector_mock.brand.name}
 
     await appliances_manager.fetch_appliances()
 
     aioresponses_mock.assert_called_with(
         backend_selector_mock.get_owned_appliances_url(ACCOUNT_ID),
         "GET",
-        headers=owned_headers,
+        headers=HEADERS,
     )
 
     aioresponses_mock.assert_called_with(
