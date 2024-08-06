@@ -1,48 +1,74 @@
-import asyncio
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import patch
 
+import aiohttp
 import pytest
+import pytest_asyncio
+from aioresponses import aioresponses
 
-from .aiohttp import AiohttpClientMocker
-from .mock_backendselector import BackendSelectorMock
+from tests.mock_backendselector import (
+    BackendSelectorMock,
+    BackendSelectorMockMultipleCreds,
+)
+from whirlpool.aircon import Aircon
+from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.auth import Auth
+from whirlpool.oven import Oven
+from whirlpool.washerdryer import WasherDryer
 
-
-@pytest.fixture
-def http_client_mock(mocker, backend_selector_mock):
-    """Set up aiohttp ClientSession mock."""
-    http_client_mocker = AiohttpClientMocker()
-    mocker.patch(
-        "aiohttp.ClientSession",
-        side_effect=lambda *args, **kwargs: http_client_mocker.create_session(
-            asyncio.get_event_loop()
-        ),
-    )
-    return http_client_mocker
+SAID = "WPR1XYZABC123"
 
 
 @pytest.fixture
-def appliance_http_client_mock(
-    http_client_mock, backend_selector_mock: BackendSelectorMock
+def aioresponses_mock():
+    with aioresponses() as m:
+        yield m
+
+
+@pytest_asyncio.fixture(scope="session")
+async def client_session_fixture():
+    session = aiohttp.ClientSession()
+    yield session
+    await session.close()
+
+
+@pytest.fixture(params=[BackendSelectorMock, BackendSelectorMockMultipleCreds])
+def backend_selector_mock(request):
+    yield request.param()
+
+
+@pytest.fixture
+def auth_fixture(backend_selector_mock, client_session_fixture):
+    auth = Auth(backend_selector_mock, "email", "secretpass", client_session_fixture)
+    yield auth
+
+
+@pytest.fixture(name="oven")
+def oven_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
+    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+        oven = Oven(backend_selector_mock, auth_fixture, SAID, client_session_fixture)
+        yield oven
+
+
+@pytest.fixture(name="washer_dryer")
+def washer_dryer_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
+    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+        washer_dryer = WasherDryer(
+            backend_selector_mock, auth_fixture, SAID, client_session_fixture
+        )
+        yield washer_dryer
+
+
+@pytest.fixture(name="aircon")
+def aircon_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
+    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+        aircon = Aircon(
+            backend_selector_mock, auth_fixture, SAID, client_session_fixture
+        )
+        yield aircon
+
+
+@pytest.fixture(name="appliances_manager")
+def appliances_manager_fixture(
+    backend_selector_mock, auth_fixture, client_session_fixture
 ):
-    http_client_mock.get(
-        backend_selector_mock.websocket_url, json={"url": "wss://something"}
-    )
-
-    return http_client_mock
-
-
-@pytest.fixture
-def backend_selector_mock():
-    return BackendSelectorMock()
-
-
-@pytest.fixture
-def auth_mock():
-    return MagicMock()
-
-
-@pytest.fixture(autouse=True)
-def event_socket_mock(mocker):
-    event_socket = mocker.patch("whirlpool.appliance.EventSocket").return_value
-    event_socket.stop = AsyncMock()
-    return event_socket
+    yield AppliancesManager(backend_selector_mock, auth_fixture, client_session_fixture)

@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any
 
 import aiohttp
@@ -11,7 +11,6 @@ from .backendselector import BackendSelector
 LOGGER = logging.getLogger(__name__)
 
 AUTH_JSON_FILE = ".whirlpool_auth.json"
-AUTO_REFRESH_DELTA = timedelta(minutes=15)
 
 
 class Auth:
@@ -88,7 +87,7 @@ class Auth:
         self._auth_dict = {
             "access_token": fetched_auth_data.get("access_token", ""),
             "refresh_token": fetched_auth_data.get("refresh_token", ""),
-            "expire_date": curr_timestamp + fetched_auth_data.get("expires_in", ""),
+            "expire_date": curr_timestamp + fetched_auth_data.get("expires_in", 0),
             "accountId": fetched_auth_data.get("accountId", ""),
             "SAID": fetched_auth_data.get("SAID", ""),
         }
@@ -117,9 +116,30 @@ class Auth:
     def get_access_token(self):
         return self._auth_dict.get("access_token", None)
 
-    def get_account_id(self) -> str | None:
-        """Returns the accountId value from the `_auth_dict`, or None if not present."""
-        return self._auth_dict.get("accountId", None)
+    async def get_account_id(self) -> str | None:
+        """Returns the accountId value from the `_auth_dict` if it exists,
+        otherwise fetches it from the backend and returns it.
+        """
+        if self._auth_dict.get("accountId"):
+            return self._auth_dict.get("accountId")
+
+        headers = {
+            "Authorization": f"Bearer {self.get_access_token()}",
+            "Content-Type": "application/json",
+            "User-Agent": "okhttp/3.12.0",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+        }
+
+        async with self._session.get(
+            self._backend_selector.user_details_url, headers=headers
+        ) as r:
+            if r.status != 200:
+                LOGGER.error(f"Failed to get account id: {r.status}")
+                return None
+            data = await r.json()
+            self._auth_dict["accountId"] = data["accountId"]
+            return self._auth_dict["accountId"]
 
     def get_said_list(self):
         return self._auth_dict.get("SAID", None)

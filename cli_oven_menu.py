@@ -126,8 +126,8 @@ async def show_oven_menu(backend_selector, auth, said, session):
         elif choice == "v":
             print(ov._data_dict)
         elif choice == "c":
-            cmd = aioconsole.ainput("Command: ")
-            val = aioconsole.ainput("Value: ")
+            cmd = await aioconsole.ainput("Command: ")
+            val = await aioconsole.ainput("Value: ")
             await ov.send_attributes({cmd: val})
         elif choice == "q":
             await ov.disconnect()

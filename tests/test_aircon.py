@@ -1,81 +1,38 @@
-import asyncio
-from unittest.mock import MagicMock
+import json
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
+import pytest
+from yarl import URL
 
 from whirlpool.aircon import Aircon, FanSpeed, Mode
-
-from .aiohttp import AiohttpClientMocker
-from .mock_backendselector import BackendSelectorMock
-from .utils import (
-    assert_appliance_setter_call,
-    mock_appliance_http_get,
-    mock_appliance_http_post,
-)
+from whirlpool.backendselector import BackendSelector
 
 ACCOUNT_ID = 111222333
-SAID = "WPR1XYZABC123"
-AC_NAME = "TestAc"
-DATA1 = {
-    "_id": SAID,
-    "applianceId": SAID,
-    "lastFullSyncTime": 1604500393149,
-    "lastModified": 1641436766989,
-    "attributes": {
-        "Cavity_OpSetFanSpeed": {"value": "0", "updateTime": 1626535975892},
-        "Cavity_OpSetHorzLouverSwing": {"value": "1", "updateTime": 1626517992782},
-        "Cavity_OpSetMode": {"value": "3", "updateTime": 1626535966896},
-        "Cavity_OpSetTurboMode": {"value": "0", "updateTime": 1626517785042},
-        "Cavity_OpStatusMode": {"value": "3", "updateTime": 1626535966896},
-        "Online": {"value": "0", "updateTime": 1626536325968},
-        "SAID": {"value": SAID, "updateTime": 1626517782012},
-        "Sys_DisplaySetBrightness": {"value": "0", "updateTime": 1626535966896},
-        "Sys_OpSetEcoModeEnabled": {"value": "0", "updateTime": 1626517785042},
-        "Sys_OpSetPowerOn": {"value": "0", "updateTime": 1626535966896},
-        "Sys_OpSetQuietModeEnabled": {"value": "0", "updateTime": 1626517785042},
-        "Sys_OpSetSleepMode": {"value": "0", "updateTime": 1626517785042},
-        "Sys_OpSetTargetHumidity": {"value": "40", "updateTime": 1626517785042},
-        "Sys_OpSetTargetTemp": {"value": "300", "updateTime": 1626535966896},
-        "Sys_OpStatusDisplayHumidity": {"value": "56", "updateTime": 1626536203199},
-        "Sys_OpStatusDisplayTemp": {"value": "230", "updateTime": 1626535909593},
-    },
-}
-DATA2 = {
-    "_id": SAID,
-    "applianceId": SAID,
-    "lastFullSyncTime": 1604500393149,
-    "lastModified": 1641436766989,
-    "attributes": {
-        "Cavity_OpSetFanSpeed": {"value": "1", "updateTime": 1626535975892},
-        "Cavity_OpSetHorzLouverSwing": {"value": "0", "updateTime": 1626517992782},
-        "Cavity_OpSetMode": {"value": "4", "updateTime": 1626535966896},
-        "Cavity_OpSetTurboMode": {"value": "1", "updateTime": 1626517785042},
-        "Cavity_OpStatusMode": {"value": "2", "updateTime": 1626535966896},
-        "Online": {"value": "1", "updateTime": 1626536325968},
-        "SAID": {"value": SAID, "updateTime": 1626517782012},
-        "Sys_DisplaySetBrightness": {"value": "4", "updateTime": 1626535966896},
-        "Sys_OpSetEcoModeEnabled": {"value": "1", "updateTime": 1626517785042},
-        "Sys_OpSetPowerOn": {"value": "1", "updateTime": 1626535966896},
-        "Sys_OpSetQuietModeEnabled": {"value": "1", "updateTime": 1626517785042},
-        "Sys_OpSetSleepMode": {"value": "1", "updateTime": 1626517785042},
-        "Sys_OpSetTargetHumidity": {"value": "45", "updateTime": 1626517785042},
-        "Sys_OpSetTargetTemp": {"value": "290", "updateTime": 1626535966896},
-        "Sys_OpStatusDisplayHumidity": {"value": "31", "updateTime": 1626536203199},
-        "Sys_OpStatusDisplayTemp": {"value": "300", "updateTime": 1626535909593},
-    },
-}
+
+
+CURR_DIR = Path(__file__).parent
+DATA_DIR = CURR_DIR / "data"
+
+AIRCON_DATA = json.loads((DATA_DIR / "aircon_data.json").read_text())
+
+DATA1 = AIRCON_DATA["DATA1"]
+DATA2 = AIRCON_DATA["DATA2"]
 
 
 async def test_attributes(
-    appliance_http_client_mock: AiohttpClientMocker,
-    backend_selector_mock: BackendSelectorMock,
-    auth_mock: MagicMock,
+    aircon: Aircon, backend_selector_mock: BackendSelector, aioresponses_mock
 ):
-    mock_appliance_http_get(
-        appliance_http_client_mock, backend_selector_mock, SAID, DATA1
+    aioresponses_mock.get(
+        backend_selector_mock.websocket_url,
+        payload={"url": "wss://something"},
+        repeat=True,
     )
-    appliance_http_client_mock.create_session(asyncio.get_event_loop())
-    aircon = Aircon(
-        backend_selector_mock, auth_mock, SAID, appliance_http_client_mock.session
+    aioresponses_mock.get(
+        backend_selector_mock.get_appliance_data_url(aircon.said), payload=DATA1
     )
+
     await aircon.connect()
     assert aircon.get_online() is False
     assert aircon.get_power_on() is False
@@ -93,9 +50,10 @@ async def test_attributes(
     assert aircon.get_quiet_mode() is False
     await aircon.disconnect()
 
-    mock_appliance_http_get(
-        appliance_http_client_mock, backend_selector_mock, SAID, DATA2
+    aioresponses_mock.get(
+        backend_selector_mock.get_appliance_data_url(aircon.said), payload=DATA2
     )
+
     await aircon.connect()
     assert aircon.get_online() is True
     assert aircon.get_power_on() is True
@@ -113,116 +71,64 @@ async def test_attributes(
     assert aircon.get_quiet_mode() is True
     await aircon.disconnect()
 
-    await appliance_http_client_mock.close_session()
-    # TODO: update DATA with changed attributes for things that are not tested yet
 
-
+@pytest.mark.parametrize(
+    ["method", "argument", "expected_json"],
+    [
+        (Aircon.set_power_on, True, {"Sys_OpSetPowerOn": "1"}),
+        (Aircon.set_power_on, False, {"Sys_OpSetPowerOn": "0"}),
+        (Aircon.set_temp, 30, {"Sys_OpSetTargetTemp": "300"}),
+        (Aircon.set_humidity, 45, {"Sys_OpSetTargetHumidity": "45"}),
+        (Aircon.set_mode, Mode.Cool, {"Cavity_OpSetMode": "1"}),
+        (Aircon.set_fanspeed, FanSpeed.Auto, {"Cavity_OpSetFanSpeed": "1"}),
+        (Aircon.set_h_louver_swing, True, {"Cavity_OpSetHorzLouverSwing": "1"}),
+        (Aircon.set_turbo_mode, False, {"Cavity_OpSetTurboMode": "0"}),
+        (Aircon.set_eco_mode, False, {"Sys_OpSetEcoModeEnabled": "0"}),
+        (Aircon.set_quiet_mode, False, {"Sys_OpSetQuietModeEnabled": "0"}),
+        (Aircon.set_display_on, True, {"Sys_DisplaySetBrightness": "4"}),
+    ],
+)
 async def test_setters(
-    appliance_http_client_mock: AiohttpClientMocker,
-    backend_selector_mock: BackendSelectorMock,
-    auth_mock: MagicMock,
+    aircon: Aircon,
+    backend_selector_mock: BackendSelector,
+    aioresponses_mock,
+    method: Callable,
+    argument: Any,
+    expected_json: dict,
 ):
-    mock_appliance_http_get(
-        appliance_http_client_mock, backend_selector_mock, SAID, DATA1
+    expected_payload = {
+        "json": {
+            "body": expected_json,
+            "header": {"said": aircon.said, "command": "setAttributes"},
+        }
+    }
+
+    post_request_call_kwargs = {
+        "url": backend_selector_mock.appliance_command_url,
+        "method": "POST",
+        "data": None,
+        "json": expected_payload["json"],
+        "allow_redirects": True,
+        "headers": {},
+    }
+
+    url = backend_selector_mock.appliance_command_url
+
+    aioresponses_mock.get(
+        backend_selector_mock.websocket_url, payload={"url": "wss://something"}
     )
-    mock_appliance_http_post(appliance_http_client_mock, backend_selector_mock)
-    appliance_http_client_mock.create_session(asyncio.get_event_loop())
-    CONNECT_HTTP_CALLS = 2
-    aircon = Aircon(
-        backend_selector_mock,
-        auth_mock,
-        SAID,
-        appliance_http_client_mock.session,
+    aioresponses_mock.get(
+        backend_selector_mock.get_appliance_data_url(aircon.said), payload=DATA1
     )
+
     await aircon.connect()
 
-    await aircon.set_power_on(True)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Sys_OpSetPowerOn": "1"},
-        CONNECT_HTTP_CALLS + 1,
-    )
+    # add call, call method
+    aioresponses_mock.post(url, payload=expected_payload)
+    await method(aircon, argument)
 
-    await aircon.set_power_on(False)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Sys_OpSetPowerOn": "0"},
-        CONNECT_HTTP_CALLS + 2,
-    )
-
-    await aircon.set_temp(30)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Sys_OpSetTargetTemp": "300"},
-        CONNECT_HTTP_CALLS + 3,
-    )
-
-    await aircon.set_humidity(45)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Sys_OpSetTargetHumidity": "45"},
-        CONNECT_HTTP_CALLS + 4,
-    )
-
-    await aircon.set_mode(Mode.Cool)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Cavity_OpSetMode": "1"},
-        CONNECT_HTTP_CALLS + 5,
-    )
-
-    await aircon.set_fanspeed(FanSpeed.Auto)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Cavity_OpSetFanSpeed": "1"},
-        CONNECT_HTTP_CALLS + 6,
-    )
-
-    await aircon.set_h_louver_swing(True)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Cavity_OpSetHorzLouverSwing": "1"},
-        CONNECT_HTTP_CALLS + 7,
-    )
-
-    await aircon.set_turbo_mode(False)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Cavity_OpSetTurboMode": "0"},
-        CONNECT_HTTP_CALLS + 8,
-    )
-
-    await aircon.set_eco_mode(False)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Sys_OpSetEcoModeEnabled": "0"},
-        CONNECT_HTTP_CALLS + 9,
-    )
-
-    await aircon.set_quiet_mode(False)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Sys_OpSetQuietModeEnabled": "0"},
-        CONNECT_HTTP_CALLS + 10,
-    )
-
-    await aircon.set_display_on(True)
-    assert_appliance_setter_call(
-        appliance_http_client_mock,
-        SAID,
-        {"Sys_DisplaySetBrightness": "4"},
-        CONNECT_HTTP_CALLS + 11,
-    )
+    # assert args and length
+    aioresponses_mock.assert_called_with(**post_request_call_kwargs)
+    assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
 
     await aircon.disconnect()
-    await appliance_http_client_mock.close_session()
