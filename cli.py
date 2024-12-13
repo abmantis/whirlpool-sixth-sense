@@ -5,9 +5,9 @@ import logging
 import aiohttp
 
 from cli_ac_menu import show_aircon_menu
+from cli_beer_fridge_menu import show_beer_fridge_menu
 from cli_oven_menu import show_oven_menu
 from cli_washerdryer_menu import show_washerdryer_menu
-from cli_beer_fridge_menu import show_beer_fridge_menu
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector, Brand, Region
