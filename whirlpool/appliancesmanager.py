@@ -118,14 +118,14 @@ class AppliancesManager:
     @property
     def aircons(self):
         return self._aircons
-
-    @property
-    def washer_dryers(self):
-        return self._washer_dryers
     
     @property
     def beer_fridges(self):
         return self._beer_fridges
+
+    @property
+    def washer_dryers(self):
+        return self._washer_dryers
 
     @property
     def ovens(self):
