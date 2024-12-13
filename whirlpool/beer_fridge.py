@@ -16,7 +16,7 @@ TEMP_MAP = {
     0: 10,
     3: 9,
     5: 8,
-    }
+}
 
 
 class BeerFridge(Appliance):
@@ -32,7 +32,7 @@ class BeerFridge(Appliance):
     async def set_temp(self, temp: int):
         if 8 <= temp <= 12:
             await self.send_attributes({SETTING_TEMP: str(temp)})
-            
+
     async def set_especific_temp(self, temp: int):
         allowed_temps = [-4, -2, 0, 3, 5]
         if temp not in allowed_temps:
@@ -49,7 +49,7 @@ class BeerFridge(Appliance):
 
     def get_display_lock(self):
         return self.attr_value_to_bool(self.get_attribute(SETTING_DISPLAY_LOCK))
-    
+
     async def set_display_lock(self, display: bool):
         await self.send_attributes(
             {SETTING_DISPLAY_LOCK: self.bool_to_attr_value(display)}

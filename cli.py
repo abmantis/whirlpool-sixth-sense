@@ -26,7 +26,7 @@ parser.add_argument(
     "-b",
     "--brand",
     help="Brand (whirlpool/maytag/kitchenaid/consul)",
-    default="whirlpool"
+    default="whirlpool",
 )
 parser.add_argument("-r", "--region", help="Region (EU/US)", default="EU")
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
@@ -89,14 +89,14 @@ async def start():
             if mo_data["SAID"] == args.said:
                 await show_oven_menu(backend_selector, auth, args.said, session)
                 return
-        
+
         for bf_data in appliance_manager.beer_fridges:
             if bf_data["SAID"]:
                 await show_beer_fridge_menu(
                     backend_selector, auth, bf_data["SAID"], session
-                    )
+                )
                 return
-            
+
         if not args.said:
             logger.error("No appliance specified")
             return

@@ -62,15 +62,15 @@ class AppliancesManager:
             "cooking_u2",
             "ddm_cooking_bio_self_clean_tourmaline_v2",
         ]
-        
+
         if any(model in data_model for model in oven_models):
             self._ovens.append(appliance_data)
             return
-        
+
         if "ddm_ted_refrigerator_v12" in data_model:
             self._beer_fridges.append(appliance_data)
             return
-        
+
         LOGGER.warning("Unsupported appliance data model %s", data_model)
 
     async def _get_owned_appliances(self, account_id: str) -> bool:
