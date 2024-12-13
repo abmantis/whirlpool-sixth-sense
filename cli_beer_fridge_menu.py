@@ -24,7 +24,7 @@ async def show_beer_fridge_menu(bbckend_selector, auth, said, session):
         print(67 * "-")
 
     def print_status(bc: BeerFridge):
-        print("current_temp: " + str(bc.get_current_temp(True))+"°C")
+        print("current_temp: " + str(bc.get_current_temp(True)) + "°C")
         print("turbo_mode: " + str(bc.get_turbo_mode()))
         print("display_locked: " + str(bc.get_display_lock()))
 

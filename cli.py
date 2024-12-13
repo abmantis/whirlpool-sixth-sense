@@ -23,7 +23,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--email", help="Email address")
 parser.add_argument("-p", "--password", help="Password")
 parser.add_argument(
-    "-b", "--brand", help="Brand (whirlpool/maytag/kitchenaid/consul)", default="whirlpool"
+    "-b",
+    "--brand",
+    help="Brand (whirlpool/maytag/kitchenaid/consul)",
+    default="whirlpool"
 )
 parser.add_argument("-r", "--region", help="Region (EU/US)", default="EU")
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
@@ -89,7 +92,9 @@ async def start():
         
         for bf_data in appliance_manager.beer_fridges:
             if bf_data["SAID"]:
-                await show_beer_fridge_menu(backend_selector, auth, bf_data["SAID"], session)
+                await show_beer_fridge_menu(
+                    backend_selector, auth, bf_data["SAID"], session
+                    )
                 return
             
         if not args.said:
