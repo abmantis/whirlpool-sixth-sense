@@ -7,6 +7,7 @@ import aiohttp
 from cli_ac_menu import show_aircon_menu
 from cli_oven_menu import show_oven_menu
 from cli_washerdryer_menu import show_washerdryer_menu
+from cli_beer_fridge_menu import show_beer_fridge_menu
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector, Brand, Region
@@ -69,11 +70,7 @@ async def start():
             print(appliance_manager.washer_dryers)
             print(appliance_manager.ovens)
             print(appliance_manager.beer_fridges)
-            return
-
-        if not args.said:
-            logger.error("No appliance specified")
-            return
+            # return
 
         for ac_data in appliance_manager.aircons:
             if ac_data["SAID"] == args.said:
@@ -89,6 +86,15 @@ async def start():
             if mo_data["SAID"] == args.said:
                 await show_oven_menu(backend_selector, auth, args.said, session)
                 return
+        
+        for bf_data in appliance_manager.beer_fridges:
+            if bf_data["SAID"]:
+                await show_beer_fridge_menu(backend_selector, auth, bf_data["SAID"], session)
+                return
+            
+        if not args.said:
+            logger.error("No appliance specified")
+            return
 
 
 asyncio.run(start())
