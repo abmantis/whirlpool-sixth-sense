@@ -20,6 +20,7 @@ class AppliancesManager:
         self._auth = auth
         self._aircons: list[dict[str, Any]] = []
         self._washer_dryers: list[dict[str, Any]] = []
+        self._beer_fridges: list[dict[str, Any]] = []
         self._ovens: list[dict[str, Any]] = []
         self._session: aiohttp.ClientSession = session
 
@@ -64,7 +65,10 @@ class AppliancesManager:
         if any(model in data_model for model in oven_models):
             self._ovens.append(appliance_data)
             return
-
+        if "ddm_ted_refrigerator_v12" in data_model:
+            self._beer_fridges.append(appliance_data)
+            return
+        
         LOGGER.warning("Unsupported appliance data model %s", data_model)
 
     async def _get_owned_appliances(self, account_id: str) -> bool:
@@ -118,6 +122,10 @@ class AppliancesManager:
     @property
     def washer_dryers(self):
         return self._washer_dryers
+    
+    @property
+    def beer_fridges(self):
+        return self._beer_fridges
 
     @property
     def ovens(self):

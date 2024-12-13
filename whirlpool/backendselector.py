@@ -27,6 +27,12 @@ CREDENTIALS: dict[Brand, list[dict[str, str]]] = {
             "client_secret": "kkdPquOHfNH-iIinccTdhAkJmaIdWBhLehhLrfoXRWbKjEpqpdu92PISF_yJEWQs72D2yeC0PdoEKeWgHR9JRA",
         }
     ],
+    Brand.Consul: [
+        {
+            "client_id": "consul_lar_android_v1",
+            "client_secret": "xfPIj2fqhHXlK4bz2oPToDX5E0zHZ409ZLY6ZHiU3p_jh4wv_Ycg8haUhnB6yXuA",
+        }
+    ],
 }
 
 URLS: dict[Region, str] = {

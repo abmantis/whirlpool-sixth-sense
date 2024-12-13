@@ -5,6 +5,7 @@ class Brand(Enum):
     Whirlpool = 0
     Maytag = 1
     KitchenAid = 2
+    Consul = 3
 
 
 class Region(Enum):

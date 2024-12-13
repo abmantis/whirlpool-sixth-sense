@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--email", help="Email address")
 parser.add_argument("-p", "--password", help="Password")
 parser.add_argument(
-    "-b", "--brand", help="Brand (whirlpool/maytag/kitchenaid)", default="whirlpool"
+    "-b", "--brand", help="Brand (whirlpool/maytag/kitchenaid/consul)", default="whirlpool"
 )
 parser.add_argument("-r", "--region", help="Region (EU/US)", default="EU")
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
@@ -40,6 +40,8 @@ async def start():
         selected_brand = Brand.Maytag
     elif args.brand == "kitchenaid":
         selected_brand = Brand.KitchenAid
+    elif args.brand == "consul":
+        selected_brand = Brand.Consul
     else:
         logger.error("Invalid brand argument")
         return
@@ -66,6 +68,7 @@ async def start():
             print(appliance_manager.aircons)
             print(appliance_manager.washer_dryers)
             print(appliance_manager.ovens)
+            print(appliance_manager.beer_fridges)
             return
 
         if not args.said:
