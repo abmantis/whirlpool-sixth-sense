@@ -7,12 +7,12 @@ LOGGER = logging.getLogger(__name__)
 CREDENTIALS: dict[Brand, list[dict[str, str]]] = {
     Brand.Whirlpool: [
         {
-            "client_id": "whirlpool_android",
-            "client_secret": "i-eQ8MD4jK4-9DUCbktfg-t_7gvU-SrRstPRGAYnfBPSrHHt5Mc0MFmYymU2E2qzif5cMaBYwFyFgSU6NTWjZg",
+            "client_id": "whirlpool_emea_android_v1",
+            "client_secret": "h-NBGuG7EY74sSvj9TrJeeTpodJBd4T35bAyV0mfa0YnJ0i4MBue8IiS4iFidkve",
         },
         {
-            "client_id": "Whirlpool_Android",
-            "client_secret": "784f6b9432727d5967a56e1ac6b125839cb0b789a52c47f450c98b2acaa4fdce",
+            "client_id": "whirlpool_android_v1",
+            "client_secret": "yH5BcCm4ogWBoyD_NrlE04vmVps2s8T7KaIi4PYrc_fsdphWpG1IwlLSJ-yl7FGV",
         },
     ],
     Brand.Maytag: [
