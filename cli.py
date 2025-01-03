@@ -5,6 +5,7 @@ import logging
 import aiohttp
 
 from cli_ac_menu import show_aircon_menu
+from cli_beer_fridge_menu import show_beer_fridge_menu
 from cli_oven_menu import show_oven_menu
 from cli_washerdryer_menu import show_washerdryer_menu
 from whirlpool.appliancesmanager import AppliancesManager
@@ -22,7 +23,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--email", help="Email address")
 parser.add_argument("-p", "--password", help="Password")
 parser.add_argument(
-    "-b", "--brand", help="Brand (whirlpool/maytag/kitchenaid)", default="whirlpool"
+    "-b",
+    "--brand",
+    help="Brand (whirlpool/maytag/kitchenaid/consul)",
+    default="whirlpool",
 )
 parser.add_argument("-r", "--region", help="Region (EU/US)", default="EU")
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
@@ -40,6 +44,8 @@ async def start():
         selected_brand = Brand.Maytag
     elif args.brand == "kitchenaid":
         selected_brand = Brand.KitchenAid
+    elif args.brand == "consul":
+        selected_brand = Brand.Consul
     else:
         logger.error("Invalid brand argument")
         return
@@ -66,11 +72,8 @@ async def start():
             print(appliance_manager.aircons)
             print(appliance_manager.washer_dryers)
             print(appliance_manager.ovens)
-            return
-
-        if not args.said:
-            logger.error("No appliance specified")
-            return
+            print(appliance_manager.beer_fridges)
+            # return
 
         for ac_data in appliance_manager.aircons:
             if ac_data["SAID"] == args.said:
@@ -86,6 +89,17 @@ async def start():
             if mo_data["SAID"] == args.said:
                 await show_oven_menu(backend_selector, auth, args.said, session)
                 return
+
+        for bf_data in appliance_manager.beer_fridges:
+            if bf_data["SAID"]:
+                await show_beer_fridge_menu(
+                    backend_selector, auth, bf_data["SAID"], session
+                )
+                return
+
+        if not args.said:
+            logger.error("No appliance specified")
+            return
 
 
 asyncio.run(start())
