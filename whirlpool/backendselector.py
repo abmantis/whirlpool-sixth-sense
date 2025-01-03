@@ -17,15 +17,19 @@ CREDENTIALS: dict[Brand, list[dict[str, str]]] = {
     ],
     Brand.Maytag: [
         {
-            "client_id": "maytag_ios",
-            "client_secret": "OfTy3A3rV4BHuhujkPThVDE9-SFgOymJyUrSbixjViATjCGviXucSKq2OxmPWm8DDj9D1IFno_mZezTYduP-Ig",
+            "client_id": "maytag_android_v1",
+            "client_secret": "f1XfYji_D9KfZGovyp8PMgRzrFKjhjY26TV0hu3Mt1-tCCNPl9s95z7QLUfB9UgB",
         }
     ],
     Brand.KitchenAid: [
         {
-            "client_id": "Kitchenaid_iOS",
-            "client_secret": "kkdPquOHfNH-iIinccTdhAkJmaIdWBhLehhLrfoXRWbKjEpqpdu92PISF_yJEWQs72D2yeC0PdoEKeWgHR9JRA",
-        }
+            "client_id": "kitchenaid_android_stg",
+            "client_secret": "Dn-ukFAFoSWOnB9nVm7Y2DDj4Gs9Bocm6aOkhy0mdNGBj5RcoLkRfCXujuxpKrqF2w15sl1tI45JXwK5Zi4saw",
+        },
+        {
+            "client_id": "kitchenaid_android_v1",
+            "client_secret": "T5j9T4ZAMnC6EMVpPAwZyKsRykXGfKOMDqikPHYpCKEMYjssPtJtuJtMYEc30g56",
+        },
     ],
 }
 
