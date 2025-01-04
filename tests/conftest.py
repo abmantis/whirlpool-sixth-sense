@@ -67,6 +67,7 @@ def aircon_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
         )
         yield aircon
 
+
 @pytest.fixture(name="refrigerator")
 def refrigerator_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
     with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):

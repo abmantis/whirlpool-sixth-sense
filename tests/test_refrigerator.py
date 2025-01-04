@@ -22,7 +22,9 @@ DATA2 = REFRIGERATOR_DATA["DATA2"]
 
 
 async def test_attributes(
-    refrigerator: Refrigerator, backend_selector_mock: BackendSelector, aioresponses_mock
+    refrigerator: Refrigerator,
+    backend_selector_mock: BackendSelector,
+    aioresponses_mock
 ):
     aioresponses_mock.get(
         backend_selector_mock.websocket_url,
