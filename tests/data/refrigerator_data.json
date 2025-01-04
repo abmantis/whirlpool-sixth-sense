@@ -1,0 +1,466 @@
+{
+  "DATA1": {
+    "_id": "WPR43R8FNDJ4C",
+    "applianceId": "WPR43R8FNDJ4C",
+    "lastFullSyncTime": 1663677597931,
+    "lastModified": 1736031905504,
+    "attributes": {
+        "XCat_ApplianceInfoSetSerialNumber": {
+            "value": "TED2018",
+            "updateTime": 1735714437212
+        },
+        "Sys_OpSetCalibrationOn": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "Sys_AlertStatusCustomerFaultCode": {
+            "value": "0",
+            "updateTime": 1562028497470
+        },
+        "lkCans": {
+            "value": "14",
+            "updateTime": 1736007173422
+        },
+        "XCat_WifiSetDeprovisionWifiCommModule": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "Pantry_OpStatusDoorOpen": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "ModelNumber": {
+            "value": "CZE12",
+            "updateTime": 1735714435000
+        },
+        "ISP_PART_NUMBER": {
+            "value": "W00000000",
+            "updateTime": 1735714435000
+        },
+        "Freezer_OpStatusContentsWeight": {
+            "value": "3",
+            "updateTime": 1736031905314
+        },
+        "XCat_OdometerStatusRunningHours": {
+            "value": "553",
+            "updateTime": 1736030707778
+        },
+        "ApplianceVersionNumber": {
+            "value": "0",
+            "updateTime": 1735714435000
+        },
+        "ProjectReleaseNumber": {
+            "value": "W11224365",
+            "updateTime": 1570702737991
+        },
+        "ccuri": {
+            "value": "API144_FRIG_V12",
+            "updateTime": 1735714435000
+        },
+        "version": {
+            "value": "1",
+            "updateTime": 1735714436056
+        },
+        "lkLongneck": {
+            "value": "59",
+            "updateTime": 1736007173422
+        },
+        "XCat_PersistentInfoVersion": {
+            "value": "12",
+            "updateTime": 1735714437212
+        },
+        "lkVolume": {
+            "value": "27.045",
+            "updateTime": 1736007173422
+        },
+        "lkBottles": {
+            "value": "2",
+            "updateTime": 1736007173422
+        },
+        "SerialNumber": {
+            "value": "ED2018",
+            "updateTime": 1735714435000
+        },
+        "Refrigerator_OpStatusDoorOpen": {
+            "value": "0",
+            "updateTime": 1736007170085
+        },
+        "Sys_DisplaySetCavityBrightness": {
+            "value": "0",
+            "updateTime": 1736007170085
+        },
+        "lkWeight": {
+            "value": "39785.0",
+            "updateTime": 1736007173422
+        },
+        "Refrigerator_OpSetTempPreset": {
+            "value": "10",
+            "updateTime": 1736030932627
+        },
+        "XCat_WifiStatusRssiAntennaDiversity": {
+            "value": "-31",
+            "updateTime": 1735714437212
+        },
+        "Sys_AlertStatusDoorOpenAlarm": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "XCat_PowerStatusPowerOutage": {
+            "value": "1",
+            "updateTime": 1734307490309
+        },
+        "Sys_OpStatusState": {
+            "value": "1",
+            "updateTime": 1736030847546
+        },
+        "XCat_OdometerStatusTotalHours": {
+            "value": "553",
+            "updateTime": 1736030707778
+        },
+        "applianceId": {
+            "value": "72698",
+            "updateTime": 1736007173422
+        },
+        "Sys_OpSetMaxCool": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "TimezoneId": {
+            "value": "America/New_York",
+            "updateTime": 1580769838547
+        },
+        "XCat_PersistentInfoSaid": {
+            "value": "WPR43R8FNDJ4C",
+            "updateTime": 1735714437212
+        },
+        "XCat_WifiSetPublishApplianceState": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "orgId": {
+            "value": "NAR",
+            "updateTime": 1592607815213
+        },
+        "SAID": {
+            "value": "WPR43R8FNDJ4C",
+            "updateTime": 1735714435000
+        },
+        "Sys_OpSetControlLock": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "UtcOffset": {
+            "value": "-18000",
+            "updateTime": 1580769838547
+        },
+        "DstOffset": {
+            "value": "0",
+            "updateTime": 1580769838547
+        },
+        "XCat_WifiStatusIspCheck": {
+            "value": "1",
+            "updateTime": 1735714437212
+        },
+        "CC_URI": {
+            "value": "API144_FRIG_V12",
+            "updateTime": 1593115050140
+        },
+        "lkDelta": {
+            "value": "-551.0",
+            "updateTime": 1736007173422
+        },
+        "DateTimeMode": {
+            "value": "2",
+            "updateTime": 1580769838547
+        },
+        "XCat_ApplianceInfoSetModelNumber": {
+            "value": "CZE12",
+            "updateTime": 1735714437212
+        },
+        "Refrigerator_OpStatusContentsWeight": {
+            "value": "39785",
+            "updateTime": 1736007173422
+        },
+        "XCat_WifiSetRebootWifiCommModule": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "XCat_ConfigSetApplianceCapability": {
+            "value": "0",
+            "updateTime": 1562028497470
+        },
+        "ISP_WIFI_VERSION": {
+            "value": "9.0.0",
+            "updateTime": 1735714435000
+        },
+        "SubscribeClaimstate": {
+            "value": "1",
+            "updateTime": 1592607815750
+        },
+        "XCat_PersistentInfoMacAddress": {
+            "value": "88:E7:12:0F:E3:9A",
+            "updateTime": 1735714437212
+        },
+        "Sys_OpSetVacationMode": {
+            "value": "0",
+            "updateTime": 1648382747876
+        },
+        "XCat_DateTimeSetDateTimeSet": {
+            "value": "2024-12-30T02:44:23-03:00",
+            "updateTime": 1735537463798
+        },
+        "createdDate": {
+            "value": "1736007174451",
+            "updateTime": 1736007173422
+        },
+        "TimeZoneId": {
+            "value": "America/Sao_Paulo",
+            "updateTime": 1735714436058
+        },
+        "ISP_WIFI_PART_NUMBER": {
+            "value": "W11224365",
+            "updateTime": 1735714435000
+        },
+        "Online": {
+            "value": "0",
+            "updateTime": 1735714435238
+        },
+        "MAC_Address": {
+            "value": "88:e7:12:0f:e3:9a",
+            "updateTime": 1735714435000
+        }
+    }
+  },
+  "DATA2": {
+    "_id": "WPR43R8FNDJ4C",
+    "applianceId": "WPR43R8FNDJ4C",
+    "lastFullSyncTime": 1663677597931,
+    "lastModified": 1736031905504,
+    "attributes": {
+        "XCat_ApplianceInfoSetSerialNumber": {
+            "value": "TED2018",
+            "updateTime": 1735714437212
+        },
+        "Sys_OpSetCalibrationOn": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "Sys_AlertStatusCustomerFaultCode": {
+            "value": "0",
+            "updateTime": 1562028497470
+        },
+        "lkCans": {
+            "value": "14",
+            "updateTime": 1736007173422
+        },
+        "XCat_WifiSetDeprovisionWifiCommModule": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "Pantry_OpStatusDoorOpen": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "ModelNumber": {
+            "value": "CZE12",
+            "updateTime": 1735714435000
+        },
+        "ISP_PART_NUMBER": {
+            "value": "W00000000",
+            "updateTime": 1735714435000
+        },
+        "Freezer_OpStatusContentsWeight": {
+            "value": "3",
+            "updateTime": 1736031905314
+        },
+        "XCat_OdometerStatusRunningHours": {
+            "value": "553",
+            "updateTime": 1736030707778
+        },
+        "ApplianceVersionNumber": {
+            "value": "0",
+            "updateTime": 1735714435000
+        },
+        "ProjectReleaseNumber": {
+            "value": "W11224365",
+            "updateTime": 1570702737991
+        },
+        "ccuri": {
+            "value": "API144_FRIG_V12",
+            "updateTime": 1735714435000
+        },
+        "version": {
+            "value": "1",
+            "updateTime": 1735714436056
+        },
+        "lkLongneck": {
+            "value": "59",
+            "updateTime": 1736007173422
+        },
+        "XCat_PersistentInfoVersion": {
+            "value": "12",
+            "updateTime": 1735714437212
+        },
+        "lkVolume": {
+            "value": "27.045",
+            "updateTime": 1736007173422
+        },
+        "lkBottles": {
+            "value": "2",
+            "updateTime": 1736007173422
+        },
+        "SerialNumber": {
+            "value": "ED2018",
+            "updateTime": 1735714435000
+        },
+        "Refrigerator_OpStatusDoorOpen": {
+            "value": "0",
+            "updateTime": 1736007170085
+        },
+        "Sys_DisplaySetCavityBrightness": {
+            "value": "0",
+            "updateTime": 1736007170085
+        },
+        "lkWeight": {
+            "value": "39785.0",
+            "updateTime": 1736007173422
+        },
+        "Refrigerator_OpSetTempPreset": {
+            "value": "8",
+            "updateTime": 1736030932627
+        },
+        "XCat_WifiStatusRssiAntennaDiversity": {
+            "value": "-31",
+            "updateTime": 1735714437212
+        },
+        "Sys_AlertStatusDoorOpenAlarm": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "XCat_PowerStatusPowerOutage": {
+            "value": "1",
+            "updateTime": 1734307490309
+        },
+        "Sys_OpStatusState": {
+            "value": "1",
+            "updateTime": 1736030847546
+        },
+        "XCat_OdometerStatusTotalHours": {
+            "value": "553",
+            "updateTime": 1736030707778
+        },
+        "applianceId": {
+            "value": "72698",
+            "updateTime": 1736007173422
+        },
+        "Sys_OpSetMaxCool": {
+            "value": "1",
+            "updateTime": 1735714437212
+        },
+        "TimezoneId": {
+            "value": "America/New_York",
+            "updateTime": 1580769838547
+        },
+        "XCat_PersistentInfoSaid": {
+            "value": "WPR43R8FNDJ4C",
+            "updateTime": 1735714437212
+        },
+        "XCat_WifiSetPublishApplianceState": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "orgId": {
+            "value": "NAR",
+            "updateTime": 1592607815213
+        },
+        "SAID": {
+            "value": "WPR43R8FNDJ4C",
+            "updateTime": 1735714435000
+        },
+        "Sys_OpSetControlLock": {
+            "value": "1",
+            "updateTime": 1735714437212
+        },
+        "UtcOffset": {
+            "value": "-18000",
+            "updateTime": 1580769838547
+        },
+        "DstOffset": {
+            "value": "0",
+            "updateTime": 1580769838547
+        },
+        "XCat_WifiStatusIspCheck": {
+            "value": "1",
+            "updateTime": 1735714437212
+        },
+        "CC_URI": {
+            "value": "API144_FRIG_V12",
+            "updateTime": 1593115050140
+        },
+        "lkDelta": {
+            "value": "-551.0",
+            "updateTime": 1736007173422
+        },
+        "DateTimeMode": {
+            "value": "2",
+            "updateTime": 1580769838547
+        },
+        "XCat_ApplianceInfoSetModelNumber": {
+            "value": "CZE12",
+            "updateTime": 1735714437212
+        },
+        "Refrigerator_OpStatusContentsWeight": {
+            "value": "39785",
+            "updateTime": 1736007173422
+        },
+        "XCat_WifiSetRebootWifiCommModule": {
+            "value": "0",
+            "updateTime": 1735714437212
+        },
+        "XCat_ConfigSetApplianceCapability": {
+            "value": "0",
+            "updateTime": 1562028497470
+        },
+        "ISP_WIFI_VERSION": {
+            "value": "9.0.0",
+            "updateTime": 1735714435000
+        },
+        "SubscribeClaimstate": {
+            "value": "1",
+            "updateTime": 1592607815750
+        },
+        "XCat_PersistentInfoMacAddress": {
+            "value": "88:E7:12:0F:E3:9A",
+            "updateTime": 1735714437212
+        },
+        "Sys_OpSetVacationMode": {
+            "value": "0",
+            "updateTime": 1648382747876
+        },
+        "XCat_DateTimeSetDateTimeSet": {
+            "value": "2024-12-30T02:44:23-03:00",
+            "updateTime": 1735537463798
+        },
+        "createdDate": {
+            "value": "1736007174451",
+            "updateTime": 1736007173422
+        },
+        "TimeZoneId": {
+            "value": "America/Sao_Paulo",
+            "updateTime": 1735714436058
+        },
+        "ISP_WIFI_PART_NUMBER": {
+            "value": "W11224365",
+            "updateTime": 1735714435000
+        },
+        "Online": {
+            "value": "1",
+            "updateTime": 1735714435238
+        },
+        "MAC_Address": {
+            "value": "88:e7:12:0f:e3:9a",
+            "updateTime": 1735714435000
+        }
+    }
+  }
+}
