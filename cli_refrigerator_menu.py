@@ -1,9 +1,9 @@
 import aioconsole
 
-from whirlpool.beer_fridge import BeerFridge
+from whirlpool.refrigerator import Refrigerator
 
 
-async def show_beer_fridge_menu(bbckend_selector, auth, said, session):
+async def show_refrigerator_menu(bbckend_selector, auth, said, session):
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -23,17 +23,17 @@ async def show_beer_fridge_menu(bbckend_selector, auth, said, session):
         print("q. Exit")
         print(67 * "-")
 
-    def print_status(bc: BeerFridge):
-        print("current_temp: " + str(bc.get_current_temp(True)) + "°C")
-        print("turbo_mode: " + str(bc.get_turbo_mode()))
-        print("display_locked: " + str(bc.get_display_lock()))
+    def print_status(bc: Refrigerator):
+        print("current_temp: " + str(rf.get_current_temp(True)) + "°C")
+        print("turbo_mode: " + str(rf.get_turbo_mode()))
+        print("display_locked: " + str(rf.get_display_lock()))
 
     def attr_upd():
         print("Attributes updated")
 
-    bc = BeerFridge(bbckend_selector, auth, said, session)
-    bc.register_attr_callback(attr_upd)
-    await bc.connect()
+    rf = Refrigerator(bbckend_selector, auth, said, session)
+    rf.register_attr_callback(attr_upd)
+    await rf.connect()
 
     loop = True
     while loop:
@@ -41,31 +41,31 @@ async def show_beer_fridge_menu(bbckend_selector, auth, said, session):
         choice = await aioconsole.ainput("Enter your choice: ")
 
         if choice == "+":
-            temp = bc.get_current_temp() - 1
-            await bc.set_temp(temp)
+            temp = rf.get_current_temp() - 1
+            await rf.set_temp(temp)
         elif choice == "-":
-            temp = bc.get_current_temp() + 1
-            await bc.set_temp(temp)
+            temp = rf.get_current_temp() + 1
+            await rf.set_temp(temp)
         elif choice in ["-4", "-2", "0", "3", "5"]:
             temp = int(choice)
-            await bc.set_especific_temp(temp)
+            await rf.set_especific_temp(temp)
         elif choice == "t":
-            await bc.set_turbo_mode(not bc.get_turbo_mode())
+            await rf.set_turbo_mode(not rf.get_turbo_mode())
         elif choice == "l":
-            await bc.set_display_lock(not bc.get_display_lock())
+            await rf.set_display_lock(not rf.get_display_lock())
         elif choice == "p":
-            print_status(bc)
+            print_status(rf)
         elif choice == "u":
-            await bc.fetch_data()
-            print_status(bc)
+            await rf.fetch_data()
+            print_status(rf)
         elif choice == "r":
-            print(bc._data_dict)
+            print(rf._data_dict)
         elif choice == "c":
             cmd = await aioconsole.ainput("Command: ")
             val = await aioconsole.ainput("Value: ")
-            await bc.send_attributes({cmd: val})
+            await rf.send_attributes({cmd: val})
         elif choice == "q":
-            await bc.disconnect()
+            await rf.disconnect()
             print("Bye")
             loop = False
         else:

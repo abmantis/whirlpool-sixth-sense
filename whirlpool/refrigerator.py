@@ -19,7 +19,7 @@ TEMP_MAP = {
 }
 
 
-class BeerFridge(Appliance):
+class Refrigerator(Appliance):
     def __init__(self, backend_selector, auth, said, session: aiohttp.ClientSession):
         Appliance.__init__(self, backend_selector, auth, said, session)
 

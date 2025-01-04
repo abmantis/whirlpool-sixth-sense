@@ -5,7 +5,7 @@ import logging
 import aiohttp
 
 from cli_ac_menu import show_aircon_menu
-from cli_beer_fridge_menu import show_beer_fridge_menu
+from cli_refrigerator_menu import show_refrigerator_menu
 from cli_oven_menu import show_oven_menu
 from cli_washerdryer_menu import show_washerdryer_menu
 from whirlpool.appliancesmanager import AppliancesManager
@@ -72,8 +72,8 @@ async def start():
             print(appliance_manager.aircons)
             print(appliance_manager.washer_dryers)
             print(appliance_manager.ovens)
-            print(appliance_manager.beer_fridges)
-            # return
+            print(appliance_manager.refrigerator)
+            return
 
         for ac_data in appliance_manager.aircons:
             if ac_data["SAID"] == args.said:
@@ -90,10 +90,10 @@ async def start():
                 await show_oven_menu(backend_selector, auth, args.said, session)
                 return
 
-        for bf_data in appliance_manager.beer_fridges:
-            if bf_data["SAID"]:
-                await show_beer_fridge_menu(
-                    backend_selector, auth, bf_data["SAID"], session
+        for rf_data in appliance_manager.refrigerator:
+            if rf_data["SAID"] == args.said:
+                await show_refrigerator_menu(
+                    backend_selector, auth, args.said, session
                 )
                 return
 
