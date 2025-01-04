@@ -5,8 +5,8 @@ import logging
 import aiohttp
 
 from cli_ac_menu import show_aircon_menu
-from cli_refrigerator_menu import show_refrigerator_menu
 from cli_oven_menu import show_oven_menu
+from cli_refrigerator_menu import show_refrigerator_menu
 from cli_washerdryer_menu import show_washerdryer_menu
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
@@ -92,9 +92,7 @@ async def start():
 
         for rf_data in appliance_manager.refrigerator:
             if rf_data["SAID"] == args.said:
-                await show_refrigerator_menu(
-                    backend_selector, auth, args.said, session
-                )
+                await show_refrigerator_menu(backend_selector, auth, args.said, session)
                 return
 
         if not args.said:
