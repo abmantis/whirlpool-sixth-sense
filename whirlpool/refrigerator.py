@@ -30,16 +30,14 @@ class Refrigerator(Appliance):
         return int(self.get_attribute(SETTING_TEMP))
 
     async def set_temp(self, temp: int):
-        if 8 <= temp <= 12:
+        if temp in TEMP_MAP.keys():
+            await self.send_attributes({SETTING_TEMP: str(TEMP_MAP[temp])})
+        elif temp in TEMP_MAP.values():
             await self.send_attributes({SETTING_TEMP: str(temp)})
-
-    async def set_especific_temp(self, temp: int):
-        allowed_temps = [-4, -2, 0, 3, 5]
-        if temp not in allowed_temps:
+        else:
             raise ValueError(
-                f"Invalid temperature: {temp}. Allowed values are {allowed_temps}."
+                f"Invalid temperature: {temp}. Allowed values are {TEMP_MAP.keys()}."
             )
-        await self.send_attributes({SETTING_TEMP: str(TEMP_MAP[temp])})
 
     def get_turbo_mode(self):
         return self.attr_value_to_bool(self.get_attribute(SETTING_TURBO_MODE))

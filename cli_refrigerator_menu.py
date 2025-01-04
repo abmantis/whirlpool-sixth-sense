@@ -48,7 +48,7 @@ async def show_refrigerator_menu(bbckend_selector, auth, said, session):
             await rf.set_temp(temp)
         elif choice in ["-4", "-2", "0", "3", "5"]:
             temp = int(choice)
-            await rf.set_especific_temp(temp)
+            await rf.set_temp(temp)
         elif choice == "t":
             await rf.set_turbo_mode(not rf.get_turbo_mode())
         elif choice == "l":
