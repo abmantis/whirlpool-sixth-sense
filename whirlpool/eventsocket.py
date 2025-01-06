@@ -49,7 +49,10 @@ class EventSocket:
         self._session = session
 
     def _create_connect_msg(self):
-        return f"CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:{self._auth.get_access_token()}"
+        return (
+            "CONNECT\naccept-version:1.1,1.2\nheart-beat:30000,0\nwcloudtoken:"
+            f"{self._auth.get_access_token()}"
+        )
 
     def _create_subscribe_msg(self):
         id = uuid.uuid4()
@@ -113,7 +116,11 @@ class EventSocket:
 
                             elif msg.data == WS_STATUS_GOING_AWAY:
                                 LOGGER.warning(
-                                    f"Received Going Away message: Waiting for {GOING_AWAY_DELAY} seconds"
+                                    (
+                                        "Received Going Away message: Waiting for %s"
+                                        " seconds"
+                                    ),
+                                    GOING_AWAY_DELAY,
                                 )
                                 # Give server some time to come back up.
                                 await asyncio.sleep(GOING_AWAY_DELAY)
@@ -158,7 +165,8 @@ class EventSocket:
                 if self._reconnect_tries < 0:
                     self._reconnect_tries = 0
                     LOGGER.info(
-                        f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY} seconds"
+                        f"Waiting to reconnect long delay {RECONNECT_LONG_DELAY}"
+                        " seconds"
                     )
 
                     # Give server some time to come back up.
