@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "whirlpool_sixth_sense"
-version = "0.18.9"
+version = "0.18.11"
 authors = [{ name = "Abílio Costa", email = "amfcalt@gmail.com" }]
 description = "Unofficial API for Whirlpool's 6th Sense appliances"
 classifiers = [
@@ -34,5 +34,20 @@ include-package-data = false
 exclude = ["tests"]
 namespaces = false
 
-[tool.isort]
-profile = "black"
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # isort
+    "I",]
+
+
+
+[tool.ruff.lint.mccabe]
+max-complexity = 25

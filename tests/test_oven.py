@@ -35,14 +35,14 @@ async def test_attributes(
 
     await oven.connect()
     assert oven.get_online() is True
-    assert oven.get_door_opened() == False
-    assert oven.get_control_locked() == False
-    assert oven.get_sabbath_mode() == False
+    assert oven.get_door_opened() is False
+    assert oven.get_control_locked() is False
+    assert oven.get_sabbath_mode() is False
     assert oven.get_display_brightness_percent() == 90
-    assert oven.get_oven_cavity_exists(Cavity.Upper) == True
-    assert oven.get_oven_cavity_exists(Cavity.Lower) == False
-    assert oven.get_light(Cavity.Upper) == False
-    assert oven.get_meat_probe_status(Cavity.Upper) == False
+    assert oven.get_oven_cavity_exists(Cavity.Upper) is True
+    assert oven.get_oven_cavity_exists(Cavity.Lower) is False
+    assert oven.get_light(Cavity.Upper) is False
+    assert oven.get_meat_probe_status(Cavity.Upper) is False
     assert oven.get_cook_time(Cavity.Upper) == 81
     assert oven.get_temp(Cavity.Upper) == 37.7
     assert oven.get_target_temp(Cavity.Upper) == 176.6
@@ -56,14 +56,14 @@ async def test_attributes(
 
     await oven.connect()
     assert oven.get_online() is True
-    assert oven.get_door_opened() == True
-    assert oven.get_control_locked() == True
-    assert oven.get_sabbath_mode() == False
+    assert oven.get_door_opened() is True
+    assert oven.get_control_locked() is True
+    assert oven.get_sabbath_mode() is False
     assert oven.get_display_brightness_percent() == 70
-    assert oven.get_oven_cavity_exists(Cavity.Upper) == True
-    assert oven.get_oven_cavity_exists(Cavity.Lower) == False
-    assert oven.get_light(Cavity.Upper) == False
-    assert oven.get_meat_probe_status(Cavity.Upper) == False
+    assert oven.get_oven_cavity_exists(Cavity.Upper) is True
+    assert oven.get_oven_cavity_exists(Cavity.Lower) is False
+    assert oven.get_light(Cavity.Upper) is False
+    assert oven.get_meat_probe_status(Cavity.Upper) is False
     assert oven.get_cook_time(Cavity.Upper) == 0
     assert oven.get_temp(Cavity.Upper) == 0.0
     assert oven.get_target_temp(Cavity.Upper) == 0.0
@@ -77,14 +77,14 @@ async def test_attributes(
 
     await oven.connect()
     assert oven.get_online() is True
-    assert oven.get_door_opened() == False
-    assert oven.get_control_locked() == False
-    assert oven.get_sabbath_mode() == False
+    assert oven.get_door_opened() is False
+    assert oven.get_control_locked() is False
+    assert oven.get_sabbath_mode() is False
     assert oven.get_display_brightness_percent() == 90
-    assert oven.get_oven_cavity_exists(Cavity.Upper) == True
-    assert oven.get_oven_cavity_exists(Cavity.Lower) == False
-    assert oven.get_light(Cavity.Upper) == False
-    assert oven.get_meat_probe_status(Cavity.Upper) == False
+    assert oven.get_oven_cavity_exists(Cavity.Upper) is True
+    assert oven.get_oven_cavity_exists(Cavity.Lower) is False
+    assert oven.get_light(Cavity.Upper) is False
+    assert oven.get_meat_probe_status(Cavity.Upper) is False
     assert oven.get_cook_time(Cavity.Upper) == 0
     assert oven.get_temp(Cavity.Upper) == 0.0
     assert oven.get_target_temp(Cavity.Upper) == 0.0
