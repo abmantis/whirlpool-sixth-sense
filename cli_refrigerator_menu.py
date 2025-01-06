@@ -24,7 +24,7 @@ async def show_refrigerator_menu(backend_selector, auth, said, session):
         print(67 * "-")
 
     def print_status(bc: Refrigerator):
-        print("current_temp: " + str(rf.get_offset_temp(True)) + "°C")
+        print("current_temp: " + str(rf.get_offset_temp()) + "°C")
         print("turbo_mode: " + str(rf.get_turbo_mode()))
         print("display_locked: " + str(rf.get_display_lock()))
 
