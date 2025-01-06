@@ -6,6 +6,7 @@ import aiohttp
 
 from cli_ac_menu import show_aircon_menu
 from cli_oven_menu import show_oven_menu
+from cli_refrigerator_menu import show_refrigerator_menu
 from cli_washerdryer_menu import show_washerdryer_menu
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
@@ -22,7 +23,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--email", help="Email address")
 parser.add_argument("-p", "--password", help="Password")
 parser.add_argument(
-    "-b", "--brand", help="Brand (whirlpool/maytag/kitchenaid)", default="whirlpool"
+    "-b",
+    "--brand",
+    help="Brand (whirlpool/maytag/kitchenaid/consul)",
+    default="whirlpool",
 )
 parser.add_argument("-r", "--region", help="Region (EU/US)", default="EU")
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
@@ -40,6 +44,8 @@ async def start():
         selected_brand = Brand.Maytag
     elif args.brand == "kitchenaid":
         selected_brand = Brand.KitchenAid
+    elif args.brand == "consul":
+        selected_brand = Brand.Consul
     else:
         logger.error("Invalid brand argument")
         return
@@ -66,6 +72,7 @@ async def start():
             print(appliance_manager.aircons)
             print(appliance_manager.washer_dryers)
             print(appliance_manager.ovens)
+            print(appliance_manager.refrigerators)
             return
 
         if not args.said:
@@ -85,6 +92,11 @@ async def start():
         for mo_data in appliance_manager.ovens:
             if mo_data["SAID"] == args.said:
                 await show_oven_menu(backend_selector, auth, args.said, session)
+                return
+
+        for rf_data in appliance_manager.refrigerators:
+            if rf_data["SAID"] == args.said:
+                await show_refrigerator_menu(backend_selector, auth, args.said, session)
                 return
 
 

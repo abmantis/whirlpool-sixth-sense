@@ -20,6 +20,7 @@ class AppliancesManager:
         self._auth = auth
         self._aircons: list[dict[str, Any]] = []
         self._washer_dryers: list[dict[str, Any]] = []
+        self._refrigerators: list[dict[str, Any]] = []
         self._ovens: list[dict[str, Any]] = []
         self._session: aiohttp.ClientSession = session
 
@@ -61,8 +62,13 @@ class AppliancesManager:
             "cooking_u2",
             "ddm_cooking_bio_self_clean_tourmaline_v2",
         ]
+
         if any(model in data_model for model in oven_models):
             self._ovens.append(appliance_data)
+            return
+
+        if "ddm_ted_refrigerator_v12" in data_model:
+            self._refrigerators.append(appliance_data)
             return
 
         LOGGER.warning("Unsupported appliance data model %s", data_model)
@@ -114,6 +120,10 @@ class AppliancesManager:
     @property
     def aircons(self):
         return self._aircons
+
+    @property
+    def refrigerators(self):
+        return self._refrigerators
 
     @property
     def washer_dryers(self):

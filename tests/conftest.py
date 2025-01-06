@@ -13,6 +13,7 @@ from whirlpool.aircon import Aircon
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.oven import Oven
+from whirlpool.refrigerator import Refrigerator
 from whirlpool.washerdryer import WasherDryer
 
 SAID = "WPR1XYZABC123"
@@ -65,6 +66,15 @@ def aircon_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
             backend_selector_mock, auth_fixture, SAID, client_session_fixture
         )
         yield aircon
+
+
+@pytest.fixture(name="refrigerator")
+def refrigerator_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
+    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+        refrigerator = Refrigerator(
+            backend_selector_mock, auth_fixture, SAID, client_session_fixture
+        )
+        yield refrigerator
 
 
 @pytest.fixture(name="appliances_manager")
