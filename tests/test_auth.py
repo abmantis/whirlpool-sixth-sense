@@ -75,7 +75,8 @@ async def test_auth_will_check_all_client_creds(
     expected = []
 
     for i in range(len(client_creds)):
-        # all but the last one should return 404, as we keep checking until we get a 200 (or run out)
+        # all but the last one should return 404, as we keep checking until we get a 200
+        # (or run out)
         status = HTTPStatus.NOT_FOUND if i != len(client_creds) else HTTPStatus.OK
         expected.append({"status": status})
         aioresponses_mock.post(AUTH_URL, status=status)
@@ -110,7 +111,8 @@ async def test_auth_bad_credentials(
     # assert that the proper method and url were used
     assert ("POST", URL(AUTH_URL)) in aioresponses_mock.requests
 
-    # get the calls for the method/url and assert length - should be the same as the number of client credentials
+    # get the calls for the method/url and assert length - should be the same as the
+    # number of client credentials
     calls = aioresponses_mock.requests[("POST", URL(AUTH_URL))]
     assert len(calls) == len(backend_selector_mock.client_credentials)
 

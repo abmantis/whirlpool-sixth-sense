@@ -33,3 +33,21 @@ include-package-data = false
 [tool.setuptools.packages.find]
 exclude = ["tests"]
 namespaces = false
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # isort
+    "I",]
+
+
+
+[tool.ruff.lint.mccabe]
+max-complexity = 25

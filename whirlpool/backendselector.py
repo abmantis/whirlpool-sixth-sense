@@ -8,27 +8,27 @@ CREDENTIALS: dict[Brand, list[dict[str, str]]] = {
     Brand.Whirlpool: [
         {
             "client_id": "whirlpool_emea_android_v1",
-            "client_secret": "h-NBGuG7EY74sSvj9TrJeeTpodJBd4T35bAyV0mfa0YnJ0i4MBue8IiS4iFidkve",
+            "client_secret": "h-NBGuG7EY74sSvj9TrJeeTpodJBd4T35bAyV0mfa0YnJ0i4MBue8IiS4iFidkve",  # noqa: E501
         },
         {
             "client_id": "whirlpool_android_v1",
-            "client_secret": "yH5BcCm4ogWBoyD_NrlE04vmVps2s8T7KaIi4PYrc_fsdphWpG1IwlLSJ-yl7FGV",
+            "client_secret": "yH5BcCm4ogWBoyD_NrlE04vmVps2s8T7KaIi4PYrc_fsdphWpG1IwlLSJ-yl7FGV",  # noqa: E501
         },
     ],
     Brand.Maytag: [
         {
             "client_id": "maytag_android_v1",
-            "client_secret": "f1XfYji_D9KfZGovyp8PMgRzrFKjhjY26TV0hu3Mt1-tCCNPl9s95z7QLUfB9UgB",
+            "client_secret": "f1XfYji_D9KfZGovyp8PMgRzrFKjhjY26TV0hu3Mt1-tCCNPl9s95z7QLUfB9UgB",  # noqa: E501
         }
     ],
     Brand.KitchenAid: [
         {
             "client_id": "kitchenaid_android_stg",
-            "client_secret": "Dn-ukFAFoSWOnB9nVm7Y2DDj4Gs9Bocm6aOkhy0mdNGBj5RcoLkRfCXujuxpKrqF2w15sl1tI45JXwK5Zi4saw",
+            "client_secret": "Dn-ukFAFoSWOnB9nVm7Y2DDj4Gs9Bocm6aOkhy0mdNGBj5RcoLkRfCXujuxpKrqF2w15sl1tI45JXwK5Zi4saw",  # noqa: E501
         },
         {
             "client_id": "kitchenaid_android_v1",
-            "client_secret": "T5j9T4ZAMnC6EMVpPAwZyKsRykXGfKOMDqikPHYpCKEMYjssPtJtuJtMYEc30g56",
+            "client_secret": "T5j9T4ZAMnC6EMVpPAwZyKsRykXGfKOMDqikPHYpCKEMYjssPtJtuJtMYEc30g56",  # noqa: E501
         },
     ],
 }
