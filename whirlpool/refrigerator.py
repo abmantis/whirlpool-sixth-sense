@@ -23,20 +23,27 @@ class Refrigerator(Appliance):
     def __init__(self, backend_selector, auth, said, session: aiohttp.ClientSession):
         Appliance.__init__(self, backend_selector, auth, said, session)
 
-    def get_current_temp(self, real_temp: bool = None):
-        if real_temp:
-            reversed_temp_map = {v: k for k, v in TEMP_MAP.items()}
-            return str(reversed_temp_map[int(self.get_attribute(SETTING_TEMP))])
+    def get_offset_temp(self):
+        reversed_temp_map = {v: k for k, v in TEMP_MAP.items()}
+        return str(reversed_temp_map[int(self.get_attribute(SETTING_TEMP))])
+    
+    async def set_offset_temp(self, temp):
+        if temp in TEMP_MAP.keys():
+            await self.send_attributes({SETTING_TEMP: str(TEMP_MAP[temp])})
+        else:
+            LOGGER.error(
+                f"Invalid temperature: {temp}. Allowed values are {TEMP_MAP.keys()}."
+                )
+
+    def get_temp(self):
         return int(self.get_attribute(SETTING_TEMP))
 
     async def set_temp(self, temp: int):
-        if temp in TEMP_MAP.keys():
-            await self.send_attributes({SETTING_TEMP: str(TEMP_MAP[temp])})
-        elif temp in TEMP_MAP.values():
+        if temp in TEMP_MAP.values():
             await self.send_attributes({SETTING_TEMP: str(temp)})
         else:
-            raise ValueError(
-                f"Invalid temperature: {temp}. Allowed values are {TEMP_MAP.keys()}."
+            LOGGER.error(
+                f"Invalid temperature: {temp}. Allowed values are {TEMP_MAP.values()}."
             )
 
     def get_turbo_mode(self):

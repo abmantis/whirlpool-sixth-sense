@@ -72,7 +72,11 @@ async def start():
             print(appliance_manager.aircons)
             print(appliance_manager.washer_dryers)
             print(appliance_manager.ovens)
-            print(appliance_manager.refrigerator)
+            print(appliance_manager.refrigerators)
+            return
+
+        if not args.said:
+            logger.error("No appliance specified")
             return
 
         for ac_data in appliance_manager.aircons:
@@ -90,7 +94,7 @@ async def start():
                 await show_oven_menu(backend_selector, auth, args.said, session)
                 return
 
-        for rf_data in appliance_manager.refrigerator:
+        for rf_data in appliance_manager.refrigerators:
             if rf_data["SAID"] == args.said:
                 await show_refrigerator_menu(backend_selector, auth, args.said, session)
                 return

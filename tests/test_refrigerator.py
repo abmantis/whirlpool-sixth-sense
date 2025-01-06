@@ -37,7 +37,7 @@ async def test_attributes(
 
     await refrigerator.connect()
     assert refrigerator.get_online() is False
-    assert refrigerator.get_current_temp(True) == "0"
+    assert refrigerator.get_offset_temp() == "0"
     assert refrigerator.get_turbo_mode() is False
     assert refrigerator.get_display_lock() is False
     await refrigerator.disconnect()
@@ -50,18 +50,20 @@ async def test_attributes(
     assert refrigerator.get_online() is True
     assert refrigerator.get_turbo_mode() is True
     assert refrigerator.get_display_lock() is True
-    assert refrigerator.get_current_temp(True) == "5"
+    assert refrigerator.get_offset_temp() == "5"
     await refrigerator.disconnect()
 
 
 @pytest.mark.parametrize(
     ["method", "argument", "expected_json"],
     [
-        (Refrigerator.set_temp, -4, {"Refrigerator_OpSetTempPreset": "12"}),
-        (Refrigerator.set_temp, -2, {"Refrigerator_OpSetTempPreset": "11"}),
-        (Refrigerator.set_temp, 0, {"Refrigerator_OpSetTempPreset": "10"}),
-        (Refrigerator.set_temp, 3, {"Refrigerator_OpSetTempPreset": "9"}),
-        (Refrigerator.set_temp, 5, {"Refrigerator_OpSetTempPreset": "8"}),
+        (Refrigerator.set_offset_temp, -4, {"Refrigerator_OpSetTempPreset": "12"}),
+        (Refrigerator.set_offset_temp, -2, {"Refrigerator_OpSetTempPreset": "11"}),
+        (Refrigerator.set_offset_temp, 0, {"Refrigerator_OpSetTempPreset": "10"}),
+        (Refrigerator.set_offset_temp, 3, {"Refrigerator_OpSetTempPreset": "9"}),
+        (Refrigerator.set_offset_temp, 5, {"Refrigerator_OpSetTempPreset": "8"}),
+        (Refrigerator.set_temp, 8, {"Refrigerator_OpSetTempPreset": "8"}),
+        (Refrigerator.set_temp, 12, {"Refrigerator_OpSetTempPreset": "12"}),
         (Refrigerator.set_turbo_mode, True, {"Sys_OpSetMaxCool": "1"}),
         (Refrigerator.set_turbo_mode, False, {"Sys_OpSetMaxCool": "0"}),
         (Refrigerator.set_display_lock, True, {"Sys_OpSetControlLock": "1"}),

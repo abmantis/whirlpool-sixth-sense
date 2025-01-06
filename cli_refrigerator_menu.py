@@ -3,7 +3,7 @@ import aioconsole
 from whirlpool.refrigerator import Refrigerator
 
 
-async def show_refrigerator_menu(bbckend_selector, auth, said, session):
+async def show_refrigerator_menu(backend_selector, auth, said, session):
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -24,14 +24,14 @@ async def show_refrigerator_menu(bbckend_selector, auth, said, session):
         print(67 * "-")
 
     def print_status(bc: Refrigerator):
-        print("current_temp: " + str(rf.get_current_temp(True)) + "°C")
+        print("current_temp: " + str(rf.get_offset_temp(True)) + "°C")
         print("turbo_mode: " + str(rf.get_turbo_mode()))
         print("display_locked: " + str(rf.get_display_lock()))
 
     def attr_upd():
         print("Attributes updated")
 
-    rf = Refrigerator(bbckend_selector, auth, said, session)
+    rf = Refrigerator(backend_selector, auth, said, session)
     rf.register_attr_callback(attr_upd)
     await rf.connect()
 
@@ -41,14 +41,14 @@ async def show_refrigerator_menu(bbckend_selector, auth, said, session):
         choice = await aioconsole.ainput("Enter your choice: ")
 
         if choice == "+":
-            temp = rf.get_current_temp() - 1
+            temp = rf.get_temp() - 1
             await rf.set_temp(temp)
         elif choice == "-":
-            temp = rf.get_current_temp() + 1
+            temp = rf.get_temp() + 1
             await rf.set_temp(temp)
         elif choice in ["-4", "-2", "0", "3", "5"]:
             temp = int(choice)
-            await rf.set_temp(temp)
+            await rf.set_offset_temp(temp)
         elif choice == "t":
             await rf.set_turbo_mode(not rf.get_turbo_mode())
         elif choice == "l":
