@@ -1,9 +1,10 @@
 import sys
+import pytest
 from http import HTTPStatus
 
 from yarl import URL
 
-from whirlpool.auth import Auth
+from whirlpool.auth import AccountLockedError, Auth
 from whirlpool.backendselector import BackendSelector
 
 from .mock_backendselector import BackendSelectorMock, BackendSelectorMockMultipleCreds
@@ -116,6 +117,18 @@ async def test_auth_bad_credentials(
     call = calls[0]
     assert call[1]["data"] == AUTH_DATA
     assert call[1]["headers"] == AUTH_HEADERS
+
+
+async def test_auth_account_locked(
+    auth_fixture: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
+):
+    aioresponses_mock.post(AUTH_URL, status=HTTPStatus.LOCKED, repeat=True)
+
+    with pytest.raises(AccountLockedError):
+        await auth_fixture.do_auth(store=False)
+
+    assert auth_fixture.is_access_token_valid() is False
+    assert auth_fixture.get_said_list() is None
 
 
 async def test_user_details_requested_only_once(
