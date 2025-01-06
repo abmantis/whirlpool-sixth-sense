@@ -26,14 +26,14 @@ class Refrigerator(Appliance):
     def get_offset_temp(self):
         reversed_temp_map = {v: k for k, v in TEMP_MAP.items()}
         return str(reversed_temp_map[int(self.get_attribute(SETTING_TEMP))])
-    
+
     async def set_offset_temp(self, temp):
         if temp in TEMP_MAP.keys():
             await self.send_attributes({SETTING_TEMP: str(TEMP_MAP[temp])})
         else:
             LOGGER.error(
                 f"Invalid temperature: {temp}. Allowed values are {TEMP_MAP.keys()}."
-                )
+            )
 
     def get_temp(self):
         return int(self.get_attribute(SETTING_TEMP))
