@@ -1,7 +1,7 @@
 import sys
-import pytest
 from http import HTTPStatus
 
+import pytest
 from yarl import URL
 
 from whirlpool.auth import AccountLockedError, Auth
