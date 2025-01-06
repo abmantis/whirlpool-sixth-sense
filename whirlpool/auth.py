@@ -146,5 +146,6 @@ class Auth:
             data = await r.json()
             self._auth_dict["accountId"] = data["accountId"]
             return self._auth_dict["accountId"]
+
     def get_said_list(self):
         return self._auth_dict.get("SAID", None)
