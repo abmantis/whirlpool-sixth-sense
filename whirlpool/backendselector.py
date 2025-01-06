@@ -34,7 +34,7 @@ CREDENTIALS: dict[Brand, list[dict[str, str]]] = {
     Brand.Consul: [
         {
             "client_id": "consul_lar_android_v1",
-            "client_secret": "xfPIj2fqhHXlK4bz2oPToDX5E0zHZ409ZLY6ZHiU3p_jh4wv_Ycg8haUhnB6yXuA",
+            "client_secret": "xfPIj2fqhHXlK4bz2oPToDX5E0zHZ409ZLY6ZHiU3p_jh4wv_Ycg8haUhnB6yXuA",  # noqa: E501
         }
     ],
 }
