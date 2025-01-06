@@ -33,6 +33,3 @@ include-package-data = false
 [tool.setuptools.packages.find]
 exclude = ["tests"]
 namespaces = false
-
-[tool.isort]
-profile = "black"
