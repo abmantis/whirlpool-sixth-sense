@@ -3,7 +3,7 @@ import aioconsole
 from whirlpool.refrigerator import Refrigerator
 
 
-async def show_refrigerator_menu(bbckend_selector, auth, said, session):
+async def show_refrigerator_menu(backend_selector, auth, said, session):
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
