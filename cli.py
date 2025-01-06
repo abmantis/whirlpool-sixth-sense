@@ -99,9 +99,5 @@ async def start():
                 await show_refrigerator_menu(backend_selector, auth, args.said, session)
                 return
 
-        if not args.said:
-            logger.error("No appliance specified")
-            return
-
 
 asyncio.run(start())
