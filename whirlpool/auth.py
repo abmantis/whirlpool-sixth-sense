@@ -13,6 +13,10 @@ LOGGER = logging.getLogger(__name__)
 AUTH_JSON_FILE = ".whirlpool_auth.json"
 
 
+class AccountLockedError(Exception):
+    """Exception for authentication failure due to account being locked."""
+
+
 class Auth:
     def __init__(
         self,
@@ -68,6 +72,8 @@ class Auth:
                     LOGGER.debug("Auth status: " + str(r.status))
                     if r.status == 200:
                         return await r.json()
+                    if r.status == 423:
+                        raise AccountLockedError()
                     elif refresh_token:
                         return await self._do_auth(refresh_token=None)
 
