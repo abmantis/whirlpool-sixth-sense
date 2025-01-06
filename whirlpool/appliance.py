@@ -1,5 +1,5 @@
-import json
 import logging
+import json
 from collections.abc import Callable
 
 import aiohttp
