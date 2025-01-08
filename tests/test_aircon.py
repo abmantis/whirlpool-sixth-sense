@@ -7,6 +7,7 @@ import pytest
 from yarl import URL
 
 from whirlpool.aircon import Aircon, FanSpeed, Mode
+from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.backendselector import BackendSelector
 
 ACCOUNT_ID = 111222333
@@ -22,10 +23,10 @@ DATA2 = AIRCON_DATA["DATA2"]
 
 
 async def test_attributes(
-    aircon: Aircon, backend_selector_mock: BackendSelector, aioresponses_mock
+    aircon: Aircon, backend_selector_mock: BackendSelector, aioresponses_mock, appliances_manager
 ):
     aioresponses_mock.get(
-        backend_selector_mock.websocket_url,
+        backend_selector_mock.ws_url,
         payload={"url": "wss://something"},
         repeat=True,
     )
@@ -33,7 +34,9 @@ async def test_attributes(
         backend_selector_mock.get_appliance_data_url(aircon.said), payload=DATA1
     )
 
-    await aircon.connect()
+    await appliances_manager.fetch_appliance_data(aircon)
+
+    await appliances_manager.connect()
     assert aircon.get_online() is False
     assert aircon.get_power_on() is False
     assert aircon.get_display_on() is False
@@ -48,13 +51,15 @@ async def test_attributes(
     assert aircon.get_turbo_mode() is False
     assert aircon.get_eco_mode() is False
     assert aircon.get_quiet_mode() is False
-    await aircon.disconnect()
+    await appliances_manager.disconnect()
 
     aioresponses_mock.get(
         backend_selector_mock.get_appliance_data_url(aircon.said), payload=DATA2
     )
 
-    await aircon.connect()
+    await appliances_manager.fetch_appliance_data(aircon)
+
+    await appliances_manager.connect()
     assert aircon.get_online() is True
     assert aircon.get_power_on() is True
     assert aircon.get_display_on() is True
@@ -69,7 +74,7 @@ async def test_attributes(
     assert aircon.get_turbo_mode() is True
     assert aircon.get_eco_mode() is True
     assert aircon.get_quiet_mode() is True
-    await aircon.disconnect()
+    await appliances_manager.disconnect()
 
 
 @pytest.mark.parametrize(
@@ -90,6 +95,7 @@ async def test_attributes(
 )
 async def test_setters(
     aircon: Aircon,
+    appliances_manager: AppliancesManager,
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
     method: Callable,
@@ -104,7 +110,7 @@ async def test_setters(
     }
 
     post_request_call_kwargs = {
-        "url": backend_selector_mock.appliance_command_url,
+        "url": backend_selector_mock.post_appliance_command_url,
         "method": "POST",
         "data": None,
         "json": expected_payload["json"],
@@ -112,16 +118,18 @@ async def test_setters(
         "headers": {},
     }
 
-    url = backend_selector_mock.appliance_command_url
+    url = backend_selector_mock.post_appliance_command_url
 
     aioresponses_mock.get(
-        backend_selector_mock.websocket_url, payload={"url": "wss://something"}
+        backend_selector_mock.ws_url, payload={"url": "wss://something"}
     )
     aioresponses_mock.get(
         backend_selector_mock.get_appliance_data_url(aircon.said), payload=DATA1
     )
 
-    await aircon.connect()
+    await appliances_manager.fetch_appliance_data(aircon)
+
+    await appliances_manager.connect()
 
     # add call, call method
     aioresponses_mock.post(url, payload=expected_payload)
@@ -131,4 +139,4 @@ async def test_setters(
     aioresponses_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
 
-    await aircon.disconnect()
+    await appliances_manager.disconnect()

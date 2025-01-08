@@ -92,7 +92,7 @@ class AppliancesManager:
         elif "dryer" in data_model or "washer" in data_model:
             app = WasherDryer(self, app_data)
         elif any(model in data_model for model in oven_models):
-            app = Oven(self, app.data)
+            app = Oven(self, app_data)
         elif "ddm_ted_refrigerator_v12" in data_model:
             app = Refrigerator(self, app_data)
         else:
@@ -103,7 +103,7 @@ class AppliancesManager:
 
     async def _get_owned_appliances(self, account_id: str) -> bool:
         async with self._session.get(
-            f"{self._backend_selector.get_owned_appliances_url}/{account_id}",
+            self._backend_selector.get_owned_appliances_url(account_id),
             headers=self._create_headers(),
         ) as r:
             if r.status != 200:
@@ -151,7 +151,7 @@ class AppliancesManager:
         if not self._session:
             LOGGER.error("Session not started")
             return False
-        uri = f"{self._backend_selector.get_appliance_data_url}/{appliance.said}"
+        uri = self._backend_selector.get_appliance_data_url(appliance.said)
         for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.get(uri, headers=self._create_headers()) as r:

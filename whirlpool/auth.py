@@ -138,7 +138,7 @@ class Auth:
         }
 
         async with self._session.get(
-            self._backend_selector.user_details_url, headers=headers
+            self._backend_selector.get_user_details_url, headers=headers
         ) as r:
             if r.status != 200:
                 LOGGER.error(f"Failed to get account id: {r.status}")
