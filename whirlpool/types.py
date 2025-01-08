@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 from enum import Enum
+from typing import TypedDict
 
 
 class Brand(Enum):
@@ -11,3 +13,20 @@ class Brand(Enum):
 class Region(Enum):
     EU = 0
     US = 1
+
+
+@dataclass
+class CredentialsDict(TypedDict):
+    client_id: str
+    client_secret: str
+
+
+@dataclass
+class ApplianceData:
+    said: str
+    name: str
+    data_model: str
+    category: str
+    model_number: str
+    serial_number: str
+

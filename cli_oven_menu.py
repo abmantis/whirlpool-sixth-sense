@@ -3,7 +3,7 @@ import aioconsole
 from whirlpool.oven import Cavity, CookMode, KitchenTimerState, Oven
 
 
-async def show_oven_menu(backend_selector, auth, said, session):
+async def show_oven_menu(manager: "AppliancesManager", app_data: "ApplianceData"):
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -65,9 +65,9 @@ async def show_oven_menu(backend_selector, auth, said, session):
     def attr_upd():
         print("Attributes updated")
 
-    ov = Oven(backend_selector, auth, said, session)
+    ov = Oven(manager, app_data)
     ov.register_attr_callback(attr_upd)
-    await ov.connect()
+    await manager.connect()
 
     loop = True
     while loop:
@@ -130,8 +130,9 @@ async def show_oven_menu(backend_selector, auth, said, session):
             val = await aioconsole.ainput("Value: ")
             await ov.send_attributes({cmd: val})
         elif choice == "q":
-            await ov.disconnect()
             print("Bye")
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
+
+    await manager.disconnect()

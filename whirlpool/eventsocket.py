@@ -30,16 +30,16 @@ class EventSocket:
 
     def __init__(
         self,
-        url,
+        url: str,
         auth: Auth,
-        said,
+        said_list: list[str],
         msg_listener: Callable[[str], None],
         con_up_listener: Callable,
         session: aiohttp.ClientSession,
     ):
         self._url = url
         self._auth = auth
-        self._said = said
+        self._said_list = said_list
         self._msg_listener = msg_listener
         self._running = False
         self._websocket: aiohttp.ClientWebSocketResponse | None = None
@@ -54,9 +54,12 @@ class EventSocket:
             f"{self._auth.get_access_token()}"
         )
 
-    def _create_subscribe_msg(self):
-        id = uuid.uuid4()
-        return f"SUBSCRIBE\nid:{id}\ndestination:/topic/{self._said}\nack:auto"
+    async def _send_subscribe_messages(self, ws: aiohttp.ClientWebSocketResponse):
+        # send one subscribe message for each said, with a unique id
+        for said in self._said_list:
+            id = uuid.uuid4()
+            msg = f"SUBSCRIBE\nid:{id}\ndestination:/topic/{said}\nack:auto"
+            await self._send_msg(ws, msg)
 
     async def _send_msg(self, websocket: aiohttp.ClientWebSocketResponse, msg):
         LOGGER.debug(f"> {msg}")
@@ -89,7 +92,7 @@ class EventSocket:
                         if not connected_msg_done:
                             await self._send_msg(ws, self._create_connect_msg())
                         elif not subscribe_msg_done:
-                            await self._send_msg(ws, self._create_subscribe_msg())
+                            await self._send_subscribe_messages(ws)
 
                         msg = await self._recv_msg(ws)
                         if not msg:

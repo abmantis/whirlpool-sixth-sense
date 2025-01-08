@@ -1,8 +1,6 @@
 import logging
 from enum import Enum
 
-import aiohttp
-
 from .appliance import Appliance
 
 LOGGER = logging.getLogger(__name__)
@@ -82,9 +80,6 @@ MACHINE_STATE_MAP = {
 
 
 class WasherDryer(Appliance):
-    def __init__(self, backend_selector, auth, said, session: aiohttp.ClientSession):
-        Appliance.__init__(self, backend_selector, auth, said, session)
-
     def get_machine_state(self):
         state_raw = self.get_attribute(ATTR_MACHINE_STATE)
         for k, v in MACHINE_STATE_MAP.items():
