@@ -34,7 +34,7 @@ async def test_attributes(
         backend_selector_mock.get_appliance_data_url(aircon.said), payload=DATA1
     )
 
-    await appliances_manager.fetch_appliance_data(aircon)
+    await aircon.fetch_data()
 
     await appliances_manager.connect()
     assert aircon.get_online() is False
@@ -57,7 +57,7 @@ async def test_attributes(
         backend_selector_mock.get_appliance_data_url(aircon.said), payload=DATA2
     )
 
-    await appliances_manager.fetch_appliance_data(aircon)
+    await aircon.fetch_data()
 
     await appliances_manager.connect()
     assert aircon.get_online() is True
@@ -127,7 +127,7 @@ async def test_setters(
         backend_selector_mock.get_appliance_data_url(aircon.said), payload=DATA1
     )
 
-    await appliances_manager.fetch_appliance_data(aircon)
+    await aircon.fetch_data()
 
     await appliances_manager.connect()
 

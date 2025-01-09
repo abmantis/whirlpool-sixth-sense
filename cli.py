@@ -78,22 +78,30 @@ async def start():
 
         for ac_data in appliance_manager.aircons:
             if ac_data.said == args.said:
-                await show_aircon_menu(appliance_manager, ac_data)
+                await show_aircon_menu(
+                    appliance_manager, backend_selector, auth, session, ac_data
+                )
                 return
 
         for wd_data in appliance_manager.washer_dryers:
             if wd_data.said == args.said:
-                await show_washerdryer_menu(appliance_manager, wd_data)
+                await show_washerdryer_menu(
+                    appliance_manager, backend_selector, auth, session, wd_data
+                )
                 return
 
         for mo_data in appliance_manager.ovens:
             if mo_data.said == args.said:
-                await show_oven_menu(appliance_manager, mo_data)
+                await show_oven_menu(
+                    appliance_manager, backend_selector, auth, session, mo_data
+                )
                 return
 
         for rf_data in appliance_manager.refrigerators:
             if rf_data.said == args.said:
-                await show_refrigerator_menu(appliance_manager, rf_data)
+                await show_refrigerator_menu(
+                    appliance_manager, backend_selector, auth, session, rf_data
+                )
                 return
 
 

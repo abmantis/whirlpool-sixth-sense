@@ -1,13 +1,17 @@
+import aiohttp
+import async_timeout
+import json
 import logging
 import typing
 from collections.abc import Callable
 
+from .auth import Auth
+from .backendselector import BackendSelector
 from .types import ApplianceData
 
-if typing.TYPE_CHECKING:
-    from .appliancesmanager import AppliancesManager
-
 LOGGER = logging.getLogger(__name__)
+
+REQUEST_RETRY_COUNT = 3
 
 ATTR_ONLINE = "Online"
 
@@ -20,10 +24,15 @@ class Appliance:
 
     def __init__(
         self,
-        app_manager: "AppliancesManager",
+        backend_selector: BackendSelector,
+        auth: Auth,
+        session: aiohttp.ClientSession,
         appliance_data: ApplianceData,
     ):
-        self._app_manager = app_manager
+        self._backend_selector = backend_selector
+        self._auth = auth
+        self._session = session
+
         self._attr_changed: list[Callable] = []
         self._data_dict: dict = {}
         self._appliance_data = appliance_data
@@ -38,8 +47,58 @@ class Appliance:
         """Return Appliance name"""
         return self._appliance_data.name
 
-    async def fetch_data(self):
-        await self._app_manager.fetch_appliance_data(self)
+    async def fetch_data(self) -> bool:
+        """Fetch appliance data from web api"""
+        if not self._session:
+            LOGGER.error("Session not started")
+            return False
+        uri = self._backend_selector.get_appliance_data_url(self.said)
+        for _ in range(REQUEST_RETRY_COUNT):
+            async with async_timeout.timeout(30):
+                async with self._session.get(uri, headers=self._create_headers()) as r:
+                    if r.status == 200:
+                        self._data_dict = json.loads(await r.text())
+                        for callback in self._attr_changed:
+                            callback()
+                        return True
+                    elif r.status == 401:
+                        LOGGER.error(
+                            "Fetching data failed (%s). Doing reauth", r.status
+                        )
+                        await self._auth.do_auth()
+                    else:
+                        LOGGER.error("Fetching data failed (%s)", r.status)
+        return False
+
+    async def send_attributes(
+        self, appliance: "Appliance", attributes: dict[str, str]
+    ) -> bool:
+        """Send attributes to appliance api"""
+        if not self._session:
+            LOGGER.error("Session not started")
+            return False
+
+        LOGGER.info(f"Sending attributes: {attributes}")
+
+        cmd_data = {
+            "body": attributes,
+            "header": {"said": self.said, "command": "setAttributes"},
+        }
+        for _ in range(REQUEST_RETRY_COUNT):
+            async with async_timeout.timeout(30):
+                async with self._session.post(
+                    self._backend_selector.post_appliance_command_url,
+                    json=cmd_data,
+                    headers=self._create_headers(),
+                ) as r:
+                    LOGGER.debug(f"Reply: {await r.text()}")
+                    if r.status == 200:
+                        return True
+                    elif r.status == 401:
+                        await self._auth.do_auth()
+                        continue
+                    LOGGER.error(f"Sending attributes failed ({r.status})")
+        return False
 
     def register_attr_callback(self, update_callback: Callable):
         """Register Callback function."""
@@ -53,6 +112,16 @@ class Appliance:
             LOGGER.debug("Unregistered attr callback")
         except ValueError:
             LOGGER.error("Attr callback not found")
+
+    def _create_headers(self) -> dict[str, str]:
+        headers = {
+            "Authorization": f"Bearer {self._auth.get_access_token()}",
+            "Content-Type": "application/json",
+            "User-Agent": "okhttp/3.12.0",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+        }
+        return headers
 
     def _set_attribute(self, attribute: str, value: str, timestamp: int):
         LOGGER.debug(f"Updating attribute {attribute} with {value} ({timestamp})")

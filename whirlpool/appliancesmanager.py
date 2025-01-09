@@ -21,7 +21,6 @@ if typing.TYPE_CHECKING:
 
 
 LOGGER = logging.getLogger(__name__)
-REQUEST_RETRY_COUNT = 3
 
 
 class AppliancesManager:
@@ -88,13 +87,13 @@ class AppliancesManager:
         ]
 
         if "airconditioner" in data_model:
-            app = Aircon(self, app_data)
+            app = Aircon(self._backend_selector, self._auth, self._session, app_data)
         elif "dryer" in data_model or "washer" in data_model:
-            app = WasherDryer(self, app_data)
+            app = WasherDryer(self._backend_selector, self._auth, self._session, app_data)
         elif any(model in data_model for model in oven_models):
-            app = Oven(self, app_data)
+            app = Oven(self._backend_selector, self._auth, self._session, app_data)
         elif "ddm_ted_refrigerator_v12" in data_model:
-            app = Refrigerator(self, app_data)
+            app = Refrigerator(self._backend_selector, self._auth, self._session, app_data)
         else:
             LOGGER.warning("Unsupported appliance data model %s", data_model)
             return
@@ -146,58 +145,9 @@ class AppliancesManager:
 
         return success_owned or success_shared
 
-    async def fetch_appliance_data(self, appliance: "Appliance") -> bool:
-        """Fetch appliance data from web api"""
-        if not self._session:
-            LOGGER.error("Session not started")
-            return False
-        uri = self._backend_selector.get_appliance_data_url(appliance.said)
-        for _ in range(REQUEST_RETRY_COUNT):
-            async with async_timeout.timeout(30):
-                async with self._session.get(uri, headers=self._create_headers()) as r:
-                    if r.status == 200:
-                        appliance._data_dict = json.loads(await r.text())
-                        for callback in appliance._attr_changed:
-                            callback()
-                        return True
-                    elif r.status == 401:
-                        LOGGER.error(
-                            "Fetching data failed (%s). Doing reauth", r.status
-                        )
-                        await self._auth.do_auth()
-                    else:
-                        LOGGER.error("Fetching data failed (%s)", r.status)
-        return False
-
-    async def send_attributes(
-        self, appliance: "Appliance", attributes: dict[str, str]
-    ) -> bool:
-        """Send attributes to appliance api"""
-        if not self._session:
-            LOGGER.error("Session not started")
-            return False
-
-        LOGGER.info(f"Sending attributes: {attributes}")
-
-        cmd_data = {
-            "body": attributes,
-            "header": {"said": appliance.said, "command": "setAttributes"},
-        }
-        for _ in range(REQUEST_RETRY_COUNT):
-            async with async_timeout.timeout(30):
-                async with self._session.post(
-                    self._backend_selector.post_appliance_command_url,
-                    json=cmd_data,
-                    headers=self._create_headers(),
-                ) as r:
-                    LOGGER.debug(f"Reply: {await r.text()}")
-                    if r.status == 200:
-                        return True
-                    elif r.status == 401:
-                        await self._auth.do_auth()
-                        continue
-                    LOGGER.error(f"Sending attributes failed ({r.status})")
-        return False
+    async def fetch_all_data(self):
+        for appliance in self._app_dict.values():
+            await appliance.fetch_data()
 
     async def connect(self):
         """Connect to appliance event listener"""
@@ -227,10 +177,6 @@ class AppliancesManager:
         """Stop the appliance event listener"""
         await self._event_socket.stop()
         self._event_socket = None
-
-    async def fetch_all_data(self):
-        for appliance in self._app_dict.values():
-            await self.fetch_appliance_data(appliance)
 
     def _event_socket_callback(self, msg: str):
         LOGGER.debug(f"Manager event socket message: {msg}")

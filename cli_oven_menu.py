@@ -1,9 +1,19 @@
 import aioconsole
+import aiohttp
 
+from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.auth import Auth
+from whirlpool.backendselector import BackendSelector
 from whirlpool.oven import Cavity, CookMode, KitchenTimerState, Oven
+from whirlpool.types import ApplianceData
 
-
-async def show_oven_menu(manager: "AppliancesManager", app_data: "ApplianceData"):
+async def show_oven_menu(
+    manager: AppliancesManager,
+    backend_selector: BackendSelector,
+    auth: Auth,
+    session: aiohttp.ClientSession,
+    app_data: ApplianceData
+) -> None:
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -65,7 +75,7 @@ async def show_oven_menu(manager: "AppliancesManager", app_data: "ApplianceData"
     def attr_upd():
         print("Attributes updated")
 
-    ov = Oven(manager, app_data)
+    ov = Oven(backend_selector, auth, session, app_data)
     ov.register_attr_callback(attr_upd)
     await manager.connect()
 

@@ -24,7 +24,7 @@ class Refrigerator(Appliance):
 
     async def set_offset_temp(self, temp):
         if temp in TEMP_MAP.keys():
-            await self._app_manager.send_attributes(
+            await self.send_attributes(
                 self, {SETTING_TEMP: str(TEMP_MAP[temp])}
             )
         else:
@@ -37,7 +37,7 @@ class Refrigerator(Appliance):
 
     async def set_temp(self, temp: int):
         if temp in TEMP_MAP.values():
-            await self._app_manager.send_attributes(
+            await self.send_attributes(
                 self, {SETTING_TEMP: str(temp)}
             )
         else:
@@ -49,7 +49,7 @@ class Refrigerator(Appliance):
         return self.attr_value_to_bool(self.get_attribute(SETTING_TURBO_MODE))
 
     async def set_turbo_mode(self, turbo: bool):
-        await self._app_manager.send_attributes(
+        await self.send_attributes(
             self, {SETTING_TURBO_MODE: self.bool_to_attr_value(turbo)}
         )
 
@@ -57,6 +57,6 @@ class Refrigerator(Appliance):
         return self.attr_value_to_bool(self.get_attribute(SETTING_DISPLAY_LOCK))
 
     async def set_display_lock(self, display: bool):
-        await self._app_manager.send_attributes(
+        await self.send_attributes(
             self, {SETTING_DISPLAY_LOCK: self.bool_to_attr_value(display)}
         )

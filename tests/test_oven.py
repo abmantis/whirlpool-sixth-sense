@@ -34,7 +34,7 @@ async def test_attributes(
         backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA1
     )
 
-    await appliances_manager.fetch_appliance_data(oven)
+    await oven.fetch_data()
 
     await appliances_manager.connect()
     assert oven.get_online() is True
@@ -57,7 +57,7 @@ async def test_attributes(
         backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA2
     )
 
-    await appliances_manager.fetch_appliance_data(oven)
+    await oven.fetch_data()
 
     await appliances_manager.connect()
     assert oven.get_online() is True
@@ -80,7 +80,7 @@ async def test_attributes(
         backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA3
     )
 
-    await appliances_manager.fetch_appliance_data(oven)
+    await oven.fetch_data()
 
     await appliances_manager.connect()
     assert oven.get_online() is True
@@ -239,7 +239,7 @@ async def test_setters(
         backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA2
     )
 
-    await appliances_manager.fetch_appliance_data(oven)
+    await oven.fetch_data()
 
     await appliances_manager.connect()
 
