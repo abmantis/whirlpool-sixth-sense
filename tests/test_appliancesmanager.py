@@ -50,7 +50,7 @@ async def test_fetch_appliances_returns_owned_and_shared_appliances(
 
     # the test data has one owned appliance and one shared appliance
     # so if this is 2 then we have both
-    assert len(appliances_manager.washer_dryers) == 2
+    assert len(appliances_manager.washers) == 2
 
     # ensure oven list is populated
     assert len(appliances_manager.ovens) == 1
