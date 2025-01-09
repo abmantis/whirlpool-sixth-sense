@@ -88,9 +88,7 @@ class Appliance:
                         LOGGER.error("Fetching data failed (%s)", r.status)
         return False
 
-    async def send_attributes(
-        self, appliance: "Appliance", attributes: dict[str, str]
-    ) -> bool:
+    async def send_attributes(self, attributes: dict[str, str]) -> bool:
         """Send attributes to appliance api"""
         if not self._session:
             LOGGER.error("Session not started")
