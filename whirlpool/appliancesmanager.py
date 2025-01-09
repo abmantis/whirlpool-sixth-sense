@@ -11,10 +11,11 @@ from whirlpool.eventsocket import EventSocket
 from .aircon import Aircon
 from .auth import Auth
 from .backendselector import BackendSelector
+from .dryer import Dryer
 from .oven import Oven
 from .refrigerator import Refrigerator
 from .types import ApplianceData
-from .washerdryer import WasherDryer
+from .washer import Washer
 
 if typing.TYPE_CHECKING:
     from whirlpool.appliance import Appliance
@@ -45,8 +46,8 @@ class AppliancesManager:
         return [app for app in self.all_appliances if isinstance(app, Aircon)]
 
     @property
-    def washer_dryers(self) -> list[WasherDryer]:
-        return [app for app in self.all_appliances if isinstance(app, WasherDryer)]
+    def dryers(self) -> list[Dryer]:
+        return [app for app in self.all_appliances if isinstance(app, Dryer)]
 
     @property
     def ovens(self) -> list[Oven]:
@@ -55,6 +56,10 @@ class AppliancesManager:
     @property
     def refrigerators(self) -> list[Refrigerator]:
         return [app for app in self.all_appliances if isinstance(app, Refrigerator)]
+
+    @property
+    def washers(self) -> list[Washer]:
+        return [app for app in self.all_appliances if isinstance(app, Washer)]
 
     def _create_headers(self) -> dict[str, str]:
         headers = {
@@ -88,12 +93,14 @@ class AppliancesManager:
 
         if "airconditioner" in data_model:
             app = Aircon(self._backend_selector, self._auth, self._session, app_data)
-        elif "dryer" in data_model or "washer" in data_model:
-            app = WasherDryer(self._backend_selector, self._auth, self._session, app_data)
+        elif "dryer" in data_model:
+            app = Dryer(self._backend_selector, self._auth, self._session, app_data)
         elif any(model in data_model for model in oven_models):
             app = Oven(self._backend_selector, self._auth, self._session, app_data)
         elif "ddm_ted_refrigerator_v12" in data_model:
             app = Refrigerator(self._backend_selector, self._auth, self._session, app_data)
+        elif "washer" in data_model:
+            app = Washer(self._backend_selector, self._auth, self._session, app_data)
         else:
             LOGGER.warning("Unsupported appliance data model %s", data_model)
             return
