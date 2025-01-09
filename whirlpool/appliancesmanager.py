@@ -193,19 +193,7 @@ class AppliancesManager:
         if app is None:
             LOGGER.error(f"Received message for unknown appliance {said}")
             return
-
-        self._update_appliance_attributes(app, msg)
-
-    def _update_appliance_attributes(self, appliance: "Appliance", msg: str):
-        json_msg = json.loads(msg)
-        timestamp = json_msg["timestamp"]
-        for attr, val in json_msg["attributeMap"].items():
-            if not appliance.has_attribute(attr):
-                continue
-            appliance._set_attribute(attr, str(val), timestamp)
-
-        for callback in appliance._attr_changed:
-            callback()
+        app._update_appliance_attributes(json_msg["attributeMap"], json_msg["timestamp"])
 
     async def _getWebsocketUrl(self) -> str:
         DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
