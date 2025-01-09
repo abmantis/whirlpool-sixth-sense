@@ -15,6 +15,14 @@ class Region(Enum):
     US = 1
 
 
+class ApplianceKind(Enum):
+    AirCon = 0
+    Dryer = 1
+    Oven = 2
+    Refrigerator = 3
+    Washer = 4
+
+
 @dataclass
 class CredentialsDict(TypedDict):
     client_id: str

@@ -2,6 +2,7 @@ import logging
 from enum import Enum
 
 from .appliance import Appliance
+from .types import ApplianceData, ApplianceKind
 
 LOGGER = logging.getLogger(__name__)
 
@@ -146,6 +147,15 @@ MACHINE_STATE_MAP = {
 
 
 class Dryer(Appliance):
+    Kind: ApplianceKind = ApplianceKind.Dryer
+
+    @staticmethod
+    def wants(appliance_data: ApplianceData) -> bool:
+        return (
+            "dryer" in appliance_data.data_model.lower()
+            and "washer" not in appliance_data.data_model.lower()
+        )
+
     def get_machine_state(self) -> MachineState:
         state_raw = self.get_attribute(ATTR_MACHINE_STATE)
         for k, v in MACHINE_STATE_MAP.items():

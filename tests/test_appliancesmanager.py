@@ -5,6 +5,7 @@ import pytest
 
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.backendselector import BackendSelector
+from whirlpool.types import ApplianceKind
 
 CURR_DIR = Path(__file__).parent
 DATA_DIR = CURR_DIR / "data"
@@ -49,11 +50,14 @@ async def test_fetch_appliances_returns_owned_and_shared_appliances(
     await appliances_manager.fetch_appliances()
 
     # the test data has one owned appliance and one shared appliance
-    # so if this is 2 then we have both
-    assert len(appliances_manager.washers) == 2
+    # so there should be 3 total, 2 washers and 1 oven
+    assert len(appliances_manager.all_appliances) == 3
+
+    # ensure we have 2 washers
+    assert len(appliances_manager.get_appliances(ApplianceKind.Washer)) == 2
 
     # ensure oven list is populated
-    assert len(appliances_manager.ovens) == 1
+    assert len(appliances_manager.get_appliances(ApplianceKind.Oven)) == 1
 
 
 async def test_fetch_appliances_calls_owned_and_shared_methods(

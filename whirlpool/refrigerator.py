@@ -1,6 +1,7 @@
 import logging
 
 from .appliance import Appliance
+from .types import ApplianceData, ApplianceKind
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +19,14 @@ TEMP_MAP = {
 
 
 class Refrigerator(Appliance):
+    Kind: ApplianceKind = ApplianceKind.Refrigerator
+
+    @staticmethod
+    def wants(appliance_data: ApplianceData) -> bool:
+        return (
+            "ddm_ted_refrigerator_v12" in appliance_data.data_model.lower()
+        )
+
     def get_offset_temp(self):
         reversed_temp_map = {v: k for k, v in TEMP_MAP.items()}
         return str(reversed_temp_map[int(self.get_attribute(SETTING_TEMP))])

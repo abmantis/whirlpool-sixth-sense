@@ -8,14 +8,10 @@ import async_timeout
 
 from whirlpool.eventsocket import EventSocket
 
-from .aircon import Aircon
+from .appliance import Appliance
 from .auth import Auth
 from .backendselector import BackendSelector
-from .dryer import Dryer
-from .oven import Oven
-from .refrigerator import Refrigerator
-from .types import ApplianceData
-from .washer import Washer
+from .types import ApplianceData, ApplianceKind
 
 if typing.TYPE_CHECKING:
     from whirlpool.appliance import Appliance
@@ -41,26 +37,6 @@ class AppliancesManager:
     def all_appliances(self) -> list["Appliance"]:
         return list(self._app_dict.values())
 
-    @property
-    def aircons(self) -> list[Aircon]:
-        return [app for app in self.all_appliances if isinstance(app, Aircon)]
-
-    @property
-    def dryers(self) -> list[Dryer]:
-        return [app for app in self.all_appliances if isinstance(app, Dryer)]
-
-    @property
-    def ovens(self) -> list[Oven]:
-        return [app for app in self.all_appliances if isinstance(app, Oven)]
-
-    @property
-    def refrigerators(self) -> list[Refrigerator]:
-        return [app for app in self.all_appliances if isinstance(app, Refrigerator)]
-
-    @property
-    def washers(self) -> list[Washer]:
-        return [app for app in self.all_appliances if isinstance(app, Washer)]
-
     def _create_headers(self) -> dict[str, str]:
         headers = {
             "Authorization": f"Bearer {self._auth.get_access_token()}",
@@ -82,29 +58,15 @@ class AppliancesManager:
             serial_number=appliance.get("SERIAL"),
         )
 
-        data_model = appliance["DATA_MODEL_KEY"].lower()
-
-        oven_models = [
-            "cooking_minerva",
-            "cooking_vsi",
-            "cooking_u2",
-            "ddm_cooking_bio_self_clean_tourmaline_v2",
-        ]
-
-        if "airconditioner" in data_model:
-            app = Aircon(self._backend_selector, self._auth, self._session, app_data)
-        elif "dryer" in data_model:
-            app = Dryer(self._backend_selector, self._auth, self._session, app_data)
-        elif any(model in data_model for model in oven_models):
-            app = Oven(self._backend_selector, self._auth, self._session, app_data)
-        elif "ddm_ted_refrigerator_v12" in data_model:
-            app = Refrigerator(self._backend_selector, self._auth, self._session, app_data)
-        elif "washer" in data_model:
-            app = Washer(self._backend_selector, self._auth, self._session, app_data)
-        else:
-            LOGGER.warning("Unsupported appliance data model %s", data_model)
+        handler: Appliance = None
+        for handler in Appliance.handlers:
+            if handler.wants(app_data):
+                break
+        if not handler:
+            LOGGER.warning("Unsupported appliance data model %s", app_data.data_model)
             return
 
+        app = handler(self._backend_selector, self._auth, self._session, app_data)
         self._app_dict[app_data.said] = app
 
     async def _get_owned_appliances(self, account_id: str) -> bool:
@@ -142,6 +104,14 @@ class AppliancesManager:
                     self._add_appliance(appliance)
 
             return True
+
+    def get_appliances(self, kind: ApplianceKind = None) -> list["Appliance"]:
+        if not kind:
+            return list(self._app_dict.values())
+        return [app for app in self._app_dict.values() if app.Kind == kind]
+
+    def get_appliance(self, said: str) -> Appliance:
+        return self._app_dict.get(said, None)
 
     async def fetch_appliances(self):
         account_id = await self._auth.get_account_id()

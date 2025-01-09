@@ -3,6 +3,7 @@ import typing
 from enum import Enum
 
 from .appliance import Appliance
+from .types import ApplianceData, ApplianceKind
 
 LOGGER = logging.getLogger(__name__)
 
@@ -194,6 +195,17 @@ class KitchenTimer:
 
 
 class Oven(Appliance):
+    Kind: ApplianceData = ApplianceKind.Oven
+
+    @staticmethod
+    def wants(appliance_data: ApplianceData) -> bool:
+        return (
+            "cooking_minerva" in appliance_data.data_model.lower()
+            or "cooking_vsi" in appliance_data.data_model.lower()
+            or "cooking_u2" in appliance_data.data_model.lower()
+            or "ddm_cooking_bio_self_clean_tourmaline_v2" in appliance_data.data_model.lower()
+        )
+
     def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper):
         return self.attr_value_to_bool(
             self.get_attribute(

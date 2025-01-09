@@ -4,6 +4,7 @@ import json
 import logging
 import typing
 from collections.abc import Callable
+from typing import ClassVar
 
 from .auth import Auth
 from .backendselector import BackendSelector
@@ -22,16 +23,33 @@ SETVAL_VALUE_ON = "1"
 class Appliance:
     """Whirlpool appliance class"""
 
+    handlers: ClassVar[list[type["Appliance"]]] = list()
+
+    def __init_subclass__(cls: type["Appliance"], **kwargs):
+        super().__init_subclass__(**kwargs)
+        if not hasattr(cls, "Kind"):
+            LOGGER.error("appliance class missing Kind attribute")
+            return
+
+        if hasattr(cls, "Model"):
+            cls.handlers.insert(0, cls)
+        else:
+            cls.handlers.append(cls)
+
+    @staticmethod
+    def wants(appliance_data: ApplianceData) -> bool:
+        return False
+
     def __init__(
         self,
         backend_selector: BackendSelector,
         auth: Auth,
         session: aiohttp.ClientSession,
         appliance_data: ApplianceData,
-    ):
-        self._backend_selector = backend_selector
-        self._auth = auth
-        self._session = session
+    ) -> None:
+        self._backend_selector: BackendSelector = backend_selector
+        self._auth: Auth = auth
+        self._session: ClientSession = session
 
         self._attr_changed: list[Callable] = []
         self._data_dict: dict = {}
@@ -131,7 +149,7 @@ class Appliance:
         for callback in self._attr_changed:
             callback()
 
-    def _set_attribute(self, attribute: str, value: str, timestamp: int):
+    def _set_attribute(self, attribute: str, value: str, timestamp: str):
         LOGGER.debug(f"Updating attribute {attribute} with {value} ({timestamp})")
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp

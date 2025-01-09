@@ -1,19 +1,8 @@
 import aioconsole
-import aiohttp
 
 from whirlpool.aircon import Aircon, Mode
-from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.auth import Auth
-from whirlpool.backendselector import BackendSelector
-from whirlpool.types import ApplianceData
 
-async def show_aircon_menu(
-    manager: AppliancesManager,
-    backend_selector: BackendSelector,
-    auth: Auth,
-    session: aiohttp.ClientSession,
-    app_data: ApplianceData
-) -> None:
+async def show_aircon_menu(ac: Aircon) -> None:
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -56,9 +45,7 @@ async def show_aircon_menu(
     def attr_upd():
         print("Attributes updated")
 
-    ac = Aircon(backend_selector, auth, session, app_data)
     ac.register_attr_callback(attr_upd)
-    await manager.connect()
 
     loop = True
     while loop:
@@ -109,5 +96,3 @@ async def show_aircon_menu(
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
-
-    await manager.disconnect()

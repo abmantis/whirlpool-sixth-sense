@@ -2,6 +2,7 @@ import logging
 from enum import Enum
 
 from .appliance import Appliance
+from .types import ApplianceData, ApplianceKind
 
 LOGGER = logging.getLogger(__name__)
 
@@ -79,6 +80,12 @@ FANSPEED_MAP = {
 
 
 class Aircon(Appliance):
+    Kind: ApplianceKind = ApplianceKind.AirCon
+
+    @staticmethod
+    def wants(appliance_data: ApplianceData) -> bool:
+        return "airconditioner" in appliance_data.data_model.lower()
+
     def get_current_temp(self):
         return int(self.get_attribute(ATTR_DISPLAY_TEMP)) / 10
 

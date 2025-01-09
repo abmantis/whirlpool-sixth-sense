@@ -1,19 +1,8 @@
 import aioconsole
-import aiohttp
 
-from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.auth import Auth
-from whirlpool.backendselector import BackendSelector
 from whirlpool.dryer import Dryer
-from whirlpool.types import ApplianceData
 
-async def show_dryer_menu(
-    manager: AppliancesManager,
-    backend_selector: BackendSelector,
-    auth: Auth,
-    session: aiohttp.ClientSession,
-    app_data: ApplianceData
-) -> None:
+async def show_dryer_menu(dr: Dryer) -> None:
     def print_menu() -> None:
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -59,10 +48,7 @@ async def show_dryer_menu(
     def attr_upd() -> None:
         print("Attributes updated")
 
-    dr = Dryer(backend_selector, auth, session, app_data)
-    print("DR", dr)
     dr.register_attr_callback(attr_upd)
-    await manager.connect()
 
     loop = True
     while loop:
@@ -86,4 +72,4 @@ async def show_dryer_menu(
         else:
             print("Wrong option selection. Enter any key to try again..")
 
-    await manager.disconnect()
+    dr.unregister_attr_callback(attr_upd)
