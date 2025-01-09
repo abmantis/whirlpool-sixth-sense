@@ -123,6 +123,14 @@ class Appliance:
         }
         return headers
 
+    def _update_appliance_attributes(self, attrs: dict[str, str], timestamp: str):
+        for attr, val in attrs.items():
+            if self.has_attribute(attr):
+                self._set_attribute(attr, str(val), timestamp)
+
+        for callback in self._attr_changed:
+            callback()
+
     def _set_attribute(self, attribute: str, value: str, timestamp: int):
         LOGGER.debug(f"Updating attribute {attribute} with {value} ({timestamp})")
         self._data_dict["attributes"][attribute]["value"] = value
