@@ -5,15 +5,12 @@ from typing import Any
 
 import aiohttp
 
-from whirlpool.eventsocket import EventSocket
 
 from .appliance import Appliance
 from .auth import Auth
 from .backendselector import BackendSelector
+from .eventsocket import EventSocket
 from .types import ApplianceData, ApplianceKind
-
-if typing.TYPE_CHECKING:
-    from whirlpool.appliance import Appliance
 
 
 LOGGER = logging.getLogger(__name__)

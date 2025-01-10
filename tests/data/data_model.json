@@ -1,0 +1,1103 @@
+{
+   "WPR1XYZABC123" : {
+      "_id" : "DDM_LAUNDRY_VMAX20_MAYTAG_DRYER_6_V1",
+      "_rev" : "42-e16c3f9ba47bcc4f727919ab0150254e",
+      "dataModel" : {
+         "attributes" : [
+            {
+               "AttributeName" : "Version",
+               "DataType" : "BEIntegerUnsigned16Bit",
+               "Default" : 18,
+               "DeviceIO" : "RO",
+               "Instance" : "XCat_PersistentInfo",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01010001",
+               "M2MAttributeName" : "XCat_PersistentInfoVersion",
+               "MappedAttributeName" : "XCat_PersistentInfoVersion",
+               "RangeValues" : {
+                  "Max" : 18,
+                  "Min" : 18,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "Said",
+               "DataType" : "String",
+               "DeviceIO" : "RO",
+               "Instance" : "XCat_PersistentInfo",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01010002",
+               "M2MAttributeName" : "XCat_PersistentInfoSaid",
+               "MappedAttributeName" : "XCat_PersistentInfoSaid"
+            },
+            {
+               "AttributeName" : "MacAddress",
+               "DataType" : "String",
+               "DeviceIO" : "RO",
+               "Instance" : "XCat_PersistentInfo",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01010003",
+               "M2MAttributeName" : "XCat_PersistentInfoMacAddress",
+               "MappedAttributeName" : "XCat_PersistentInfoMacAddress"
+            },
+            {
+               "AttributeName" : "RssiAntennaDiversity",
+               "DataType" : "IntegerSigned8Bit",
+               "Default" : -99,
+               "DeviceIO" : "RO",
+               "Instance" : "XCat_WifiStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01020001",
+               "M2MAttributeName" : "XCat_WifiStatusRssiAntennaDiversity",
+               "MappedAttributeName" : "XCat_WifiStatusRssiAntennaDiversity",
+               "RangeValues" : {
+                  "Max" : 127,
+                  "Min" : -128,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "SmartGridCompliant",
+               "DataType" : "enum",
+               "Default" : "0",
+               "DeviceIO" : "RO",
+               "EnumValues" : {
+                  "0" : "None",
+                  "1" : "UserOverride",
+                  "2" : "ApplianceOverride"
+               },
+               "Instance" : "XCat_SmartGridStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01040001",
+               "M2MAttributeName" : "XCat_SmartGridStatusSmartGridCompliant",
+               "MappedAttributeName" : "XCat_SmartGridStatusSmartGridCompliant"
+            },
+            {
+               "AttributeName" : "RunningHours",
+               "DataType" : "BEIntegerUnsigned32Bit",
+               "Default" : 0,
+               "DeviceIO" : "RO",
+               "Instance" : "XCat_OdometerStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01050001",
+               "M2MAttributeName" : "XCat_OdometerStatusRunningHours",
+               "MappedAttributeName" : "XCat_OdometerStatusRunningHours",
+               "RangeValues" : {
+                  "Max" : 4294967295,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "TotalHours",
+               "DataType" : "BEIntegerUnsigned32Bit",
+               "Default" : 0,
+               "DeviceIO" : "RO",
+               "Instance" : "XCat_OdometerStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01050002",
+               "M2MAttributeName" : "XCat_OdometerStatusTotalHours",
+               "MappedAttributeName" : "XCat_OdometerStatusTotalHours",
+               "RangeValues" : {
+                  "Max" : 4294967295,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "CycleCount",
+               "DataType" : "BEIntegerUnsigned32Bit",
+               "Default" : 0,
+               "DeviceIO" : "RO",
+               "Instance" : "XCat_OdometerStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : true,
+               "Key" : "0x01050003",
+               "M2MAttributeName" : "XCat_OdometerStatusCycleCount",
+               "MappedAttributeName" : "XCat_OdometerStatusCycleCount",
+               "RangeValues" : {
+                  "Max" : 4294967295,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "ModelNumber",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "XCat_ApplianceInfoSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01060001",
+               "M2MAttributeName" : "XCat_ApplianceInfoSetModelNumber",
+               "MappedAttributeName" : "XCat_ApplianceInfoSetModelNumber"
+            },
+            {
+               "AttributeName" : "SerialNumber",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "XCat_ApplianceInfoSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01060002",
+               "M2MAttributeName" : "XCat_ApplianceInfoSetSerialNumber",
+               "MappedAttributeName" : "XCat_ApplianceInfoSetSerialNumber"
+            },
+            {
+               "AttributeName" : "RemoteControlEnable",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RO",
+               "Instance" : "XCat_RemoteSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01080001",
+               "M2MAttributeName" : "XCat_RemoteSetRemoteControlEnable",
+               "MappedAttributeName" : "XCat_RemoteSetRemoteControlEnable"
+            },
+            {
+               "AttributeName" : "RebootAppliance",
+               "DataType" : "enum",
+               "Default" : "0",
+               "DeviceIO" : "WO",
+               "EnumValues" : {
+                  "2" : "ExecuteReset"
+               },
+               "Instance" : "XCat_RemoteSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01080003",
+               "M2MAttributeName" : "XCat_RemoteSetRebootAppliance",
+               "MappedAttributeName" : "XCat_RemoteSetRebootAppliance"
+            },
+            {
+               "AttributeName" : "PublishApplianceState",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "WO",
+               "Instance" : "XCat_WifiSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x01090001",
+               "M2MAttributeName" : "XCat_WifiSetPublishApplianceState",
+               "MappedAttributeName" : "XCat_WifiSetPublishApplianceState"
+            },
+            {
+               "AttributeName" : "SmartGridEnable",
+               "DataType" : "Boolean",
+               "Default" : true,
+               "DeviceIO" : "RW",
+               "Instance" : "XCat_SmartGridSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x010B0001",
+               "M2MAttributeName" : "XCat_SmartGridSetSmartGridEnable",
+               "MappedAttributeName" : "XCat_SmartGridSetSmartGridEnable"
+            },
+            {
+               "AttributeName" : "SmartGridMode",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "XCat_SmartGridSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x010B0002",
+               "M2MAttributeName" : "XCat_SmartGridSetSmartGridMode",
+               "MappedAttributeName" : "XCat_SmartGridSetSmartGridMode"
+            },
+            {
+               "AttributeName" : "MaxCustomCycles",
+               "DataType" : "IntegerUnsigned8Bit",
+               "Default" : 1,
+               "DeviceIO" : "RO",
+               "Instance" : "XCat_ConfigSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x010C0005",
+               "M2MAttributeName" : "XCat_ConfigSetMaxCustomCycles",
+               "MappedAttributeName" : "XCat_ConfigSetMaxCustomCycles",
+               "RangeValues" : {
+                  "Max" : 1,
+                  "Min" : 1,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "CustomerFaultCode",
+               "DataType" : "String",
+               "DeviceIO" : "RO",
+               "Instance" : "Sys_AlertStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : true,
+               "Key" : "0x02010001",
+               "M2MAttributeName" : "Sys_AlertStatusCustomerFaultCode",
+               "MappedAttributeName" : "Sys_AlertStatusCustomerFaultCode"
+            },
+            {
+               "AttributeName" : "Language",
+               "DataType" : "enum",
+               "Default" : "0",
+               "DeviceIO" : "RW",
+               "EnumValues" : {
+                  "0" : "LanguageEnglish",
+                  "1" : "LanguageCanadianFrench",
+                  "2" : "LanguageLatinAmericanSpanish"
+               },
+               "Instance" : "Sys_DisplaySet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x02020002",
+               "M2MAttributeName" : "Sys_DisplaySetLanguage",
+               "MappedAttributeName" : "Sys_DisplaySetLanguage"
+            },
+            {
+               "AttributeName" : "AlertToneVolume",
+               "DataType" : "enum",
+               "Default" : "2",
+               "DeviceIO" : "RW",
+               "EnumValues" : {
+                  "0" : "VolumeValueOff",
+                  "1" : "VolumeValueLow",
+                  "2" : "VolumeValueMedium",
+                  "3" : "VolumeValueHigh"
+               },
+               "Instance" : "Sys_OpSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x02030004",
+               "M2MAttributeName" : "Sys_OpSetAlertToneVolume",
+               "MappedAttributeName" : "Sys_OpSetAlertToneVolume"
+            },
+            {
+               "AttributeName" : "EstTimeRemaining",
+               "DataType" : "BEIntegerUnsigned32Bit",
+               "Default" : 0,
+               "DeviceIO" : "RO",
+               "Instance" : "Cavity_TimeStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03010001",
+               "M2MAttributeName" : "Cavity_TimeStatusEstTimeRemaining",
+               "MappedAttributeName" : "Cavity_TimeStatusEstTimeRemaining",
+               "RangeValues" : {
+                  "Max" : 4294967295,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "DoorOpen",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RO",
+               "Instance" : "Cavity_OpStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03020002",
+               "M2MAttributeName" : "Cavity_OpStatusDoorOpen",
+               "MappedAttributeName" : "Cavity_OpStatusDoorOpen"
+            },
+            {
+               "AttributeName" : "ExtraPowerChangeable",
+               "DataType" : "Boolean",
+               "Default" : true,
+               "DeviceIO" : "RO",
+               "Instance" : "Cavity_ChangeStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03030001",
+               "M2MAttributeName" : "Cavity_ChangeStatusExtraPowerChangeable",
+               "MappedAttributeName" : "Cavity_ChangeStatusExtraPowerChangeable"
+            },
+            {
+               "AttributeName" : "MachineState",
+               "DataType" : "enum",
+               "Default" : "0",
+               "DeviceIO" : "RO",
+               "EnumValues" : {
+                  "0" : "MachineStateStandby",
+                  "1" : "MachineStateSetting",
+                  "10" : "MachineStateComplete",
+                  "11" : "MachineStatePowerFailure",
+                  "17" : "MachineStateHardStopOrError",
+                  "19" : "MachineStateCancelled",
+                  "2" : "MachineStateDelayCountdownMode",
+                  "3" : "MachineStateDelayPause",
+                  "4" : "MachineStateSmartDelay",
+                  "5" : "MachineStateSmartGridPause",
+                  "6" : "MachineStatePause",
+                  "7" : "MachineStateRunningMainCycle",
+                  "8" : "MachineStateRunningPostCycle"
+               },
+               "Instance" : "Cavity_CycleStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03040001",
+               "M2MAttributeName" : "Cavity_CycleStatusMachineState",
+               "MappedAttributeName" : "Cavity_CycleStatusMachineState"
+            },
+            {
+               "AttributeName" : "DrumLightOn",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RW",
+               "Instance" : "Cavity_DisplaySet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03060001",
+               "M2MAttributeName" : "Cavity_DisplaySetDrumLightOn",
+               "MappedAttributeName" : "Cavity_DisplaySetDrumLightOn"
+            },
+            {
+               "AttributeName" : "Operations",
+               "DataType" : "enum",
+               "Default" : "0",
+               "DeviceIO" : "WO",
+               "EnumValues" : {
+                  "0" : "OperationsNone",
+                  "1" : "OperationsCancel",
+                  "10" : "OperationsSaveAndStart",
+                  "2" : "OperationsStart",
+                  "3" : "OperationsSetOnDisplay",
+                  "5" : "OperationsPause",
+                  "6" : "OperationsResume",
+                  "9" : "OperationsSave"
+               },
+               "Instance" : "Cavity_OpSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03070001",
+               "M2MAttributeName" : "Cavity_OpSetOperations",
+               "MappedAttributeName" : "Cavity_OpSetOperations"
+            },
+            {
+               "AttributeName" : "DownloadAndGo",
+               "DataType" : "IntegerUnsigned8Bit",
+               "Default" : 0,
+               "DeviceIO" : "RW",
+               "Instance" : "Cavity_CycleSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03080001",
+               "M2MAttributeName" : "Cavity_CycleSetDownloadAndGo",
+               "MappedAttributeName" : "Cavity_CycleSetDownloadAndGo",
+               "RangeValues" : {
+                  "Max" : 1,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "ExtraPowerEnable",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RW",
+               "Instance" : "Cavity_CycleSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03080002",
+               "M2MAttributeName" : "Cavity_CycleSetExtraPowerEnable",
+               "MappedAttributeName" : "Cavity_CycleSetExtraPowerEnable"
+            },
+            {
+               "AttributeName" : "CycleName",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "Cavity_CycleSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03080006",
+               "M2MAttributeName" : "Cavity_CycleSetCycleName",
+               "MappedAttributeName" : "Cavity_CycleSetCycleName"
+            },
+            {
+               "AttributeName" : "SpecialtyCycleId",
+               "DataType" : "IntegerUnsigned8Bit",
+               "Default" : 0,
+               "DeviceIO" : "RW",
+               "Instance" : "Cavity_CycleSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x03080007",
+               "M2MAttributeName" : "Cavity_CycleSetSpecialtyCycleId",
+               "MappedAttributeName" : "Cavity_CycleSetSpecialtyCycleId",
+               "RangeValues" : {
+                  "Max" : 1,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "DampNotificationToneVolume",
+               "DataType" : "enum",
+               "Default" : "2",
+               "DeviceIO" : "RW",
+               "EnumValues" : {
+                  "0" : "VolumeValueOff",
+                  "3" : "VolumeValueHigh"
+               },
+               "Instance" : "DrySys_OpSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x06020001",
+               "M2MAttributeName" : "DrySys_OpSetDampNotificationToneVolume",
+               "MappedAttributeName" : "DrySys_OpSetDampNotificationToneVolume"
+            },
+            {
+               "AttributeName" : "CycleSelect",
+               "DataType" : "Boolean",
+               "Default" : true,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_ChangeStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07020001",
+               "M2MAttributeName" : "DryCavity_ChangeStatusCycleSelect",
+               "MappedAttributeName" : "DryCavity_ChangeStatusCycleSelect"
+            },
+            {
+               "AttributeName" : "Dryness",
+               "DataType" : "Boolean",
+               "Default" : true,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_ChangeStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07020002",
+               "M2MAttributeName" : "DryCavity_ChangeStatusDryness",
+               "MappedAttributeName" : "DryCavity_ChangeStatusDryness"
+            },
+            {
+               "AttributeName" : "ManualDryTime",
+               "DataType" : "Boolean",
+               "Default" : true,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_ChangeStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07020005",
+               "M2MAttributeName" : "DryCavity_ChangeStatusManualDryTime",
+               "MappedAttributeName" : "DryCavity_ChangeStatusManualDryTime"
+            },
+            {
+               "AttributeName" : "Temperature",
+               "DataType" : "Boolean",
+               "Default" : true,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_ChangeStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07020008",
+               "M2MAttributeName" : "DryCavity_ChangeStatusTemperature",
+               "MappedAttributeName" : "DryCavity_ChangeStatusTemperature"
+            },
+            {
+               "AttributeName" : "WrinkleShield",
+               "DataType" : "Boolean",
+               "Default" : true,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_ChangeStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07020009",
+               "M2MAttributeName" : "DryCavity_ChangeStatusWrinkleShield",
+               "MappedAttributeName" : "DryCavity_ChangeStatusWrinkleShield"
+            },
+            {
+               "AttributeName" : "CoolDown",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_CycleStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07030002",
+               "M2MAttributeName" : "DryCavity_CycleStatusCoolDown",
+               "MappedAttributeName" : "DryCavity_CycleStatusCoolDown"
+            },
+            {
+               "AttributeName" : "Damp",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_CycleStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07030003",
+               "M2MAttributeName" : "DryCavity_CycleStatusDamp",
+               "MappedAttributeName" : "DryCavity_CycleStatusDamp"
+            },
+            {
+               "AttributeName" : "Drying",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_CycleStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07030004",
+               "M2MAttributeName" : "DryCavity_CycleStatusDrying",
+               "MappedAttributeName" : "DryCavity_CycleStatusDrying"
+            },
+            {
+               "AttributeName" : "Sensing",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_CycleStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07030006",
+               "M2MAttributeName" : "DryCavity_CycleStatusSensing",
+               "MappedAttributeName" : "DryCavity_CycleStatusSensing"
+            },
+            {
+               "AttributeName" : "Wet",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_CycleStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x0703000A",
+               "M2MAttributeName" : "DryCavity_CycleStatusWet",
+               "MappedAttributeName" : "DryCavity_CycleStatusWet"
+            },
+            {
+               "AttributeName" : "LimitedCycle",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RO",
+               "Instance" : "DryCavity_CycleStatus",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x0703000C",
+               "M2MAttributeName" : "DryCavity_CycleStatusLimitedCycle",
+               "MappedAttributeName" : "DryCavity_CycleStatusLimitedCycle"
+            },
+            {
+               "AttributeName" : "CycleSelect",
+               "DataType" : "enum",
+               "Default" : "1",
+               "DeviceIO" : "RW",
+               "EnumValues" : {
+                  "1" : "DryCycleNormal",
+                  "11" : "DryCycleTimedDry",
+                  "15" : "DryCycleTowels",
+                  "16" : "DryCycleWhites",
+                  "2" : "DryCycleHeavyDuty",
+                  "4" : "DryCycleDelicate",
+                  "41" : "DryCycleEcoNormal",
+                  "5" : "DryCycleWrinkleControlCasual",
+                  "6" : "DryCycleBeddingBulky",
+                  "7" : "DryCycleRapidDryExpress"
+               },
+               "Instance" : "DryCavity_CycleSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07040001",
+               "M2MAttributeName" : "DryCavity_CycleSetCycleSelect",
+               "MappedAttributeName" : "DryCavity_CycleSetCycleSelect"
+            },
+            {
+               "AttributeName" : "Dryness",
+               "DataType" : "enum",
+               "Default" : "0",
+               "DeviceIO" : "RW",
+               "EnumValues" : {
+                  "0" : "DrynessLessLow",
+                  "1" : "DrynessLessMid",
+                  "4" : "DrynessNormMid",
+                  "7" : "DrynessMoreMid"
+               },
+               "Instance" : "DryCavity_CycleSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07040002",
+               "M2MAttributeName" : "DryCavity_CycleSetDryness",
+               "MappedAttributeName" : "DryCavity_CycleSetDryness"
+            },
+            {
+               "AttributeName" : "ManualDryTime",
+               "DataType" : "BEIntegerUnsigned16Bit",
+               "Default" : 0,
+               "DeviceIO" : "RW",
+               "Instance" : "DryCavity_CycleSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07040005",
+               "M2MAttributeName" : "DryCavity_CycleSetManualDryTime",
+               "MappedAttributeName" : "DryCavity_CycleSetManualDryTime",
+               "RangeValues" : {
+                  "Max" : 9000,
+                  "Min" : 0,
+                  "StepSize" : 300
+               }
+            },
+            {
+               "AttributeName" : "Temperature",
+               "DataType" : "enum",
+               "Default" : "0",
+               "DeviceIO" : "RW",
+               "EnumValues" : {
+                  "0" : "DryTempAir",
+                  "2" : "DryTempCoolMid",
+                  "5" : "DryTempWarmMid",
+                  "6" : "DryTempWarmHigh",
+                  "8" : "DryTempHotMid"
+               },
+               "Instance" : "DryCavity_CycleSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07040008",
+               "M2MAttributeName" : "DryCavity_CycleSetTemperature",
+               "MappedAttributeName" : "DryCavity_CycleSetTemperature"
+            },
+            {
+               "AttributeName" : "WrinkleShield",
+               "DataType" : "enum",
+               "Default" : "0",
+               "DeviceIO" : "RW",
+               "EnumValues" : {
+                  "0" : "WrinkleShieldOff",
+                  "1" : "WrinkleShieldOn"
+               },
+               "Instance" : "DryCavity_CycleSet",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x07040009",
+               "M2MAttributeName" : "DryCavity_CycleSetWrinkleShield",
+               "MappedAttributeName" : "DryCavity_CycleSetWrinkleShield"
+            },
+            {
+               "AttributeName" : "PushTrigger",
+               "DataType" : "BEIntegerSigned32Bit",
+               "Default" : 0,
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "PushTrigger",
+               "MappedAttributeName" : "PushTrigger",
+               "RangeValues" : {
+                  "Max" : 2147483647,
+                  "Min" : -2147483648,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "Relational_to_Appliance",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "Relational_to_Appliance",
+               "MappedAttributeName" : "Relational_to_Appliance"
+            },
+            {
+               "AttributeName" : "GetSubscribeListVersion",
+               "DataType" : "BEIntegerUnsigned32Bit",
+               "Default" : 0,
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "GetSubscribeListVersion",
+               "MappedAttributeName" : "GetSubscribeListVersion",
+               "RangeValues" : {
+                  "Max" : 4294967295,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "M2MSubList",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "M2MSubList",
+               "MappedAttributeName" : "M2MSubList"
+            },
+            {
+               "AttributeName" : "M2MSubscribeListVersion",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "M2MSubscribeListVersion",
+               "MappedAttributeName" : "M2MSubscribeListVersion"
+            },
+            {
+               "AttributeName" : "SetDNSNames",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "SetDNSNames",
+               "MappedAttributeName" : "SetDNSNames"
+            },
+            {
+               "AttributeName" : "sys-parser-type",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "sys-parser-type",
+               "MappedAttributeName" : "sys-parser-type"
+            },
+            {
+               "AttributeName" : "MAC_Address",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "MAC_Address",
+               "MappedAttributeName" : "MAC_Address"
+            },
+            {
+               "AttributeName" : "uid",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "uid",
+               "MappedAttributeName" : "uid"
+            },
+            {
+               "AttributeName" : "ModelNumber",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "ModelNumber",
+               "MappedAttributeName" : "ModelNumber"
+            },
+            {
+               "AttributeName" : "SerialNumber",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "SerialNumber",
+               "MappedAttributeName" : "SerialNumber"
+            },
+            {
+               "AttributeName" : "ISPReasonCode",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "ISPReasonCode",
+               "MappedAttributeName" : "ISPReasonCode"
+            },
+            {
+               "AttributeName" : "GetApplianceVersionNumber",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "GetApplianceVersionNumber",
+               "MappedAttributeName" : "GetApplianceVersionNumber"
+            },
+            {
+               "AttributeName" : "ProjectReleaseNumber",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "ProjectReleaseNumber",
+               "MappedAttributeName" : "ProjectReleaseNumber"
+            },
+            {
+               "AttributeName" : "ISPStep",
+               "DataType" : "IntegerUnsigned8Bit",
+               "Default" : 0,
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "ISPStep",
+               "MappedAttributeName" : "ISPStep",
+               "RangeValues" : {
+                  "Max" : 255,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "CustomerFaultCodeNotification",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "CustomerFaultCodeNotification",
+               "MappedAttributeName" : "CustomerFaultCodeNotification"
+            },
+            {
+               "AttributeName" : "ControlLockChangedByAppliance",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "ControlLockChangedByAppliance",
+               "MappedAttributeName" : "ControlLockChangedByAppliance"
+            },
+            {
+               "AttributeName" : "ApplianceVersionNumber",
+               "DataType" : "BEIntegerUnsigned16Bit",
+               "Default" : 0,
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "ApplianceVersionNumber",
+               "MappedAttributeName" : "ApplianceVersionNumber",
+               "RangeValues" : {
+                  "Max" : 65535,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "EnergyProfileSetting",
+               "DataType" : "BEIntegerUnsigned32Bit",
+               "Default" : 0,
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "EnergyProfileSetting",
+               "MappedAttributeName" : "EnergyProfileSetting",
+               "RangeValues" : {
+                  "Max" : 4294967295,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "ISPBundleAttributes",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "ISPBundleAttributes",
+               "MappedAttributeName" : "ISPBundleAttributes"
+            },
+            {
+               "AttributeName" : "RatePlanID",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "RatePlanID",
+               "MappedAttributeName" : "RatePlanID"
+            },
+            {
+               "AttributeName" : "UtilityID",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "UtilityID",
+               "MappedAttributeName" : "UtilityID"
+            },
+            {
+               "AttributeName" : "SmartID",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "SmartID",
+               "MappedAttributeName" : "SmartID"
+            },
+            {
+               "AttributeName" : "Zip",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "Zip",
+               "MappedAttributeName" : "Zip"
+            },
+            {
+               "AttributeName" : "cc_uri",
+               "DataType" : "String",
+               "DeviceIO" : "WO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "cc_uri",
+               "MappedAttributeName" : "cc_uri"
+            },
+            {
+               "AttributeName" : "InServiceDate",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "InServiceDate",
+               "MappedAttributeName" : "InServiceDate"
+            },
+            {
+               "AttributeName" : "trid_result",
+               "DataType" : "String",
+               "DeviceIO" : "RO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "trid_result",
+               "MappedAttributeName" : "trid_result"
+            },
+            {
+               "AttributeName" : "trid",
+               "DataType" : "BEIntegerUnsigned16Bit",
+               "Default" : 0,
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "trid",
+               "MappedAttributeName" : "trid",
+               "RangeValues" : {
+                  "Max" : 65535,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "online",
+               "DataType" : "Boolean",
+               "Default" : false,
+               "DeviceIO" : "RO",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "online",
+               "MappedAttributeName" : "online"
+            },
+            {
+               "AttributeName" : "UtcOffset",
+               "DataType" : "BEIntegerSigned32Bit",
+               "Default" : 0,
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "UtcOffset",
+               "MappedAttributeName" : "UtcOffset",
+               "RangeValues" : {
+                  "Max" : 2147483647,
+                  "Min" : -2147483648,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "DstOffset",
+               "DataType" : "BEIntegerSigned32Bit",
+               "Default" : 0,
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "DstOffset",
+               "MappedAttributeName" : "DstOffset",
+               "RangeValues" : {
+                  "Max" : 2147483647,
+                  "Min" : -2147483648,
+                  "StepSize" : 1
+               }
+            },
+            {
+               "AttributeName" : "TimeZoneId",
+               "DataType" : "String",
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "TimeZoneId",
+               "MappedAttributeName" : "TimeZoneId"
+            },
+            {
+               "AttributeName" : "DateTimeMode",
+               "DataType" : "BEIntegerUnsigned16Bit",
+               "Default" : 0,
+               "DeviceIO" : "RW",
+               "Instance" : "",
+               "IsTemplate" : false,
+               "IsTimeSeries" : false,
+               "Key" : "0x00000000",
+               "M2MAttributeName" : "DateTimeMode",
+               "MappedAttributeName" : "DateTimeMode",
+               "RangeValues" : {
+                  "Max" : 65535,
+                  "Min" : 0,
+                  "StepSize" : 1
+               }
+            }
+         ],
+         "id" : "DDM_LAUNDRY_VMAX20_MAYTAG_DRYER_6_V1"
+      }
+   }
+}

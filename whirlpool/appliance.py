@@ -1,7 +1,7 @@
 import json
 import logging
 from collections.abc import Callable
-from typing import ClassVar
+from typing import Any, ClassVar
 
 import aiohttp
 import async_timeout
@@ -53,6 +53,8 @@ class Appliance:
 
         self._attr_changed: list[Callable] = []
         self._data_dict: dict = {}
+        self._data_model: dict | None = None
+        self._data_attrs: dict = None
         self._appliance_data = appliance_data
 
     @property
@@ -65,11 +67,22 @@ class Appliance:
         """Return Appliance name"""
         return self._appliance_data.name
 
+    @property
+    def data_model(self) -> dict[str, Any] | None:
+        """Return this appliances data model"""
+        return self._data_model
+
+    @property
+    def data_attrs(self) -> dict[str, str] | None:
+        """Return this appliances data model"""
+        return self._data_attrs
+
     async def fetch_data(self) -> bool:
         """Fetch appliance data from web api"""
         if not self._session:
             LOGGER.error("Session not started")
             return False
+
         uri = self._backend_selector.get_appliance_data_url(self.said)
         for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
@@ -87,6 +100,58 @@ class Appliance:
                     else:
                         LOGGER.error("Fetching data failed (%s)", r.status)
         return False
+
+    async def fetch_data_model(self) -> bool:
+        """Fetch appliance data model from web api"""
+        if not self._session:
+            LOGGER.error("Session not started")
+            return False
+
+        headers = self._create_headers()
+        headers["WP-CLIENT-COUNTRY"] = self._backend_selector.region.name
+        headers["WP-CLIENT-BRAND"] = self._backend_selector.brand.name
+        data={"saIdList": [self.said]}
+
+        model = None
+        url=self._backend_selector.get_data_model_url
+        for _ in range(REQUEST_RETRY_COUNT):
+            async with async_timeout.timeout(30):
+                async with self._session.post(url, json=data, headers=headers) as r:
+                    if r.status == 200:
+                        model = json.loads(await r.text())
+                        break
+                    elif r.status == 403:
+                        LOGGER.error(
+                            "Fetching data failed (%s).", r.status
+                        )
+                        return False
+                    elif r.status == 401:
+                        LOGGER.error(
+                            "Fetching data failed (%s). Doing reauth", r.status
+                        )
+                        await self._auth.do_auth()
+                    else:
+                        LOGGER.error("Fetching data failed (%s)", r.status)
+                        return False
+
+        if self.said not in model:
+            LOGGER.warning("SAID not found in data model...ignoring device")
+            return False
+
+        model = model[self.said]
+        if "dataModel" not in model or "attributes" not in model["dataModel"]:
+            LOGGER.warning("Missing dataModel -> attributes...ignoring device")
+            return False
+
+        attrs = {}
+        for attr in model["dataModel"]["attributes"]:
+            if "Instance" in attr and attr["Instance"]:
+                if "M2MAttributeName" in attr:
+                    attrs[attr["M2MAttributeName"]] = attr
+
+        self._data_model = model
+        self._data_attrs = attrs
+        return True
 
     async def send_attributes(self, attributes: dict[str, str]) -> bool:
         """Send attributes to appliance api"""
@@ -158,6 +223,9 @@ class Appliance:
             return None
         return self._data_dict["attributes"][attribute]["value"]
 
+    async def set_attribute(self, attr: str, val: str) -> None:
+        await self.send_attributes(self, {attr: val})
+
     def has_attribute(self, attribute: str) -> bool:
         """Check for attribute in local data dictionary"""
         if not self._data_dict:
@@ -176,4 +244,48 @@ class Appliance:
     def get_online(self) -> bool | None:
         """Get online state for appliance"""
         return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
+
+    def get_boolean(self, attr: str) -> bool:
+        return self.get_attribute(attr) == "1"
+
+    async def set_boolean(self, attr: str, val: bool) -> None:
+        await self.send_attributes(
+            self, {attr: self.bool_to_attr_value(val)}
+        )
+
+    def get_enum(self, attr: str) -> str | None:
+        val = self.get_attribute(attr)
+        if not val or attr not in self.data_attrs:
+            return None
+        if "EnumValues" not in self.data_attrs[attr]:
+            return None
+        return self.data_attrs[attr]["EnumValues"].get(val, None)
+
+    def get_enum_values(self, attr: str) -> list[str] | None:
+        if attr not in self.data_attrs:
+            return None
+        if "EnumValues" not in self.data_attrs[attr]:
+            return None
+        return list(self.data_attrs[attr]["EnumValues"].values())
+
+    async def set_enum(self, attr: str, val: str) -> None:
+        if attr not in self.data_attrs:
+            return None
+        if "EnumValues" not in self.data_attrs[attr]:
+            return None
+        for k, v in self.data_attrs[attr]["EnumValues"]:
+            if v == val:
+                await self.send_attributes(self, {attr: k})
+
+    def get_int(self, attr: str) -> int | None:
+        val = self.get_attribute(attr)
+        if not val:
+            return None
+        try:
+            return int(val)
+        except Exception:
+            return None
+
+    async def set_int(self, attr: str, val: int) -> None:
+        await self.send_attributes(self, {attr: str(val)})
 

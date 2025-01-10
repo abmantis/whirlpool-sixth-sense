@@ -88,6 +88,10 @@ class BackendSelector:
     def get_shared_appliances_url(self):
         return f"{self.base_url}/api/v1/share-accounts/appliances"
 
+    @property
+    def get_data_model_url(self):
+        return f"{self.base_url}/api/v2/DeviceDataModel"
+
     def get_appliance_data_url(self, said: str) -> str:
         return f"{self.base_url}/api/v1/appliance/{said}"
 
