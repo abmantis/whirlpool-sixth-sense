@@ -1,17 +1,14 @@
 import json
 import logging
-import typing
 from typing import Any
 
 import aiohttp
-
 
 from .appliance import Appliance
 from .auth import Auth
 from .backendselector import BackendSelector
 from .eventsocket import EventSocket
 from .types import ApplianceData, ApplianceKind
-
 
 LOGGER = logging.getLogger(__name__)
 
