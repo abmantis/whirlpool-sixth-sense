@@ -6,6 +6,8 @@ from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
 from whirlpool.washer import Washer
 from whirlpool.types import ApplianceData
+from whirlpool.washerdryer import WasherDryer
+
 
 async def show_washer_menu(
     manager: AppliancesManager,

@@ -22,7 +22,10 @@ DATA3 = OVEN_DATA["DATA3"]
 
 
 async def test_attributes(
-    oven: Oven, backend_selector_mock: BackendSelector, aioresponses_mock, appliances_manager
+    oven: Oven,
+    backend_selector_mock: BackendSelector,
+    aioresponses_mock,
+    appliances_manager: AppliancesManager
 ):
     aioresponses_mock.get(
         backend_selector_mock.ws_url,

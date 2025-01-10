@@ -23,7 +23,10 @@ DATA2 = AIRCON_DATA["DATA2"]
 
 
 async def test_attributes(
-    aircon: Aircon, backend_selector_mock: BackendSelector, aioresponses_mock, appliances_manager
+    aircon: Aircon,
+    backend_selector_mock: BackendSelector,
+    aioresponses_mock,
+    appliances_manager: AppliancesManager
 ):
     aioresponses_mock.get(
         backend_selector_mock.ws_url,
