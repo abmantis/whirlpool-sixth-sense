@@ -2,6 +2,7 @@ import aioconsole
 
 from whirlpool.dryer import Dryer
 
+
 async def show_dryer_menu(dr: Dryer) -> None:
     def print_menu() -> None:
         print("\n")

@@ -2,6 +2,7 @@ import aioconsole
 
 from whirlpool.washer import Washer
 
+
 async def show_washer_menu(wr: Washer) -> None:
     def print_menu():
         print("\n")

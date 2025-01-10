@@ -49,7 +49,7 @@ class Appliance:
     ) -> None:
         self._backend_selector: BackendSelector = backend_selector
         self._auth: Auth = auth
-        self._session: ClientSession = session
+        self._session: aiohttp.ClientSession = session
 
         self._attr_changed: list[Callable] = []
         self._data_dict: dict = {}

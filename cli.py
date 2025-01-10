@@ -81,7 +81,7 @@ async def start():
 
         app = appliance_manager.get_appliance(args.said)
         if not app:
-            logger.error(f"{said} wasn't found");
+            logger.error(f"{args.said} wasn't found")
             return
 
         await appliance_manager.connect()
@@ -98,6 +98,6 @@ async def start():
             case ApplianceKind.Washer:
                 await show_washer_menu(app)
 
-        await manager.disconnect()
+        await appliance_manager.disconnect()
 
 asyncio.run(start())

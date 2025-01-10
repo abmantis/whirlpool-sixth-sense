@@ -2,6 +2,7 @@ import aioconsole
 
 from whirlpool.refrigerator import Refrigerator
 
+
 async def show_refrigerator_menu(rf: Refrigerator) -> None:
     def print_menu():
         print("\n")

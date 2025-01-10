@@ -2,6 +2,7 @@ import aioconsole
 
 from whirlpool.aircon import Aircon, Mode
 
+
 async def show_aircon_menu(ac: Aircon) -> None:
     def print_menu():
         print("\n")

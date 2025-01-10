@@ -4,9 +4,10 @@
     is created.
 """
 
-from .aircon import Aircon
-from .dryer import Dryer
-from .oven import Oven
-from .refrigerator import Refrigerator
-from .washer import Washer
+from .aircon import Aircon as Aircon
+from .dryer import Dryer as Dryer
+from .oven import Oven as Oven
+from .refrigerator import Refrigerator as Refrigerator
+from .washer import Washer as Washer
+
 

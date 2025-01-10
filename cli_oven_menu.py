@@ -2,7 +2,8 @@ import aioconsole
 
 from whirlpool.oven import Cavity, CookMode, KitchenTimerState, Oven
 
-async def show_oven_menu(app: Oven) -> None:
+
+async def show_oven_menu(ov: Oven) -> None:
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")

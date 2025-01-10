@@ -196,11 +196,12 @@ class Oven(Appliance):
 
     @staticmethod
     def wants(appliance_data: ApplianceData) -> bool:
+        model = appliance_data.data_model.lower()
         return (
-            "cooking_minerva" in appliance_data.data_model.lower()
-            or "cooking_vsi" in appliance_data.data_model.lower()
-            or "cooking_u2" in appliance_data.data_model.lower()
-            or "ddm_cooking_bio_self_clean_tourmaline_v2" in appliance_data.data_model.lower()
+            "cooking_minerva" in model
+            or "cooking_vsi" in model
+            or "cooking_u2" in model
+            or "ddm_cooking_bio_self_clean_tourmaline_v2" in model
         )
 
     def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper):

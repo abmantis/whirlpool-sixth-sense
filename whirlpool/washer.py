@@ -87,7 +87,8 @@ class Washer(Appliance):
     def wants(appliance_data: ApplianceData) -> bool:
         return (
             "washer" in appliance_data.data_model.lower()
-            and "dryer" not in appliance_data.data_model.lower()                                          )
+            and "dryer" not in appliance_data.data_model.lower()
+        )
 
     def get_machine_state(self):
         state_raw = self.get_attribute(ATTR_MACHINE_STATE)
