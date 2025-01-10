@@ -1,10 +1,10 @@
-import aiohttp
-import async_timeout
 import json
 import logging
-import typing
 from collections.abc import Callable
 from typing import ClassVar
+
+import aiohttp
+import async_timeout
 
 from .auth import Auth
 from .backendselector import BackendSelector

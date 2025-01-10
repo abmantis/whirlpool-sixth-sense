@@ -13,7 +13,7 @@ async def show_washer_menu(wr: Washer) -> None:
         print("q. Exit")
         print(67 * "-")
 
-    def print_status(wd: Washer):
+    def print_status(wr: Washer):
         print("online: " + str(wr.get_online()))
         print("state: " + str(wr.get_machine_state()))
         print("sensing: " + str(wr.get_cycle_status_sensing()))
@@ -34,10 +34,10 @@ async def show_washer_menu(wr: Washer) -> None:
         choice = await aioconsole.ainput("Enter your choice: ")
 
         if choice == "p":
-            print_status(wd)
+            print_status(wr)
         elif choice == "u":
             await wr.fetch_data()
-            print_status(wd)
+            print_status(wr)
         elif choice == "v":
             print(wr._data_dict)
         elif choice == "c":

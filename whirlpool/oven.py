@@ -1,5 +1,4 @@
 import logging
-import typing
 from enum import Enum
 
 from .appliance import Appliance

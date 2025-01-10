@@ -11,11 +11,11 @@ from tests.mock_backendselector import (
 )
 from whirlpool.aircon import Aircon
 from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.types import ApplianceData
 from whirlpool.auth import Auth
 from whirlpool.dryer import Dryer
 from whirlpool.oven import Oven
 from whirlpool.refrigerator import Refrigerator
+from whirlpool.types import ApplianceData
 from whirlpool.washer import Washer
 
 SAID = "WPR1XYZABC123"

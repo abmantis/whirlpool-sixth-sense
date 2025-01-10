@@ -4,7 +4,6 @@ import typing
 from typing import Any
 
 import aiohttp
-import async_timeout
 
 from whirlpool.eventsocket import EventSocket
 
@@ -163,7 +162,10 @@ class AppliancesManager:
         if app is None:
             LOGGER.error(f"Received message for unknown appliance {said}")
             return
-        app._update_appliance_attributes(json_msg["attributeMap"], json_msg["timestamp"])
+        app._update_appliance_attributes(
+            json_msg["attributeMap"],
+            json_msg["timestamp"]
+        )
 
     async def _getWebsocketUrl(self) -> str:
         DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
