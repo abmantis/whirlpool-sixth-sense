@@ -7,6 +7,7 @@ from whirlpool.backendselector import BackendSelector
 from whirlpool.refrigerator import Refrigerator
 from whirlpool.types import ApplianceData
 
+
 async def show_refrigerator_menu(
     manager: AppliancesManager,
     backend_selector: BackendSelector,

@@ -4,8 +4,9 @@ import aiohttp
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
-from whirlpool.washerdryer import WasherDryer
 from whirlpool.types import ApplianceData
+from whirlpool.washerdryer import WasherDryer
+
 
 async def show_washerdryer_menu(
     manager: AppliancesManager,

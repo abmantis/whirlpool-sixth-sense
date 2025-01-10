@@ -26,7 +26,7 @@ async def test_attributes(
     refrigerator: Refrigerator,
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
-    appliances_manager
+    appliances_manager: AppliancesManager
 ):
     aioresponses_mock.get(
         backend_selector_mock.ws_url,

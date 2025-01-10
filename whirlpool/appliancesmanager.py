@@ -4,7 +4,6 @@ import typing
 from typing import Any
 
 import aiohttp
-import async_timeout
 
 from whirlpool.eventsocket import EventSocket
 
@@ -89,11 +88,15 @@ class AppliancesManager:
         if "airconditioner" in data_model:
             app = Aircon(self._backend_selector, self._auth, self._session, app_data)
         elif "dryer" in data_model or "washer" in data_model:
-            app = WasherDryer(self._backend_selector, self._auth, self._session, app_data)
+            app = WasherDryer(
+                self._backend_selector, self._auth, self._session, app_data
+            )
         elif any(model in data_model for model in oven_models):
             app = Oven(self._backend_selector, self._auth, self._session, app_data)
         elif "ddm_ted_refrigerator_v12" in data_model:
-            app = Refrigerator(self._backend_selector, self._auth, self._session, app_data)
+            app = Refrigerator(
+                self._backend_selector, self._auth, self._session, app_data
+            )
         else:
             LOGGER.warning("Unsupported appliance data model %s", data_model)
             return
@@ -186,7 +189,10 @@ class AppliancesManager:
         if app is None:
             LOGGER.error(f"Received message for unknown appliance {said}")
             return
-        app._update_appliance_attributes(json_msg["attributeMap"], json_msg["timestamp"])
+        app._update_appliance_attributes(
+            json_msg["attributeMap"],
+            json_msg["timestamp"]
+        )
 
     async def _getWebsocketUrl(self) -> str:
         DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"

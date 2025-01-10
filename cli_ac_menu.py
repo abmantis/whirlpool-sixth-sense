@@ -7,6 +7,7 @@ from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
 from whirlpool.types import ApplianceData
 
+
 async def show_aircon_menu(
     manager: AppliancesManager,
     backend_selector: BackendSelector,

@@ -7,6 +7,7 @@ from whirlpool.backendselector import BackendSelector
 from whirlpool.oven import Cavity, CookMode, KitchenTimerState, Oven
 from whirlpool.types import ApplianceData
 
+
 async def show_oven_menu(
     manager: AppliancesManager,
     backend_selector: BackendSelector,
