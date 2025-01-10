@@ -1,10 +1,5 @@
 import json
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
-
-import pytest
-from yarl import URL
 
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.backendselector import BackendSelector
@@ -22,7 +17,10 @@ DATA1 = DRYER_DATA["DATA1"]
 
 
 async def test_attributes(
-    dryer: Dryer, backend_selector_mock: BackendSelector, aioresponses_mock, appliances_manager
+    dryer: Dryer,
+    backend_selector_mock: BackendSelector,
+    aioresponses_mock,
+    appliances_manager: AppliancesManager
 ):
     aioresponses_mock.get(
         backend_selector_mock.ws_url,
@@ -38,7 +36,7 @@ async def test_attributes(
     await appliances_manager.connect()
     assert dryer.get_machine_state() == MachineState.Standby
     assert dryer.get_machine_state_value() == 0
-    assert dryer.get_op_status_dooropen() == False
+    assert dryer.get_op_status_dooropen() is False
     assert dryer.get_time_status_est_time_remaining() == 1800
     assert dryer.get_drum_light_on() == 0
     assert dryer.get_change_status_steamchangeable() == 1

@@ -1,14 +1,9 @@
 import json
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
-
-import pytest
-from yarl import URL
 
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.backendselector import BackendSelector
-from whirlpool.washer import Washer, MachineState
+from whirlpool.washer import MachineState, Washer
 
 ACCOUNT_ID = 111222333
 
@@ -22,7 +17,10 @@ DATA1 = WASHER_DATA["DATA1"]
 
 
 async def test_attributes(
-    washer: Washer, backend_selector_mock: BackendSelector, aioresponses_mock, appliances_manager
+    washer: Washer,
+    backend_selector_mock: BackendSelector,
+    aioresponses_mock,
+    appliances_manager: AppliancesManager
 ):
     aioresponses_mock.get(
         backend_selector_mock.ws_url,

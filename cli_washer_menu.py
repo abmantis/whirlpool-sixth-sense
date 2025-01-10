@@ -4,9 +4,8 @@ import aiohttp
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
-from whirlpool.washer import Washer
 from whirlpool.types import ApplianceData
-from whirlpool.washerdryer import WasherDryer
+from whirlpool.washer import Washer
 
 
 async def show_washer_menu(
@@ -26,7 +25,7 @@ async def show_washer_menu(
         print("q. Exit")
         print(67 * "-")
 
-    def print_status(wd: Washer):
+    def print_status(wr: Washer):
         print("online: " + str(wr.get_online()))
         print("state: " + str(wr.get_machine_state()))
         print("sensing: " + str(wr.get_cycle_status_sensing()))
@@ -39,7 +38,7 @@ async def show_washer_menu(
     def attr_upd():
         print("Attributes updated")
 
-    wd = Washer(backend_selector, auth, session, app_data)
+    wr = Washer(backend_selector, auth, session, app_data)
     wr.register_attr_callback(attr_upd)
     await manager.connect()
 
@@ -49,10 +48,10 @@ async def show_washer_menu(
         choice = await aioconsole.ainput("Enter your choice: ")
 
         if choice == "p":
-            print_status(wd)
+            print_status(wr)
         elif choice == "u":
             await wr.fetch_data()
-            print_status(wd)
+            print_status(wr)
         elif choice == "v":
             print(wr._data_dict)
         elif choice == "c":

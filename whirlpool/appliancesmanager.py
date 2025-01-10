@@ -97,7 +97,9 @@ class AppliancesManager:
         elif any(model in data_model for model in oven_models):
             app = Oven(self._backend_selector, self._auth, self._session, app_data)
         elif "ddm_ted_refrigerator_v12" in data_model:
-            app = Refrigerator(self._backend_selector, self._auth, self._session, app_data)
+            app = Refrigerator(
+                self._backend_selector, self._auth, self._session, app_data
+            )
         elif "washer" in data_model:
             app = Washer(self._backend_selector, self._auth, self._session, app_data)
         else:

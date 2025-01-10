@@ -166,28 +166,38 @@ class Dryer(Appliance):
         return self.attr_value_to_bool(self.get_attribute(ATTR_DISPLAY_SET_DRUMLIGHTON))
 
     def get_change_status_extrapowerchangeable(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CHANGE_STATUS_EXTRAPOWERCHANGEABLE))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CHANGE_STATUS_EXTRAPOWERCHANGEABLE)
+        )
 
     def get_change_status_steamchangeable(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CHANGE_STATUS_STEAMCHANGEABLE))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CHANGE_STATUS_STEAMCHANGEABLE)
+        )
 
     def get_change_status_cycleselect(self) -> int:
         return int(self.get_attribute(ATTR_CHANGE_STATUS_CYCLESELECT))
 
     def get_change_status_dryness(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CHANGE_STATUS_DRYNESS))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CHANGE_STATUS_DRYNESS)
+        )
 
     def get_change_status_manualdrytime(self) -> int:
         return int(self.get_attribute(ATTR_CHANGE_STATUS_MANUALDRYTIME))
 
     def get_change_status_staticguard(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CHANGE_STATUS_STATICGUARD))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CHANGE_STATUS_STATICGUARD)
+        )
 
     def get_change_status_temperature(self) -> int:
         return int(self.get_attribute(ATTR_CHANGE_STATUS_TEMPERATURE))
 
     def get_change_status_wrinkleshield(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CHANGE_STATUS_WRINKLESHIELD))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CHANGE_STATUS_WRINKLESHIELD)
+        )
 
     def get_dryness(self) -> int:
         return int(self.get_attribute(ATTR_CYCLE_SET_DRYNESS))
@@ -199,31 +209,49 @@ class Dryer(Appliance):
         return int(self.get_attribute(ATTR_CYCLE_SET_CYCLESELECT))
 
     def get_cycle_status_airflow_status(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_AIRFLOWSTATUS))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CYCLE_STATUS_AIRFLOWSTATUS)
+        )
 
     def get_cycle_status_cool_down(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_COOLDOWN))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CYCLE_STATUS_COOLDOWN)
+        )
 
     def get_cycle_status_damp(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_DAMP))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CYCLE_STATUS_DAMP)
+        )
 
     def get_cycle_status_drying(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_DRYING))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CYCLE_STATUS_DRYING)
+        )
 
     def get_cycle_status_limited_cycle(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_LIMITEDCYCLE))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CYCLE_STATUS_LIMITEDCYCLE)
+        )
 
     def get_cycle_status_sensing(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_SENSING))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CYCLE_STATUS_SENSING)
+        )
 
     def get_cycle_status_static_reduce(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_STATICREDUCE))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CYCLE_STATUS_STATICREDUCE)
+        )
 
     def get_cycle_status_steaming(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_STEAMING))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CYCLE_STATUS_STEAMING)
+        )
 
     def get_cycle_status_wet(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_WET))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_CYCLE_STATUS_WET)
+        )
 
     def get_odometer_status_cycle_count(self) -> int:
         return int(self.get_attribute(ATTR_ODOMETER_STATUS_CYCLECOUNT))
@@ -235,7 +263,9 @@ class Dryer(Appliance):
         return int(self.get_attribute(ATTR_ODOMETER_STATUS_TOTALHOURS))
 
     def get_wifi_status_isp_check(self) -> bool:
-        return self.attr_value_to_bool(self.get_attribute(ATTR_WIFI_STATUS_ISPCHECK))
+        return self.attr_value_to_bool(
+            self.get_attribute(ATTR_WIFI_STATUS_ISPCHECK)
+        )
 
     def get_wifi_status_rssi_antenna_diversity(self) -> int:
         return int(self.get_attribute(ATTR_WIFI_STATUS_RSSIANTENNADIVERSITY))

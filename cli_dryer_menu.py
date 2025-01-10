@@ -7,6 +7,7 @@ from whirlpool.backendselector import BackendSelector
 from whirlpool.dryer import Dryer
 from whirlpool.types import ApplianceData
 
+
 async def show_dryer_menu(
     manager: AppliancesManager,
     backend_selector: BackendSelector,
