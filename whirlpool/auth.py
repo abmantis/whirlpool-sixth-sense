@@ -149,3 +149,14 @@ class Auth:
 
     def get_said_list(self):
         return self._auth_dict.get("SAID", None)
+
+    def _create_headers(self) -> dict[str, str]:
+        headers = {
+            "Authorization": f"Bearer {self.get_access_token()}",
+            "Content-Type": "application/json",
+            "User-Agent": "okhttp/3.12.0",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+        }
+        return headers
+
