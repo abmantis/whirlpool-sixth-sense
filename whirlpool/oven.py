@@ -186,7 +186,7 @@ class KitchenTimer:
                 + ATTR_POSTFIX_KITCHEN_TIMER_SET_OPS: KITCHEN_TIMER_OPERATIONS_MAP[
                     KitchenTimerOperations.Cancel
                 ]
-            },
+            }
         )
 
 
