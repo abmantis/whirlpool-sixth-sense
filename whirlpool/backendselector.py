@@ -69,23 +69,23 @@ class BackendSelector:
         return CREDENTIALS[self._brand]
 
     @property
-    def appliance_command_url(self) -> str:
-        return f"{self.base_url}/api/v1/appliance/command"
-
-    @property
     def oauth_token_url(self) -> str:
         return f"{self.base_url}/oauth/token"
 
     @property
-    def websocket_url(self) -> str:
+    def ws_url(self):
         return f"{self.base_url}/api/v1/client_auth/webSocketUrl"
 
     @property
-    def user_details_url(self) -> str:
+    def post_appliance_command_url(self):
+        return f"{self.base_url}/api/v1/appliance/command"
+
+    @property
+    def get_user_details_url(self):
         return f"{self.base_url}/api/v1/getUserDetails"
 
     @property
-    def shared_appliances_url(self) -> str:
+    def get_shared_appliances_url(self):
         return f"{self.base_url}/api/v1/share-accounts/appliances"
 
     def get_appliance_data_url(self, said: str) -> str:
@@ -93,3 +93,4 @@ class BackendSelector:
 
     def get_owned_appliances_url(self, account_id: str) -> str:
         return f"{self.base_url}/api/v2/appliance/all/account/{account_id}"
+
