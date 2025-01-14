@@ -1,6 +1,5 @@
 import json
 import logging
-import typing
 from typing import Any
 
 import aiohttp
@@ -8,16 +7,13 @@ import aiohttp
 from whirlpool.eventsocket import EventSocket
 
 from .aircon import Aircon
+from .appliance import Appliance
 from .auth import Auth
 from .backendselector import BackendSelector
 from .oven import Oven
 from .refrigerator import Refrigerator
 from .types import ApplianceData
 from .washerdryer import WasherDryer
-
-if typing.TYPE_CHECKING:
-    from whirlpool.appliance import Appliance
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,7 +35,7 @@ class AppliancesManager:
         self._rf_dict: dict[str, Any] = {}
 
     @property
-    def all_appliances(self) -> list["Appliance"]:
+    def all_appliances(self) -> list[Appliance]:
         return {
             **self._ac_dict,
             **self._wd_dict,
