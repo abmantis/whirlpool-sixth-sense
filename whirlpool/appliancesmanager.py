@@ -182,7 +182,6 @@ class AppliancesManager:
         self._event_socket = None
 
     def _event_socket_callback(self, msg: str):
-        LOGGER.debug(f"Manager event socket message: {msg}")
         json_msg = json.loads(msg)
         said = json_msg["said"]
         app = {
