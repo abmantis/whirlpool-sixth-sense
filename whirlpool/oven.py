@@ -239,7 +239,7 @@ class Oven(Appliance):
                 CAVITY_PREFIX_MAP[cavity]
                 + "_"
                 + ATTR_POSTFIX_LIGHT_STATUS: self.bool_to_attr_value(on)
-            },
+            }
         )
 
     def get_temp(self, cavity: Cavity = Cavity.Upper):
@@ -274,9 +274,7 @@ class Oven(Appliance):
 
     # todo: persist the kitchen timer objects in the object
     def get_kitchen_timer(self, timer_id=1):
-        timer = KitchenTimer(
-            appliance=self, app_manager=self._app_manager, timer_id=timer_id
-        )
+        timer = KitchenTimer(appliance=self, timer_id=timer_id)
         return timer
 
     def get_cook_mode(self, cavity: Cavity = Cavity.Upper):
@@ -363,7 +361,7 @@ class Oven(Appliance):
                 CAVITY_PREFIX_MAP[cavity]
                 + "_"
                 + ATTR_POSTFIX_SET_OPERATION: COOK_OPERATION_MAP[CookOperation.Cancel]
-            },
+            }
         )
 
     def get_sabbath_mode(self):
