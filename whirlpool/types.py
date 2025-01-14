@@ -16,12 +16,6 @@ class Region(Enum):
 
 
 @dataclass
-class CredentialsDict(TypedDict):
-    client_id: str
-    client_secret: str
-
-
-@dataclass
 class ApplianceData:
     said: str
     name: str
