@@ -58,7 +58,7 @@ async def oven_fixture(
         serial_number="RO12345678",
     )
 
-    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+    with patch("whirlpool.appliance.Auth._create_headers", return_value={}):
         oven = Oven(
             backend_selector_mock, auth_fixture, client_session_fixture, app_data
         )
@@ -78,7 +78,7 @@ def aircon_fixture(
         serial_number="AC12345678",
     )
 
-    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+    with patch("whirlpool.appliance.Auth._create_headers", return_value={}):
         aircon = Aircon(
             backend_selector_mock, auth_fixture, client_session_fixture, app_data
         )
@@ -98,7 +98,7 @@ def dryer_fixture(
         serial_number="DR12345678",
     )
 
-    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+    with patch("whirlpool.auth.Auth._create_headers", return_value={}):
         dryer = Dryer(
             backend_selector_mock, auth_fixture, client_session_fixture, app_data
         )
@@ -118,7 +118,7 @@ def refrigerator_fixture(
         serial_number="FR12345678",
     )
 
-    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+    with patch("whirlpool.appliance.Auth._create_headers", return_value={}):
         refrigerator = Refrigerator(
             backend_selector_mock, auth_fixture, client_session_fixture, app_data
         )
@@ -138,7 +138,7 @@ def washer_fixture(
         serial_number="WR12345678",
     )
 
-    with patch("whirlpool.appliance.Appliance._create_headers", return_value={}):
+    with patch("whirlpool.auth.Auth._create_headers", return_value={}):
         washer = Washer(
             backend_selector_mock, auth_fixture, client_session_fixture, app_data
         )

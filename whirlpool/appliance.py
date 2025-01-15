@@ -55,7 +55,9 @@ class Appliance:
         uri = self._backend_selector.get_appliance_data_url(self.said)
         for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
-                async with self._session.get(uri, headers=self._create_headers()) as r:
+                async with self._session.get(
+                        uri, headers=self._auth._create_headers()
+                    ) as r:
                     if r.status == 200:
                         self._data_dict = json.loads(await r.text())
                         for callback in self._attr_changed:
@@ -87,7 +89,7 @@ class Appliance:
                 async with self._session.post(
                     self._backend_selector.post_appliance_command_url,
                     json=cmd_data,
-                    headers=self._create_headers(),
+                    headers=self._auth._create_headers(),
                 ) as r:
                     LOGGER.debug(f"Reply: {await r.text()}")
                     if r.status == 200:
@@ -110,16 +112,6 @@ class Appliance:
             LOGGER.debug("Unregistered attr callback")
         except ValueError:
             LOGGER.error("Attr callback not found")
-
-    def _create_headers(self) -> dict[str, str]:
-        headers = {
-            "Authorization": f"Bearer {self._auth.get_access_token()}",
-            "Content-Type": "application/json",
-            "User-Agent": "okhttp/3.12.0",
-            "Pragma": "no-cache",
-            "Cache-Control": "no-cache",
-        }
-        return headers
 
     def _update_appliance_attributes(self, attrs: dict[str, str], timestamp: str):
         for attr, val in attrs.items():
