@@ -1,6 +1,5 @@
 import json
 import logging
-import typing
 from typing import Any
 
 import aiohttp
@@ -11,10 +10,6 @@ from .appliance import Appliance
 from .auth import Auth
 from .backendselector import BackendSelector
 from .types import ApplianceData, ApplianceKind
-
-if typing.TYPE_CHECKING:
-    from whirlpool.appliance import Appliance
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +28,7 @@ class AppliancesManager:
         self._app_dict: dict[str, Any] = {}
 
     @property
-    def all_appliances(self) -> list["Appliance"]:
+    def all_appliances(self) -> list[Appliance]:
         return list(self._app_dict.values())
 
     def _create_headers(self) -> dict[str, str]:
@@ -155,7 +150,6 @@ class AppliancesManager:
         self._event_socket = None
 
     def _event_socket_callback(self, msg: str):
-        LOGGER.debug(f"Manager event socket message: {msg}")
         json_msg = json.loads(msg)
         said = json_msg["said"]
         app = self._app_dict.get(said)

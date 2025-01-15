@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import TypedDict
 
 
 class Brand(Enum):
@@ -21,12 +20,6 @@ class ApplianceKind(Enum):
     Oven = 2
     Refrigerator = 3
     Washer = 4
-
-
-@dataclass
-class CredentialsDict(TypedDict):
-    client_id: str
-    client_secret: str
 
 
 @dataclass
