@@ -5,9 +5,10 @@ import logging
 import aiohttp
 
 from cli_ac_menu import show_aircon_menu
+from cli_dryer_menu import show_dryer_menu
 from cli_oven_menu import show_oven_menu
 from cli_refrigerator_menu import show_refrigerator_menu
-from cli_washerdryer_menu import show_washerdryer_menu
+from cli_washer_menu import show_washer_menu
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector, Brand, Region
@@ -35,9 +36,6 @@ args = parser.parse_args()
 
 
 async def start():
-    def attr_upd():
-        logger.info("Attributes updated")
-
     if args.brand == "whirlpool":
         selected_brand = Brand.Whirlpool
     elif args.brand == "maytag":
@@ -70,9 +68,10 @@ async def start():
 
         if args.list:
             print(appliance_manager.aircons)
-            print(appliance_manager.washer_dryers)
+            print(appliance_manager.dryer)
             print(appliance_manager.ovens)
             print(appliance_manager.refrigerators)
+            print(appliance_manager.washers)
             return
 
         if not args.said:
@@ -80,23 +79,38 @@ async def start():
             return
 
         for ac_data in appliance_manager.aircons:
-            if ac_data["SAID"] == args.said:
-                await show_aircon_menu(backend_selector, auth, args.said, session)
+            if ac_data.said == args.said:
+                await show_aircon_menu(
+                    appliance_manager, backend_selector, auth, session, ac_data
+                )
                 return
 
-        for wd_data in appliance_manager.washer_dryers:
-            if wd_data["SAID"] == args.said:
-                await show_washerdryer_menu(backend_selector, auth, args.said, session)
+        for dr_data in appliance_manager.dryers:
+            if dr_data.said == args.said:
+                await show_dryer_menu(
+                    appliance_manager, backend_selector, auth, session, dr_data
+                )
                 return
 
         for mo_data in appliance_manager.ovens:
-            if mo_data["SAID"] == args.said:
-                await show_oven_menu(backend_selector, auth, args.said, session)
+            if mo_data.said == args.said:
+                await show_oven_menu(
+                    appliance_manager, backend_selector, auth, session, mo_data
+                )
                 return
 
         for rf_data in appliance_manager.refrigerators:
-            if rf_data["SAID"] == args.said:
-                await show_refrigerator_menu(backend_selector, auth, args.said, session)
+            if rf_data.said == args.said:
+                await show_refrigerator_menu(
+                    appliance_manager, backend_selector, auth, session, rf_data
+                )
+                return
+
+        for wr_data in appliance_manager.washers:
+            if wr_data.said == args.said:
+                await show_washer_menu(
+                    appliance_manager, backend_selector, auth, session, wr_data
+                )
                 return
 
 

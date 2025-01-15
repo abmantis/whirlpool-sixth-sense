@@ -32,14 +32,14 @@ def common_http_calls_fixture(aioresponses_mock, backend_selector_mock):
         shared_appliance_data = json.load(f)
 
     aioresponses_mock.get(
-        backend_selector_mock.user_details_url, payload={"accountId": ACCOUNT_ID}
+        backend_selector_mock.get_user_details_url, payload={"accountId": ACCOUNT_ID}
     )
     aioresponses_mock.get(
         backend_selector_mock.get_owned_appliances_url(ACCOUNT_ID),
         payload={ACCOUNT_ID: owned_appliance_data},
     )
     aioresponses_mock.get(
-        backend_selector_mock.shared_appliances_url, payload=shared_appliance_data
+        backend_selector_mock.get_shared_appliances_url, payload=shared_appliance_data
     )
 
 
@@ -50,7 +50,7 @@ async def test_fetch_appliances_returns_owned_and_shared_appliances(
 
     # the test data has one owned appliance and one shared appliance
     # so if this is 2 then we have both
-    assert len(appliances_manager.washer_dryers) == 2
+    assert len(appliances_manager.washers) == 2
 
     # ensure oven list is populated
     assert len(appliances_manager.ovens) == 1
@@ -72,5 +72,5 @@ async def test_fetch_appliances_calls_owned_and_shared_methods(
     )
 
     aioresponses_mock.assert_called_with(
-        backend_selector_mock.shared_appliances_url, "GET", headers=shared_headers
+        backend_selector_mock.get_shared_appliances_url, "GET", headers=shared_headers
     )
