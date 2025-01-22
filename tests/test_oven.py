@@ -28,7 +28,7 @@ async def test_attributes(
     appliances_manager: AppliancesManager
 ):
     aioresponses_mock.get(
-        backend_selector_mock.ws_url,
+        backend_selector_mock.websocket_url,
         payload={"url": "wss://something"},
         repeat=True,
     )
@@ -224,7 +224,7 @@ async def test_setters(
     }
 
     post_request_call_kwargs = {
-        "url": backend_selector_mock.post_appliance_command_url,
+        "url": backend_selector_mock.appliance_command_url,
         "method": "POST",
         "data": None,
         "json": expected_payload["json"],
@@ -232,10 +232,10 @@ async def test_setters(
         "headers": {},
     }
 
-    url = backend_selector_mock.post_appliance_command_url
+    url = backend_selector_mock.appliance_command_url
 
     aioresponses_mock.get(
-        backend_selector_mock.ws_url,
+        backend_selector_mock.websocket_url,
         payload={"url": "wss://something"},
     )
     aioresponses_mock.get(

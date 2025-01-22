@@ -138,7 +138,7 @@ class Auth:
         }
 
         async with self._session.get(
-            self._backend_selector.get_user_details_url, headers=headers
+            self._backend_selector.user_details_url, headers=headers
         ) as r:
             if r.status != 200:
                 LOGGER.error(f"Failed to get account id: {r.status}")
@@ -150,13 +150,12 @@ class Auth:
     def get_said_list(self):
         return self._auth_dict.get("SAID", None)
 
-    def _create_headers(self) -> dict[str, str]:
-        headers = {
+    def create_headers(self) -> dict[str, str]:
+        return {
             "Authorization": f"Bearer {self.get_access_token()}",
             "Content-Type": "application/json",
             "User-Agent": "okhttp/3.12.0",
             "Pragma": "no-cache",
             "Cache-Control": "no-cache",
         }
-        return headers
 

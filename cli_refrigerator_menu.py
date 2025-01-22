@@ -5,7 +5,7 @@ from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
 from whirlpool.refrigerator import Refrigerator
-from whirlpool.types import ApplianceData
+from whirlpool.types import ApplianceInfo
 
 
 async def show_refrigerator_menu(
@@ -13,7 +13,7 @@ async def show_refrigerator_menu(
     backend_selector: BackendSelector,
     auth: Auth,
     session: aiohttp.ClientSession,
-    app_data: ApplianceData
+    app_data: ApplianceInfo
 ) -> None:
     def print_menu():
         print("\n")

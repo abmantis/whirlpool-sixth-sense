@@ -73,19 +73,19 @@ class BackendSelector:
         return f"{self.base_url}/oauth/token"
 
     @property
-    def ws_url(self):
+    def websocket_url(self):
         return f"{self.base_url}/api/v1/client_auth/webSocketUrl"
 
     @property
-    def post_appliance_command_url(self):
+    def appliance_command_url(self):
         return f"{self.base_url}/api/v1/appliance/command"
 
     @property
-    def get_user_details_url(self):
+    def user_details_url(self):
         return f"{self.base_url}/api/v1/getUserDetails"
 
     @property
-    def get_shared_appliances_url(self):
+    def shared_appliances_url(self):
         return f"{self.base_url}/api/v1/share-accounts/appliances"
 
     def get_appliance_data_url(self, said: str) -> str:

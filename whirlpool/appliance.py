@@ -7,7 +7,7 @@ import async_timeout
 
 from .auth import Auth
 from .backendselector import BackendSelector
-from .types import ApplianceData
+from .types import ApplianceInfo
 
 LOGGER = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class Appliance:
         backend_selector: BackendSelector,
         auth: Auth,
         session: aiohttp.ClientSession,
-        appliance_data: ApplianceData,
+        appliance_data: ApplianceInfo,
     ):
         self._backend_selector = backend_selector
         self._auth = auth
@@ -56,7 +56,7 @@ class Appliance:
         for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.get(
-                        uri, headers=self._auth._create_headers()
+                        uri, headers=self._auth.create_headers()
                     ) as r:
                     if r.status == 200:
                         self._data_dict = json.loads(await r.text())
@@ -87,9 +87,9 @@ class Appliance:
         for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.post(
-                    self._backend_selector.post_appliance_command_url,
+                    self._backend_selector.appliance_command_url,
                     json=cmd_data,
-                    headers=self._auth._create_headers(),
+                    headers=self._auth.create_headers(),
                 ) as r:
                     LOGGER.debug(f"Reply: {await r.text()}")
                     if r.status == 200:
@@ -113,10 +113,10 @@ class Appliance:
         except ValueError:
             LOGGER.error("Attr callback not found")
 
-    def _update_appliance_attributes(self, attrs: dict[str, str], timestamp: str):
+    def update_attributes(self, attrs: dict[str, str], timestamp: str):
         for attr, val in attrs.items():
             if self.has_attribute(attr):
-                self._set_attribute(attr, str(val), timestamp)
+                self._set_attribute(attr, val, timestamp)
 
         for callback in self._attr_changed:
             callback()

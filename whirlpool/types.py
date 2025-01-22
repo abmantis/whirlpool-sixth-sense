@@ -15,7 +15,7 @@ class Region(Enum):
 
 
 @dataclass
-class ApplianceData:
+class ApplianceInfo:
     said: str
     name: str
     data_model: str

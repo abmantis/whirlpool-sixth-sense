@@ -14,7 +14,7 @@ from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.oven import Oven
 from whirlpool.refrigerator import Refrigerator
-from whirlpool.types import ApplianceData
+from whirlpool.types import ApplianceInfo
 from whirlpool.washerdryer import WasherDryer
 
 SAID = "WPR1XYZABC123"
@@ -48,7 +48,7 @@ def auth_fixture(backend_selector_mock, client_session_fixture):
 async def oven_fixture(
     backend_selector_mock, auth_fixture, client_session_fixture
 ):
-    app_data = ApplianceData(
+    app_data = ApplianceInfo(
         said=SAID,
         name="Oven",
         data_model="RANGE_DATA_MODEL",
@@ -57,7 +57,7 @@ async def oven_fixture(
         serial_number="RO12345678",
     )
 
-    with patch("whirlpool.appliance.Auth._create_headers", return_value={}):
+    with patch("whirlpool.appliance.Auth.create_headers", return_value={}):
         oven = Oven(
             backend_selector_mock, auth_fixture, client_session_fixture, app_data
         )
@@ -68,7 +68,7 @@ async def oven_fixture(
 def washer_dryer_fixture(
     backend_selector_mock, auth_fixture, client_session_fixture
 ):
-    app_data = ApplianceData(
+    app_data = ApplianceInfo(
         said=SAID,
         name="Washer/Dryer AIO",
         data_model="WASHDRY_DATA_MODEL",
@@ -77,7 +77,7 @@ def washer_dryer_fixture(
         serial_number="WD12345678",
     )
 
-    with patch("whirlpool.appliance.Auth._create_headers", return_value={}):
+    with patch("whirlpool.appliance.Auth.create_headers", return_value={}):
         washer_dryer = WasherDryer(
             backend_selector_mock, auth_fixture, client_session_fixture, app_data
         )
@@ -88,7 +88,7 @@ def washer_dryer_fixture(
 def aircon_fixture(
     backend_selector_mock, auth_fixture, client_session_fixture
 ):
-    app_data = ApplianceData(
+    app_data = ApplianceInfo(
         said=SAID,
         name="Air Conditioner",
         data_model="AIRCON_DATA_MODEL",
@@ -97,7 +97,7 @@ def aircon_fixture(
         serial_number="AC12345678",
     )
 
-    with patch("whirlpool.appliance.Auth._create_headers", return_value={}):
+    with patch("whirlpool.appliance.Auth.create_headers", return_value={}):
         aircon = Aircon(
             backend_selector_mock, auth_fixture, client_session_fixture, app_data
         )
@@ -107,7 +107,7 @@ def aircon_fixture(
 def refrigerator_fixture(
     backend_selector_mock, auth_fixture, client_session_fixture
 ):
-    app_data = ApplianceData(
+    app_data = ApplianceInfo(
         said=SAID,
         name="Refrigerator",
         data_model="FRIG_DATA_MODEL",
@@ -116,7 +116,7 @@ def refrigerator_fixture(
         serial_number="FR12345678",
     )
 
-    with patch("whirlpool.appliance.Auth._create_headers", return_value={}):
+    with patch("whirlpool.appliance.Auth.create_headers", return_value={}):
         refrigerator = Refrigerator(
             backend_selector_mock, auth_fixture, client_session_fixture, app_data
         )

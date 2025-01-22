@@ -4,7 +4,7 @@ import aiohttp
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
-from whirlpool.types import ApplianceData
+from whirlpool.types import ApplianceInfo
 from whirlpool.washerdryer import WasherDryer
 
 
@@ -13,7 +13,7 @@ async def show_washerdryer_menu(
     backend_selector: BackendSelector,
     auth: Auth,
     session: aiohttp.ClientSession,
-    app_data: ApplianceData
+    app_data: ApplianceInfo
 ) -> None:
     def print_menu():
         print("\n")

@@ -137,7 +137,7 @@ async def test_user_details_requested_only_once(
     auth_fixture: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
 ):
     aioresponses_mock.get(
-        backend_selector_mock.get_user_details_url, payload={"accountId": ACCOUNT_ID}
+        backend_selector_mock.user_details_url, payload={"accountId": ACCOUNT_ID}
     )
 
     headers = {
@@ -151,7 +151,7 @@ async def test_user_details_requested_only_once(
     await auth_fixture.get_account_id()
 
     aioresponses_mock.assert_called_with(
-        backend_selector_mock.get_user_details_url, "GET", headers=headers
+        backend_selector_mock.user_details_url, "GET", headers=headers
     )
 
     assert auth_fixture._auth_dict["accountId"] == ACCOUNT_ID
