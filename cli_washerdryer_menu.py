@@ -1,9 +1,20 @@
 import aioconsole
+import aiohttp
 
+from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.auth import Auth
+from whirlpool.backendselector import BackendSelector
+from whirlpool.types import ApplianceInfo
 from whirlpool.washerdryer import WasherDryer
 
 
-async def show_washerdryer_menu(backend_selector, auth, said, session):
+async def show_washerdryer_menu(
+    manager: AppliancesManager,
+    backend_selector: BackendSelector,
+    auth: Auth,
+    session: aiohttp.ClientSession,
+    app_data: ApplianceInfo
+) -> None:
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -27,9 +38,9 @@ async def show_washerdryer_menu(backend_selector, auth, said, session):
     def attr_upd():
         print("Attributes updated")
 
-    wd = WasherDryer(backend_selector, auth, said, session)
+    wd = WasherDryer(backend_selector, auth, session, app_data)
     wd.register_attr_callback(attr_upd)
-    await wd.connect()
+    await manager.connect()
 
     loop = True
     while loop:
@@ -48,8 +59,9 @@ async def show_washerdryer_menu(backend_selector, auth, said, session):
             val = await aioconsole.ainput("Value: ")
             await wd.send_attributes({cmd: val})
         elif choice == "q":
-            await wd.disconnect()
             print("Bye")
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
+
+    await manager.disconnect()
