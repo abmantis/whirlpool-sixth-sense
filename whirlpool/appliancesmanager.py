@@ -97,7 +97,7 @@ class AppliancesManager:
             self._backend_selector.shared_appliances_url, headers=headers
         ) as r:
             if r.status != 200:
-                LOGGER.error(f"Failed to get shared appliances: {r.status}")
+                LOGGER.warning(f"Failed to get shared appliances: {r.status}")
                 return False
 
             data = await r.json()
