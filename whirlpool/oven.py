@@ -1,8 +1,6 @@
 import logging
 from enum import Enum
 
-import aiohttp
-
 from .appliance import Appliance
 
 LOGGER = logging.getLogger(__name__)
@@ -170,7 +168,7 @@ class KitchenTimer:
         return None
 
     async def set_timer(self, timer_time: int, operation=KitchenTimerOperations.Start):
-        await self._appliance.send_attributes(
+        await self.send_attributes(
             {
                 self._attr_prefix
                 + ATTR_POSTFIX_KITCHEN_TIMER_SET_TIME: int(timer_time),
@@ -178,11 +176,11 @@ class KitchenTimer:
                 + ATTR_POSTFIX_KITCHEN_TIMER_SET_OPS: KITCHEN_TIMER_OPERATIONS_MAP[
                     operation
                 ],
-            }
+            },
         )
 
     async def cancel_timer(self):
-        await self._appliance.send_attributes(
+        await self.send_attributes(
             {
                 self._attr_prefix
                 + ATTR_POSTFIX_KITCHEN_TIMER_SET_OPS: KITCHEN_TIMER_OPERATIONS_MAP[
@@ -193,9 +191,6 @@ class KitchenTimer:
 
 
 class Oven(Appliance):
-    def __init__(self, backend_selector, auth, said, session: aiohttp.ClientSession):
-        Appliance.__init__(self, backend_selector, auth, said, session)
-
     def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper):
         return self.attr_value_to_bool(
             self.get_attribute(
@@ -214,7 +209,9 @@ class Oven(Appliance):
         return int(self.get_attribute(ATTR_DISPLAY_BRIGHTNESS))
 
     async def set_display_brightness_percent(self, pct: int):
-        await self.send_attributes({ATTR_DISPLAY_BRIGHTNESS: str(pct)})
+        await self.send_attributes(
+            {ATTR_DISPLAY_BRIGHTNESS: str(pct)}
+        )
 
     def get_cook_time(self, cavity: Cavity = Cavity.Upper):
         return int(
@@ -225,7 +222,9 @@ class Oven(Appliance):
         return self.attr_value_to_bool(self.get_attribute(ATTR_CONTROL_LOCK))
 
     async def set_control_locked(self, on: bool):
-        await self.send_attributes({ATTR_CONTROL_LOCK: self.bool_to_attr_value(on)})
+        await self.send_attributes(
+            {ATTR_CONTROL_LOCK: self.bool_to_attr_value(on)}
+        )
 
     def get_light(self, cavity: Cavity = Cavity.Upper):
         return self.attr_value_to_bool(
@@ -369,4 +368,7 @@ class Oven(Appliance):
         return self.attr_value_to_bool(self.get_attribute(ATTR_SABBATH_MODE))
 
     async def set_sabbath_mode(self, on: bool):
-        await self.send_attributes({ATTR_SABBATH_MODE: self.bool_to_attr_value(on)})
+        await self.send_attributes(
+            {ATTR_SABBATH_MODE: self.bool_to_attr_value(on)}
+        )
+
