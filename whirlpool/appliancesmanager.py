@@ -1,5 +1,6 @@
 import json
 import logging
+from functools import cached_property
 from typing import Any
 
 import aiohttp
@@ -34,7 +35,7 @@ class AppliancesManager:
         self._ovens: dict[str, Any] = {}
         self._refrigerators: dict[str, Any] = {}
 
-    @property
+    @cached_property
     def all_appliances(self) -> dict[str, Appliance]:
         return {
             **self._aircons,
@@ -97,6 +98,9 @@ class AppliancesManager:
         else:
             LOGGER.warning("Unsupported appliance data model %s", data_model)
             return
+
+        # Invalidate cached property
+        self.__dict__.pop("all_appliances", None)
 
     async def _get_owned_appliances(self, account_id: str) -> bool:
         async with self._session.get(
