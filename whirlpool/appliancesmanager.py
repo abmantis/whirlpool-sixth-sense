@@ -35,13 +35,13 @@ class AppliancesManager:
         self._refrigerators: dict[str, Any] = {}
 
     @property
-    def all_appliances(self) -> list[Appliance]:
+    def all_appliances(self) -> dict[str, Appliance]:
         return {
             **self._aircons,
             **self._washerdryers,
             **self._ovens,
             **self._refrigerators,
-        }.values()
+        }
 
     @property
     def aircons(self) -> list[Aircon]:
@@ -60,7 +60,7 @@ class AppliancesManager:
         return self._refrigerators.values()
 
     def _add_appliance(self, appliance: dict[str, Any]) -> None:
-        app_data = ApplianceInfo(
+        appliance_data = ApplianceInfo(
             said=appliance["SAID"],
             name=appliance["APPLIANCE_NAME"],
             data_model=appliance["DATA_MODEL_KEY"],
@@ -79,20 +79,20 @@ class AppliancesManager:
         ]
 
         if "airconditioner" in data_model:
-            self._aircons[app_data.said] = Aircon(
-                self._backend_selector, self._auth, self._session, app_data
+            self._aircons[appliance_data.said] = Aircon(
+                self._backend_selector, self._auth, self._session, appliance_data
             )
         elif "dryer" in data_model or "washer" in data_model:
-            self._washerdryers[app_data.said] = WasherDryer(
-                self._backend_selector, self._auth, self._session, app_data
+            self._washerdryers[appliance_data.said] = WasherDryer(
+                self._backend_selector, self._auth, self._session, appliance_data
             )
         elif any(model in data_model for model in oven_models):
-            self._ovens[app_data.said] = Oven(
-                self._backend_selector, self._auth, self._session, app_data
+            self._ovens[appliance_data.said] = Oven(
+                self._backend_selector, self._auth, self._session, appliance_data
             )
         elif "ddm_ted_refrigerator_v12" in data_model:
-            self.rf_dict[app_data.said] = Refrigerator(
-                self._backend_selector, self._auth, self._session, app_data
+            self.rf_dict[appliance_data.said] = Refrigerator(
+                self._backend_selector, self._auth, self._session, appliance_data
             )
         else:
             LOGGER.warning("Unsupported appliance data model %s", data_model)
@@ -104,7 +104,7 @@ class AppliancesManager:
             headers=self._auth.create_headers(),
         ) as r:
             if r.status != 200:
-                LOGGER.error(f"Failed to get appliances: {r.status}")
+                LOGGER.error("Failed to get appliances: %s", r.status)
                 return False
 
             data = await r.json()
@@ -123,7 +123,7 @@ class AppliancesManager:
             self._backend_selector.shared_appliances_url, headers=headers
         ) as r:
             if r.status != 200:
-                LOGGER.error(f"Failed to get shared appliances: {r.status}")
+                LOGGER.error("Failed to get shared appliances: %s", r.status)
                 return False
 
             data = await r.json()
@@ -144,7 +144,7 @@ class AppliancesManager:
         return success_owned or success_shared
 
     async def fetch_all_data(self):
-        for appliance in self.all_appliances:
+        for appliance in self.all_appliances.values():
             await appliance.fetch_data()
 
     async def connect(self):
@@ -164,12 +164,7 @@ class AppliancesManager:
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
             self._auth,
-            list({
-                **self._aircons,
-                **self._washerdryers,
-                **self._ovens,
-                **self._refrigerators,
-            }.keys()),
+            self.all_appliances.keys(),
             self._event_socket_callback,
             self.fetch_all_data,
             self._session,
@@ -184,14 +179,9 @@ class AppliancesManager:
     def _event_socket_callback(self, msg: str):
         json_msg = json.loads(msg)
         said = json_msg["said"]
-        app = {
-            **self._aircons,
-            **self._washerdryers,
-            **self._ovens,
-            **self._refrigerators
-        }.get(said)
+        app = self.all_appliances().get(said)
         if app is None:
-            LOGGER.warning(f"Received message for unknown appliance {said}")
+            LOGGER.warning("Received message for unknown appliance %s", said)
             return
         app._update_appliance_attributes(
             json_msg["attributeMap"],
@@ -209,6 +199,6 @@ class AppliancesManager:
             try:
                 return json.loads(await r.text())["url"]
             except KeyError:
-                LOGGER.error("Failed to get websocket url: %s",  r.status)
+                LOGGER.exception("Failed to read websocket url")
                 return DEFAULT_WS_URL
 
