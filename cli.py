@@ -76,33 +76,34 @@ async def start():
             logger.error("No appliance specified")
             return
 
-        for ac_data in appliance_manager.aircons:
-            if ac_data.said == args.said:
-                await show_aircon_menu(
-                    appliance_manager, backend_selector, auth, session, ac_data
-                )
-                return
+        class connection:
+            def __init__(self, manager: AppliancesManager) -> None:
+                self._manager = manager
+            def __enter__(self) -> None:
+                self._manager.connect()
+            def __exit__(self, *args) -> None:
+                self._manager.disconnect()
 
-        for wd_data in appliance_manager.washer_dryers:
-            if wd_data.said == args.said:
-                await show_washerdryer_menu(
-                    appliance_manager, backend_selector, auth, session, wd_data
-                )
-                return
+        with connection(appliance_manager):
+            for ac_data in appliance_manager.aircons:
+                if ac_data.said == args.said:
+                    await show_aircon_menu(ac_data)
+                    return
 
-        for mo_data in appliance_manager.ovens:
-            if mo_data.said == args.said:
-                await show_oven_menu(
-                    appliance_manager, backend_selector, auth, session, mo_data
-                )
-                return
+            for wd_data in appliance_manager.washer_dryers:
+                if wd_data.said == args.said:
+                    await show_washerdryer_menu(wd_data)
+                    return
 
-        for rf_data in appliance_manager.refrigerators:
-            if rf_data.said == args.said:
-                await show_refrigerator_menu(
-                    appliance_manager, backend_selector, auth, session, rf_data
-                )
-                return
+            for mo_data in appliance_manager.ovens:
+                if mo_data.said == args.said:
+                    await show_oven_menu(mo_data)
+                    return
+
+            for rf_data in appliance_manager.refrigerators:
+                if rf_data.said == args.said:
+                    await show_refrigerator_menu(rf_data)
+                    return
 
 
 asyncio.run(start())

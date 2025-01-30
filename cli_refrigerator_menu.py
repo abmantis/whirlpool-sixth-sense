@@ -1,20 +1,9 @@
 import aioconsole
-import aiohttp
 
-from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.auth import Auth
-from whirlpool.backendselector import BackendSelector
 from whirlpool.refrigerator import Refrigerator
-from whirlpool.types import ApplianceInfo
 
 
-async def show_refrigerator_menu(
-    manager: AppliancesManager,
-    backend_selector: BackendSelector,
-    auth: Auth,
-    session: aiohttp.ClientSession,
-    app_data: ApplianceInfo
-) -> None:
+async def show_refrigerator_menu(rf: Refrigerator) -> None:
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -34,7 +23,7 @@ async def show_refrigerator_menu(
         print("q. Exit")
         print(67 * "-")
 
-    def print_status(bc: Refrigerator):
+    def print_status(rf: Refrigerator):
         print("current_temp: " + str(rf.get_offset_temp()) + "°C")
         print("turbo_mode: " + str(rf.get_turbo_mode()))
         print("display_locked: " + str(rf.get_display_lock()))
@@ -42,9 +31,7 @@ async def show_refrigerator_menu(
     def attr_upd():
         print("Attributes updated")
 
-    rf = Refrigerator(backend_selector, auth, session, app_data)
     rf.register_attr_callback(attr_upd)
-    await manager.connect()
 
     loop = True
     while loop:
@@ -81,4 +68,3 @@ async def show_refrigerator_menu(
         else:
             print("Wrong option selection. Enter any key to try again..")
 
-    await manager.disconnect()
