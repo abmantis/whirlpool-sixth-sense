@@ -79,12 +79,14 @@ async def start():
         class Connection:
             def __init__(self, manager: AppliancesManager) -> None:
                 self._manager = manager
-            def __enter__(self) -> None:
-                self._manager.connect()
-            def __exit__(self, *args) -> None:
-                self._manager.disconnect()
 
-        with Connection(appliance_manager):
+            async def __aenter__(self) -> None:
+                await self._manager.connect()
+
+            async def __aexit__(self, *args) -> None:
+                await self._manager.disconnect()
+
+        async with Connection(appliance_manager):
             for ac_data in appliance_manager.aircons:
                 if ac_data.said == args.said:
                     await show_aircon_menu(ac_data)
