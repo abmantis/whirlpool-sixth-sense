@@ -1,9 +1,11 @@
+import json
+
 import aioconsole
 
 from whirlpool.washerdryer import WasherDryer
 
 
-async def show_washerdryer_menu(backend_selector, auth, said, session):
+async def show_washerdryer_menu(wd: WasherDryer) -> None:
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -27,9 +29,7 @@ async def show_washerdryer_menu(backend_selector, auth, said, session):
     def attr_upd():
         print("Attributes updated")
 
-    wd = WasherDryer(backend_selector, auth, said, session)
     wd.register_attr_callback(attr_upd)
-    await wd.connect()
 
     loop = True
     while loop:
@@ -42,13 +42,12 @@ async def show_washerdryer_menu(backend_selector, auth, said, session):
             await wd.fetch_data()
             print_status(wd)
         elif choice == "v":
-            print(wd._data_dict)
+            print(json.dumps(wd._data_dict, indent=4))
         elif choice == "c":
             cmd = await aioconsole.ainput("Command: ")
             val = await aioconsole.ainput("Value: ")
             await wd.send_attributes({cmd: val})
         elif choice == "q":
-            await wd.disconnect()
             print("Bye")
             loop = False
         else:

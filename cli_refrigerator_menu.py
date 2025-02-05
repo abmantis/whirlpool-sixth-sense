@@ -1,9 +1,11 @@
+import json
+
 import aioconsole
 
 from whirlpool.refrigerator import Refrigerator
 
 
-async def show_refrigerator_menu(backend_selector, auth, said, session):
+async def show_refrigerator_menu(rf: Refrigerator) -> None:
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -23,7 +25,7 @@ async def show_refrigerator_menu(backend_selector, auth, said, session):
         print("q. Exit")
         print(67 * "-")
 
-    def print_status(bc: Refrigerator):
+    def print_status(rf: Refrigerator):
         print("current_temp: " + str(rf.get_offset_temp()) + "°C")
         print("turbo_mode: " + str(rf.get_turbo_mode()))
         print("display_locked: " + str(rf.get_display_lock()))
@@ -31,9 +33,7 @@ async def show_refrigerator_menu(backend_selector, auth, said, session):
     def attr_upd():
         print("Attributes updated")
 
-    rf = Refrigerator(backend_selector, auth, said, session)
     rf.register_attr_callback(attr_upd)
-    await rf.connect()
 
     loop = True
     while loop:
@@ -59,13 +59,12 @@ async def show_refrigerator_menu(backend_selector, auth, said, session):
             await rf.fetch_data()
             print_status(rf)
         elif choice == "r":
-            print(rf._data_dict)
+            print(json.dumps(rf._data_dict, indent=4))
         elif choice == "c":
             cmd = await aioconsole.ainput("Command: ")
             val = await aioconsole.ainput("Value: ")
             await rf.send_attributes({cmd: val})
         elif choice == "q":
-            await rf.disconnect()
             print("Bye")
             loop = False
         else:

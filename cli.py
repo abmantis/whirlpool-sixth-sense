@@ -35,9 +35,6 @@ args = parser.parse_args()
 
 
 async def start():
-    def attr_upd():
-        logger.info("Attributes updated")
-
     if args.brand == "whirlpool":
         selected_brand = Brand.Whirlpool
     elif args.brand == "maytag":
@@ -69,35 +66,53 @@ async def start():
             return
 
         if args.list:
-            print(appliance_manager.aircons)
-            print(appliance_manager.washer_dryers)
-            print(appliance_manager.ovens)
-            print(appliance_manager.refrigerators)
+            if appliance_manager.aircons:
+                print("\n".join(map(str, appliance_manager.aircons)))
+
+            if appliance_manager.washer_dryers:
+                print("\n".join(map(str, appliance_manager.washer_dryers)))
+
+            if appliance_manager.ovens:
+                print("\n".join(map(str, appliance_manager.ovens)))
+
+            if appliance_manager.refrigerators:
+                print("\n".join(map(str, appliance_manager.refrigerators)))
             return
 
         if not args.said:
             logger.error("No appliance specified")
             return
 
-        for ac_data in appliance_manager.aircons:
-            if ac_data["SAID"] == args.said:
-                await show_aircon_menu(backend_selector, auth, args.said, session)
-                return
+        class Connection:
+            def __init__(self, manager: AppliancesManager) -> None:
+                self._manager = manager
 
-        for wd_data in appliance_manager.washer_dryers:
-            if wd_data["SAID"] == args.said:
-                await show_washerdryer_menu(backend_selector, auth, args.said, session)
-                return
+            async def __aenter__(self) -> None:
+                await self._manager.connect()
 
-        for mo_data in appliance_manager.ovens:
-            if mo_data["SAID"] == args.said:
-                await show_oven_menu(backend_selector, auth, args.said, session)
-                return
+            async def __aexit__(self, *args) -> None:
+                await self._manager.disconnect()
 
-        for rf_data in appliance_manager.refrigerators:
-            if rf_data["SAID"] == args.said:
-                await show_refrigerator_menu(backend_selector, auth, args.said, session)
-                return
+        async with Connection(appliance_manager):
+            for ac_data in appliance_manager.aircons:
+                if ac_data.said == args.said:
+                    await show_aircon_menu(ac_data)
+                    return
+
+            for wd_data in appliance_manager.washer_dryers:
+                if wd_data.said == args.said:
+                    await show_washerdryer_menu(wd_data)
+                    return
+
+            for mo_data in appliance_manager.ovens:
+                if mo_data.said == args.said:
+                    await show_oven_menu(mo_data)
+                    return
+
+            for rf_data in appliance_manager.refrigerators:
+                if rf_data.said == args.said:
+                    await show_refrigerator_menu(rf_data)
+                    return
 
 
 asyncio.run(start())
