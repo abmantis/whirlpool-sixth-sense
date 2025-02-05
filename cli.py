@@ -66,10 +66,17 @@ async def start():
             return
 
         if args.list:
-            print(appliance_manager.aircons)
-            print(appliance_manager.washer_dryers)
-            print(appliance_manager.ovens)
-            print(appliance_manager.refrigerators)
+            if appliance_manager.aircons:
+                print("\n".join(map(str, appliance_manager.aircons)))
+
+            if appliance_manager.washer_dryers:
+                print("\n".join(map(str, appliance_manager.washer_dryers)))
+
+            if appliance_manager.ovens:
+                print("\n".join(map(str, appliance_manager.ovens)))
+
+            if appliance_manager.refrigerators:
+                print("\n".join(map(str, appliance_manager.refrigerators)))
             return
 
         if not args.said:
