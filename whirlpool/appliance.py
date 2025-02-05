@@ -37,6 +37,9 @@ class Appliance:
         self._data_dict: dict = {}
         self._appliance_data = appliance_data
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__}> {self.said} | {self.name}"
+
     @property
     def said(self) -> str:
         """Return Appliance SAID"""
@@ -56,8 +59,8 @@ class Appliance:
         for _ in range(REQUEST_RETRY_COUNT):
             async with async_timeout.timeout(30):
                 async with self._session.get(
-                        uri, headers=self._auth.create_headers()
-                    ) as r:
+                    uri, headers=self._auth.create_headers()
+                ) as r:
                     if r.status == 200:
                         self._data_dict = json.loads(await r.text())
                         for callback in self._attr_changed:
@@ -150,4 +153,3 @@ class Appliance:
     def get_online(self) -> bool | None:
         """Get online state for appliance"""
         return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
-

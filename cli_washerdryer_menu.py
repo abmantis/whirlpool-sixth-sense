@@ -1,3 +1,5 @@
+import json
+
 import aioconsole
 
 from whirlpool.washerdryer import WasherDryer
@@ -40,7 +42,7 @@ async def show_washerdryer_menu(wd: WasherDryer) -> None:
             await wd.fetch_data()
             print_status(wd)
         elif choice == "v":
-            print(wd._data_dict)
+            print(json.dumps(wd._data_dict, indent=4))
         elif choice == "c":
             cmd = await aioconsole.ainput("Command: ")
             val = await aioconsole.ainput("Value: ")
@@ -50,4 +52,3 @@ async def show_washerdryer_menu(wd: WasherDryer) -> None:
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
-

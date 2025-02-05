@@ -66,10 +66,17 @@ async def start():
             return
 
         if args.list:
-            print(appliance_manager.aircons)
-            print(appliance_manager.washer_dryers)
-            print(appliance_manager.ovens)
-            print(appliance_manager.refrigerators)
+            if appliance_manager.aircons:
+                print("\n".join(map(str, appliance_manager.aircons)))
+
+            if appliance_manager.washer_dryers:
+                print("\n".join(map(str, appliance_manager.washer_dryers)))
+
+            if appliance_manager.ovens:
+                print("\n".join(map(str, appliance_manager.ovens)))
+
+            if appliance_manager.refrigerators:
+                print("\n".join(map(str, appliance_manager.refrigerators)))
             return
 
         if not args.said:
@@ -79,12 +86,14 @@ async def start():
         class Connection:
             def __init__(self, manager: AppliancesManager) -> None:
                 self._manager = manager
-            def __enter__(self) -> None:
-                self._manager.connect()
-            def __exit__(self, *args) -> None:
-                self._manager.disconnect()
 
-        with Connection(appliance_manager):
+            async def __aenter__(self) -> None:
+                await self._manager.connect()
+
+            async def __aexit__(self, *args) -> None:
+                await self._manager.disconnect()
+
+        async with Connection(appliance_manager):
             for ac_data in appliance_manager.aircons:
                 if ac_data.said == args.said:
                     await show_aircon_menu(ac_data)
