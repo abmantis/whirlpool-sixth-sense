@@ -99,9 +99,6 @@ class AppliancesManager:
             LOGGER.warning("Unsupported appliance data model %s", data_model)
             return
 
-        # Invalidate cached property
-        self.__dict__.pop("all_appliances", None)
-
     async def _get_owned_appliances(self, account_id: str) -> bool:
         async with self._session.get(
             self._backend_selector.get_owned_appliances_url(account_id),
@@ -138,10 +135,14 @@ class AppliancesManager:
 
             return True
 
-    async def fetch_appliances(self):
+    async def fetch_appliances(self) -> bool:
         account_id = await self._auth.get_account_id()
         if not account_id:
             return False
+
+        # Invalidate cached property
+        self.__dict__.pop("all_appliances", None)
+
         success_owned = await self._get_owned_appliances(account_id)
         success_shared = await self._get_shared_appliances()
 

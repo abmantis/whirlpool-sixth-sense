@@ -76,7 +76,7 @@ async def start():
             logger.error("No appliance specified")
             return
 
-        class connection:
+        class Connection:
             def __init__(self, manager: AppliancesManager) -> None:
                 self._manager = manager
             def __enter__(self) -> None:
@@ -84,7 +84,7 @@ async def start():
             def __exit__(self, *args) -> None:
                 self._manager.disconnect()
 
-        with connection(appliance_manager):
+        with Connection(appliance_manager):
             for ac_data in appliance_manager.aircons:
                 if ac_data.said == args.said:
                     await show_aircon_menu(ac_data)
