@@ -1,3 +1,5 @@
+import json
+
 import aioconsole
 
 from whirlpool.aircon import Aircon, Mode
@@ -87,7 +89,7 @@ async def show_aircon_menu(ac: Aircon) -> None:
             await ac.fetch_data()
             print_status(ac)
         elif choice == "v":
-            print(ac._data_dict)
+            print(json.dumps(ac._data_dict, indent=4))
         elif choice == "c":
             cmd = await aioconsole.ainput("Command: ")
             val = await aioconsole.ainput("Value: ")
@@ -97,4 +99,3 @@ async def show_aircon_menu(ac: Aircon) -> None:
             loop = False
         else:
             print("Wrong option selection. Enter any key to try again..")
-
