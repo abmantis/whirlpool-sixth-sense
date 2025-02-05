@@ -46,19 +46,19 @@ class AppliancesManager:
 
     @property
     def aircons(self) -> list[Aircon]:
-        return self._aircons.values()
+        return list(self._aircons.values())
 
     @property
     def washer_dryers(self) -> list[WasherDryer]:
-        return self._washerdryers.values()
+        return list(self._washerdryers.values())
 
     @property
     def ovens(self) -> list[Oven]:
-        return self._ovens.values()
+        return list(self._ovens.values())
 
     @property
     def refrigerators(self) -> list[Refrigerator]:
-        return self._refrigerators.values()
+        return list(self._refrigerators.values())
 
     def _add_appliance(self, appliance: dict[str, Any]) -> None:
         appliance_data = ApplianceInfo(
