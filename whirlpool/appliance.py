@@ -1,6 +1,7 @@
 import json
 import logging
 from collections.abc import Callable
+from typing import Any
 
 import aiohttp
 import async_timeout
@@ -116,10 +117,10 @@ class Appliance:
         except ValueError:
             LOGGER.error("Attr callback not found")
 
-    def update_attributes(self, attrs: dict[str, str], timestamp: str):
+    def update_attributes(self, attrs: dict[str, Any], timestamp: int):
         for attr, val in attrs.items():
             if self.has_attribute(attr):
-                self._set_attribute(attr, val, timestamp)
+                self._set_attribute(attr, str(val), timestamp)
 
         for callback in self._attr_changed:
             callback()

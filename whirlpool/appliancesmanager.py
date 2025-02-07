@@ -29,7 +29,7 @@ class AppliancesManager:
         self._backend_selector = backend_selector
         self._auth = auth
         self._session: aiohttp.ClientSession = session
-        self._event_socket: EventSocket = None
+        self._event_socket: EventSocket | None = None
         self._aircons: dict[str, Any] = {}
         self._washerdryers: dict[str, Any] = {}
         self._ovens: dict[str, Any] = {}
@@ -92,12 +92,15 @@ class AppliancesManager:
                 self._backend_selector, self._auth, self._session, appliance_data
             )
         elif "ddm_ted_refrigerator_v12" in data_model:
-            self.rf_dict[appliance_data.said] = Refrigerator(
+            self._refrigerators[appliance_data.said] = Refrigerator(
                 self._backend_selector, self._auth, self._session, appliance_data
             )
         else:
             LOGGER.warning("Unsupported appliance data model %s", data_model)
             return
+
+        # Invalidate cached property
+        self.__dict__.pop("all_appliances", None)
 
     async def _get_owned_appliances(self, account_id: str) -> bool:
         async with self._session.get(
@@ -140,9 +143,6 @@ class AppliancesManager:
         if not account_id:
             return False
 
-        # Invalidate cached property
-        self.__dict__.pop("all_appliances", None)
-
         success_owned = await self._get_owned_appliances(account_id)
         success_shared = await self._get_shared_appliances()
 
@@ -184,11 +184,11 @@ class AppliancesManager:
     def _event_socket_callback(self, msg: str):
         json_msg = json.loads(msg)
         said = json_msg["said"]
-        app = self.all_appliances().get(said)
+        app = self.all_appliances.get(said)
         if app is None:
             LOGGER.warning("Received message for unknown appliance %s", said)
             return
-        app._update_appliance_attributes(
+        app.update_attributes(
             json_msg["attributeMap"],
             json_msg["timestamp"]
         )
