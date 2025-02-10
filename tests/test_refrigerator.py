@@ -6,6 +6,7 @@ from typing import Any
 import pytest
 from yarl import URL
 
+from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.backendselector import BackendSelector
 from whirlpool.refrigerator import Refrigerator
 
@@ -25,6 +26,7 @@ async def test_attributes(
     refrigerator: Refrigerator,
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
+    appliances_manager: AppliancesManager
 ):
     aioresponses_mock.get(
         backend_selector_mock.websocket_url,
@@ -35,23 +37,27 @@ async def test_attributes(
         backend_selector_mock.get_appliance_data_url(refrigerator.said), payload=DATA1
     )
 
-    await refrigerator.connect()
+    await refrigerator.fetch_data()
+
+    await appliances_manager.connect()
     assert refrigerator.get_online() is False
     assert refrigerator.get_offset_temp() == "0"
     assert refrigerator.get_turbo_mode() is False
     assert refrigerator.get_display_lock() is False
-    await refrigerator.disconnect()
+    await appliances_manager.disconnect()
 
     aioresponses_mock.get(
         backend_selector_mock.get_appliance_data_url(refrigerator.said), payload=DATA2
     )
 
-    await refrigerator.connect()
+    await refrigerator.fetch_data()
+
+    await appliances_manager.connect()
     assert refrigerator.get_online() is True
     assert refrigerator.get_turbo_mode() is True
     assert refrigerator.get_display_lock() is True
     assert refrigerator.get_offset_temp() == "5"
-    await refrigerator.disconnect()
+    await appliances_manager.disconnect()
 
 
 @pytest.mark.parametrize(
@@ -72,6 +78,7 @@ async def test_attributes(
 )
 async def test_setters(
     refrigerator: Refrigerator,
+    appliances_manager: AppliancesManager,
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
     method: Callable,
@@ -103,7 +110,9 @@ async def test_setters(
         backend_selector_mock.get_appliance_data_url(refrigerator.said), payload=DATA1
     )
 
-    await refrigerator.connect()
+    await refrigerator.fetch_data()
+
+    await appliances_manager.connect()
 
     # add call, call method
     aioresponses_mock.post(url, payload=expected_payload)
@@ -113,4 +122,4 @@ async def test_setters(
     aioresponses_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
 
-    await refrigerator.disconnect()
+    await appliances_manager.disconnect()

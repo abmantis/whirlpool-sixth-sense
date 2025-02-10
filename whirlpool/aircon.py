@@ -1,8 +1,6 @@
 import logging
 from enum import Enum
 
-import aiohttp
-
 from .appliance import Appliance
 
 LOGGER = logging.getLogger(__name__)
@@ -81,9 +79,6 @@ FANSPEED_MAP = {
 
 
 class Aircon(Appliance):
-    def __init__(self, backend_selector, auth, said, session: aiohttp.ClientSession):
-        Appliance.__init__(self, backend_selector, auth, said, session)
-
     def get_current_temp(self):
         return int(self.get_attribute(ATTR_DISPLAY_TEMP)) / 10
 
@@ -94,7 +89,9 @@ class Aircon(Appliance):
         return self.attr_value_to_bool(self.get_attribute(SETTING_POWER))
 
     async def set_power_on(self, on: bool):
-        await self.send_attributes({SETTING_POWER: self.bool_to_attr_value(on)})
+        await self.send_attributes(
+            {SETTING_POWER: self.bool_to_attr_value(on)}
+        )
 
     def get_temp(self):
         return int(self.get_attribute(SETTING_TEMP)) / 10
@@ -136,7 +133,9 @@ class Aircon(Appliance):
     async def set_fanspeed(self, speed: FanSpeed):
         if speed not in FANSPEED_MAP:
             LOGGER.error("Invalid fan speed")
-        await self.send_attributes({SETTING_FAN_SPEED: FANSPEED_MAP[speed]})
+        await self.send_attributes(
+            {SETTING_FAN_SPEED: FANSPEED_MAP[speed]}
+        )
 
     def get_h_louver_swing(self):
         return self.attr_value_to_bool(self.get_attribute(SETTING_HORZ_LOUVER_SWING))
@@ -150,19 +149,25 @@ class Aircon(Appliance):
         return self.attr_value_to_bool(self.get_attribute(SETTING_TURBO_MODE))
 
     async def set_turbo_mode(self, turbo: bool):
-        await self.send_attributes({SETTING_TURBO_MODE: self.bool_to_attr_value(turbo)})
+        await self.send_attributes(
+            {SETTING_TURBO_MODE: self.bool_to_attr_value(turbo)}
+        )
 
     def get_eco_mode(self):
         return self.attr_value_to_bool(self.get_attribute(SETTING_ECO_MODE))
 
     async def set_eco_mode(self, eco: bool):
-        await self.send_attributes({SETTING_ECO_MODE: self.bool_to_attr_value(eco)})
+        await self.send_attributes(
+            {SETTING_ECO_MODE: self.bool_to_attr_value(eco)}
+        )
 
     def get_quiet_mode(self):
         return self.attr_value_to_bool(self.get_attribute(SETTING_QUIET_MODE))
 
     async def set_quiet_mode(self, quiet: bool):
-        await self.send_attributes({SETTING_QUIET_MODE: self.bool_to_attr_value(quiet)})
+        await self.send_attributes(
+            {SETTING_QUIET_MODE: self.bool_to_attr_value(quiet)}
+        )
 
     def get_display_on(self):
         return (

@@ -1,10 +1,20 @@
+import json
 import logging
+from functools import cached_property
 from typing import Any
 
 import aiohttp
 
+from whirlpool.eventsocket import EventSocket
+
+from .aircon import Aircon
+from .appliance import Appliance
 from .auth import Auth
 from .backendselector import BackendSelector
+from .oven import Oven
+from .refrigerator import Refrigerator
+from .types import ApplianceInfo
+from .washerdryer import WasherDryer
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,44 +28,50 @@ class AppliancesManager:
     ):
         self._backend_selector = backend_selector
         self._auth = auth
-        self._aircons: list[dict[str, Any]] = []
-        self._washer_dryers: list[dict[str, Any]] = []
-        self._refrigerators: list[dict[str, Any]] = []
-        self._ovens: list[dict[str, Any]] = []
         self._session: aiohttp.ClientSession = session
+        self._event_socket: EventSocket | None = None
+        self._aircons: dict[str, Any] = {}
+        self._washerdryers: dict[str, Any] = {}
+        self._ovens: dict[str, Any] = {}
+        self._refrigerators: dict[str, Any] = {}
 
-    def _create_headers(self, include_wp_brand_name: bool = False):
-        headers = {
-            "Authorization": f"Bearer {self._auth.get_access_token()}",
-            "Content-Type": "application/json",
-            "User-Agent": "okhttp/3.12.0",
-            "Pragma": "no-cache",
-            "Cache-Control": "no-cache",
+    @cached_property
+    def all_appliances(self) -> dict[str, Appliance]:
+        return {
+            **self._aircons,
+            **self._washerdryers,
+            **self._ovens,
+            **self._refrigerators,
         }
 
-        if include_wp_brand_name:
-            headers["WP-CLIENT-BRAND"] = self._backend_selector.brand.name
+    @property
+    def aircons(self) -> list[Aircon]:
+        return list(self._aircons.values())
 
-        return headers
+    @property
+    def washer_dryers(self) -> list[WasherDryer]:
+        return list(self._washerdryers.values())
+
+    @property
+    def ovens(self) -> list[Oven]:
+        return list(self._ovens.values())
+
+    @property
+    def refrigerators(self) -> list[Refrigerator]:
+        return list(self._refrigerators.values())
 
     def _add_appliance(self, appliance: dict[str, Any]) -> None:
-        appliance_data = {
-            "SAID": appliance["SAID"],
-            "NAME": appliance["APPLIANCE_NAME"],
-            "DATA_MODEL": appliance["DATA_MODEL_KEY"],
-            "CATEGORY": appliance["CATEGORY_NAME"],
-            "MODEL_NUMBER": appliance.get("MODEL_NO"),
-            "SERIAL_NUMBER": appliance.get("SERIAL"),
-        }
+        appliance_data = ApplianceInfo(
+            said=appliance["SAID"],
+            name=appliance["APPLIANCE_NAME"],
+            data_model=appliance["DATA_MODEL_KEY"],
+            category=appliance["CATEGORY_NAME"],
+            model_number=appliance.get("MODEL_NO"),
+            serial_number=appliance.get("SERIAL"),
+        )
+
         data_model = appliance["DATA_MODEL_KEY"].lower()
 
-        if "airconditioner" in data_model:
-            self._aircons.append(appliance_data)
-            return
-
-        if "dryer" in data_model or "washer" in data_model:
-            self._washer_dryers.append(appliance_data)
-            return
         oven_models = [
             "cooking_minerva",
             "cooking_vsi",
@@ -63,23 +79,36 @@ class AppliancesManager:
             "ddm_cooking_bio_self_clean_tourmaline_v2",
         ]
 
-        if any(model in data_model for model in oven_models):
-            self._ovens.append(appliance_data)
+        if "airconditioner" in data_model:
+            self._aircons[appliance_data.said] = Aircon(
+                self._backend_selector, self._auth, self._session, appliance_data
+            )
+        elif "dryer" in data_model or "washer" in data_model:
+            self._washerdryers[appliance_data.said] = WasherDryer(
+                self._backend_selector, self._auth, self._session, appliance_data
+            )
+        elif any(model in data_model for model in oven_models):
+            self._ovens[appliance_data.said] = Oven(
+                self._backend_selector, self._auth, self._session, appliance_data
+            )
+        elif "ddm_ted_refrigerator_v12" in data_model:
+            self._refrigerators[appliance_data.said] = Refrigerator(
+                self._backend_selector, self._auth, self._session, appliance_data
+            )
+        else:
+            LOGGER.warning("Unsupported appliance data model %s", data_model)
             return
 
-        if "ddm_ted_refrigerator_v12" in data_model:
-            self._refrigerators.append(appliance_data)
-            return
-
-        LOGGER.warning("Unsupported appliance data model %s", data_model)
+        # Invalidate cached property
+        self.__dict__.pop("all_appliances", None)
 
     async def _get_owned_appliances(self, account_id: str) -> bool:
         async with self._session.get(
             self._backend_selector.get_owned_appliances_url(account_id),
-            headers=self._create_headers(),
+            headers=self._auth.create_headers(),
         ) as r:
             if r.status != 200:
-                LOGGER.error(f"Failed to get appliances: {r.status}")
+                LOGGER.error("Failed to get appliances: %s", r.status)
                 return False
 
             data = await r.json()
@@ -91,13 +120,14 @@ class AppliancesManager:
             return True
 
     async def _get_shared_appliances(self) -> bool:
-        headers = self._create_headers(include_wp_brand_name=True)
+        headers = self._auth.create_headers()
+        headers["WP-CLIENT-BRAND"] = self._backend_selector.brand.name
 
         async with self._session.get(
             self._backend_selector.shared_appliances_url, headers=headers
         ) as r:
             if r.status != 200:
-                LOGGER.warning(f"Failed to get shared appliances: {r.status}")
+                LOGGER.error("Failed to get shared appliances: %s", r.status)
                 return False
 
             data = await r.json()
@@ -108,27 +138,72 @@ class AppliancesManager:
 
             return True
 
-    async def fetch_appliances(self):
+    async def fetch_appliances(self) -> bool:
         account_id = await self._auth.get_account_id()
         if not account_id:
             return False
+
         success_owned = await self._get_owned_appliances(account_id)
         success_shared = await self._get_shared_appliances()
 
         return success_owned or success_shared
 
-    @property
-    def aircons(self):
-        return self._aircons
+    async def fetch_all_data(self):
+        for appliance in self.all_appliances.values():
+            await appliance.fetch_data()
 
-    @property
-    def refrigerators(self):
-        return self._refrigerators
+    async def connect(self):
+        """Connect to appliance event listener"""
+        await self.start_event_listener()
 
-    @property
-    def washer_dryers(self):
-        return self._washer_dryers
+    async def disconnect(self):
+        """Disconnect from appliance event listener"""
+        await self.stop_event_listener()
 
-    @property
-    def ovens(self):
-        return self._ovens
+    async def start_event_listener(self):
+        """Start the appliance event listener"""
+        await self.fetch_all_data()
+        if self._event_socket is not None:
+            LOGGER.warning("Event socket not None when starting event listener")
+
+        self._event_socket = EventSocket(
+            await self._getWebsocketUrl(),
+            self._auth,
+            self.all_appliances.keys(),
+            self._event_socket_callback,
+            self.fetch_all_data,
+            self._session,
+        )
+        self._event_socket.start()
+
+    async def stop_event_listener(self):
+        """Stop the appliance event listener"""
+        await self._event_socket.stop()
+        self._event_socket = None
+
+    def _event_socket_callback(self, msg: str):
+        json_msg = json.loads(msg)
+        said = json_msg["said"]
+        app = self.all_appliances.get(said)
+        if app is None:
+            LOGGER.warning("Received message for unknown appliance %s", said)
+            return
+        app.update_attributes(
+            json_msg["attributeMap"],
+            json_msg["timestamp"]
+        )
+
+    async def _getWebsocketUrl(self) -> str:
+        DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
+        async with self._session.get(
+            self._backend_selector.websocket_url, headers=self._auth.create_headers()
+        ) as r:
+            if r.status != 200:
+                LOGGER.error("Failed to get websocket url: %s", r.status)
+                return DEFAULT_WS_URL
+            try:
+                return json.loads(await r.text())["url"]
+            except KeyError:
+                LOGGER.exception("Failed to read websocket url")
+                return DEFAULT_WS_URL
+

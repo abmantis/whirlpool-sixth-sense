@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 from yarl import URL
 
+from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.backendselector import BackendSelector
 from whirlpool.oven import Cavity, CavityState, CookMode, Oven
 
@@ -21,7 +22,10 @@ DATA3 = OVEN_DATA["DATA3"]
 
 
 async def test_attributes(
-    oven: Oven, backend_selector_mock: BackendSelector, aioresponses_mock
+    oven: Oven,
+    backend_selector_mock: BackendSelector,
+    aioresponses_mock,
+    appliances_manager: AppliancesManager
 ):
     aioresponses_mock.get(
         backend_selector_mock.websocket_url,
@@ -33,7 +37,9 @@ async def test_attributes(
         backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA1
     )
 
-    await oven.connect()
+    await oven.fetch_data()
+
+    await appliances_manager.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() is False
     assert oven.get_control_locked() is False
@@ -48,13 +54,15 @@ async def test_attributes(
     assert oven.get_target_temp(Cavity.Upper) == 176.6
     assert oven.get_cavity_state(Cavity.Upper) == CavityState.Preheating
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Bake
-    await oven.disconnect()
+    await appliances_manager.disconnect()
 
     aioresponses_mock.get(
         backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA2
     )
 
-    await oven.connect()
+    await oven.fetch_data()
+
+    await appliances_manager.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() is True
     assert oven.get_control_locked() is True
@@ -69,13 +77,15 @@ async def test_attributes(
     assert oven.get_target_temp(Cavity.Upper) == 0.0
     assert oven.get_cavity_state(Cavity.Upper) == CavityState.Standby
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
-    await oven.disconnect()
+    await appliances_manager.disconnect()
 
     aioresponses_mock.get(
         backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA3
     )
 
-    await oven.connect()
+    await oven.fetch_data()
+
+    await appliances_manager.connect()
     assert oven.get_online() is True
     assert oven.get_door_opened() is False
     assert oven.get_control_locked() is False
@@ -90,7 +100,7 @@ async def test_attributes(
     assert oven.get_target_temp(Cavity.Upper) == 0.0
     assert oven.get_cavity_state(Cavity.Upper) == CavityState.Standby
     assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
-    await oven.disconnect()
+    await appliances_manager.disconnect()
 
 
 @pytest.mark.parametrize(
@@ -199,6 +209,7 @@ async def test_attributes(
 )
 async def test_setters(
     oven: Oven,
+    appliances_manager: AppliancesManager,
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
     method: Callable,
@@ -231,7 +242,9 @@ async def test_setters(
         backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA2
     )
 
-    await oven.connect()
+    await oven.fetch_data()
+
+    await appliances_manager.connect()
 
     # add call, call method
     aioresponses_mock.post(url, payload=expected_payload)
@@ -241,4 +254,4 @@ async def test_setters(
     aioresponses_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
 
-    await oven.disconnect()
+    await appliances_manager.disconnect()

@@ -1,9 +1,11 @@
+import json
+
 import aioconsole
 
 from whirlpool.aircon import Aircon, Mode
 
 
-async def show_aircon_menu(backend_selector, auth, said, session):
+async def show_aircon_menu(ac: Aircon) -> None:
     def print_menu():
         print("\n")
         print(30 * "-", "MENU", 30 * "-")
@@ -46,9 +48,7 @@ async def show_aircon_menu(backend_selector, auth, said, session):
     def attr_upd():
         print("Attributes updated")
 
-    ac = Aircon(backend_selector, auth, said, session)
     ac.register_attr_callback(attr_upd)
-    await ac.connect()
 
     loop = True
     while loop:
@@ -89,13 +89,12 @@ async def show_aircon_menu(backend_selector, auth, said, session):
             await ac.fetch_data()
             print_status(ac)
         elif choice == "v":
-            print(ac._data_dict)
+            print(json.dumps(ac._data_dict, indent=4))
         elif choice == "c":
             cmd = await aioconsole.ainput("Command: ")
             val = await aioconsole.ainput("Value: ")
             await ac.send_attributes({cmd: val})
         elif choice == "q":
-            await ac.disconnect()
             print("Bye")
             loop = False
         else:
