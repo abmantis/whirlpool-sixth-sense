@@ -41,10 +41,10 @@ async def show_refrigerator_menu(rf: Refrigerator) -> None:
         choice = await aioconsole.ainput("Enter your choice: ")
 
         if choice == "+":
-            temp = rf.get_temp() - 1
+            temp = (rf.get_temp() or 0) - 1
             await rf.set_temp(temp)
         elif choice == "-":
-            temp = rf.get_temp() + 1
+            temp = (rf.get_temp() or 0) + 1
             await rf.set_temp(temp)
         elif choice in ["-4", "-2", "0", "3", "5"]:
             temp = int(choice)
