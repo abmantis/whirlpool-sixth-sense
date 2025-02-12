@@ -48,6 +48,8 @@ select = [
     "I",]
 
 
-
 [tool.ruff.lint.mccabe]
 max-complexity = 25
+
+[tool.pyright]
+typeCheckingMode = "standard"
