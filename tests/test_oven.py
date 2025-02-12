@@ -25,7 +25,7 @@ async def test_attributes(
     oven: Oven,
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
-    appliances_manager: AppliancesManager
+    appliances_manager: AppliancesManager,
 ):
     aioresponses_mock.get(
         backend_selector_mock.websocket_url,
@@ -114,17 +114,8 @@ async def test_attributes(
             {"mode": CookMode.Bake, "cavity": Cavity.Upper, "target_temp": 260},
             {
                 "OvenUpperCavity_CycleSetCommonMode": "2",
-                "OvenUpperCavity_CycleSetTargetTemp": 2600,
-                "OvenUpperCavity_OpSetOperations": 2,
-            },
-        ),
-        (
-            Oven.set_bake,
-            {"cavity": Cavity.Upper, "target_temp": 260},
-            {
-                "OvenUpperCavity_CycleSetCommonMode": "2",
-                "OvenUpperCavity_CycleSetTargetTemp": 2600,
-                "OvenUpperCavity_OpSetOperations": 2,
+                "OvenUpperCavity_CycleSetTargetTemp": "2600",
+                "OvenUpperCavity_OpSetOperations": "2",
             },
         ),
         (
@@ -132,68 +123,59 @@ async def test_attributes(
             {"mode": CookMode.Broil, "cavity": Cavity.Upper, "target_temp": 260},
             {
                 "OvenUpperCavity_CycleSetCommonMode": "8",
-                "OvenUpperCavity_CycleSetTargetTemp": 2600,
-                "OvenUpperCavity_OpSetOperations": 2,
+                "OvenUpperCavity_CycleSetTargetTemp": "2600",
+                "OvenUpperCavity_OpSetOperations": "2",
             },
         ),
         (
-            Oven.set_broil,
-            {"cavity": Cavity.Upper, "target_temp": 260},
-            {
-                "OvenUpperCavity_CycleSetCommonMode": "8",
-                "OvenUpperCavity_CycleSetTargetTemp": 2600,
-                "OvenUpperCavity_OpSetOperations": 2,
-            },
-        ),
-        (
-            Oven.set_convect_broil,
-            {"cavity": Cavity.Upper, "target_temp": 260},
+            Oven.set_cook,
+            {"mode": CookMode.ConvectBroil, "cavity": Cavity.Upper, "target_temp": 260},
             {
                 "OvenUpperCavity_CycleSetCommonMode": "9",
-                "OvenUpperCavity_CycleSetTargetTemp": 2600,
-                "OvenUpperCavity_OpSetOperations": 2,
+                "OvenUpperCavity_CycleSetTargetTemp": "2600",
+                "OvenUpperCavity_OpSetOperations": "2",
             },
         ),
         (
-            Oven.set_convect_bake,
-            {"cavity": Cavity.Upper, "target_temp": 260},
+            Oven.set_cook,
+            {"mode": CookMode.ConvectBake, "cavity": Cavity.Upper, "target_temp": 260},
             {
                 "OvenUpperCavity_CycleSetCommonMode": "6",
-                "OvenUpperCavity_CycleSetTargetTemp": 2600,
-                "OvenUpperCavity_OpSetOperations": 2,
+                "OvenUpperCavity_CycleSetTargetTemp": "2600",
+                "OvenUpperCavity_OpSetOperations": "2",
             },
         ),
         (
-            Oven.set_keep_warm,
-            {"cavity": Cavity.Upper, "target_temp": 100},
+            Oven.set_cook,
+            {"mode": CookMode.KeepWarm, "cavity": Cavity.Upper, "target_temp": 100},
             {
                 "OvenUpperCavity_CycleSetCommonMode": "24",
-                "OvenUpperCavity_CycleSetTargetTemp": 1000,
-                "OvenUpperCavity_OpSetOperations": 2,
+                "OvenUpperCavity_CycleSetTargetTemp": "1000",
+                "OvenUpperCavity_OpSetOperations": "2",
             },
         ),
         (
-            Oven.set_air_fry,
-            {"cavity": Cavity.Upper, "target_temp": 260},
+            Oven.set_cook,
+            {"mode": CookMode.AirFry, "cavity": Cavity.Upper, "target_temp": 260},
             {
                 "OvenUpperCavity_CycleSetCommonMode": "41",
-                "OvenUpperCavity_CycleSetTargetTemp": 2600,
-                "OvenUpperCavity_OpSetOperations": 2,
+                "OvenUpperCavity_CycleSetTargetTemp": "2600",
+                "OvenUpperCavity_OpSetOperations": "2",
             },
         ),
         (
-            Oven.set_convect_roast,
-            {"cavity": Cavity.Upper, "target_temp": 260},
+            Oven.set_cook,
+            {"mode": CookMode.ConvectRoast, "cavity": Cavity.Upper, "target_temp": 260},
             {
                 "OvenUpperCavity_CycleSetCommonMode": "16",
-                "OvenUpperCavity_CycleSetTargetTemp": 2600,
-                "OvenUpperCavity_OpSetOperations": 2,
+                "OvenUpperCavity_CycleSetTargetTemp": "2600",
+                "OvenUpperCavity_OpSetOperations": "2",
             },
         ),
         (
             Oven.stop_cook,
             {"cavity": Cavity.Upper},
-            {"OvenUpperCavity_OpSetOperations": 1},
+            {"OvenUpperCavity_OpSetOperations": "1"},
         ),
         (
             Oven.set_sabbath_mode,
