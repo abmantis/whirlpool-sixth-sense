@@ -41,7 +41,7 @@ async def test_attributes(
 
     await appliances_manager.connect()
     assert refrigerator.get_online() is False
-    assert refrigerator.get_offset_temp() == "0"
+    assert refrigerator.get_offset_temp() == 0
     assert refrigerator.get_turbo_mode() is False
     assert refrigerator.get_display_lock() is False
     await appliances_manager.disconnect()
@@ -56,7 +56,7 @@ async def test_attributes(
     assert refrigerator.get_online() is True
     assert refrigerator.get_turbo_mode() is True
     assert refrigerator.get_display_lock() is True
-    assert refrigerator.get_offset_temp() == "5"
+    assert refrigerator.get_offset_temp() == 5
     await appliances_manager.disconnect()
 
 
