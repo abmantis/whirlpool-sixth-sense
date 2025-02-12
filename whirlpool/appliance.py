@@ -136,6 +136,11 @@ class Appliance:
             return None
         return self._data_dict["attributes"][attribute]["value"]
 
+    def get_int_attribute(self, attribute: str) -> int | None:
+        """Get attribute from local data as int"""
+        val = self.get_attribute(attribute)
+        return None if val is None else int(val)
+
     def has_attribute(self, attribute: str) -> bool:
         """Check for attribute in local data dictionary"""
         if not self._data_dict:
