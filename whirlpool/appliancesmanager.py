@@ -66,8 +66,8 @@ class AppliancesManager:
             name=appliance["APPLIANCE_NAME"],
             data_model=appliance["DATA_MODEL_KEY"],
             category=appliance["CATEGORY_NAME"],
-            model_number=appliance.get("MODEL_NO"),
-            serial_number=appliance.get("SERIAL"),
+            model_number=appliance.get("MODEL_NO", ""),
+            serial_number=appliance.get("SERIAL", ""),
         )
 
         data_model = appliance["DATA_MODEL_KEY"].lower()
@@ -169,7 +169,7 @@ class AppliancesManager:
         self._event_socket = EventSocket(
             await self._getWebsocketUrl(),
             self._auth,
-            self.all_appliances.keys(),
+            list(self.all_appliances.keys()),
             self._event_socket_callback,
             self.fetch_all_data,
             self._session,
@@ -178,6 +178,9 @@ class AppliancesManager:
 
     async def stop_event_listener(self):
         """Stop the appliance event listener"""
+        if self._event_socket is None:
+            LOGGER.warning("Event socket is None")
+            return
         await self._event_socket.stop()
         self._event_socket = None
 
@@ -188,10 +191,7 @@ class AppliancesManager:
         if app is None:
             LOGGER.warning("Received message for unknown appliance %s", said)
             return
-        app.update_attributes(
-            json_msg["attributeMap"],
-            json_msg["timestamp"]
-        )
+        app.update_attributes(json_msg["attributeMap"], json_msg["timestamp"])
 
     async def _getWebsocketUrl(self) -> str:
         DEFAULT_WS_URL = "wss://ws.emeaprod.aws.whrcloud.com/appliance/websocket"
@@ -206,4 +206,3 @@ class AppliancesManager:
             except KeyError:
                 LOGGER.exception("Failed to read websocket url")
                 return DEFAULT_WS_URL
-

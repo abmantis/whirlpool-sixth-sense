@@ -38,7 +38,7 @@ class Auth:
             json.dump(self._auth_dict, f)
 
     def _get_auth_body(
-        self, refresh_token: str, client_creds: dict[str, str]
+        self, refresh_token: str | None, client_creds: dict[str, str]
     ) -> dict[str, str]:
         if refresh_token:
             LOGGER.info("Using refresh token in auth body")
@@ -56,7 +56,7 @@ class Auth:
 
         return auth_data
 
-    async def _do_auth(self, refresh_token: str | None) -> dict[str, str]:
+    async def _do_auth(self, refresh_token: str | None) -> dict[str, str] | None:
         auth_url = self._backend_selector.oauth_token_url
         auth_header = {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -93,7 +93,7 @@ class Auth:
         self._auth_dict = {
             "access_token": fetched_auth_data.get("access_token", ""),
             "refresh_token": fetched_auth_data.get("refresh_token", ""),
-            "expire_date": curr_timestamp + fetched_auth_data.get("expires_in", 0),
+            "expire_date": curr_timestamp + int(fetched_auth_data.get("expires_in", 0)),
             "accountId": fetched_auth_data.get("accountId", ""),
             "SAID": fetched_auth_data.get("SAID", ""),
         }
@@ -158,4 +158,3 @@ class Auth:
             "Pragma": "no-cache",
             "Cache-Control": "no-cache",
         }
-

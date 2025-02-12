@@ -60,10 +60,10 @@ async def show_aircon_menu(ac: Aircon) -> None:
         elif choice == "0":
             await ac.set_power_on(False)
         elif choice == "+":
-            temp = ac.get_temp() + 1
+            temp = (ac.get_temp() or 0) + 1
             await ac.set_temp(temp)
         elif choice == "-":
-            temp = ac.get_temp() - 1
+            temp = (ac.get_temp() or 0) - 1
             await ac.set_temp(temp)
         elif choice == "C":
             await ac.set_mode(Mode.Cool)

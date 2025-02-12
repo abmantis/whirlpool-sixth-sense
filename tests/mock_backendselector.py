@@ -1,5 +1,6 @@
 from enum import Enum
 
+from whirlpool import types
 from whirlpool.backendselector import BackendSelector
 
 
@@ -13,15 +14,7 @@ class DummyRegion(Enum):
 
 class BackendSelectorMock(BackendSelector):
     def __init__(self):
-        super().__init__(DummyBrand.DUMMY_BRAND, DummyRegion.DUMMY_REGION)
-
-    @property
-    def brand(self):
-        return DummyBrand.DUMMY_BRAND
-
-    @property
-    def region(self):
-        return DummyRegion.DUMMY_REGION
+        super().__init__(types.Brand.Whirlpool, types.Region.EU)
 
     @property
     def base_url(self):
