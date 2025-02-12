@@ -72,13 +72,11 @@ class EventSocket:
 
     async def _run(self):
         while self._running:
-            timeout = aiohttp.ClientTimeout(total=None, connect=60, sock_connect=60)
-
             try:
                 LOGGER.debug(f"Connecting to {self._url}")
                 async with self._session.ws_connect(
                     self._url,
-                    timeout=timeout,
+                    timeout=aiohttp.ClientWSTimeout(ws_receive=60, ws_close=60),  # type: ignore # ClientWSTimeout uses attr.s which pyright does not support
                     autoclose=True,
                     autoping=True,
                     heartbeat=45,
@@ -194,5 +192,7 @@ class EventSocket:
             return
         await self._websocket.close()
         self._websocket = None
+        if not self._run_future:
+            return
         if not self._run_future.done():
             await self._run_future
