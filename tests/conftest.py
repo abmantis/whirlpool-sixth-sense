@@ -37,14 +37,14 @@ def backend_selector_mock(request):
     yield request.param()
 
 
-@pytest.fixture
+@pytest.fixture(name="auth")
 def auth_fixture(backend_selector_mock, client_session_fixture):
     auth = Auth(backend_selector_mock, "email", "secretpass", client_session_fixture)
     yield auth
 
 
 @pytest.fixture(name="oven")
-async def oven_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
+async def oven_fixture(backend_selector_mock, auth, client_session_fixture):
     app_data = ApplianceInfo(
         said=SAID,
         name="Oven",
@@ -54,12 +54,12 @@ async def oven_fixture(backend_selector_mock, auth_fixture, client_session_fixtu
         serial_number="RO12345678",
     )
 
-    oven = Oven(backend_selector_mock, auth_fixture, client_session_fixture, app_data)
+    oven = Oven(backend_selector_mock, auth, client_session_fixture, app_data)
     yield oven
 
 
 @pytest.fixture(name="washer_dryer")
-def washer_dryer_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
+def washer_dryer_fixture(backend_selector_mock, auth, client_session_fixture):
     app_data = ApplianceInfo(
         said=SAID,
         name="Washer/Dryer AIO",
@@ -70,13 +70,13 @@ def washer_dryer_fixture(backend_selector_mock, auth_fixture, client_session_fix
     )
 
     washer_dryer = WasherDryer(
-        backend_selector_mock, auth_fixture, client_session_fixture, app_data
+        backend_selector_mock, auth, client_session_fixture, app_data
     )
     yield washer_dryer
 
 
 @pytest.fixture(name="aircon")
-def aircon_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
+def aircon_fixture(backend_selector_mock, auth, client_session_fixture):
     app_data = ApplianceInfo(
         said=SAID,
         name="Air Conditioner",
@@ -87,13 +87,13 @@ def aircon_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
     )
 
     aircon = Aircon(
-        backend_selector_mock, auth_fixture, client_session_fixture, app_data
+        backend_selector_mock, auth, client_session_fixture, app_data
     )
     yield aircon
 
 
 @pytest.fixture(name="refrigerator")
-def refrigerator_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
+def refrigerator_fixture(backend_selector_mock, auth, client_session_fixture):
     app_data = ApplianceInfo(
         said=SAID,
         name="Refrigerator",
@@ -104,13 +104,13 @@ def refrigerator_fixture(backend_selector_mock, auth_fixture, client_session_fix
     )
 
     refrigerator = Refrigerator(
-        backend_selector_mock, auth_fixture, client_session_fixture, app_data
+        backend_selector_mock, auth, client_session_fixture, app_data
     )
     yield refrigerator
 
 
 @pytest.fixture(name="appliances_manager")
 def appliances_manager_fixture(
-    backend_selector_mock, auth_fixture, client_session_fixture
+    backend_selector_mock, auth, client_session_fixture
 ):
-    yield AppliancesManager(backend_selector_mock, auth_fixture, client_session_fixture)
+    yield AppliancesManager(backend_selector_mock, auth, client_session_fixture)
