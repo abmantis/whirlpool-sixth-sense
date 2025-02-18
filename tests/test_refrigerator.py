@@ -79,7 +79,7 @@ async def test_attributes(
 )
 async def test_setters(
     refrigerator: Refrigerator,
-    auth_fixture: MagicMock,
+    auth: MagicMock,
     appliances_manager: AppliancesManager,
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
@@ -100,7 +100,7 @@ async def test_setters(
         "data": None,
         "json": expected_payload["json"],
         "allow_redirects": True,
-        "headers": auth_fixture.create_headers(),
+        "headers": auth.create_headers(),
     }
 
     url = backend_selector_mock.appliance_command_url
