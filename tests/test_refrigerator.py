@@ -2,6 +2,7 @@ import json
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
 from yarl import URL
@@ -26,7 +27,7 @@ async def test_attributes(
     refrigerator: Refrigerator,
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
-    appliances_manager: AppliancesManager
+    appliances_manager: AppliancesManager,
 ):
     aioresponses_mock.get(
         backend_selector_mock.websocket_url,
@@ -78,6 +79,7 @@ async def test_attributes(
 )
 async def test_setters(
     refrigerator: Refrigerator,
+    auth_fixture: MagicMock,
     appliances_manager: AppliancesManager,
     backend_selector_mock: BackendSelector,
     aioresponses_mock,
@@ -98,7 +100,7 @@ async def test_setters(
         "data": None,
         "json": expected_payload["json"],
         "allow_redirects": True,
-        "headers": {},
+        "headers": auth_fixture.create_headers(),
     }
 
     url = backend_selector_mock.appliance_command_url
