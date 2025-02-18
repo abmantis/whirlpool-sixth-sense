@@ -45,9 +45,7 @@ def auth_fixture(backend_selector_mock, client_session_fixture):
 
 
 @pytest.fixture(name="oven")
-async def oven_fixture(
-    backend_selector_mock, auth_fixture, client_session_fixture
-):
+async def oven_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
     app_data = ApplianceInfo(
         said=SAID,
         name="Oven",
@@ -57,17 +55,12 @@ async def oven_fixture(
         serial_number="RO12345678",
     )
 
-    with patch("whirlpool.appliance.Auth.create_headers", return_value={}):
-        oven = Oven(
-            backend_selector_mock, auth_fixture, client_session_fixture, app_data
-        )
-        yield oven
+    oven = Oven(backend_selector_mock, auth_fixture, client_session_fixture, app_data)
+    yield oven
 
 
 @pytest.fixture(name="washer_dryer")
-def washer_dryer_fixture(
-    backend_selector_mock, auth_fixture, client_session_fixture
-):
+def washer_dryer_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
     app_data = ApplianceInfo(
         said=SAID,
         name="Washer/Dryer AIO",
@@ -77,17 +70,14 @@ def washer_dryer_fixture(
         serial_number="WD12345678",
     )
 
-    with patch("whirlpool.appliance.Auth.create_headers", return_value={}):
-        washer_dryer = WasherDryer(
-            backend_selector_mock, auth_fixture, client_session_fixture, app_data
-        )
-        yield washer_dryer
+    washer_dryer = WasherDryer(
+        backend_selector_mock, auth_fixture, client_session_fixture, app_data
+    )
+    yield washer_dryer
 
 
 @pytest.fixture(name="aircon")
-def aircon_fixture(
-    backend_selector_mock, auth_fixture, client_session_fixture
-):
+def aircon_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
     app_data = ApplianceInfo(
         said=SAID,
         name="Air Conditioner",
@@ -97,16 +87,14 @@ def aircon_fixture(
         serial_number="AC12345678",
     )
 
-    with patch("whirlpool.appliance.Auth.create_headers", return_value={}):
-        aircon = Aircon(
-            backend_selector_mock, auth_fixture, client_session_fixture, app_data
-        )
-        yield aircon
+    aircon = Aircon(
+        backend_selector_mock, auth_fixture, client_session_fixture, app_data
+    )
+    yield aircon
+
 
 @pytest.fixture(name="refrigerator")
-def refrigerator_fixture(
-    backend_selector_mock, auth_fixture, client_session_fixture
-):
+def refrigerator_fixture(backend_selector_mock, auth_fixture, client_session_fixture):
     app_data = ApplianceInfo(
         said=SAID,
         name="Refrigerator",
@@ -116,11 +104,10 @@ def refrigerator_fixture(
         serial_number="FR12345678",
     )
 
-    with patch("whirlpool.appliance.Auth.create_headers", return_value={}):
-        refrigerator = Refrigerator(
-            backend_selector_mock, auth_fixture, client_session_fixture, app_data
-        )
-        yield refrigerator
+    refrigerator = Refrigerator(
+        backend_selector_mock, auth_fixture, client_session_fixture, app_data
+    )
+    yield refrigerator
 
 
 @pytest.fixture(name="appliances_manager")
