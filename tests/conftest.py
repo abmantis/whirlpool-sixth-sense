@@ -1,22 +1,18 @@
+import json
 
 import aiohttp
 import pytest
 import pytest_asyncio
 from aioresponses import aioresponses
 
-from tests.mock_backendselector import (
+from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.auth import Auth
+
+from . import ACCOUNT_ID, DATA_DIR
+from .mock_backendselector import (
     BackendSelectorMock,
     BackendSelectorMockMultipleCreds,
 )
-from whirlpool.aircon import Aircon
-from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.auth import Auth
-from whirlpool.oven import Oven
-from whirlpool.refrigerator import Refrigerator
-from whirlpool.types import ApplianceInfo
-from whirlpool.washerdryer import WasherDryer
-
-SAID = "WPR1XYZABC123"
 
 
 @pytest.fixture
@@ -43,74 +39,47 @@ def auth_fixture(backend_selector_mock, client_session_fixture):
     yield auth
 
 
-@pytest.fixture(name="oven")
-async def oven_fixture(backend_selector_mock, auth, client_session_fixture):
-    app_data = ApplianceInfo(
-        said=SAID,
-        name="Oven",
-        data_model="RANGE_DATA_MODEL",
-        category="Cooking",
-        model_number="WRO1234XX1",
-        serial_number="RO12345678",
-    )
-
-    oven = Oven(backend_selector_mock, auth, client_session_fixture, app_data)
-    yield oven
-
-
-@pytest.fixture(name="washer_dryer")
-def washer_dryer_fixture(backend_selector_mock, auth, client_session_fixture):
-    app_data = ApplianceInfo(
-        said=SAID,
-        name="Washer/Dryer AIO",
-        data_model="WASHDRY_DATA_MODEL",
-        category="FabricCare",
-        model_number="WWD1234XX1",
-        serial_number="WD12345678",
-    )
-
-    washer_dryer = WasherDryer(
-        backend_selector_mock, auth, client_session_fixture, app_data
-    )
-    yield washer_dryer
-
-
-@pytest.fixture(name="aircon")
-def aircon_fixture(backend_selector_mock, auth, client_session_fixture):
-    app_data = ApplianceInfo(
-        said=SAID,
-        name="Air Conditioner",
-        data_model="AIRCON_DATA_MODEL",
-        category="Climate",
-        model_number="WAC1234XX1",
-        serial_number="AC12345678",
-    )
-
-    aircon = Aircon(
-        backend_selector_mock, auth, client_session_fixture, app_data
-    )
-    yield aircon
-
-
-@pytest.fixture(name="refrigerator")
-def refrigerator_fixture(backend_selector_mock, auth, client_session_fixture):
-    app_data = ApplianceInfo(
-        said=SAID,
-        name="Refrigerator",
-        data_model="FRIG_DATA_MODEL",
-        category="Kitchen",
-        model_number="WFR1234XX1",
-        serial_number="FR12345678",
-    )
-
-    refrigerator = Refrigerator(
-        backend_selector_mock, auth, client_session_fixture, app_data
-    )
-    yield refrigerator
-
-
 @pytest.fixture(name="appliances_manager")
-def appliances_manager_fixture(
-    backend_selector_mock, auth, client_session_fixture
+async def appliances_manager_fixture(
+    backend_selector_mock, auth, client_session_fixture, aioresponses_mock
 ):
-    yield AppliancesManager(backend_selector_mock, auth, client_session_fixture)
+    with open(DATA_DIR / "owned_appliances.json") as f:
+        owned_appliance_data = json.load(f)
+
+    with open(DATA_DIR / "shared_appliances.json") as f:
+        shared_appliance_data = json.load(f)
+
+    with open(DATA_DIR / "mock_data.json") as f:
+        mock_data = json.load(f)
+
+    aioresponses_mock.get(
+        backend_selector_mock.user_details_url, payload={"accountId": ACCOUNT_ID}
+    )
+    aioresponses_mock.get(
+        backend_selector_mock.get_owned_appliances_url(ACCOUNT_ID),
+        payload={ACCOUNT_ID: owned_appliance_data},
+    )
+    aioresponses_mock.get(
+        backend_selector_mock.shared_appliances_url, payload=shared_appliance_data
+    )
+
+    aioresponses_mock.get(
+        backend_selector_mock.websocket_url,
+        payload={"url": "wss://something"},
+        repeat=True,
+    )
+
+    appliances_manager = AppliancesManager(
+        backend_selector_mock, auth, client_session_fixture
+    )
+    await appliances_manager.fetch_appliances()
+
+    for said in appliances_manager.all_appliances.keys():
+        aioresponses_mock.get(
+            backend_selector_mock.get_appliance_data_url(said),
+            payload=mock_data[said],
+        )
+
+    await appliances_manager.connect()
+    yield appliances_manager
+    await appliances_manager.disconnect()
