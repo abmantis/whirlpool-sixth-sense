@@ -1,64 +1,25 @@
-import json
 from collections.abc import Callable
-from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
 from yarl import URL
 
-from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.backendselector import BackendSelector
 from whirlpool.refrigerator import Refrigerator
 
-ACCOUNT_ID = 111222333
 
+async def test_attributes(appliances_manager: MagicMock):
+    refrigerator1 = appliances_manager.refrigerators[0]
+    assert refrigerator1.get_online() is False
+    assert refrigerator1.get_offset_temp() == 0
+    assert refrigerator1.get_turbo_mode() is False
+    assert refrigerator1.get_display_lock() is False
 
-CURR_DIR = Path(__file__).parent
-DATA_DIR = CURR_DIR / "data"
-
-REFRIGERATOR_DATA = json.loads((DATA_DIR / "refrigerator_data.json").read_text())
-
-DATA1 = REFRIGERATOR_DATA["DATA1"]
-DATA2 = REFRIGERATOR_DATA["DATA2"]
-
-
-async def test_attributes(
-    refrigerator: Refrigerator,
-    backend_selector_mock: BackendSelector,
-    aioresponses_mock,
-    appliances_manager: AppliancesManager,
-):
-    aioresponses_mock.get(
-        backend_selector_mock.websocket_url,
-        payload={"url": "wss://something"},
-        repeat=True,
-    )
-    aioresponses_mock.get(
-        backend_selector_mock.get_appliance_data_url(refrigerator.said), payload=DATA1
-    )
-
-    await refrigerator.fetch_data()
-
-    await appliances_manager.connect()
-    assert refrigerator.get_online() is False
-    assert refrigerator.get_offset_temp() == 0
-    assert refrigerator.get_turbo_mode() is False
-    assert refrigerator.get_display_lock() is False
-    await appliances_manager.disconnect()
-
-    aioresponses_mock.get(
-        backend_selector_mock.get_appliance_data_url(refrigerator.said), payload=DATA2
-    )
-
-    await refrigerator.fetch_data()
-
-    await appliances_manager.connect()
-    assert refrigerator.get_online() is True
-    assert refrigerator.get_turbo_mode() is True
-    assert refrigerator.get_display_lock() is True
-    assert refrigerator.get_offset_temp() == 5
-    await appliances_manager.disconnect()
+    refrigerator2 = appliances_manager.refrigerators[1]
+    assert refrigerator2.get_online() is True
+    assert refrigerator2.get_turbo_mode() is True
+    assert refrigerator2.get_display_lock() is True
+    assert refrigerator2.get_offset_temp() == 5
 
 
 @pytest.mark.parametrize(
@@ -78,15 +39,16 @@ async def test_attributes(
     ],
 )
 async def test_setters(
-    refrigerator: Refrigerator,
+    appliances_manager: MagicMock,
     auth: MagicMock,
-    appliances_manager: AppliancesManager,
-    backend_selector_mock: BackendSelector,
-    aioresponses_mock,
+    backend_selector_mock: MagicMock,
+    aioresponses_mock: MagicMock,
     method: Callable,
     argument: Any,
     expected_json: dict,
 ):
+    refrigerator = appliances_manager.refrigerators[0]
+
     expected_payload = {
         "json": {
             "body": expected_json,
@@ -105,17 +67,6 @@ async def test_setters(
 
     url = backend_selector_mock.appliance_command_url
 
-    aioresponses_mock.get(
-        backend_selector_mock.websocket_url, payload={"url": "wss://something"}
-    )
-    aioresponses_mock.get(
-        backend_selector_mock.get_appliance_data_url(refrigerator.said), payload=DATA1
-    )
-
-    await refrigerator.fetch_data()
-
-    await appliances_manager.connect()
-
     # add call, call method
     aioresponses_mock.post(url, payload=expected_payload)
     await method(refrigerator, argument)
@@ -123,5 +74,3 @@ async def test_setters(
     # assert args and length
     aioresponses_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
-
-    await appliances_manager.disconnect()

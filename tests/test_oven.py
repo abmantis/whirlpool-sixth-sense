@@ -1,106 +1,60 @@
-import json
 from collections.abc import Callable
-from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
 from yarl import URL
 
-from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.backendselector import BackendSelector
 from whirlpool.oven import Cavity, CavityState, CookMode, Oven
 
-ACCOUNT_ID = 111222333
 
-CURR_DIR = Path(__file__).parent
-DATA_DIR = CURR_DIR / "data"
+async def test_attributes(appliances_manager: MagicMock):
+    oven1 = appliances_manager.ovens[0]
+    assert oven1.get_online() is True
+    assert oven1.get_door_opened() is False
+    assert oven1.get_control_locked() is False
+    assert oven1.get_sabbath_mode() is False
+    assert oven1.get_display_brightness_percent() == 90
+    assert oven1.get_oven_cavity_exists(Cavity.Upper) is True
+    assert oven1.get_oven_cavity_exists(Cavity.Lower) is False
+    assert oven1.get_light(Cavity.Upper) is False
+    assert oven1.get_meat_probe_status(Cavity.Upper) is False
+    assert oven1.get_cook_time(Cavity.Upper) == 81
+    assert oven1.get_temp(Cavity.Upper) == 37.7
+    assert oven1.get_target_temp(Cavity.Upper) == 176.6
+    assert oven1.get_cavity_state(Cavity.Upper) == CavityState.Preheating
+    assert oven1.get_cook_mode(Cavity.Upper) == CookMode.Bake
 
-OVEN_DATA = json.loads((DATA_DIR / "oven_data.json").read_text())
+    oven2 = appliances_manager.ovens[1]
+    assert oven2.get_online() is True
+    assert oven2.get_door_opened() is True
+    assert oven2.get_control_locked() is True
+    assert oven2.get_sabbath_mode() is False
+    assert oven2.get_display_brightness_percent() == 70
+    assert oven2.get_oven_cavity_exists(Cavity.Upper) is True
+    assert oven2.get_oven_cavity_exists(Cavity.Lower) is False
+    assert oven2.get_light(Cavity.Upper) is False
+    assert oven2.get_meat_probe_status(Cavity.Upper) is False
+    assert oven2.get_cook_time(Cavity.Upper) == 0
+    assert oven2.get_temp(Cavity.Upper) == 0.0
+    assert oven2.get_target_temp(Cavity.Upper) == 0.0
+    assert oven2.get_cavity_state(Cavity.Upper) == CavityState.Standby
+    assert oven2.get_cook_mode(Cavity.Upper) == CookMode.Standby
 
-DATA1 = OVEN_DATA["DATA1"]
-DATA2 = OVEN_DATA["DATA2"]
-DATA3 = OVEN_DATA["DATA3"]
-
-
-async def test_attributes(
-    oven: Oven,
-    backend_selector_mock: BackendSelector,
-    aioresponses_mock,
-    appliances_manager: AppliancesManager,
-):
-    aioresponses_mock.get(
-        backend_selector_mock.websocket_url,
-        payload={"url": "wss://something"},
-        repeat=True,
-    )
-
-    aioresponses_mock.get(
-        backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA1
-    )
-
-    await oven.fetch_data()
-
-    await appliances_manager.connect()
-    assert oven.get_online() is True
-    assert oven.get_door_opened() is False
-    assert oven.get_control_locked() is False
-    assert oven.get_sabbath_mode() is False
-    assert oven.get_display_brightness_percent() == 90
-    assert oven.get_oven_cavity_exists(Cavity.Upper) is True
-    assert oven.get_oven_cavity_exists(Cavity.Lower) is False
-    assert oven.get_light(Cavity.Upper) is False
-    assert oven.get_meat_probe_status(Cavity.Upper) is False
-    assert oven.get_cook_time(Cavity.Upper) == 81
-    assert oven.get_temp(Cavity.Upper) == 37.7
-    assert oven.get_target_temp(Cavity.Upper) == 176.6
-    assert oven.get_cavity_state(Cavity.Upper) == CavityState.Preheating
-    assert oven.get_cook_mode(Cavity.Upper) == CookMode.Bake
-    await appliances_manager.disconnect()
-
-    aioresponses_mock.get(
-        backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA2
-    )
-
-    await oven.fetch_data()
-
-    await appliances_manager.connect()
-    assert oven.get_online() is True
-    assert oven.get_door_opened() is True
-    assert oven.get_control_locked() is True
-    assert oven.get_sabbath_mode() is False
-    assert oven.get_display_brightness_percent() == 70
-    assert oven.get_oven_cavity_exists(Cavity.Upper) is True
-    assert oven.get_oven_cavity_exists(Cavity.Lower) is False
-    assert oven.get_light(Cavity.Upper) is False
-    assert oven.get_meat_probe_status(Cavity.Upper) is False
-    assert oven.get_cook_time(Cavity.Upper) == 0
-    assert oven.get_temp(Cavity.Upper) == 0.0
-    assert oven.get_target_temp(Cavity.Upper) == 0.0
-    assert oven.get_cavity_state(Cavity.Upper) == CavityState.Standby
-    assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
-    await appliances_manager.disconnect()
-
-    aioresponses_mock.get(
-        backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA3
-    )
-
-    await oven.fetch_data()
-
-    await appliances_manager.connect()
-    assert oven.get_online() is True
-    assert oven.get_door_opened() is False
-    assert oven.get_control_locked() is False
-    assert oven.get_sabbath_mode() is False
-    assert oven.get_display_brightness_percent() == 90
-    assert oven.get_oven_cavity_exists(Cavity.Upper) is True
-    assert oven.get_oven_cavity_exists(Cavity.Lower) is False
-    assert oven.get_light(Cavity.Upper) is False
-    assert oven.get_meat_probe_status(Cavity.Upper) is False
-    assert oven.get_cook_time(Cavity.Upper) == 0
-    assert oven.get_temp(Cavity.Upper) == 0.0
-    assert oven.get_target_temp(Cavity.Upper) == 0.0
-    assert oven.get_cavity_state(Cavity.Upper) == CavityState.Standby
-    assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
+    oven3 = appliances_manager.ovens[2]
+    assert oven3.get_online() is True
+    assert oven3.get_door_opened() is False
+    assert oven3.get_control_locked() is False
+    assert oven3.get_sabbath_mode() is False
+    assert oven3.get_display_brightness_percent() == 90
+    assert oven3.get_oven_cavity_exists(Cavity.Upper) is True
+    assert oven3.get_oven_cavity_exists(Cavity.Lower) is False
+    assert oven3.get_light(Cavity.Upper) is False
+    assert oven3.get_meat_probe_status(Cavity.Upper) is False
+    assert oven3.get_cook_time(Cavity.Upper) == 0
+    assert oven3.get_temp(Cavity.Upper) == 0.0
+    assert oven3.get_target_temp(Cavity.Upper) == 0.0
+    assert oven3.get_cavity_state(Cavity.Upper) == CavityState.Standby
+    assert oven3.get_cook_mode(Cavity.Upper) == CookMode.Standby
     await appliances_manager.disconnect()
 
 
@@ -191,15 +145,15 @@ async def test_attributes(
     ],
 )
 async def test_setters(
-    oven: Oven,
+    appliances_manager: MagicMock,
     auth: MagicMock,
-    appliances_manager: AppliancesManager,
-    backend_selector_mock: BackendSelector,
-    aioresponses_mock,
+    backend_selector_mock: MagicMock,
+    aioresponses_mock: MagicMock,
     method: Callable,
     arguments: dict,
     expected_json: dict,
 ):
+    oven = appliances_manager.ovens[0]
     expected_payload = {
         "json": {
             "body": expected_json,
@@ -218,18 +172,6 @@ async def test_setters(
 
     url = backend_selector_mock.appliance_command_url
 
-    aioresponses_mock.get(
-        backend_selector_mock.websocket_url,
-        payload={"url": "wss://something"},
-    )
-    aioresponses_mock.get(
-        backend_selector_mock.get_appliance_data_url(oven.said), payload=DATA2
-    )
-
-    await oven.fetch_data()
-
-    await appliances_manager.connect()
-
     # add call, call method
     aioresponses_mock.post(url, payload=expected_payload)
     await method(oven, **arguments)
@@ -237,5 +179,3 @@ async def test_setters(
     # assert args and length
     aioresponses_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
-
-    await appliances_manager.disconnect()

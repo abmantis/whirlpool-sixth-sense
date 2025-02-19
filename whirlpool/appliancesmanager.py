@@ -79,6 +79,7 @@ class AppliancesManager:
             "ddm_cooking_bio_self_clean_tourmaline_v2",
         ]
 
+        LOGGER.debug("Adding appliance %s", appliance_data)
         if "airconditioner" in data_model:
             self._aircons[appliance_data.said] = Aircon(
                 self._backend_selector, self._auth, self._session, appliance_data
