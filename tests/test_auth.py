@@ -4,30 +4,33 @@ from http import HTTPStatus
 import pytest
 from yarl import URL
 
+from tests import ACCOUNT_ID
 from whirlpool.auth import AccountLockedError, Auth
 from whirlpool.backendselector import BackendSelector
 
-from .mock_backendselector import BackendSelectorMock, BackendSelectorMockMultipleCreds
-
-ACCOUNT_ID = "12345"
-BACKEND_SELECTOR_MOCK = BackendSelectorMock()
-BACKEND_SELECTOR_MOCK_MULTIPLE_CREDS = BackendSelectorMockMultipleCreds()
-
-AUTH_URL = f"{BACKEND_SELECTOR_MOCK.base_url}/oauth/token"
-AUTH_DATA = {
-    "client_id": BACKEND_SELECTOR_MOCK.client_credentials[0]["client_id"],
-    "client_secret": BACKEND_SELECTOR_MOCK.client_credentials[0]["client_secret"],
-    "grant_type": "password",
-    "username": "email",
-    "password": "secretpass",
-}
 AUTH_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
     "User-Agent": "okhttp/3.12.0",
 }
 
 
-async def test_auth_success(auth: Auth, aioresponses_mock):
+def get_auth_url(backend_selector: BackendSelector) -> str:
+    return f"{backend_selector.base_url}/oauth/token"
+
+
+def get_auth_data(backend_selector: BackendSelector) -> dict[str, str]:
+    return {
+        "client_id": backend_selector.client_credentials[0]["client_id"],
+        "client_secret": backend_selector.client_credentials[0]["client_secret"],
+        "grant_type": "password",
+        "username": "email",
+        "password": "secretpass",
+    }
+
+
+async def test_auth_success(
+    auth: Auth, backend_selector: BackendSelector, aioresponses_mock
+):
     mock_resp_data = {
         "access_token": "acess_token_123",
         "token_type": "bearer",
@@ -39,9 +42,11 @@ async def test_auth_success(auth: Auth, aioresponses_mock):
         "jti": "?????",
     }
 
+    auth_url = get_auth_url(backend_selector)
+
     # don't need repeat here because the first one will succeed
     # so we will only call this url once
-    aioresponses_mock.post(AUTH_URL, payload=mock_resp_data)
+    aioresponses_mock.post(auth_url, payload=mock_resp_data)
 
     await auth.do_auth(store=False)
     assert auth.is_access_token_valid()
@@ -49,21 +54,21 @@ async def test_auth_success(auth: Auth, aioresponses_mock):
     assert str(await auth.get_account_id()) == ACCOUNT_ID
 
     # assert that the proper method and url were used
-    assert ("POST", URL(AUTH_URL)) in aioresponses_mock.requests
+    assert ("POST", URL(auth_url)) in aioresponses_mock.requests
 
     # get the calls for the method/url and assert length
-    calls = aioresponses_mock.requests[("POST", URL(AUTH_URL))]
+    calls = aioresponses_mock.requests[("POST", URL(auth_url))]
     assert len(calls) == 1
 
     # actual call, as a tuple
     call = calls[0]
-    assert call[1]["data"] == AUTH_DATA
+    assert call[1]["data"] == get_auth_data(backend_selector)
     assert call[1]["headers"] == AUTH_HEADERS
 
 
 async def test_auth_will_check_all_client_creds(
     auth: Auth,
-    backend_selector_mock: BackendSelector,
+    backend_selector: BackendSelector,
     aioresponses_mock,
     caplog,
 ):
@@ -71,7 +76,8 @@ async def test_auth_will_check_all_client_creds(
     # other good way to check it
     caplog.set_level("DEBUG")
 
-    client_creds = backend_selector_mock.client_credentials
+    auth_url = get_auth_url(backend_selector)
+    client_creds = backend_selector.client_credentials
     expected = []
 
     for i in range(len(client_creds)):
@@ -79,7 +85,7 @@ async def test_auth_will_check_all_client_creds(
         # (or run out)
         status = HTTPStatus.NOT_FOUND if i != len(client_creds) else HTTPStatus.OK
         expected.append({"status": status})
-        aioresponses_mock.post(AUTH_URL, status=status)
+        aioresponses_mock.post(auth_url, status=status)
 
     await auth.do_auth(store=False)
 
@@ -97,10 +103,12 @@ async def test_auth_will_check_all_client_creds(
 
 
 async def test_auth_bad_credentials(
-    auth: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
+    auth: Auth, backend_selector: BackendSelector, aioresponses_mock
 ):
+    auth_url = get_auth_url(backend_selector)
+
     # need to repeat for the multiple client credentials mock
-    aioresponses_mock.post(AUTH_URL, status=HTTPStatus.BAD_REQUEST, repeat=True)
+    aioresponses_mock.post(auth_url, status=HTTPStatus.BAD_REQUEST, repeat=True)
 
     await auth.do_auth(store=False)
 
@@ -109,22 +117,23 @@ async def test_auth_bad_credentials(
     assert auth.get_said_list() is None
 
     # assert that the proper method and url were used
-    assert ("POST", URL(AUTH_URL)) in aioresponses_mock.requests
+    assert ("POST", URL(auth_url)) in aioresponses_mock.requests
 
     # get the calls for the method/url and assert length - should be the same as the
     # number of client credentials
-    calls = aioresponses_mock.requests[("POST", URL(AUTH_URL))]
-    assert len(calls) == len(backend_selector_mock.client_credentials)
+    calls = aioresponses_mock.requests[("POST", URL(auth_url))]
+    assert len(calls) == len(backend_selector.client_credentials)
 
     call = calls[0]
-    assert call[1]["data"] == AUTH_DATA
+    assert call[1]["data"] == get_auth_data(backend_selector)
     assert call[1]["headers"] == AUTH_HEADERS
 
 
 async def test_auth_account_locked(
-    auth: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
+    auth: Auth, backend_selector: BackendSelector, aioresponses_mock
 ):
-    aioresponses_mock.post(AUTH_URL, status=HTTPStatus.LOCKED, repeat=True)
+    auth_url = get_auth_url(backend_selector)
+    aioresponses_mock.post(auth_url, status=HTTPStatus.LOCKED, repeat=True)
 
     with pytest.raises(AccountLockedError):
         await auth.do_auth(store=False)
@@ -134,10 +143,10 @@ async def test_auth_account_locked(
 
 
 async def test_user_details_requested_only_once(
-    auth: Auth, backend_selector_mock: BackendSelector, aioresponses_mock
+    auth: Auth, backend_selector: BackendSelector, aioresponses_mock
 ):
     aioresponses_mock.get(
-        backend_selector_mock.user_details_url, payload={"accountId": ACCOUNT_ID}
+        backend_selector.user_details_url, payload={"accountId": ACCOUNT_ID}
     )
 
     headers = {
@@ -151,14 +160,13 @@ async def test_user_details_requested_only_once(
     await auth.get_account_id()
 
     aioresponses_mock.assert_called_with(
-        backend_selector_mock.user_details_url, "GET", headers=headers
+        backend_selector.user_details_url, "GET", headers=headers
     )
 
     assert auth._auth_dict["accountId"] == ACCOUNT_ID
 
     # aioresponses_mock.clear does not reset the requests list, so I'm
     # just checking that the length doesn't change instead
-
     curr_request_count = len(aioresponses_mock.requests)
 
     await auth.get_account_id()

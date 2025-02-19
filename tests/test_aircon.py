@@ -6,6 +6,7 @@ import pytest
 from yarl import URL
 
 from whirlpool.aircon import Aircon, FanSpeed, Mode
+from whirlpool.backendselector import BackendSelector
 
 
 async def test_attributes(appliances_manager: MagicMock):
@@ -62,7 +63,7 @@ async def test_attributes(appliances_manager: MagicMock):
 async def test_setters(
     appliances_manager: MagicMock,
     auth: MagicMock,
-    backend_selector_mock: MagicMock,
+    backend_selector: BackendSelector,
     aioresponses_mock: MagicMock,
     method: Callable,
     argument: Any,
@@ -77,7 +78,7 @@ async def test_setters(
     }
 
     post_request_call_kwargs = {
-        "url": backend_selector_mock.appliance_command_url,
+        "url": backend_selector.appliance_command_url,
         "method": "POST",
         "data": None,
         "json": expected_payload["json"],
@@ -85,7 +86,7 @@ async def test_setters(
         "headers": auth.create_headers(),
     }
 
-    url = backend_selector_mock.appliance_command_url
+    url = backend_selector.appliance_command_url
 
     # add call, call method
     aioresponses_mock.post(url, payload=expected_payload)
