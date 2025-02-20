@@ -1,4 +1,5 @@
 import json
+from collections.abc import AsyncGenerator, Generator
 
 import aiohttp
 import pytest
@@ -14,13 +15,13 @@ from . import ACCOUNT_ID, DATA_DIR
 
 
 @pytest.fixture
-def aioresponses_mock():
+def aioresponses_mock() -> Generator[aioresponses]:
     with aioresponses() as m:
         yield m
 
 
 @pytest_asyncio.fixture(scope="session")
-async def client_session_fixture():
+async def client_session_fixture() -> AsyncGenerator[aiohttp.ClientSession]:
     session = aiohttp.ClientSession()
     yield session
     await session.close()
@@ -32,15 +33,19 @@ def backen_selector_fixture() -> BackendSelector:
 
 
 @pytest.fixture(name="auth")
-def auth_fixture(backend_selector, client_session_fixture):
-    auth = Auth(backend_selector, "email", "secretpass", client_session_fixture)
-    yield auth
+def auth_fixture(
+    backend_selector: BackendSelector, client_session_fixture: aiohttp.ClientSession
+) -> Auth:
+    return Auth(backend_selector, "email", "secretpass", client_session_fixture)
 
 
 @pytest.fixture(name="appliances_manager")
 async def appliances_manager_fixture(
-    auth, backend_selector, client_session_fixture, aioresponses_mock
-):
+    auth: Auth,
+    backend_selector: BackendSelector,
+    client_session_fixture: aiohttp.ClientSession,
+    aioresponses_mock: aioresponses,
+) -> AsyncGenerator[AppliancesManager]:
     with open(DATA_DIR / "owned_appliances.json") as f:
         owned_appliance_data = json.load(f)
 
@@ -77,7 +82,6 @@ async def appliances_manager_fixture(
             backend_selector.get_appliance_data_url(said),
             payload=mock_data[said],
         )
-
     await appliances_manager.connect()
     yield appliances_manager
     await appliances_manager.disconnect()

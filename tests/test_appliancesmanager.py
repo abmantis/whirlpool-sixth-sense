@@ -1,15 +1,16 @@
-from unittest.mock import MagicMock
-
 import pytest
+from aioresponses import aioresponses
 
 from tests import ACCOUNT_ID
+from whirlpool.auth import Auth
+from whirlpool.backendselector import BackendSelector
 
 
 @pytest.mark.usefixtures("appliances_manager")
 async def test_fetch_appliances_calls_owned_and_shared_methods(
-    auth: MagicMock,
-    backend_selector: MagicMock,
-    aioresponses_mock: MagicMock,
+    auth: Auth,
+    backend_selector: BackendSelector,
+    aioresponses_mock: aioresponses,
 ):
     headers = auth.create_headers()
     shared_headers = {**headers, "WP-CLIENT-BRAND": backend_selector.brand.name}
