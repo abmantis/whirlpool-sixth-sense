@@ -1,13 +1,16 @@
 from collections.abc import Callable
-from unittest.mock import MagicMock
 
 import pytest
+from aioresponses import aioresponses
 from yarl import URL
 
+from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.auth import Auth
+from whirlpool.backendselector import BackendSelector
 from whirlpool.oven import Cavity, CavityState, CookMode, Oven
 
 
-async def test_attributes(appliances_manager: MagicMock):
+async def test_attributes(appliances_manager: AppliancesManager):
     oven1 = appliances_manager.ovens[0]
     assert oven1.get_online() is True
     assert oven1.get_door_opened() is False
@@ -145,10 +148,10 @@ async def test_attributes(appliances_manager: MagicMock):
     ],
 )
 async def test_setters(
-    appliances_manager: MagicMock,
-    auth: MagicMock,
-    backend_selector: MagicMock,
-    aioresponses_mock: MagicMock,
+    appliances_manager: AppliancesManager,
+    auth: Auth,
+    backend_selector: BackendSelector,
+    aioresponses_mock: aioresponses,
     method: Callable,
     arguments: dict,
     expected_json: dict,

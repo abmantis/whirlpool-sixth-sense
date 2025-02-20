@@ -2,6 +2,7 @@ import sys
 from http import HTTPStatus
 
 import pytest
+from aioresponses import aioresponses
 from yarl import URL
 
 from tests import ACCOUNT_ID
@@ -29,7 +30,7 @@ def get_auth_data(backend_selector: BackendSelector) -> dict[str, str]:
 
 
 async def test_auth_success(
-    auth: Auth, backend_selector: BackendSelector, aioresponses_mock
+    auth: Auth, backend_selector: BackendSelector, aioresponses_mock: aioresponses
 ):
     mock_resp_data = {
         "access_token": "acess_token_123",
@@ -69,8 +70,8 @@ async def test_auth_success(
 async def test_auth_will_check_all_client_creds(
     auth: Auth,
     backend_selector: BackendSelector,
-    aioresponses_mock,
-    caplog,
+    aioresponses_mock: aioresponses,
+    caplog: pytest.LogCaptureFixture,
 ):
     # need to capture at debug level to get status - we don't return status or have any
     # other good way to check it
@@ -103,7 +104,7 @@ async def test_auth_will_check_all_client_creds(
 
 
 async def test_auth_bad_credentials(
-    auth: Auth, backend_selector: BackendSelector, aioresponses_mock
+    auth: Auth, backend_selector: BackendSelector, aioresponses_mock: aioresponses
 ):
     auth_url = get_auth_url(backend_selector)
 
@@ -130,7 +131,7 @@ async def test_auth_bad_credentials(
 
 
 async def test_auth_account_locked(
-    auth: Auth, backend_selector: BackendSelector, aioresponses_mock
+    auth: Auth, backend_selector: BackendSelector, aioresponses_mock: aioresponses
 ):
     auth_url = get_auth_url(backend_selector)
     aioresponses_mock.post(auth_url, status=HTTPStatus.LOCKED, repeat=True)
@@ -143,7 +144,7 @@ async def test_auth_account_locked(
 
 
 async def test_user_details_requested_only_once(
-    auth: Auth, backend_selector: BackendSelector, aioresponses_mock
+    auth: Auth, backend_selector: BackendSelector, aioresponses_mock: aioresponses
 ):
     aioresponses_mock.get(
         backend_selector.user_details_url, payload={"accountId": ACCOUNT_ID}
