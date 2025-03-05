@@ -28,7 +28,7 @@ class Appliance:
         backend_selector: BackendSelector,
         auth: Auth,
         session: aiohttp.ClientSession,
-        appliance_data: ApplianceInfo,
+        appliance_info: ApplianceInfo,
     ):
         self._backend_selector = backend_selector
         self._auth = auth
@@ -36,7 +36,7 @@ class Appliance:
 
         self._attr_changed: list[Callable] = []
         self._data_dict: dict = {}
-        self._appliance_data = appliance_data
+        self.appliance_info = appliance_info
 
     def __repr__(self):
         return f"<{self.__class__.__name__}> {self.said} | {self.name}"
@@ -44,12 +44,12 @@ class Appliance:
     @property
     def said(self) -> str:
         """Return Appliance SAID"""
-        return self._appliance_data.said
+        return self.appliance_info.said
 
     @property
     def name(self) -> str:
         """Return Appliance name"""
-        return self._appliance_data.name
+        return self.appliance_info.name
 
     async def fetch_data(self) -> bool:
         """Fetch appliance data from web api"""
