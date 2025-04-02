@@ -130,15 +130,15 @@ class Appliance:
         self._data_dict["attributes"][attribute]["value"] = value
         self._data_dict["attributes"][attribute]["updateTime"] = timestamp
 
-    def get_attribute(self, attribute: str) -> str | None:
+    def _get_attribute(self, attribute: str) -> str | None:
         """Get attribute from local data dictionary"""
         if not self.has_attribute(attribute):
             return None
         return self._data_dict["attributes"][attribute]["value"]
 
-    def get_int_attribute(self, attribute: str) -> int | None:
+    def _get_int_attribute(self, attribute: str) -> int | None:
         """Get attribute from local data as int"""
-        val = self.get_attribute(attribute)
+        val = self._get_attribute(attribute)
         return None if val is None else int(val)
 
     def has_attribute(self, attribute: str) -> bool:
@@ -158,4 +158,4 @@ class Appliance:
 
     def get_online(self) -> bool | None:
         """Get online state for appliance"""
-        return self.attr_value_to_bool(self.get_attribute(ATTR_ONLINE))
+        return self.attr_value_to_bool(self._get_attribute(ATTR_ONLINE))

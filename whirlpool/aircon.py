@@ -80,20 +80,20 @@ FANSPEED_MAP = {
 
 class Aircon(Appliance):
     def get_current_temp(self) -> float | None:
-        raw_temp = self.get_int_attribute(ATTR_DISPLAY_TEMP)
+        raw_temp = self._get_int_attribute(ATTR_DISPLAY_TEMP)
         return raw_temp / 10 if raw_temp is not None else None
 
     def get_current_humidity(self) -> int | None:
-        return self.get_int_attribute(ATTR_DISPLAY_HUMID)
+        return self._get_int_attribute(ATTR_DISPLAY_HUMID)
 
     def get_power_on(self) -> bool | None:
-        return self.attr_value_to_bool(self.get_attribute(SETTING_POWER))
+        return self.attr_value_to_bool(self._get_attribute(SETTING_POWER))
 
     async def set_power_on(self, on: bool):
         await self.send_attributes({SETTING_POWER: self.bool_to_attr_value(on)})
 
     def get_temp(self) -> float | None:
-        raw_temp = self.get_int_attribute(SETTING_TEMP)
+        raw_temp = self._get_int_attribute(SETTING_TEMP)
         return raw_temp / 10 if raw_temp is not None else None
 
     async def set_temp(self, temp: float):
@@ -101,13 +101,13 @@ class Aircon(Appliance):
         await self.send_attributes({SETTING_TEMP: str(tempint)})
 
     def get_humidity(self) -> int | None:
-        return self.get_int_attribute(SETTING_HUMIDITY)
+        return self._get_int_attribute(SETTING_HUMIDITY)
 
     async def set_humidity(self, temp: int):
         await self.send_attributes({SETTING_HUMIDITY: str(temp)})
 
     def get_mode(self) -> Mode | None:
-        mode_raw = self.get_attribute(ATTR_MODE)
+        mode_raw = self._get_attribute(ATTR_MODE)
         if mode_raw in [ATTRVAL_MODE_COOL, ATTRVAL_MODE_SIXTH_SENSE_COOL]:
             return Mode.Cool
         if mode_raw in [ATTRVAL_MODE_HEAT, ATTRVAL_MODE_SIXTH_SENSE_HEAT]:
@@ -117,7 +117,7 @@ class Aircon(Appliance):
         return None
 
     def get_sixthsense_mode(self) -> bool:
-        return self.get_attribute(SETTING_MODE) == SETVAL_MODE_SIXTH_SENSE
+        return self._get_attribute(SETTING_MODE) == SETVAL_MODE_SIXTH_SENSE
 
     async def set_mode(self, mode: Mode):
         if mode not in MODES_MAP:
@@ -125,7 +125,7 @@ class Aircon(Appliance):
         await self.send_attributes({SETTING_MODE: MODES_MAP[mode]})
 
     def get_fanspeed(self) -> FanSpeed | None:
-        fanspeed_raw = self.get_attribute(SETTING_FAN_SPEED)
+        fanspeed_raw = self._get_attribute(SETTING_FAN_SPEED)
         for k, v in FANSPEED_MAP.items():
             if v == fanspeed_raw:
                 return k
@@ -137,7 +137,7 @@ class Aircon(Appliance):
         await self.send_attributes({SETTING_FAN_SPEED: FANSPEED_MAP[speed]})
 
     def get_h_louver_swing(self) -> bool | None:
-        return self.attr_value_to_bool(self.get_attribute(SETTING_HORZ_LOUVER_SWING))
+        return self.attr_value_to_bool(self._get_attribute(SETTING_HORZ_LOUVER_SWING))
 
     async def set_h_louver_swing(self, swing: bool):
         await self.send_attributes(
@@ -145,26 +145,26 @@ class Aircon(Appliance):
         )
 
     def get_turbo_mode(self) -> bool | None:
-        return self.attr_value_to_bool(self.get_attribute(SETTING_TURBO_MODE))
+        return self.attr_value_to_bool(self._get_attribute(SETTING_TURBO_MODE))
 
     async def set_turbo_mode(self, turbo: bool):
         await self.send_attributes({SETTING_TURBO_MODE: self.bool_to_attr_value(turbo)})
 
     def get_eco_mode(self) -> bool | None:
-        return self.attr_value_to_bool(self.get_attribute(SETTING_ECO_MODE))
+        return self.attr_value_to_bool(self._get_attribute(SETTING_ECO_MODE))
 
     async def set_eco_mode(self, eco: bool):
         await self.send_attributes({SETTING_ECO_MODE: self.bool_to_attr_value(eco)})
 
     def get_quiet_mode(self) -> bool | None:
-        return self.attr_value_to_bool(self.get_attribute(SETTING_QUIET_MODE))
+        return self.attr_value_to_bool(self._get_attribute(SETTING_QUIET_MODE))
 
     async def set_quiet_mode(self, quiet: bool):
         await self.send_attributes({SETTING_QUIET_MODE: self.bool_to_attr_value(quiet)})
 
     def get_display_on(self) -> bool | None:
         return (
-            self.get_attribute(SETTING_DISPLAY_BRIGHTNESS)
+            self._get_attribute(SETTING_DISPLAY_BRIGHTNESS)
             == SETVAL_DISPLAY_BRIGHTNESS_ON
         )
 
