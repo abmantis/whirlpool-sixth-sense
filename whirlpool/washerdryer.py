@@ -11,7 +11,10 @@ ATTR_CYCLE_STATUS_SOAKING = "WashCavity_CycleStatusSoaking"
 ATTR_CYCLE_STATUS_WASHING = "WashCavity_CycleStatusWashing"
 ATTR_CYCLE_STATUS_RINSING = "WashCavity_CycleStatusRinsing"
 ATTR_CYCLE_STATUS_SPINNING = "WashCavity_CycleStatusSpinning"
+ATTR_DISPENSE_1_LEVEL = "WashCavity_OpStatusBulkDispense1Level"
+ATTR_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
 ATTR_MACHINE_STATE = "Cavity_CycleStatusMachineState"
+ATTR_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
 
 ATTRVAL_MACHINE_STATE_STANDBY = "0"
 ATTRVAL_MACHINE_STATE_SETTING = "1"
@@ -80,27 +83,36 @@ MACHINE_STATE_MAP = {
 
 
 class WasherDryer(Appliance):
-    def get_machine_state(self):
+    def get_machine_state(self) -> MachineState | None:
         state_raw = self.get_attribute(ATTR_MACHINE_STATE)
         for k, v in MACHINE_STATE_MAP.items():
             if v == state_raw:
                 return k
         return None
 
-    def get_cycle_status_sensing(self):
+    def get_cycle_status_sensing(self) -> bool | None:
         return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_SENSING))
 
-    def get_cycle_status_filling(self):
+    def get_cycle_status_filling(self) -> bool | None:
         return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_FILLING))
 
-    def get_cycle_status_soaking(self):
+    def get_cycle_status_soaking(self) -> bool | None:
         return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_SOAKING))
 
-    def get_cycle_status_washing(self):
+    def get_cycle_status_washing(self) -> bool | None:
         return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_WASHING))
 
-    def get_cycle_status_rinsing(self):
+    def get_cycle_status_rinsing(self) -> bool | None:
         return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_RINSING))
 
-    def get_cycle_status_spinning(self):
+    def get_cycle_status_spinning(self) -> bool | None:
         return self.attr_value_to_bool(self.get_attribute(ATTR_CYCLE_STATUS_SPINNING))
+
+    def get_dispense_1_level(self) -> int | None:
+        return self.get_int_attribute(ATTR_DISPENSE_1_LEVEL)
+
+    def get_door_open(self) -> bool | None:
+        return self.attr_value_to_bool(self.get_attribute(ATTR_DOOR_OPEN))
+
+    def get_time_remaining(self) -> int | None:
+        return self.get_int_attribute(ATTR_TIME_REMAINING)
