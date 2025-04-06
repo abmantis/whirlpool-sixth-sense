@@ -5,9 +5,10 @@ import logging
 import aiohttp
 
 from cli_ac_menu import show_aircon_menu
+from cli_dryer_menu import show_dryer_menu
 from cli_oven_menu import show_oven_menu
 from cli_refrigerator_menu import show_refrigerator_menu
-from cli_washerdryer_menu import show_washerdryer_menu
+from cli_washer_menu import show_washer_menu
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector, Brand, Region
@@ -99,9 +100,14 @@ async def start():
                     await show_aircon_menu(ac_data)
                     return
 
-            for wd_data in appliance_manager.washer_dryers:
-                if wd_data.said == args.said:
-                    await show_washerdryer_menu(wd_data)
+            for dr_data in appliance_manager.dryers:
+                if dr_data.said == args.said:
+                    await show_dryer_menu(dr_data)
+                    return
+
+            for wr_data in appliance_manager.washers:
+                if wr_data.said == args.said:
+                    await show_washer_menu(wr_data)
                     return
 
             for mo_data in appliance_manager.ovens:

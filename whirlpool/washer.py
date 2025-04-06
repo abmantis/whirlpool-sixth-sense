@@ -82,7 +82,7 @@ MACHINE_STATE_MAP = {
 }
 
 
-class WasherDryer(Appliance):
+class Washer(Appliance):
     def get_machine_state(self) -> MachineState | None:
         state_raw = self._get_attribute(ATTR_MACHINE_STATE)
         for k, v in MACHINE_STATE_MAP.items():
