@@ -101,7 +101,7 @@
         "CREATED_AT": 1693943005000,
         "UPDATED_AT": 1693943005000,
         "APPLIANCE_NAME": "Dryer",
-        "SAID": "WPR01xxx1234x",
+        "SAID": "SAIDDRYER1",
         "NEST_AWAY": 0,
         "CYCLE_HANDOFF": 0,
         "NEST_THERMOSTAT_ID": 0,
