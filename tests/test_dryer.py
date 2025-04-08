@@ -14,7 +14,6 @@ from whirlpool.dryer import MachineState
 async def test_attributes(appliances_manager: AppliancesManager):
     dryer1 = appliances_manager.dryers[0]
     assert dryer1.get_machine_state() == MachineState.Standby
-    assert dryer1.get_machine_state_value() == 0
     assert dryer1.get_op_status_dooropen() is False
     assert dryer1.get_time_status_est_time_remaining() == 1800
     assert dryer1.get_drum_light_on() == 0

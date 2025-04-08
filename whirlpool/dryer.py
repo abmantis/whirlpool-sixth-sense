@@ -149,9 +149,6 @@ class Dryer(Appliance):
         state_raw = self._get_attribute(ATTR_MACHINE_STATE) or ""
         return MACHINE_STATE_MAP.get(state_raw, None)
 
-    def get_machine_state_value(self) -> int | None:
-        return self._get_int_attribute(ATTR_MACHINE_STATE)
-
     def get_op_status_dooropen(self) -> bool | None:
         return self.attr_value_to_bool(
             self._get_attribute(ATTR_OP_STATUS_DOOR_OPEN)
