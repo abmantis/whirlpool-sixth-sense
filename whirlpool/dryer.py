@@ -10,41 +10,41 @@ ATTR_MACHINE_STATE = "Cavity_CycleStatusMachineState"
 
 ATTRVAL_MACHINE_STATE_STANDBY = "0"
 ATTRVAL_MACHINE_STATE_SETTING = "1"
-ATTRVAL_MACHINE_STATE_DELAYCOUNTDOWNMODE = "2"
-ATTRVAL_MACHINE_STATE_DELAYPAUSE = "3"
-ATTRVAL_MACHINE_STATE_SMARTDELAY = "4"
-ATTRVAL_MACHINE_STATE_SMARTGRIDPAUSE = "5"
+ATTRVAL_MACHINE_STATE_DELAY_COUNT_DOWN_MODE = "2"
+ATTRVAL_MACHINE_STATE_DELAY_PAUSE = "3"
+ATTRVAL_MACHINE_STATE_SMART_DELAY = "4"
+ATTRVAL_MACHINE_STATE_SMART_GRID_PAUSE = "5"
 ATTRVAL_MACHINE_STATE_PAUSE = "6"
-ATTRVAL_MACHINE_STATE_RUNNINGMAINCYCLE = "7"
-ATTRVAL_MACHINE_STATE_RUNNINGPOSTCYCLE = "8"
+ATTRVAL_MACHINE_STATE_RUNNING_MAIN_CYCLE = "7"
+ATTRVAL_MACHINE_STATE_RUNNING_POST_CYCLE = "8"
 ATTRVAL_MACHINE_STATE_EXCEPTIONS = "9"
 ATTRVAL_MACHINE_STATE_COMPLETE = "10"
-ATTRVAL_MACHINE_STATE_POWERFAILURE = "11"
-ATTRVAL_MACHINE_STATE_SERVICEDIAGNOSTIC = "12"
-ATTRVAL_MACHINE_STATE_FACTORYDIAGNOSTIC = "13"
-ATTRVAL_MACHINE_STATE_LIFETEST = "14"
-ATTRVAL_MACHINE_STATE_CUSTOMERFOCUSMODE = "15"
-ATTRVAL_MACHINE_STATE_DEMOMODE = "16"
-ATTRVAL_MACHINE_STATE_HARDSTOPORERROR = "17"
-ATTRVAL_MACHINE_STATE_SYSTEMINIT = "18"
-ATTRVAL_MACHINE_STATE_MYSTERY = "19" # Observed on "Maytag MGD6230HW3"
+ATTRVAL_MACHINE_STATE_POWER_FAILURE = "11"
+ATTRVAL_MACHINE_STATE_SERVICE_DIAGNOSTIC = "12"
+ATTRVAL_MACHINE_STATE_FACTORY_DIAGNOSTIC = "13"
+ATTRVAL_MACHINE_STATE_LIFE_TEST = "14"
+ATTRVAL_MACHINE_STATE_CUSTOMER_FOCUS_MODE = "15"
+ATTRVAL_MACHINE_STATE_DEMO_MODE = "16"
+ATTRVAL_MACHINE_STATE_HARD_STOP_OR_ERROR = "17"
+ATTRVAL_MACHINE_STATE_SYSTEM_INIT = "18"
+ATTRVAL_MACHINE_STATE_CANCELLED = "19"
 
 # Cavity
-ATTR_OP_STATUS_DOOROPEN = "Cavity_OpStatusDoorOpen"
-ATTR_TIME_STATUS_ESTTIMEREMAINING = "Cavity_TimeStatusEstTimeRemaining"
-ATTR_DISPLAY_SET_DRUMLIGHTON = "Cavity_DisplaySetDrumLightOn"
+ATTR_OP_STATUS_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
+ATTR_TIME_STATUS_EST_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
+ATTR_DISPLAY_SET_DRUM_LIGHT_ON = "Cavity_DisplaySetDrumLightOn"
 
 # DryCavity
-ATTR_CHANGE_STATUS_EXTRAPOWERCHANGEABLE = "Cavity_ChangeStatusExtraPowerChangeable"
-ATTR_CHANGE_STATUS_STEAMCHANGEABLE = "Cavity_ChangeStatusSteamChangeable"
-ATTR_CHANGE_STATUS_CYCLESELECT = "DryCavity_ChangeStatusCycleSelect"
+ATTR_CHANGE_STATUS_EXTRA_POWER_CHANGEABLE = "Cavity_ChangeStatusExtraPowerChangeable"
+ATTR_CHANGE_STATUS_STEAM_CHANGEABLE = "Cavity_ChangeStatusSteamChangeable"
+ATTR_CHANGE_STATUS_CYCLE_SELECT = "DryCavity_ChangeStatusCycleSelect"
 ATTR_CHANGE_STATUS_DRYNESS = "DryCavity_ChangeStatusDryness"
-ATTR_CHANGE_STATUS_MANUALDRYTIME = "DryCavity_ChangeStatusManualDryTime"
-ATTR_CHANGE_STATUS_STATICGUARD = "DryCavity_ChangeStatusStaticGuard"
+ATTR_CHANGE_STATUS_MANUAL_DRY_TIME = "DryCavity_ChangeStatusManualDryTime"
+ATTR_CHANGE_STATUS_STATIC_GUARD = "DryCavity_ChangeStatusStaticGuard"
 ATTR_CHANGE_STATUS_TEMPERATURE = "DryCavity_ChangeStatusTemperature"
-ATTR_CHANGE_STATUS_WRINKLESHIELD = "DryCavity_ChangeStatusWrinkleShield"
+ATTR_CHANGE_STATUS_WRINKLE_SHIELD = "DryCavity_ChangeStatusWrinkleShield"
 
-ATTR_CYCLE_SET_CYCLESELECT = "DryCavity_CycleSetCycleSelect"
+ATTR_CYCLE_SET_CYCLE_SELECT = "DryCavity_CycleSetCycleSelect"
 
 ATTRVAL_CYCLESET_REGULAR = 1
 ATTRVAL_CYCLESET_HEAVY_DUTY = 2
@@ -63,8 +63,8 @@ ATTRVAL_DRYNESS_LOW = 1
 ATTRVAL_DRYNESS_NORMAL = 4
 ATTRVAL_DRYNESS_HIGH = 7
 
-ATTR_CYCLE_SET_MANUALDRYTIME = "DryCavity_CycleSetManualDryTime"
-ATTR_CYCLE_SET_WRINKLESHIELD = "DryCavity_CycleSetWrinkleShield"
+ATTR_CYCLE_SET_MANUAL_DRY_TIME = "DryCavity_CycleSetManualDryTime"
+ATTR_CYCLE_SET_WRINKLE_SHIELD = "DryCavity_CycleSetWrinkleShield"
 
 ATTR_CYCLE_SET_TEMPERATURE = "DryCavity_CycleSetTemperature"
 
@@ -74,29 +74,29 @@ ATTRVAL_TEMPERATURE_MEDIUM_HIGH = 6
 ATTRVAL_TEMPERATURE_HIGH = 8
 
 
-ATTR_CYCLE_STATUS_AIRFLOWSTATUS = "DryCavity_CycleStatusAirFlowStatus"
-ATTR_CYCLE_STATUS_COOLDOWN = "DryCavity_CycleStatusCoolDown"
+ATTR_CYCLE_STATUS_AIR_FLOW_STATUS = "DryCavity_CycleStatusAirFlowStatus"
+ATTR_CYCLE_STATUS_COOL_DOWN = "DryCavity_CycleStatusCoolDown"
 ATTR_CYCLE_STATUS_DAMP = "DryCavity_CycleStatusDamp"
 ATTR_CYCLE_STATUS_DRYING = "DryCavity_CycleStatusDrying"
-ATTR_CYCLE_STATUS_LIMITEDCYCLE = "DryCavity_CycleStatusLimitedCycle"
+ATTR_CYCLE_STATUS_LIMITED_CYCLE = "DryCavity_CycleStatusLimitedCycle"
 ATTR_CYCLE_STATUS_SENSING = "DryCavity_CycleStatusSensing"
-ATTR_CYCLE_STATUS_STATICREDUCE = "DryCavity_CycleStatusStaticReduce"
+ATTR_CYCLE_STATUS_STATIC_REDUCE = "DryCavity_CycleStatusStaticReduce"
 ATTR_CYCLE_STATUS_STEAMING = "DryCavity_CycleStatusSteaming"
 ATTR_CYCLE_STATUS_WET = "DryCavity_CycleStatusWet"
 
 # DrySys
-ATTR_OP_SET_DAMPNOTIFICATIONTONEVOLUME = "DrySys_OpSetDampNotificationToneVolume" 
+ATTR_OP_SET_DAMP_NOTIFICATION_TONE_VOLUME = "DrySys_OpSetDampNotificationToneVolume" 
 
 # Sys
-ATTR_OP_SET_ALERTTONEVOLUME = "Sys_OpSetAlertToneVolume"
+ATTR_OP_SET_ALERT_TONE_VOLUME = "Sys_OpSetAlertToneVolume"
 
 # XCat
-ATTR_ODOMETER_STATUS_CYCLECOUNT = "XCat_OdometerStatusCycleCount"
-ATTR_ODOMETER_STATUS_RUNNINGHOURS = "XCat_OdometerStatusRunningHours"
-ATTR_ODOMETER_STATUS_TOTALHOURS = "XCat_OdometerStatusTotalHours"
+ATTR_ODOMETER_STATUS_CYCLE_COUNT = "XCat_OdometerStatusCycleCount"
+ATTR_ODOMETER_STATUS_RUNNING_HOURS = "XCat_OdometerStatusRunningHours"
+ATTR_ODOMETER_STATUS_TOTAL_HOURS = "XCat_OdometerStatusTotalHours"
 
-ATTR_WIFI_STATUS_ISPCHECK = "XCat_WifiStatusIspCheck"
-ATTR_WIFI_STATUS_RSSIANTENNADIVERSITY = "XCat_WifiStatusRssiAntennaDiversity"
+ATTR_WIFI_STATUS_ISP_CHECK = "XCat_WifiStatusIspCheck"
+ATTR_WIFI_STATUS_RSSI_ANTENNA_DIVERSITY = "XCat_WifiStatusRssiAntennaDiversity"
 
 
 class MachineState(Enum):
@@ -119,29 +119,29 @@ class MachineState(Enum):
     DemoMode = 16
     HardStopOrError = 17
     SystemInit = 18
-    Mystery = 19
+    Cancelled = 19
 
 
 MACHINE_STATE_MAP = {
     MachineState.Standby: ATTRVAL_MACHINE_STATE_STANDBY,
     MachineState.Setting: ATTRVAL_MACHINE_STATE_SETTING,
-    MachineState.DelayCountdownMode: ATTRVAL_MACHINE_STATE_DELAYCOUNTDOWNMODE,
-    MachineState.DelayPause: ATTRVAL_MACHINE_STATE_DELAYPAUSE,
-    MachineState.SmartDelay: ATTRVAL_MACHINE_STATE_SMARTDELAY,
-    MachineState.SmartGridPause: ATTRVAL_MACHINE_STATE_SMARTGRIDPAUSE,
+    MachineState.DelayCountdownMode: ATTRVAL_MACHINE_STATE_DELAY_COUNT_DOWN_MODE,
+    MachineState.DelayPause: ATTRVAL_MACHINE_STATE_DELAY_PAUSE,
+    MachineState.SmartDelay: ATTRVAL_MACHINE_STATE_SMART_DELAY,
+    MachineState.SmartGridPause: ATTRVAL_MACHINE_STATE_SMART_GRID_PAUSE,
     MachineState.Pause: ATTRVAL_MACHINE_STATE_PAUSE,
-    MachineState.RunningMainCycle: ATTRVAL_MACHINE_STATE_RUNNINGMAINCYCLE,
-    MachineState.RunningPostCycle: ATTRVAL_MACHINE_STATE_RUNNINGPOSTCYCLE,
+    MachineState.RunningMainCycle: ATTRVAL_MACHINE_STATE_RUNNING_MAIN_CYCLE,
+    MachineState.RunningPostCycle: ATTRVAL_MACHINE_STATE_RUNNING_POST_CYCLE,
     MachineState.Exceptions: ATTRVAL_MACHINE_STATE_EXCEPTIONS,
     MachineState.Complete: ATTRVAL_MACHINE_STATE_COMPLETE,
-    MachineState.PowerFailure: ATTRVAL_MACHINE_STATE_POWERFAILURE,
-    MachineState.ServiceDiagnostic: ATTRVAL_MACHINE_STATE_SERVICEDIAGNOSTIC,
-    MachineState.FactoryDiagnostic: ATTRVAL_MACHINE_STATE_FACTORYDIAGNOSTIC,
-    MachineState.LifeTest: ATTRVAL_MACHINE_STATE_LIFETEST,
-    MachineState.CustomerFocusMode: ATTRVAL_MACHINE_STATE_CUSTOMERFOCUSMODE,
-    MachineState.DemoMode: ATTRVAL_MACHINE_STATE_DEMOMODE,
-    MachineState.HardStopOrError: ATTRVAL_MACHINE_STATE_HARDSTOPORERROR,
-    MachineState.SystemInit: ATTRVAL_MACHINE_STATE_SYSTEMINIT,
+    MachineState.PowerFailure: ATTRVAL_MACHINE_STATE_POWER_FAILURE,
+    MachineState.ServiceDiagnostic: ATTRVAL_MACHINE_STATE_SERVICE_DIAGNOSTIC,
+    MachineState.FactoryDiagnostic: ATTRVAL_MACHINE_STATE_FACTORY_DIAGNOSTIC,
+    MachineState.LifeTest: ATTRVAL_MACHINE_STATE_LIFE_TEST,
+    MachineState.CustomerFocusMode: ATTRVAL_MACHINE_STATE_CUSTOMER_FOCUS_MODE,
+    MachineState.DemoMode: ATTRVAL_MACHINE_STATE_DEMO_MODE,
+    MachineState.HardStopOrError: ATTRVAL_MACHINE_STATE_HARD_STOP_OR_ERROR,
+    MachineState.SystemInit: ATTRVAL_MACHINE_STATE_SYSTEM_INIT,
 }
 
 
@@ -158,29 +158,29 @@ class Dryer(Appliance):
 
     def get_op_status_dooropen(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_OP_STATUS_DOOROPEN)
+            self._get_attribute(ATTR_OP_STATUS_DOOR_OPEN)
         )
 
     def get_time_status_est_time_remaining(self) -> int | None:
-        return self._get_int_attribute(ATTR_TIME_STATUS_ESTTIMEREMAINING)
+        return self._get_int_attribute(ATTR_TIME_STATUS_EST_TIME_REMAINING)
 
     def get_drum_light_on(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_DISPLAY_SET_DRUMLIGHTON)
+            self._get_attribute(ATTR_DISPLAY_SET_DRUM_LIGHT_ON)
         )
 
     def get_change_status_extrapowerchangeable(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CHANGE_STATUS_EXTRAPOWERCHANGEABLE)
+            self._get_attribute(ATTR_CHANGE_STATUS_EXTRA_POWER_CHANGEABLE)
         )
 
     def get_change_status_steamchangeable(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CHANGE_STATUS_STEAMCHANGEABLE)
+            self._get_attribute(ATTR_CHANGE_STATUS_STEAM_CHANGEABLE)
         )
 
     def get_change_status_cycleselect(self) -> int | None:
-        return self._get_int_attribute(ATTR_CHANGE_STATUS_CYCLESELECT)
+        return self._get_int_attribute(ATTR_CHANGE_STATUS_CYCLE_SELECT)
 
     def get_change_status_dryness(self) -> bool | None:
         return self.attr_value_to_bool(
@@ -188,11 +188,11 @@ class Dryer(Appliance):
         )
 
     def get_change_status_manualdrytime(self) -> int | None:
-        return self._get_int_attribute(ATTR_CHANGE_STATUS_MANUALDRYTIME)
+        return self._get_int_attribute(ATTR_CHANGE_STATUS_MANUAL_DRY_TIME)
 
     def get_change_status_staticguard(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CHANGE_STATUS_STATICGUARD)
+            self._get_attribute(ATTR_CHANGE_STATUS_STATIC_GUARD)
         )
 
     def get_change_status_temperature(self) -> int | None:
@@ -200,26 +200,26 @@ class Dryer(Appliance):
 
     def get_change_status_wrinkleshield(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CHANGE_STATUS_WRINKLESHIELD)
+            self._get_attribute(ATTR_CHANGE_STATUS_WRINKLE_SHIELD)
         )
 
     def get_dryness(self) -> int | None:
         return self._get_int_attribute(ATTR_CYCLE_SET_DRYNESS)
 
     def get_manual_dry_time(self) -> int | None:
-        return self._get_int_attribute(ATTR_CYCLE_SET_MANUALDRYTIME)
+        return self._get_int_attribute(ATTR_CYCLE_SET_MANUAL_DRY_TIME)
 
     def get_cycle_select(self) -> int | None:
-        return self._get_int_attribute(ATTR_CYCLE_SET_CYCLESELECT)
+        return self._get_int_attribute(ATTR_CYCLE_SET_CYCLE_SELECT)
 
     def get_cycle_status_airflow_status(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_AIRFLOWSTATUS)
+            self._get_attribute(ATTR_CYCLE_STATUS_AIR_FLOW_STATUS)
         )
 
     def get_cycle_status_cool_down(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_COOLDOWN)
+            self._get_attribute(ATTR_CYCLE_STATUS_COOL_DOWN)
         )
 
     def get_cycle_status_damp(self) -> bool | None:
@@ -234,7 +234,7 @@ class Dryer(Appliance):
 
     def get_cycle_status_limited_cycle(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_LIMITEDCYCLE)
+            self._get_attribute(ATTR_CYCLE_STATUS_LIMITED_CYCLE)
         )
 
     def get_cycle_status_sensing(self) -> bool | None:
@@ -244,7 +244,7 @@ class Dryer(Appliance):
 
     def get_cycle_status_static_reduce(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_STATICREDUCE)
+            self._get_attribute(ATTR_CYCLE_STATUS_STATIC_REDUCE)
         )
 
     def get_cycle_status_steaming(self) -> bool | None:
@@ -258,31 +258,31 @@ class Dryer(Appliance):
         )
 
     def get_odometer_status_cycle_count(self) -> int | None:
-        return self._get_int_attribute(ATTR_ODOMETER_STATUS_CYCLECOUNT)
+        return self._get_int_attribute(ATTR_ODOMETER_STATUS_CYCLE_COUNT)
 
     def get_odometer_status_running_hours(self) -> int | None:
-        return self._get_int_attribute(ATTR_ODOMETER_STATUS_RUNNINGHOURS)
+        return self._get_int_attribute(ATTR_ODOMETER_STATUS_RUNNING_HOURS)
 
     def get_odometer_status_total_hours(self) -> int | None:
-        return self._get_int_attribute(ATTR_ODOMETER_STATUS_TOTALHOURS)
+        return self._get_int_attribute(ATTR_ODOMETER_STATUS_TOTAL_HOURS)
 
     def get_wifi_status_isp_check(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_WIFI_STATUS_ISPCHECK)
+            self._get_attribute(ATTR_WIFI_STATUS_ISP_CHECK)
         )
 
     def get_wifi_status_rssi_antenna_diversity(self) -> int | None:
-        return self._get_int_attribute(ATTR_WIFI_STATUS_RSSIANTENNADIVERSITY)
+        return self._get_int_attribute(ATTR_WIFI_STATUS_RSSI_ANTENNA_DIVERSITY)
 
     def get_damp_notification_tone_volume(self) -> int | None:
-        return self._get_int_attribute(ATTR_OP_SET_DAMPNOTIFICATIONTONEVOLUME)
+        return self._get_int_attribute(ATTR_OP_SET_DAMP_NOTIFICATION_TONE_VOLUME)
 
     def get_alert_tone_volume(self) -> int | None:
-        return self._get_int_attribute(ATTR_OP_SET_ALERTTONEVOLUME)
+        return self._get_int_attribute(ATTR_OP_SET_ALERT_TONE_VOLUME)
 
     def get_temperature(self) -> int | None:
         return self._get_int_attribute(ATTR_CYCLE_SET_TEMPERATURE)
 
     def get_wrinkle_shield(self) -> int | None:
-        return self._get_int_attribute(ATTR_CYCLE_SET_WRINKLESHIELD)
+        return self._get_int_attribute(ATTR_CYCLE_SET_WRINKLE_SHIELD)
 
