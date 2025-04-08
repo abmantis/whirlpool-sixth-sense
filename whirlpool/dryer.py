@@ -73,7 +73,6 @@ ATTRVAL_TEMPERATURE_MEDIUM = 5
 ATTRVAL_TEMPERATURE_MEDIUM_HIGH = 6
 ATTRVAL_TEMPERATURE_HIGH = 8
 
-
 ATTR_CYCLE_STATUS_AIR_FLOW_STATUS = "DryCavity_CycleStatusAirFlowStatus"
 ATTR_CYCLE_STATUS_COOL_DOWN = "DryCavity_CycleStatusCoolDown"
 ATTR_CYCLE_STATUS_DAMP = "DryCavity_CycleStatusDamp"
@@ -123,35 +122,32 @@ class MachineState(Enum):
 
 
 MACHINE_STATE_MAP = {
-    MachineState.Standby: ATTRVAL_MACHINE_STATE_STANDBY,
-    MachineState.Setting: ATTRVAL_MACHINE_STATE_SETTING,
-    MachineState.DelayCountdownMode: ATTRVAL_MACHINE_STATE_DELAY_COUNT_DOWN_MODE,
-    MachineState.DelayPause: ATTRVAL_MACHINE_STATE_DELAY_PAUSE,
-    MachineState.SmartDelay: ATTRVAL_MACHINE_STATE_SMART_DELAY,
-    MachineState.SmartGridPause: ATTRVAL_MACHINE_STATE_SMART_GRID_PAUSE,
-    MachineState.Pause: ATTRVAL_MACHINE_STATE_PAUSE,
-    MachineState.RunningMainCycle: ATTRVAL_MACHINE_STATE_RUNNING_MAIN_CYCLE,
-    MachineState.RunningPostCycle: ATTRVAL_MACHINE_STATE_RUNNING_POST_CYCLE,
-    MachineState.Exceptions: ATTRVAL_MACHINE_STATE_EXCEPTIONS,
-    MachineState.Complete: ATTRVAL_MACHINE_STATE_COMPLETE,
-    MachineState.PowerFailure: ATTRVAL_MACHINE_STATE_POWER_FAILURE,
-    MachineState.ServiceDiagnostic: ATTRVAL_MACHINE_STATE_SERVICE_DIAGNOSTIC,
-    MachineState.FactoryDiagnostic: ATTRVAL_MACHINE_STATE_FACTORY_DIAGNOSTIC,
-    MachineState.LifeTest: ATTRVAL_MACHINE_STATE_LIFE_TEST,
-    MachineState.CustomerFocusMode: ATTRVAL_MACHINE_STATE_CUSTOMER_FOCUS_MODE,
-    MachineState.DemoMode: ATTRVAL_MACHINE_STATE_DEMO_MODE,
-    MachineState.HardStopOrError: ATTRVAL_MACHINE_STATE_HARD_STOP_OR_ERROR,
-    MachineState.SystemInit: ATTRVAL_MACHINE_STATE_SYSTEM_INIT,
+    ATTRVAL_MACHINE_STATE_STANDBY: MachineState.Standby,
+    ATTRVAL_MACHINE_STATE_SETTING: MachineState.Setting,
+    ATTRVAL_MACHINE_STATE_DELAY_COUNT_DOWN_MODE: MachineState.DelayCountdownMode,
+    ATTRVAL_MACHINE_STATE_DELAY_PAUSE: MachineState.DelayPause,
+    ATTRVAL_MACHINE_STATE_SMART_DELAY: MachineState.SmartDelay,
+    ATTRVAL_MACHINE_STATE_SMART_GRID_PAUSE: MachineState.SmartGridPause,
+    ATTRVAL_MACHINE_STATE_PAUSE: MachineState.Pause,
+    ATTRVAL_MACHINE_STATE_RUNNING_MAIN_CYCLE: MachineState.RunningMainCycle,
+    ATTRVAL_MACHINE_STATE_RUNNING_POST_CYCLE: MachineState.RunningPostCycle,
+    ATTRVAL_MACHINE_STATE_EXCEPTIONS: MachineState.Exceptions,
+    ATTRVAL_MACHINE_STATE_COMPLETE: MachineState.Complete,
+    ATTRVAL_MACHINE_STATE_POWER_FAILURE: MachineState.PowerFailure,
+    ATTRVAL_MACHINE_STATE_SERVICE_DIAGNOSTIC: MachineState.ServiceDiagnostic,
+    ATTRVAL_MACHINE_STATE_FACTORY_DIAGNOSTIC: MachineState.FactoryDiagnostic,
+    ATTRVAL_MACHINE_STATE_LIFE_TEST: MachineState.LifeTest,
+    ATTRVAL_MACHINE_STATE_CUSTOMER_FOCUS_MODE: MachineState.CustomerFocusMode,
+    ATTRVAL_MACHINE_STATE_DEMO_MODE: MachineState.DemoMode,
+    ATTRVAL_MACHINE_STATE_HARD_STOP_OR_ERROR: MachineState.HardStopOrError,
+    ATTRVAL_MACHINE_STATE_SYSTEM_INIT: MachineState.SystemInit
 }
 
 
 class Dryer(Appliance):
     def get_machine_state(self) -> MachineState | None:
-        state_raw = self._get_attribute(ATTR_MACHINE_STATE)
-        for k, v in MACHINE_STATE_MAP.items():
-            if v == state_raw:
-                return k
-        return None
+        state_raw = self._get_attribute(ATTR_MACHINE_STATE) or ""
+        return MACHINE_STATE_MAP.get(state_raw, None)
 
     def get_machine_state_value(self) -> int | None:
         return self._get_int_attribute(ATTR_MACHINE_STATE)
