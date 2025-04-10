@@ -11,10 +11,11 @@ from .aircon import Aircon
 from .appliance import Appliance
 from .auth import Auth
 from .backendselector import BackendSelector
+from .dryer import Dryer
 from .oven import Oven
 from .refrigerator import Refrigerator
 from .types import ApplianceInfo
-from .washerdryer import WasherDryer
+from .washer import Washer
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +32,8 @@ class AppliancesManager:
         self._session: aiohttp.ClientSession = session
         self._event_socket: EventSocket | None = None
         self._aircons: dict[str, Any] = {}
-        self._washerdryers: dict[str, Any] = {}
+        self._dryers: dict[str, Any] = {}
+        self._washers: dict[str, Any] = {}
         self._ovens: dict[str, Any] = {}
         self._refrigerators: dict[str, Any] = {}
 
@@ -39,7 +41,8 @@ class AppliancesManager:
     def all_appliances(self) -> dict[str, Appliance]:
         return {
             **self._aircons,
-            **self._washerdryers,
+            **self._dryers,
+            **self._washers,
             **self._ovens,
             **self._refrigerators,
         }
@@ -49,8 +52,12 @@ class AppliancesManager:
         return list(self._aircons.values())
 
     @property
-    def washer_dryers(self) -> list[WasherDryer]:
-        return list(self._washerdryers.values())
+    def dryers(self) -> list[Dryer]:
+        return list(self._dryers.values())
+
+    @property
+    def washers(self) -> list[Washer]:
+        return list(self._washers.values())
 
     @property
     def ovens(self) -> list[Oven]:
@@ -85,8 +92,12 @@ class AppliancesManager:
             self._aircons[appliance_data.said] = Aircon(
                 self._backend_selector, self._auth, self._session, appliance_data
             )
-        elif "dryer" in data_model or "washer" in data_model:
-            self._washerdryers[appliance_data.said] = WasherDryer(
+        elif "dryer" in data_model:
+            self._dryers[appliance_data.said] = Dryer(
+                self._backend_selector, self._auth, self._session, appliance_data
+            )
+        elif "washer" in data_model:
+            self._washers[appliance_data.said] = Washer(
                 self._backend_selector, self._auth, self._session, appliance_data
             )
         elif any(model in data_model for model in oven_models):
