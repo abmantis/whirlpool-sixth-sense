@@ -19,12 +19,12 @@ async def show_washer_menu(wr: Washer) -> None:
     def print_status(wr: Washer):
         print("online: " + str(wr.get_online()))
         print("state: " + str(wr.get_machine_state()))
-        print("sensing: " + str(wr.get_cycle_status_sensing()))
-        print("filling: " + str(wr.get_cycle_status_filling()))
-        print("soaking: " + str(wr.get_cycle_status_soaking()))
-        print("washing: " + str(wr.get_cycle_status_washing()))
-        print("rinsing: " + str(wr.get_cycle_status_rinsing()))
-        print("spinning: " + str(wr.get_cycle_status_spinning()))
+        print("sensing: " + str(wr.get_sensing()))
+        print("filling: " + str(wr.get_filling()))
+        print("soaking: " + str(wr.get_soaking()))
+        print("washing: " + str(wr.get_washing()))
+        print("rinsing: " + str(wr.get_rinsing()))
+        print("spinning: " + str(wr.get_spinning()))
 
     def attr_upd():
         print("Attributes updated")
