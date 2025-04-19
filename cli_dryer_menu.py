@@ -47,6 +47,8 @@ async def show_dryer_menu(dr: Dryer) -> None:
         print(f"set dryness: {dr.get_dryness()}")
         print(f"set manual dry time: {dr.get_manual_dry_time()}")
         print(f"set cycle select: {dr.get_cycle_select()}")
+        print(f"set temperature: {dr.get_temperature()}")
+        print(f"set wrinkle shield: {dr.get_wrinkle_shield()}")
 
     def attr_upd():
         print("Attributes updated")

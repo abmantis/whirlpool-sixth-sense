@@ -8,7 +8,13 @@ from yarl import URL
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
-from whirlpool.dryer import MachineState, WrinkleShield
+from whirlpool.dryer import (
+    CycleSelect,
+    Dryness,
+    MachineState,
+    Temperature,
+    WrinkleShield,
+)
 
 
 async def test_attributes(appliances_manager: AppliancesManager):
@@ -23,9 +29,9 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert dryer.get_status_manual_dry_time() == 1
     assert dryer.get_status_temperature() == 1
     assert dryer.get_status_wrinkle_shield() == 1
-    assert dryer.get_dryness() == 10
+    assert dryer.get_dryness() == Dryness.High
     assert dryer.get_manual_dry_time() == 1800
-    assert dryer.get_cycle_select() == 11
+    assert dryer.get_cycle_select() == CycleSelect.Timed_Dry
     assert dryer.get_airflow_status() == 0
     assert dryer.get_cool_down() == 0
     assert dryer.get_damp() == 0
@@ -41,7 +47,7 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert dryer.get_rssi_antenna_diversity() == -51
     assert dryer.get_damp_notification_tone_volume() == 0
     assert dryer.get_alert_tone_volume() == 0
-    assert dryer.get_temperature() == 2
+    assert dryer.get_temperature() == Temperature.Cool
     assert dryer.get_wrinkle_shield() == WrinkleShield.Off
 
 
