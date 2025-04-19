@@ -1,9 +1,6 @@
-import logging
 from enum import Enum
 
 from .appliance import Appliance
-
-LOGGER = logging.getLogger(__name__)
 
 ATTR_SENSING = "WashCavity_CycleStatusSensing"
 ATTR_FILLING = "WashCavity_CycleStatusFilling"
@@ -84,7 +81,9 @@ MACHINE_STATE_MAP = {
 
 class Washer(Appliance):
     def get_machine_state(self) -> MachineState | None:
-        state_raw = self._get_attribute(ATTR_MACHINE_STATE) or ""
+        state_raw = self._get_attribute(ATTR_MACHINE_STATE)
+        if state_raw is None:
+            return None
         return MACHINE_STATE_MAP.get(state_raw, None)
 
     def get_sensing(self) -> bool | None:

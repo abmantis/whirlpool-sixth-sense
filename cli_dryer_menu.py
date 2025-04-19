@@ -18,6 +18,7 @@ async def show_dryer_menu(dr: Dryer) -> None:
 
     def print_status(dr: Dryer):
         print(f"online: {dr.get_online()}")
+        print(f"state: {dr.get_machine_state()}")
         print(f"door open: {dr.get_door_open()}")
         print(f"est time remaining: {dr.get_est_time_remaining()}")
         print(f"extra power changeable: {dr.get_status_extra_power_changeable()}")

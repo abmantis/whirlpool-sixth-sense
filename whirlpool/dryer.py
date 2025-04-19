@@ -1,9 +1,6 @@
-import logging
 from enum import Enum
 
 from .appliance import Appliance
-
-LOGGER = logging.getLogger(__name__)
 
 # Machine State
 ATTR_MACHINE_STATE = "Cavity_CycleStatusMachineState"
@@ -97,6 +94,13 @@ ATTR_TOTAL_HOURS = "XCat_OdometerStatusTotalHours"
 ATTR_ISP_CHECK = "XCat_WifiStatusIspCheck"
 ATTR_RSSI_ANTENNA_DIVERSITY = "XCat_WifiStatusRssiAntennaDiversity"
 
+# Wrinkle Shield
+ATTR_WRINKLE_SHIELD = "DryCavity_CycleSetWrinkleShield"
+
+ATTRVAL_WRINKLE_SHIELD_OFF = "0"
+ATTRVAL_WRINKLE_SHIELD_ON = "1"
+ATTRVAL_WRINKLE_SHIELD_ON_WITH_STEAM = "2"
+
 
 class MachineState(Enum):
     Standby = 0
@@ -144,9 +148,24 @@ MACHINE_STATE_MAP = {
 }
 
 
+class WrinkleShield(Enum):
+    Off = 0
+    On = 1
+    On_With_Steam = 2
+
+
+WRINKLE_SHIELD_MAP = {
+    ATTRVAL_WRINKLE_SHIELD_OFF: WrinkleShield.Off,
+    ATTRVAL_WRINKLE_SHIELD_ON: WrinkleShield.On,
+    ATTRVAL_WRINKLE_SHIELD_ON_WITH_STEAM: WrinkleShield.On_With_Steam
+}
+
+
 class Dryer(Appliance):
     def get_machine_state(self) -> MachineState | None:
-        state_raw = self._get_attribute(ATTR_MACHINE_STATE) or ""
+        state_raw = self._get_attribute(ATTR_MACHINE_STATE)
+        if state_raw is None:
+            return None
         return MACHINE_STATE_MAP.get(state_raw, None)
 
     def get_door_open(self) -> bool | None:
@@ -276,6 +295,9 @@ class Dryer(Appliance):
     def get_temperature(self) -> int | None:
         return self._get_int_attribute(ATTR_TEMPERATURE)
 
-    def get_wrinkle_shield(self) -> int | None:
-        return self._get_int_attribute(ATTR_WRINKLE_SHIELD)
+    def get_wrinkle_shield(self) -> WrinkleShield | None:
+        shield_raw = self._get_attribute(ATTR_WRINKLE_SHIELD)
+        if shield_raw is None:
+            return None
+        return WRINKLE_SHIELD_MAP.get(shield_raw, None)
 

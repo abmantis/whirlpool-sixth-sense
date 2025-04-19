@@ -8,41 +8,41 @@ from yarl import URL
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
-from whirlpool.dryer import MachineState
+from whirlpool.dryer import MachineState, WrinkleShield
 
 
 async def test_attributes(appliances_manager: AppliancesManager):
-    dryer1 = appliances_manager.dryers[0]
-    assert dryer1.get_machine_state() == MachineState.Standby
-    assert dryer1.get_door_open() is False
-    assert dryer1.get_est_time_remaining() == 1800
-    assert dryer1.get_drum_light_on() == 0
-    assert dryer1.get_status_extra_steam_changeable() == 1
-    assert dryer1.get_status_cycle_select() == 0
-    assert dryer1.get_status_dryness() == 1
-    assert dryer1.get_status_manual_dry_time() == 1
-    assert dryer1.get_status_temperature() == 1
-    assert dryer1.get_status_wrinkle_shield() == 1
-    assert dryer1.get_dryness() == 10
-    assert dryer1.get_manual_dry_time() == 1800
-    assert dryer1.get_cycle_select() == 11
-    assert dryer1.get_airflow_status() == 0
-    assert dryer1.get_cool_down() == 0
-    assert dryer1.get_damp() == 0
-    assert dryer1.get_drying() == 0
-    assert dryer1.get_limited_cycle() == 0
-    assert dryer1.get_sensing() == 0
-    assert dryer1.get_static_reduce() == 0
-    assert dryer1.get_steaming() == 0
-    assert dryer1.get_wet() == 0
-    assert dryer1.get_cycle_count() == 195
-    assert dryer1.get_running_hours() == 148
-    assert dryer1.get_total_hours() == 6302
-    assert dryer1.get_rssi_antenna_diversity() == -51
-    assert dryer1.get_damp_notification_tone_volume() == 0
-    assert dryer1.get_alert_tone_volume() == 0
-    assert dryer1.get_temperature() == 2
-    assert dryer1.get_wrinkle_shield() == 0
+    dryer = appliances_manager.dryers[0]
+    assert dryer.get_machine_state() == MachineState.Standby
+    assert dryer.get_door_open() is False
+    assert dryer.get_est_time_remaining() == 1800
+    assert dryer.get_drum_light_on() == 0
+    assert dryer.get_status_extra_steam_changeable() == 1
+    assert dryer.get_status_cycle_select() == 0
+    assert dryer.get_status_dryness() == 1
+    assert dryer.get_status_manual_dry_time() == 1
+    assert dryer.get_status_temperature() == 1
+    assert dryer.get_status_wrinkle_shield() == 1
+    assert dryer.get_dryness() == 10
+    assert dryer.get_manual_dry_time() == 1800
+    assert dryer.get_cycle_select() == 11
+    assert dryer.get_airflow_status() == 0
+    assert dryer.get_cool_down() == 0
+    assert dryer.get_damp() == 0
+    assert dryer.get_drying() == 0
+    assert dryer.get_limited_cycle() == 0
+    assert dryer.get_sensing() == 0
+    assert dryer.get_static_reduce() == 0
+    assert dryer.get_steaming() == 0
+    assert dryer.get_wet() == 0
+    assert dryer.get_cycle_count() == 195
+    assert dryer.get_running_hours() == 148
+    assert dryer.get_total_hours() == 6302
+    assert dryer.get_rssi_antenna_diversity() == -51
+    assert dryer.get_damp_notification_tone_volume() == 0
+    assert dryer.get_alert_tone_volume() == 0
+    assert dryer.get_temperature() == 2
+    assert dryer.get_wrinkle_shield() == WrinkleShield.Off
 
 
 @pytest.mark.parametrize(
