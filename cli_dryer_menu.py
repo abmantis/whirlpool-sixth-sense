@@ -39,10 +39,6 @@ async def show_dryer_menu(dr: Dryer) -> None:
         print(f"steaming: {dr.get_cycle_status_steaming()}")
         print(f"wet: {dr.get_cycle_status_wet()}")
         print(f"cycle count: {dr.get_cycle_count()}")
-        print(f"running hours: {dr.get_running_hours()}")
-        print(f"total hours: {dr.get_total_hours()}")
-        print(f"isp check: {dr.get_isp_check()}")
-        print(f"rssi antenna diversity: {dr.get_rssi_antenna_diversity()}")
 
         print(f"set dryness: {dr.get_dryness()}")
         print(f"set manual dry time: {dr.get_manual_dry_time()}")

@@ -100,11 +100,6 @@ ATTR_ALERT_TONE_VOLUME = "Sys_OpSetAlertToneVolume"
 
 # XCat
 ATTR_CYCLE_COUNT = "XCat_OdometerStatusCycleCount"
-ATTR_RUNNING_HOURS = "XCat_OdometerStatusRunningHours"
-ATTR_TOTAL_HOURS = "XCat_OdometerStatusTotalHours"
-
-ATTR_ISP_CHECK = "XCat_WifiStatusIspCheck"
-ATTR_RSSI_ANTENNA_DIVERSITY = "XCat_WifiStatusRssiAntennaDiversity"
 
 
 class CycleSelect(Enum):
@@ -356,20 +351,6 @@ class Dryer(Appliance):
 
     def get_cycle_count(self) -> int | None:
         return self._get_int_attribute(ATTR_CYCLE_COUNT)
-
-    def get_running_hours(self) -> int | None:
-        return self._get_int_attribute(ATTR_RUNNING_HOURS)
-
-    def get_total_hours(self) -> int | None:
-        return self._get_int_attribute(ATTR_TOTAL_HOURS)
-
-    def get_isp_check(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_ISP_CHECK)
-        )
-
-    def get_rssi_antenna_diversity(self) -> int | None:
-        return self._get_int_attribute(ATTR_RSSI_ANTENNA_DIVERSITY)
 
     def get_damp_notification_tone_volume(self) -> int | None:
         return self._get_int_attribute(ATTR_DAMP_NOTIFICATION_TONE_VOLUME)
