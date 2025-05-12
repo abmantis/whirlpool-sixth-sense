@@ -32,15 +32,15 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert dryer.get_dryness() == Dryness.High
     assert dryer.get_manual_dry_time() == 1800
     assert dryer.get_cycle_select() == CycleSelect.Timed_Dry
-    assert dryer.get_airflow_status() == 0
-    assert dryer.get_cool_down() == 0
-    assert dryer.get_damp() == 0
-    assert dryer.get_drying() == 0
-    assert dryer.get_limited_cycle() == 0
-    assert dryer.get_sensing() == 0
-    assert dryer.get_static_reduce() == 0
-    assert dryer.get_steaming() == 0
-    assert dryer.get_wet() == 0
+    assert dryer.get_cycle_status_airflow_status() == 0
+    assert dryer.get_cycle_status_cool_down() == 0
+    assert dryer.get_cycle_status_damp() == 0
+    assert dryer.get_cycle_status_drying() == 0
+    assert dryer.get_cycle_status_limited_cycle() == 0
+    assert dryer.get_cycle_status_sensing() == 0
+    assert dryer.get_cycle_status_static_reduce() == 0
+    assert dryer.get_cycle_status_steaming() == 0
+    assert dryer.get_cycle_status_wet() == 0
     assert dryer.get_cycle_count() == 195
     assert dryer.get_running_hours() == 148
     assert dryer.get_total_hours() == 6302
@@ -51,44 +51,3 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert dryer.get_wrinkle_shield() == WrinkleShield.Off
 
 
-@pytest.mark.parametrize(
-    ["method", "argument", "expected_json"],
-    [
-    ],
-)
-async def test_setters(
-    appliances_manager: AppliancesManager,
-    auth: Auth,
-    backend_selector: BackendSelector,
-    aioresponses_mock: aioresponses,
-    method: Callable,
-    argument: Any,
-    expected_json: dict,
-):
-    dryer = appliances_manager.dryers[0]
-
-    expected_payload = {
-        "json": {
-            "body": expected_json,
-            "header": {"said": dryer.said, "command": "setAttributes"},
-        }
-    }
-
-    post_request_call_kwargs = {
-        "url": backend_selector.appliance_command_url,
-        "method": "POST",
-        "data": None,
-        "json": expected_payload["json"],
-        "allow_redirects": True,
-        "headers": auth.create_headers(),
-    }
-
-    url = backend_selector.appliance_command_url
-
-    # add call, call method
-    aioresponses_mock.post(url, payload=expected_payload)
-    await method(dryer, argument)
-
-    # assert args and length
-    aioresponses_mock.assert_called_with(**post_request_call_kwargs)
-    assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1

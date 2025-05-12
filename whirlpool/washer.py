@@ -2,16 +2,17 @@ from enum import Enum
 
 from .appliance import Appliance
 
-ATTR_SENSING = "WashCavity_CycleStatusSensing"
-ATTR_FILLING = "WashCavity_CycleStatusFilling"
-ATTR_SOAKING = "WashCavity_CycleStatusSoaking"
-ATTR_WASHING = "WashCavity_CycleStatusWashing"
-ATTR_RINSING = "WashCavity_CycleStatusRinsing"
-ATTR_SPINNING = "WashCavity_CycleStatusSpinning"
+ATTR_CYCLE_STATUS_SENSING = "WashCavity_CycleStatusSensing"
+ATTR_CYCLE_STATUS_FILLING = "WashCavity_CycleStatusFilling"
+ATTR_CYCLE_STATUS_SOAKING = "WashCavity_CycleStatusSoaking"
+ATTR_CYCLE_STATUS_WASHING = "WashCavity_CycleStatusWashing"
+ATTR_CYCLE_STATUS_RINSING = "WashCavity_CycleStatusRinsing"
+ATTR_CYCLE_STATUS_SPINNING = "WashCavity_CycleStatusSpinning"
+ATTR_CYCLE_STATUS_MACHINE_STATE = "Cavity_CycleStatusMachineState"
+ATTR_CYCLE_STATUS_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
+
 ATTR_DISPENSE_1_LEVEL = "WashCavity_OpStatusBulkDispense1Level"
 ATTR_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
-ATTR_MACHINE_STATE = "Cavity_CycleStatusMachineState"
-ATTR_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
 
 ATTRVAL_MACHINE_STATE_STANDBY = "0"
 ATTRVAL_MACHINE_STATE_SETTING = "1"
@@ -81,28 +82,28 @@ MACHINE_STATE_MAP = {
 
 class Washer(Appliance):
     def get_machine_state(self) -> MachineState | None:
-        state_raw = self._get_attribute(ATTR_MACHINE_STATE)
+        state_raw = self._get_attribute(ATTR_CYCLE_STATUS_MACHINE_STATE)
         if state_raw is None:
             return None
         return MACHINE_STATE_MAP.get(state_raw, None)
 
-    def get_sensing(self) -> bool | None:
-        return self.attr_value_to_bool(self._get_attribute(ATTR_SENSING))
+    def get_cycle_status_sensing(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_SENSING))
 
-    def get_filling(self) -> bool | None:
-        return self.attr_value_to_bool(self._get_attribute(ATTR_FILLING))
+    def get_cycle_status_filling(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_FILLING))
 
-    def get_soaking(self) -> bool | None:
-        return self.attr_value_to_bool(self._get_attribute(ATTR_SOAKING))
+    def get_cycle_status_soaking(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_SOAKING))
 
-    def get_washing(self) -> bool | None:
-        return self.attr_value_to_bool(self._get_attribute(ATTR_WASHING))
+    def get_cycle_status_washing(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_WASHING))
 
-    def get_rinsing(self) -> bool | None:
-        return self.attr_value_to_bool(self._get_attribute(ATTR_RINSING))
+    def get_cycle_status_rinsing(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_RINSING))
 
-    def get_spinning(self) -> bool | None:
-        return self.attr_value_to_bool(self._get_attribute(ATTR_SPINNING))
+    def get_cycle_status_spinning(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_SPINNING))
 
     def get_dispense_1_level(self) -> int | None:
         return self._get_int_attribute(ATTR_DISPENSE_1_LEVEL)
@@ -111,4 +112,4 @@ class Washer(Appliance):
         return self.attr_value_to_bool(self._get_attribute(ATTR_DOOR_OPEN))
 
     def get_time_remaining(self) -> int | None:
-        return self._get_int_attribute(ATTR_TIME_REMAINING)
+        return self._get_int_attribute(ATTR_CYCLE_STATUS_TIME_REMAINING)
