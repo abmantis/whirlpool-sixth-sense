@@ -1,13 +1,4 @@
-from collections.abc import Callable
-from typing import Any
-
-import pytest
-from aioresponses import aioresponses
-from yarl import URL
-
 from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.auth import Auth
-from whirlpool.backendselector import BackendSelector
 from whirlpool.dryer import (
     CycleSelect,
     Dryness,
