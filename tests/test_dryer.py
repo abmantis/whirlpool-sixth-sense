@@ -22,7 +22,7 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert dryer.get_status_wrinkle_shield()
     assert dryer.get_dryness() == Dryness.High
     assert dryer.get_manual_dry_time() == 1800
-    assert dryer.get_cycle_select() == CycleSelect.Timed_Dry
+    assert dryer.get_cycle_select() == CycleSelect.TimedDry
     assert not dryer.get_cycle_status_airflow_status()
     assert not dryer.get_cycle_status_cool_down()
     assert not dryer.get_cycle_status_damp()

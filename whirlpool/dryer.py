@@ -108,11 +108,11 @@ class CycleSelect(Enum):
     Denim = 3
     Delicates = 4
     WrinkleControl = 5
-    Bulky_Items = 6
-    Quick_Dry = 7
+    BulkyItems = 6
+    QuickDry = 7
     Sanitize = 9
     SteamRefresh = 10
-    Timed_Dry = 11
+    TimedDry = 11
     ColorsBrights = 13
     Towels = 15
     Whites = 16
@@ -125,11 +125,11 @@ CYCLE_SELECT_MAP = {
     ATTRVAL_CYCLE_SELECT_DENIM: CycleSelect.Denim,
     ATTRVAL_CYCLE_SELECT_DELICATES: CycleSelect.Delicates,
     ATTRVAL_CYCLE_SELECT_WRINKLE_CONTROL: CycleSelect.WrinkleControl,
-    ATTRVAL_CYCLE_SELECT_BULKY_ITEMS: CycleSelect.Bulky_Items,
-    ATTRVAL_CYCLE_SELECT_QUICK_DRY: CycleSelect.Quick_Dry,
+    ATTRVAL_CYCLE_SELECT_BULKY_ITEMS: CycleSelect.BulkyItems,
+    ATTRVAL_CYCLE_SELECT_QUICK_DRY: CycleSelect.QuickDry,
     ATTRVAL_CYCLE_SELECT_SANITIZE: CycleSelect.Sanitize,
     ATTRVAL_CYCLE_SELECT_STEAM_REFRESH: CycleSelect.SteamRefresh,
-    ATTRVAL_CYCLE_SELECT_TIMED_DRY: CycleSelect.Timed_Dry,
+    ATTRVAL_CYCLE_SELECT_TIMED_DRY: CycleSelect.TimedDry,
     ATTRVAL_CYCLE_SELECT_COLORS_BRIGHTS: CycleSelect.ColorsBrights,
     ATTRVAL_CYCLE_SELECT_TOWELS: CycleSelect.Towels,
     ATTRVAL_CYCLE_SELECT_WHITES: CycleSelect.Whites,
