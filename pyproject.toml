@@ -17,6 +17,10 @@ dependencies = [
     "aiohttp>=3.9.1",
     "websockets>=8.1",
     "async-timeout>=4.0.3",
+    "mcp>=1.0.0",
+    "uvicorn>=0.24.0",
+    "fastapi>=0.104.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [project.readme]
