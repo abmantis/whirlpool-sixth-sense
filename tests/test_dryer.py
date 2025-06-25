@@ -1,6 +1,6 @@
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.dryer import (
-    CycleSelect,
+    Cycle,
     Dryness,
     MachineState,
     Temperature,
@@ -14,15 +14,15 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert not dryer.get_door_open()
     assert dryer.get_est_time_remaining() == 1800
     assert not dryer.get_drum_light_on()
-    assert dryer.get_status_extra_steam_changeable()
-    assert not dryer.get_status_cycle_select()
-    assert dryer.get_status_dryness()
-    assert dryer.get_status_manual_dry_time()
-    assert dryer.get_status_temperature()
-    assert dryer.get_status_wrinkle_shield()
+    assert dryer.get_steam_changeable()
+    assert not dryer.get_cycle_changeable()
+    assert dryer.get_dryness_changeable()
+    assert dryer.get_manual_dry_time_changeable()
+    assert dryer.get_steam_changeable()
+    assert dryer.get_wrinkle_shield_changeable()
     assert dryer.get_dryness() == Dryness.High
     assert dryer.get_manual_dry_time() == 1800
-    assert dryer.get_cycle_select() == CycleSelect.Timed_Dry
+    assert dryer.get_cycle() == Cycle.Timed_Dry
     assert not dryer.get_cycle_status_airflow_status()
     assert not dryer.get_cycle_status_cool_down()
     assert not dryer.get_cycle_status_damp()
@@ -37,5 +37,3 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert dryer.get_alert_tone_volume() == 0
     assert dryer.get_temperature() == Temperature.Cool
     assert dryer.get_wrinkle_shield() == WrinkleShield.Off
-
-

@@ -26,37 +26,35 @@ ATTRVAL_MACHINE_STATE_HARD_STOP_OR_ERROR = "17"
 ATTRVAL_MACHINE_STATE_SYSTEM_INIT = "18"
 ATTRVAL_MACHINE_STATE_CANCELLED = "19"
 
-# Cavity
 ATTR_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
 ATTR_EST_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
 ATTR_DRUM_LIGHT_ON = "Cavity_DisplaySetDrumLightOn"
 
-# DryCavity
-ATTR_STATUS_EXTRA_POWER_CHANGEABLE = "Cavity_ChangeStatusExtraPowerChangeable"
-ATTR_STATUS_STEAM_CHANGEABLE = "Cavity_ChangeStatusSteamChangeable"
-ATTR_STATUS_CYCLE_SELECT = "DryCavity_ChangeStatusCycleSelect"
-ATTR_STATUS_DRYNESS = "DryCavity_ChangeStatusDryness"
-ATTR_STATUS_MANUAL_DRY_TIME = "DryCavity_ChangeStatusManualDryTime"
-ATTR_STATUS_STATIC_GUARD = "DryCavity_ChangeStatusStaticGuard"
-ATTR_STATUS_TEMPERATURE = "DryCavity_ChangeStatusTemperature"
-ATTR_STATUS_WRINKLE_SHIELD = "DryCavity_ChangeStatusWrinkleShield"
+ATTR_EXTRA_POWER_CHANGEABLE = "Cavity_ChangeStatusExtraPowerChangeable"
+ATTR_STEAM_CHANGEABLE = "Cavity_ChangeStatusSteamChangeable"
+ATTR_CYCLE_CHANGEABLE = "DryCavity_ChangeStatusCycleSelect"
+ATTR_DRYNESS_CHANGEABLE = "DryCavity_ChangeStatusDryness"
+ATTR_MANUAL_DRY_TIME_CHANGEABLE = "DryCavity_ChangeStatusManualDryTime"
+ATTR_STATIC_GUARD_CHANGEABLE = "DryCavity_ChangeStatusStaticGuard"
+ATTR_TEMPERATURE_CHANGEABLE = "DryCavity_ChangeStatusTemperature"
+ATTR_WRINKLE_SHIELD_CHANGEABLE = "DryCavity_ChangeStatusWrinkleShield"
 
-ATTR_CYCLE_SELECT = "DryCavity_CycleSetCycleSelect"
+ATTR_CYCLE = "DryCavity_CycleSetCycleSelect"
 
-ATTRVAL_CYCLE_SELECT_REGULAR = "1"
-ATTRVAL_CYCLE_SELECT_HEAVY_DUTY = "2"
-ATTRVAL_CYCLE_SELECT_DENIM = "3"
-ATTRVAL_CYCLE_SELECT_DELICATES = "4"
-ATTRVAL_CYCLE_SELECT_WRINKLE_CONTROL = "5"
-ATTRVAL_CYCLE_SELECT_BULKY_ITEMS = "6"
-ATTRVAL_CYCLE_SELECT_QUICK_DRY = "7"
-ATTRVAL_CYCLE_SELECT_SANITIZE = "9"
-ATTRVAL_CYCLE_SELECT_STEAM_REFRESH = "10"
-ATTRVAL_CYCLE_SELECT_TIMED_DRY = "11"
-ATTRVAL_CYCLE_SELECT_COLORS_BRIGHTS = "13"
-ATTRVAL_CYCLE_SELECT_TOWELS = "15"
-ATTRVAL_CYCLE_SELECT_WHITES = "16"
-ATTRVAL_CYCLE_SELECT_NORMAL = "41"
+ATTRVAL_CYCLE_REGULAR = "1"
+ATTRVAL_CYCLE_HEAVY_DUTY = "2"
+ATTRVAL_CYCLE_DENIM = "3"
+ATTRVAL_CYCLE_DELICATES = "4"
+ATTRVAL_CYCLE_WRINKLE_CONTROL = "5"
+ATTRVAL_CYCLE_BULKY_ITEMS = "6"
+ATTRVAL_CYCLE_QUICK_DRY = "7"
+ATTRVAL_CYCLE_SANITIZE = "9"
+ATTRVAL_CYCLE_STEAM_REFRESH = "10"
+ATTRVAL_CYCLE_TIMED_DRY = "11"
+ATTRVAL_CYCLE_COLORS_BRIGHTS = "13"
+ATTRVAL_CYCLE_TOWELS = "15"
+ATTRVAL_CYCLE_WHITES = "16"
+ATTRVAL_CYCLE_NORMAL = "41"
 
 ATTR_DRYNESS = "DryCavity_CycleSetDryness"
 
@@ -92,17 +90,12 @@ ATTR_CYCLE_STATUS_STATIC_REDUCE = "DryCavity_CycleStatusStaticReduce"
 ATTR_CYCLE_STATUS_STEAMING = "DryCavity_CycleStatusSteaming"
 ATTR_CYCLE_STATUS_WET = "DryCavity_CycleStatusWet"
 
-# DrySys
-ATTR_DAMP_NOTIFICATION_TONE_VOLUME = "DrySys_OpSetDampNotificationToneVolume" 
-
-# Sys
+ATTR_DAMP_NOTIFICATION_TONE_VOLUME = "DrySys_OpSetDampNotificationToneVolume"
 ATTR_ALERT_TONE_VOLUME = "Sys_OpSetAlertToneVolume"
-
-# XCat
 ATTR_CYCLE_COUNT = "XCat_OdometerStatusCycleCount"
 
 
-class CycleSelect(Enum):
+class Cycle(Enum):
     Regular = 1
     HeavyDuty = 2
     Denim = 3
@@ -119,22 +112,23 @@ class CycleSelect(Enum):
     Normal = 41
 
 
-CYCLE_SELECT_MAP = {
-    ATTRVAL_CYCLE_SELECT_REGULAR: CycleSelect.Regular,
-    ATTRVAL_CYCLE_SELECT_HEAVY_DUTY: CycleSelect.HeavyDuty,
-    ATTRVAL_CYCLE_SELECT_DENIM: CycleSelect.Denim,
-    ATTRVAL_CYCLE_SELECT_DELICATES: CycleSelect.Delicates,
-    ATTRVAL_CYCLE_SELECT_WRINKLE_CONTROL: CycleSelect.WrinkleControl,
-    ATTRVAL_CYCLE_SELECT_BULKY_ITEMS: CycleSelect.Bulky_Items,
-    ATTRVAL_CYCLE_SELECT_QUICK_DRY: CycleSelect.Quick_Dry,
-    ATTRVAL_CYCLE_SELECT_SANITIZE: CycleSelect.Sanitize,
-    ATTRVAL_CYCLE_SELECT_STEAM_REFRESH: CycleSelect.SteamRefresh,
-    ATTRVAL_CYCLE_SELECT_TIMED_DRY: CycleSelect.Timed_Dry,
-    ATTRVAL_CYCLE_SELECT_COLORS_BRIGHTS: CycleSelect.ColorsBrights,
-    ATTRVAL_CYCLE_SELECT_TOWELS: CycleSelect.Towels,
-    ATTRVAL_CYCLE_SELECT_WHITES: CycleSelect.Whites,
-    ATTRVAL_CYCLE_SELECT_NORMAL: CycleSelect.Normal
+CYCLE_MAP = {
+    ATTRVAL_CYCLE_REGULAR: Cycle.Regular,
+    ATTRVAL_CYCLE_HEAVY_DUTY: Cycle.HeavyDuty,
+    ATTRVAL_CYCLE_DENIM: Cycle.Denim,
+    ATTRVAL_CYCLE_DELICATES: Cycle.Delicates,
+    ATTRVAL_CYCLE_WRINKLE_CONTROL: Cycle.WrinkleControl,
+    ATTRVAL_CYCLE_BULKY_ITEMS: Cycle.Bulky_Items,
+    ATTRVAL_CYCLE_QUICK_DRY: Cycle.Quick_Dry,
+    ATTRVAL_CYCLE_SANITIZE: Cycle.Sanitize,
+    ATTRVAL_CYCLE_STEAM_REFRESH: Cycle.SteamRefresh,
+    ATTRVAL_CYCLE_TIMED_DRY: Cycle.Timed_Dry,
+    ATTRVAL_CYCLE_COLORS_BRIGHTS: Cycle.ColorsBrights,
+    ATTRVAL_CYCLE_TOWELS: Cycle.Towels,
+    ATTRVAL_CYCLE_WHITES: Cycle.Whites,
+    ATTRVAL_CYCLE_NORMAL: Cycle.Normal,
 }
+
 
 class Dryness(Enum):
     Low = 0
@@ -149,7 +143,7 @@ DRYNESS_MAP = {
     ATTRVAL_DRYNESS_LESS: Dryness.Less,
     ATTRVAL_DRYNESS_NORMAL: Dryness.Normal,
     ATTRVAL_DRYNESS_MORE: Dryness.More,
-    ATTRVAL_DRYNESS_HIGH: Dryness.High
+    ATTRVAL_DRYNESS_HIGH: Dryness.High,
 }
 
 
@@ -195,7 +189,7 @@ MACHINE_STATE_MAP = {
     ATTRVAL_MACHINE_STATE_CUSTOMER_FOCUS_MODE: MachineState.CustomerFocusMode,
     ATTRVAL_MACHINE_STATE_DEMO_MODE: MachineState.DemoMode,
     ATTRVAL_MACHINE_STATE_HARD_STOP_OR_ERROR: MachineState.HardStopOrError,
-    ATTRVAL_MACHINE_STATE_SYSTEM_INIT: MachineState.SystemInit
+    ATTRVAL_MACHINE_STATE_SYSTEM_INIT: MachineState.SystemInit,
 }
 
 
@@ -212,7 +206,7 @@ TEMPERATURE_MAP = {
     ATTRVAL_TEMPERATURE_COOL: Temperature.Cool,
     ATTRVAL_TEMPERATURE_WARM: Temperature.Warm,
     ATTRVAL_TEMPERATURE_WARM_HIGH: Temperature.WarmHigh,
-    ATTRVAL_TEMPERATURE_HOT: Temperature.Hot
+    ATTRVAL_TEMPERATURE_HOT: Temperature.Hot,
 }
 
 
@@ -225,7 +219,7 @@ class WrinkleShield(Enum):
 WRINKLE_SHIELD_MAP = {
     ATTRVAL_WRINKLE_SHIELD_OFF: WrinkleShield.Off,
     ATTRVAL_WRINKLE_SHIELD_ON: WrinkleShield.On,
-    ATTRVAL_WRINKLE_SHIELD_ON_WITH_STEAM: WrinkleShield.OnWithSteam
+    ATTRVAL_WRINKLE_SHIELD_ON_WITH_STEAM: WrinkleShield.OnWithSteam,
 }
 
 
@@ -237,56 +231,42 @@ class Dryer(Appliance):
         return MACHINE_STATE_MAP.get(state_raw, None)
 
     def get_door_open(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_DOOR_OPEN)
-        )
+        return self.attr_value_to_bool(self._get_attribute(ATTR_DOOR_OPEN))
 
     def get_est_time_remaining(self) -> int | None:
         return self._get_int_attribute(ATTR_EST_TIME_REMAINING)
 
     def get_drum_light_on(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_DRUM_LIGHT_ON))
+
+    def get_extra_power_changeable(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_EXTRA_POWER_CHANGEABLE))
+
+    def get_steam_changeable(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_STEAM_CHANGEABLE))
+
+    def get_cycle_changeable(self) -> int | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_CHANGEABLE))
+
+    def get_dryness_changeable(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_DRYNESS_CHANGEABLE))
+
+    def get_manual_dry_time_changeable(self) -> int | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_DRUM_LIGHT_ON)
+            self._get_attribute(ATTR_MANUAL_DRY_TIME_CHANGEABLE)
         )
 
-    def get_status_extra_power_changeable(self) -> bool | None:
+    def get_static_guard_changeable(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_STATUS_EXTRA_POWER_CHANGEABLE)
+            self._get_attribute(ATTR_STATIC_GUARD_CHANGEABLE)
         )
 
-    def get_status_extra_steam_changeable(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_STATUS_STEAM_CHANGEABLE)
-        )
+    def get_temperature_changeable(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_TEMPERATURE_CHANGEABLE))
 
-    def get_status_cycle_select(self) -> int | None:
+    def get_wrinkle_shield_changeable(self) -> bool | None:
         return self.attr_value_to_bool(
-            self._get_attribute(ATTR_STATUS_CYCLE_SELECT)
-        )
-
-    def get_status_dryness(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_STATUS_DRYNESS)
-        )
-
-    def get_status_manual_dry_time(self) -> int | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_STATUS_MANUAL_DRY_TIME)
-        )
-
-    def get_status_static_guard(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_STATUS_STATIC_GUARD)
-        )
-
-    def get_status_temperature(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_STATUS_TEMPERATURE)
-        )
-
-    def get_status_wrinkle_shield(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_STATUS_WRINKLE_SHIELD)
+            self._get_attribute(ATTR_WRINKLE_SHIELD_CHANGEABLE)
         )
 
     def get_dryness(self) -> Dryness | None:
@@ -298,11 +278,11 @@ class Dryer(Appliance):
     def get_manual_dry_time(self) -> int | None:
         return self._get_int_attribute(ATTR_MANUAL_DRY_TIME)
 
-    def get_cycle_select(self) -> CycleSelect | None:
-        cycle_raw = self._get_attribute(ATTR_CYCLE_SELECT)
+    def get_cycle(self) -> Cycle | None:
+        cycle_raw = self._get_attribute(ATTR_CYCLE)
         if cycle_raw is None:
             return None
-        return CYCLE_SELECT_MAP.get(cycle_raw, None)
+        return CYCLE_MAP.get(cycle_raw, None)
 
     def get_cycle_status_airflow_status(self) -> bool | None:
         return self.attr_value_to_bool(
@@ -310,19 +290,13 @@ class Dryer(Appliance):
         )
 
     def get_cycle_status_cool_down(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_COOL_DOWN)
-        )
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_COOL_DOWN))
 
     def get_cycle_status_damp(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_DAMP)
-        )
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_DAMP))
 
     def get_cycle_status_drying(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_DRYING)
-        )
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_DRYING))
 
     def get_cycle_status_limited_cycle(self) -> bool | None:
         return self.attr_value_to_bool(
@@ -330,9 +304,7 @@ class Dryer(Appliance):
         )
 
     def get_cycle_status_sensing(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_SENSING)
-        )
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_SENSING))
 
     def get_cycle_status_static_reduce(self) -> bool | None:
         return self.attr_value_to_bool(
@@ -340,14 +312,10 @@ class Dryer(Appliance):
         )
 
     def get_cycle_status_steaming(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_STEAMING)
-        )
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_STEAMING))
 
     def get_cycle_status_wet(self) -> bool | None:
-        return self.attr_value_to_bool(
-            self._get_attribute(ATTR_CYCLE_STATUS_WET)
-        )
+        return self.attr_value_to_bool(self._get_attribute(ATTR_CYCLE_STATUS_WET))
 
     def get_cycle_count(self) -> int | None:
         return self._get_int_attribute(ATTR_CYCLE_COUNT)
@@ -369,4 +337,3 @@ class Dryer(Appliance):
         if shield_raw is None:
             return None
         return WRINKLE_SHIELD_MAP.get(shield_raw, None)
-
