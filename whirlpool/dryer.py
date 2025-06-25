@@ -101,11 +101,11 @@ class Cycle(Enum):
     Denim = 3
     Delicates = 4
     WrinkleControl = 5
-    Bulky_Items = 6
-    Quick_Dry = 7
+    BulkyItems = 6
+    QuickDry = 7
     Sanitize = 9
     SteamRefresh = 10
-    Timed_Dry = 11
+    TimedDry = 11
     ColorsBrights = 13
     Towels = 15
     Whites = 16
@@ -118,11 +118,11 @@ CYCLE_MAP = {
     ATTRVAL_CYCLE_DENIM: Cycle.Denim,
     ATTRVAL_CYCLE_DELICATES: Cycle.Delicates,
     ATTRVAL_CYCLE_WRINKLE_CONTROL: Cycle.WrinkleControl,
-    ATTRVAL_CYCLE_BULKY_ITEMS: Cycle.Bulky_Items,
-    ATTRVAL_CYCLE_QUICK_DRY: Cycle.Quick_Dry,
+    ATTRVAL_CYCLE_BULKY_ITEMS: Cycle.BulkyItems,
+    ATTRVAL_CYCLE_QUICK_DRY: Cycle.QuickDry,
     ATTRVAL_CYCLE_SANITIZE: Cycle.Sanitize,
     ATTRVAL_CYCLE_STEAM_REFRESH: Cycle.SteamRefresh,
-    ATTRVAL_CYCLE_TIMED_DRY: Cycle.Timed_Dry,
+    ATTRVAL_CYCLE_TIMED_DRY: Cycle.TimedDry,
     ATTRVAL_CYCLE_COLORS_BRIGHTS: Cycle.ColorsBrights,
     ATTRVAL_CYCLE_TOWELS: Cycle.Towels,
     ATTRVAL_CYCLE_WHITES: Cycle.Whites,
