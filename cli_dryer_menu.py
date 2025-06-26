@@ -20,7 +20,7 @@ async def show_dryer_menu(dr: Dryer) -> None:
         print(f"online: {dr.get_online()}")
         print(f"state: {dr.get_machine_state()}")
         print(f"door open: {dr.get_door_open()}")
-        print(f"est time remaining: {dr.get_est_time_remaining()}")
+        print(f"est time remaining: {dr.get_time_remaining()}")
         print(f"extra power changeable: {dr.get_extra_power_changeable()}")
         print(f"steam changeable: {dr.get_steam_changeable()}")
         print(f"cycle select: {dr.get_cycle_changeable()}")
