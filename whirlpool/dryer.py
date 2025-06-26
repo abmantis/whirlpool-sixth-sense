@@ -27,7 +27,7 @@ ATTRVAL_MACHINE_STATE_SYSTEM_INIT = "18"
 ATTRVAL_MACHINE_STATE_CANCELLED = "19"
 
 ATTR_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
-ATTR_EST_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
+ATTR_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
 ATTR_DRUM_LIGHT_ON = "Cavity_DisplaySetDrumLightOn"
 
 ATTR_EXTRA_POWER_CHANGEABLE = "Cavity_ChangeStatusExtraPowerChangeable"
@@ -233,8 +233,8 @@ class Dryer(Appliance):
     def get_door_open(self) -> bool | None:
         return self.attr_value_to_bool(self._get_attribute(ATTR_DOOR_OPEN))
 
-    def get_est_time_remaining(self) -> int | None:
-        return self._get_int_attribute(ATTR_EST_TIME_REMAINING)
+    def get_time_remaining(self) -> int | None:
+        return self._get_int_attribute(ATTR_TIME_REMAINING)
 
     def get_drum_light_on(self) -> bool | None:
         return self.attr_value_to_bool(self._get_attribute(ATTR_DRUM_LIGHT_ON))

@@ -12,7 +12,7 @@ async def test_attributes(appliances_manager: AppliancesManager):
     dryer = appliances_manager.dryers[0]
     assert dryer.get_machine_state() == MachineState.Standby
     assert not dryer.get_door_open()
-    assert dryer.get_est_time_remaining() == 1800
+    assert dryer.get_time_remaining() == 1800
     assert not dryer.get_drum_light_on()
     assert dryer.get_steam_changeable()
     assert not dryer.get_cycle_changeable()
