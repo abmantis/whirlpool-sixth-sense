@@ -77,3 +77,23 @@ async def test_setters(
     # assert args and length
     aioresponses_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
+
+
+@pytest.mark.parametrize(
+    ["method", "argument", "message"],
+    [
+        (Refrigerator.set_offset_temp, 1, "Invalid temperature: 1"),
+        (Refrigerator.set_offset_temp, 4, "Invalid temperature: 4"),
+        (Refrigerator.set_offset_temp, 6, "Invalid temperature: 6"),
+        (Refrigerator.set_temp, 7, "Invalid temperature: 7"),
+        (Refrigerator.set_temp, 13, "Invalid temperature: 13"),
+    ],
+)
+async def test_setters_invalid_arg(
+    appliances_manager: AppliancesManager, method: Callable, argument: Any, message: str
+):
+    refrigerator = appliances_manager.refrigerators[0]
+    with pytest.raises(ValueError) as exc_info:
+        await method(refrigerator, argument)
+
+    assert message in str(exc_info.value)

@@ -121,7 +121,6 @@ class Aircon(Appliance):
 
     async def set_mode(self, mode: Mode) -> bool:
         if mode not in MODES_MAP:
-            LOGGER.error("Invalid mode")
             raise ValueError("Invalid mode")
         return await self.send_attributes({SETTING_MODE: MODES_MAP[mode]})
 
@@ -134,7 +133,6 @@ class Aircon(Appliance):
 
     async def set_fanspeed(self, speed: FanSpeed) -> bool:
         if speed not in FANSPEED_MAP:
-            LOGGER.error("Invalid fan speed")
             raise ValueError("Invalid fan speed")
         return await self.send_attributes({SETTING_FAN_SPEED: FANSPEED_MAP[speed]})
 

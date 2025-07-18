@@ -100,17 +100,20 @@ async def test_setters(
 
 
 @pytest.mark.parametrize(
-    ["method", "argument"],
+    ["method", "argument", "message"],
     [
-        (Aircon.set_mode, "Invalid Mode"),
-        (Aircon.set_fanspeed, "Invalid speed"),
+        (Aircon.set_mode, "Invalid Mode", "Invalid mode"),
+        (Aircon.set_fanspeed, "Invalid speed", "Invalid fan speed"),
     ],
 )
 async def test_setters_invalid_arg(
     appliances_manager: AppliancesManager,
     method: Callable,
     argument: Any,
+    message: str,
 ):
     aircon = appliances_manager.aircons[0]
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc_info:
         await method(aircon, argument)
+
+    assert message in str(exc_info.value)
