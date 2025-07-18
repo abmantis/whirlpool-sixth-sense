@@ -92,8 +92,25 @@ async def test_setters(
 
     # add call, call method
     aioresponses_mock.post(url, payload=expected_payload)
-    await method(aircon, argument)
+    assert await method(aircon, argument)
 
     # assert args and length
     aioresponses_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
+
+
+@pytest.mark.parametrize(
+    ["method", "argument"],
+    [
+        (Aircon.set_mode, "Invalid Mode"),
+        (Aircon.set_fanspeed, "Invalid speed"),
+    ],
+)
+async def test_setters_invalid_arg(
+    appliances_manager: AppliancesManager,
+    method: Callable,
+    argument: Any,
+):
+    aircon = appliances_manager.aircons[0]
+    with pytest.raises(ValueError):
+        await method(aircon, argument)
