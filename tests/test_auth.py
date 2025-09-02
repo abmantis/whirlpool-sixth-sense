@@ -21,8 +21,8 @@ def get_auth_url(backend_selector: BackendSelector) -> str:
 
 def get_auth_data(backend_selector: BackendSelector) -> dict[str, str]:
     return {
-        "client_id": backend_selector.client_credentials[0]["client_id"],
-        "client_secret": backend_selector.client_credentials[0]["client_secret"],
+        "client_id": backend_selector.client_credentials[0].client_id,
+        "client_secret": backend_selector.client_credentials[0].client_secret,
         "grant_type": "password",
         "username": "email",
         "password": "secretpass",
