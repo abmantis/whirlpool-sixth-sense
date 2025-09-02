@@ -6,7 +6,7 @@ from typing import Any
 import aiohttp
 import async_timeout
 
-from .backendselector import BackendSelector
+from .backendselector import BackendConfig, BackendSelector
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class Auth:
             json.dump(self._auth_dict, f)
 
     def _get_auth_body(
-        self, refresh_token: str | None, client_creds: dict[str, str]
+        self, refresh_token: str | None, client_creds: BackendConfig
     ) -> dict[str, str]:
         if refresh_token:
             LOGGER.info("Using refresh token in auth body")
@@ -52,7 +52,12 @@ class Auth:
                 "password": self._password,
             }
 
-        auth_data.update(client_creds)
+        auth_data.update(
+            {
+                "client_id": client_creds.client_id,
+                "client_secret": client_creds.client_secret,
+            }
+        )
 
         return auth_data
 
