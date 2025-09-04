@@ -125,10 +125,18 @@ class AppliancesManager:
                 return False
 
             data = await r.json()
-            locations: dict[str, Any] = data[str(account_id)]
-            for appliances in locations.values():
-                for appliance in appliances:
-                    self._add_appliance(appliance)
+            LOGGER.debug("Owned appliances data: %s", data)
+            locations: dict[str, Any] = data[account_id]
+            appliances = [
+                appliance
+                for location in locations.values()
+                for appliance in [
+                    *location["legacyAppliance"],
+                    *location["tsAppliance"],
+                ]
+            ]
+            for appliance in appliances:
+                self._add_appliance(appliance)
 
             return True
 
