@@ -171,8 +171,8 @@ class KitchenTimer:
         self,
         timer_time: int,
         operation: KitchenTimerOperations = KitchenTimerOperations.Start,
-    ):
-        await self._appliance.send_attributes(
+    ) -> bool:
+        return await self._appliance.send_attributes(
             {
                 self._attr_prefix + ATTR_POSTFIX_KITCHEN_TIMER_SET_TIME: str(
                     timer_time
@@ -184,8 +184,8 @@ class KitchenTimer:
             }
         )
 
-    async def cancel_timer(self):
-        await self._appliance.send_attributes(
+    async def cancel_timer(self) -> bool:
+        return await self._appliance.send_attributes(
             {
                 self._attr_prefix
                 + ATTR_POSTFIX_KITCHEN_TIMER_SET_OPS: KITCHEN_TIMER_OPERATIONS_MAP[
@@ -214,8 +214,8 @@ class Oven(Appliance):
         brightness = self._get_attribute(ATTR_DISPLAY_BRIGHTNESS)
         return int(brightness) if brightness is not None else None
 
-    async def set_display_brightness_percent(self, pct: int):
-        await self.send_attributes({ATTR_DISPLAY_BRIGHTNESS: str(pct)})
+    async def set_display_brightness_percent(self, pct: int) -> bool:
+        return await self.send_attributes({ATTR_DISPLAY_BRIGHTNESS: str(pct)})
 
     def get_cook_time(self, cavity: Cavity = Cavity.Upper):
         time = self._get_attribute(
@@ -226,8 +226,10 @@ class Oven(Appliance):
     def get_control_locked(self):
         return self.attr_value_to_bool(self._get_attribute(ATTR_CONTROL_LOCK))
 
-    async def set_control_locked(self, on: bool):
-        await self.send_attributes({ATTR_CONTROL_LOCK: self.bool_to_attr_value(on)})
+    async def set_control_locked(self, on: bool) -> bool:
+        return await self.send_attributes(
+            {ATTR_CONTROL_LOCK: self.bool_to_attr_value(on)}
+        )
 
     def get_light(self, cavity: Cavity = Cavity.Upper):
         return self.attr_value_to_bool(
@@ -236,8 +238,8 @@ class Oven(Appliance):
             )
         )
 
-    async def set_light(self, on: bool, cavity: Cavity = Cavity.Upper):
-        await self.send_attributes(
+    async def set_light(self, on: bool, cavity: Cavity = Cavity.Upper) -> bool:
+        return await self.send_attributes(
             {
                 CAVITY_PREFIX_MAP[cavity]
                 + "_"
@@ -299,7 +301,7 @@ class Oven(Appliance):
         meat_probe_target_temp: float | None = None,
         delay_cook: int | None = None,
         operation_type: CookOperation = CookOperation.Start,
-    ):
+    ) -> bool:
         cavity_prefix = CAVITY_PREFIX_MAP[cavity] + "_"
         attrs: dict[str, str] = {
             cavity_prefix + ATTR_POSTFIX_COOK_MODE: COOK_MODE_MAP[mode],
@@ -313,10 +315,10 @@ class Oven(Appliance):
                 round(meat_probe_target_temp * 10)
             )
 
-        await self.send_attributes(attrs)
+        return await self.send_attributes(attrs)
 
-    async def stop_cook(self, cavity: Cavity = Cavity.Upper):
-        await self.send_attributes(
+    async def stop_cook(self, cavity: Cavity = Cavity.Upper) -> bool:
+        return await self.send_attributes(
             {
                 CAVITY_PREFIX_MAP[cavity]
                 + "_"
@@ -327,5 +329,7 @@ class Oven(Appliance):
     def get_sabbath_mode(self):
         return self.attr_value_to_bool(self._get_attribute(ATTR_SABBATH_MODE))
 
-    async def set_sabbath_mode(self, on: bool):
-        await self.send_attributes({ATTR_SABBATH_MODE: self.bool_to_attr_value(on)})
+    async def set_sabbath_mode(self, on: bool) -> bool:
+        return await self.send_attributes(
+            {ATTR_SABBATH_MODE: self.bool_to_attr_value(on)}
+        )
