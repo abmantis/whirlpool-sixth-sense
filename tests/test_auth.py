@@ -1,6 +1,7 @@
 import sys
 from http import HTTPStatus
 
+import aiohttp
 import pytest
 from aioresponses import aioresponses
 from yarl import URL
@@ -8,6 +9,7 @@ from yarl import URL
 from tests import ACCOUNT_ID
 from whirlpool.auth import AccountLockedError, Auth
 from whirlpool.backendselector import BackendSelector
+from whirlpool.types import Brand, Region
 
 AUTH_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -49,7 +51,7 @@ async def test_auth_success(
     # so we will only call this url once
     aioresponses_mock.post(auth_url, payload=mock_resp_data)
 
-    await auth.do_auth(store=False)
+    assert await auth.do_auth(store=False)
     assert auth.is_access_token_valid()
     assert auth.get_said_list() == ["SAID1", "SAID2"]
     assert str(await auth.get_account_id()) == ACCOUNT_ID
@@ -88,7 +90,7 @@ async def test_auth_will_check_all_client_creds(
         expected.append({"status": status})
         aioresponses_mock.post(auth_url, status=status)
 
-    await auth.do_auth(store=False)
+    assert not await auth.do_auth(store=False)
 
     # filter down to just the lines that contain the auth status
     status_logs = [line for line in caplog.text.splitlines() if "Auth status" in line]
@@ -111,7 +113,7 @@ async def test_auth_bad_credentials(
     # need to repeat for the multiple client credentials mock
     aioresponses_mock.post(auth_url, status=HTTPStatus.BAD_REQUEST, repeat=True)
 
-    await auth.do_auth(store=False)
+    assert not await auth.do_auth(store=False)
 
     # with bad request we should not get an access token and not have a SAID list
     assert auth.is_access_token_valid() is False
@@ -173,3 +175,14 @@ async def test_user_details_requested_only_once(
     await auth.get_account_id()
 
     assert len(aioresponses_mock.requests) == curr_request_count
+
+
+async def test_auth_invalid_region_brand_combo(
+    caplog: pytest.LogCaptureFixture, client_session_fixture: aiohttp.ClientSession
+):
+    backend_selector = BackendSelector(Brand.Maytag, Region.EU)
+    auth = Auth(backend_selector, "email", "secretpass", client_session_fixture)
+    assert not await auth.do_auth()
+    assert auth.is_access_token_valid() is False
+    assert auth.get_said_list() is None
+    assert "No credentials for brand Maytag in region EU" in caplog.text
