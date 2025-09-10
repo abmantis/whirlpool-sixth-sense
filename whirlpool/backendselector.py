@@ -86,7 +86,14 @@ class BackendSelector:
 
     @property
     def client_credentials(self) -> list[BackendConfig]:
-        return CREDENTIALS[self._region][self._brand]
+        creds = CREDENTIALS[self._region].get(self._brand, [])
+        if not creds:
+            LOGGER.error(
+                "No credentials for brand %s in region %s",
+                self._brand.name,
+                self._region.name,
+            )
+        return creds
 
     @property
     def oauth_token_url(self) -> str:
