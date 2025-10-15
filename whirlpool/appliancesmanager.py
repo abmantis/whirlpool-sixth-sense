@@ -85,6 +85,7 @@ class AppliancesManager:
             "cooking_u2",
             "ddm_cooking_bio_self_clean_tourmaline_v2",
             "ddm_cooking_bio_g3evo_pyro_bk_v1",
+            "ddm_cooking_bio_self_clean_meat_probe_tourmaline_bk_v1",
         ]
 
         LOGGER.debug("Adding appliance %s", appliance_data)
