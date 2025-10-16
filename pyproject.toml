@@ -57,6 +57,7 @@ typeCheckingMode = "standard"
 branch = "master"
 version_toml = ["pyproject.toml:project.version"]
 build_command = "pip install build && python -m build"
-changelog_file = "none"
-upload_to_vcs_release = false
 tag_format = "{version}"
+
+[tool.semantic_release.publish]
+upload_to_vcs_release = false
