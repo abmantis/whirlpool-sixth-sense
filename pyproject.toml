@@ -52,3 +52,8 @@ max-complexity = 25
 
 [tool.pyright]
 typeCheckingMode = "standard"
+
+[tool.semantic_release]
+branch = "master"
+version_toml = ["pyproject.toml:project.version"]
+build_command = "pip install build && python -m build"
