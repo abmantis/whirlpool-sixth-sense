@@ -248,20 +248,26 @@ class Oven(Appliance):
         )
 
     def get_temp(self, cavity: Cavity = Cavity.Upper):
-        reported_temp = self._get_attribute(
+        reported_temp = self._get_int_attribute(
             CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_TEMP
         )
+        if reported_temp is None or reported_temp == 0:
+            return None
+
         # temperatures are returned in 1/10ths of a degree Celsius,
         # e.g. 2600 returned = 260C
-        return None if reported_temp is None else int(reported_temp) / 10
+        return reported_temp / 10
 
     def get_target_temp(self, cavity: Cavity = Cavity.Upper):
-        reported_temp = self._get_attribute(
+        reported_temp = self._get_int_attribute(
             CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_TARGET_TEMP
         )
+        if reported_temp is None or reported_temp == 0:
+            return None
+
         # temperatures are returned in 1/10ths of a degree Celsius,
         # e.g. 2600 returned = 260C
-        return None if reported_temp is None else int(reported_temp) / 10
+        return reported_temp / 10
 
     def get_cavity_state(self, cavity: Cavity = Cavity.Upper):
         state_raw = self._get_attribute(
