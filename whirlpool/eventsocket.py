@@ -103,7 +103,7 @@ class EventSocket:
                             aiohttp.WSMsgType.CLOSING,
                             aiohttp.WSMsgType.CLOSED,
                         ]:
-                            LOGGER.warning(
+                            LOGGER.info(
                                 f"Stopping receiving. Message type: {str(msg.type)}"
                             )
 
@@ -116,7 +116,7 @@ class EventSocket:
                                     await asyncio.sleep(RECONNECT_LONG_DELAY)
 
                             elif msg.data == WS_STATUS_GOING_AWAY:
-                                LOGGER.warning(
+                                LOGGER.info(
                                     (
                                         "Received Going Away message: Waiting for %s"
                                         " seconds"
