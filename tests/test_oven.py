@@ -200,15 +200,16 @@ async def test_oven_keepalive_fetches_data(monkeypatch, reset_keepalive):
     class DummyOven:
         def __init__(self):
             self.calls = 0
+            self.said = "dummy"
 
         async def fetch_data(self):
             self.calls += 1
             call_event.set()
 
-    dummy = cast(Oven, DummyOven())
+    dummy = DummyOven()
     monkeypatch.setattr(oven_module, "_KEEPALIVE_INTERVAL_SECONDS", 0)
 
-    oven_module.start_oven_keepalive(lambda: dummy)
+    oven_module.start_oven_keepalive(lambda: cast(Oven, dummy))
 
     await asyncio.wait_for(call_event.wait(), timeout=1)
     await oven_module.stop_oven_keepalive()
