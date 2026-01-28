@@ -1,4 +1,8 @@
+from __future__ import annotations
+
+import asyncio
 import logging
+from collections.abc import Callable
 from enum import Enum
 
 from .appliance import Appliance
@@ -339,3 +343,51 @@ class Oven(Appliance):
         return await self.send_attributes(
             {ATTR_SABBATH_MODE: self.bool_to_attr_value(on)}
         )
+
+
+_KEEPALIVE_INTERVAL_SECONDS = 60 * 20
+_keepalive_task: asyncio.Task | None = None
+_keepalive_supplier: Callable[[], Oven | None] | None = None
+
+
+def start_oven_keepalive(oven_supplier: Callable[[], Oven | None]) -> None:
+    """Start a background task that periodically calls fetch_data on any oven."""
+    global _keepalive_task, _keepalive_supplier
+    if _keepalive_task is not None:
+        return
+    _keepalive_supplier = oven_supplier
+    loop = asyncio.get_event_loop()
+    LOGGER.debug("Starting oven keepalive task")
+    _keepalive_task = loop.create_task(_oven_keepalive_loop())
+
+
+async def stop_oven_keepalive() -> None:
+    """Stop the background keepalive task if it is running."""
+    global _keepalive_task, _keepalive_supplier
+    if _keepalive_task is None:
+        return
+    LOGGER.debug("Stopping oven keepalive task")
+    _keepalive_task.cancel()
+    try:
+        await _keepalive_task
+    except asyncio.CancelledError:
+        pass
+    finally:
+        _keepalive_task = None
+        _keepalive_supplier = None
+
+
+async def _oven_keepalive_loop() -> None:
+    try:
+        while True:
+            oven = _keepalive_supplier() if _keepalive_supplier else None
+            if oven is not None:
+                LOGGER.debug("Running oven keepalive fetch for %s", oven.said)
+                try:
+                    await oven.fetch_data()
+                except Exception:
+                    LOGGER.exception("Oven keepalive fetch failed")
+            await asyncio.sleep(_KEEPALIVE_INTERVAL_SECONDS)
+    except asyncio.CancelledError:
+        # Task was cancelled during shutdown; exit quietly.
+        pass
