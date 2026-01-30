@@ -16,6 +16,7 @@ from .oven import Oven
 from .refrigerator import Refrigerator
 from .types import ApplianceInfo
 from .washer import Washer
+from .microwave import Microwave
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,6 +37,7 @@ class AppliancesManager:
         self._washers: dict[str, Any] = {}
         self._ovens: dict[str, Any] = {}
         self._refrigerators: dict[str, Any] = {}
+        self._microwaves: dict[str, Any] = {}
 
     @cached_property
     def all_appliances(self) -> dict[str, Appliance]:
@@ -45,6 +47,7 @@ class AppliancesManager:
             **self._washers,
             **self._ovens,
             **self._refrigerators,
+            **self._microwaves,
         }
 
     @property
@@ -67,6 +70,10 @@ class AppliancesManager:
     def refrigerators(self) -> list[Refrigerator]:
         return list(self._refrigerators.values())
 
+    @property
+    def microwaves(self) -> list[Microwave]:
+        return list(self._microwaves.values())
+
     def _add_appliance(self, appliance: dict[str, Any]) -> None:
         appliance_data = ApplianceInfo(
             said=appliance["SAID"],
@@ -79,6 +86,10 @@ class AppliancesManager:
 
         data_model = appliance["DATA_MODEL_KEY"].lower()
 
+        microwave_models = [
+            "ddm_cooking_bi_mwo_self_clean_steam_tourmaline_v2",
+        ]
+
         oven_models = [
             "cooking_minerva",
             "cooking_vsi",
@@ -87,7 +98,6 @@ class AppliancesManager:
             "ddm_cooking_bio_g3evo_pyro_bk_v1",
             "ddm_cooking_bio_self_clean_meat_probe_tourmaline_bk_v1",
             "ddm_cooking_bio_self_clean_steam_tourmaline_v2",      # <-- W9 Ovens
-            "ddm_cooking_bi_mwo_self_clean_steam_tourmaline_v2",   # <-- W9 MWOs
         ]
 
         LOGGER.debug("Adding appliance %s", appliance_data)
@@ -105,6 +115,10 @@ class AppliancesManager:
             )
         elif any(model in data_model for model in oven_models):
             self._ovens[appliance_data.said] = Oven(
+                self._backend_selector, self._auth, self._session, appliance_data
+            )
+        elif any(model in data_model for model in microwave_models):
+            self._microwaves[appliance_data.said] = Microwave(
                 self._backend_selector, self._auth, self._session, appliance_data
             )
         elif "ddm_ted_refrigerator_v12" in data_model:
