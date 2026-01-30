@@ -12,11 +12,11 @@ from .appliance import Appliance
 from .auth import Auth
 from .backendselector import BackendSelector
 from .dryer import Dryer
+from .microwave import Microwave
 from .oven import Oven
 from .refrigerator import Refrigerator
 from .types import ApplianceInfo
 from .washer import Washer
-from .microwave import Microwave
 
 LOGGER = logging.getLogger(__name__)
 
