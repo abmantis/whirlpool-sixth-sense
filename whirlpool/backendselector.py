@@ -119,4 +119,4 @@ class BackendSelector:
         return f"{self.base_url}/api/v1/appliance/{said}"
 
     def get_owned_appliances_url(self, account_id: str) -> str:
-        return f"{self.base_url}/api/v2/appliance/all/account/{account_id}"
+        return f"{self.base_url}/api/v3/appliance/all/account/{account_id}"
