@@ -132,7 +132,7 @@ class Auth:
         otherwise fetches it from the backend and returns it.
         """
         if self._auth_dict.get("accountId"):
-            return self._auth_dict.get("accountId")
+            return str(self._auth_dict.get("accountId"))
 
         headers = {
             "Authorization": f"Bearer {self.get_access_token()}",
@@ -150,7 +150,7 @@ class Auth:
                 return None
             data = await r.json()
             self._auth_dict["accountId"] = data["accountId"]
-            return self._auth_dict["accountId"]
+            return str(self._auth_dict["accountId"])
 
     def get_said_list(self):
         return self._auth_dict.get("SAID", None)
