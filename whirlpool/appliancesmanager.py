@@ -12,7 +12,7 @@ from .appliance import Appliance
 from .auth import Auth
 from .backendselector import BackendSelector
 from .dryer import Dryer
-from .oven import Oven
+from .oven import Oven, start_oven_keepalive, stop_oven_keepalive
 from .refrigerator import Refrigerator
 from .types import ApplianceInfo
 from .washer import Washer
@@ -66,6 +66,12 @@ class AppliancesManager:
     @property
     def refrigerators(self) -> list[Refrigerator]:
         return list(self._refrigerators.values())
+
+    def _select_keepalive_oven(self) -> Oven | None:
+        try:
+            return next(iter(self._ovens.values()))
+        except StopIteration:
+            return None
 
     def _add_appliance(self, appliance: dict[str, Any]) -> None:
         appliance_data = ApplianceInfo(
@@ -203,6 +209,8 @@ class AppliancesManager:
             self._session,
         )
         self._event_socket.start()
+        if self._ovens:
+            start_oven_keepalive(self._select_keepalive_oven)
 
     async def stop_event_listener(self):
         """Stop the appliance event listener"""
@@ -211,6 +219,7 @@ class AppliancesManager:
             return
         await self._event_socket.stop()
         self._event_socket = None
+        await stop_oven_keepalive()
 
     def _event_socket_callback(self, msg: str):
         json_msg = json.loads(msg)

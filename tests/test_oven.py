@@ -1,9 +1,12 @@
+import asyncio
 from collections.abc import Callable
+from typing import cast
 
 import pytest
 from aioresponses import aioresponses
 from yarl import URL
 
+import whirlpool.oven as oven_module
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
@@ -182,3 +185,50 @@ async def test_setters(
     # assert args and length
     aioresponses_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
+
+
+@pytest.fixture()
+async def reset_keepalive():
+    await oven_module.stop_oven_keepalive()
+    yield
+    await oven_module.stop_oven_keepalive()
+
+
+async def test_oven_keepalive_fetches_data(monkeypatch, reset_keepalive):
+    call_event = asyncio.Event()
+
+    class DummyOven:
+        def __init__(self):
+            self.calls = 0
+            self.said = "dummy"
+
+        async def fetch_data(self):
+            self.calls += 1
+            call_event.set()
+
+    dummy = DummyOven()
+    monkeypatch.setattr(oven_module, "_KEEPALIVE_INTERVAL_SECONDS", 0)
+
+    oven_module.start_oven_keepalive(lambda: cast(Oven, dummy))
+
+    await asyncio.wait_for(call_event.wait(), timeout=1)
+    await oven_module.stop_oven_keepalive()
+
+    assert dummy.calls >= 1
+
+
+async def test_oven_keepalive_handles_missing_oven(monkeypatch, reset_keepalive):
+    supplier_calls = 0
+
+    def supplier():
+        nonlocal supplier_calls
+        supplier_calls += 1
+        return None
+
+    monkeypatch.setattr(oven_module, "_KEEPALIVE_INTERVAL_SECONDS", 0)
+
+    oven_module.start_oven_keepalive(supplier)
+    await asyncio.sleep(0.05)
+    await oven_module.stop_oven_keepalive()
+
+    assert supplier_calls > 0
