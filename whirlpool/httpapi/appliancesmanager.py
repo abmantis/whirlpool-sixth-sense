@@ -8,14 +8,14 @@ import aiohttp
 
 from ..auth import Auth
 from ..backendselector import BackendSelector
-from .dryer import Dryer
 from ..eventsocket import EventSocket
 from ..types import ApplianceInfo
 from .aircon import Aircon
+from .appliance import Appliance
+from .dryer import Dryer
 from .oven import Oven
 from .refrigerator import Refrigerator
 from .washer import Washer
-from .appliance import Appliance
 
 LOGGER = logging.getLogger(__name__)
 
