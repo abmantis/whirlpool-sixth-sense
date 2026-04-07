@@ -14,11 +14,11 @@ from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector, Brand, Region
 
 logging.basicConfig(format="%(asctime)s [%(name)s %(levelname)s]: %(message)s")
-logger = logging.getLogger("whirlpool")
-logger.setLevel(logging.DEBUG)
+logging.getLogger("whirlpool").setLevel(logging.DEBUG)
 
-logger = logging.getLogger("whirlpool.eventsocket")
-logger.setLevel(logging.INFO)
+logging.getLogger("whirlpool.eventsocket").setLevel(logging.INFO)
+
+LOGGER = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--email", help="Email address")
@@ -45,7 +45,7 @@ async def start():
     elif args.brand == "consul":
         selected_brand = Brand.Consul
     else:
-        logger.error("Invalid brand argument")
+        LOGGER.error("Invalid brand argument")
         return
 
     if args.region == "EU":
@@ -53,51 +53,48 @@ async def start():
     elif args.region == "US":
         selected_region = Region.US
     else:
-        logger.error("Invalid region argument")
+        LOGGER.error("Invalid region argument")
         return
 
     backend_selector = BackendSelector(selected_brand, selected_region)
+
+    class ConnectionManager:
+        def __init__(self, manager: AppliancesManager) -> None:
+            self._manager = manager
+
+        async def __aenter__(self) -> None:
+            await self._manager.connect()
+
+        async def __aexit__(self, *args) -> None:
+            await self._manager.disconnect()
 
     async with aiohttp.ClientSession() as session:
         auth = Auth(backend_selector, args.email, args.password, session)
         await auth.do_auth(store=False)
         appliance_manager = AppliancesManager(backend_selector, auth, session)
-        if not await appliance_manager.fetch_appliances():
-            logger.error("Could not fetch appliances")
-            return
 
-        if args.list:
-            if appliance_manager.aircons:
-                print("\n".join(map(str, appliance_manager.aircons)))
+        async with ConnectionManager(appliance_manager):
+            if args.list:
+                if appliance_manager.aircons:
+                    print("\n".join(map(str, appliance_manager.aircons)))
 
-            if appliance_manager.dryers:
-                print("\n".join(map(str, appliance_manager.dryers)))
+                if appliance_manager.dryers:
+                    print("\n".join(map(str, appliance_manager.dryers)))
 
-            if appliance_manager.washers:
-                print("\n".join(map(str, appliance_manager.washers)))
+                if appliance_manager.washers:
+                    print("\n".join(map(str, appliance_manager.washers)))
 
-            if appliance_manager.ovens:
-                print("\n".join(map(str, appliance_manager.ovens)))
+                if appliance_manager.ovens:
+                    print("\n".join(map(str, appliance_manager.ovens)))
 
-            if appliance_manager.refrigerators:
-                print("\n".join(map(str, appliance_manager.refrigerators)))
-            return
+                if appliance_manager.refrigerators:
+                    print("\n".join(map(str, appliance_manager.refrigerators)))
+                return
 
-        if not args.said:
-            logger.error("No appliance specified")
-            return
+            if not args.said:
+                LOGGER.error("No appliance specified")
+                return
 
-        class Connection:
-            def __init__(self, manager: AppliancesManager) -> None:
-                self._manager = manager
-
-            async def __aenter__(self) -> None:
-                await self._manager.connect()
-
-            async def __aexit__(self, *args) -> None:
-                await self._manager.disconnect()
-
-        async with Connection(appliance_manager):
             for ac_data in appliance_manager.aircons:
                 if ac_data.said == args.said:
                     await show_aircon_menu(ac_data)
