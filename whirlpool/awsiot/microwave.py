@@ -28,6 +28,7 @@ _CAVITY_STATE_MAP: dict[str, MicrowaveCavityState] = {
     "cooking": MicrowaveCavityState.Cooking,
     "paused": MicrowaveCavityState.Paused,
     "completed": MicrowaveCavityState.Completed,
+    "turningOff": MicrowaveCavityState.TurningOff,
 }
 
 _DOOR_STATUS_MAP: dict[str, MicrowaveDoorStatus] = {

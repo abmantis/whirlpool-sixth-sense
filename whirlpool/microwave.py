@@ -11,6 +11,7 @@ class MicrowaveCavityState(Enum):
     Cooking = "cooking"
     Paused = "paused"
     Completed = "completed"
+    TurningOff = "turningOff"
     Unknown = "unknown"
 
 
