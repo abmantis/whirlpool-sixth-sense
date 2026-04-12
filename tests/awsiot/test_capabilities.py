@@ -19,11 +19,11 @@ class TestParseCapabilityProfile:
     ) -> None:
         profile = parse_capability_profile(capability_mwo_raw)
         assert isinstance(profile, CapabilityProfile)
-        assert profile.part_number == "W11650000"
+        assert profile.part_number == "W11788386"
         assert "microwaveOven" in profile.features
         assert "hoodFan" in profile.addressees
         assert "primaryCavity" in profile.addressees
-        assert profile.supports_command("primaryCavity", "run") is True
+        assert profile.supports_command("primaryCavity", "microwave") is True
         assert profile.supports_command("primaryCavity", "nonesuch") is False
         assert profile.has_feature("microwaveOven") is True
         assert profile.has_addressee("hoodFan") is True
@@ -31,7 +31,7 @@ class TestParseCapabilityProfile:
     def test_raw_preserved(self, capability_mwo_raw: dict) -> None:
         profile = parse_capability_profile(capability_mwo_raw)
         assert profile.raw == capability_mwo_raw
-        assert profile.metadata.get("applianceType") == "microwave"
+        assert profile.metadata.get("contentManagementProject") == "FLUSH"
 
     def test_missing_part_number_raises(self) -> None:
         with pytest.raises(CapabilityDownloadError):
@@ -81,13 +81,13 @@ class _FakeSession:
 async def test_downloader_publishes_request_and_returns_profile(
     fake_mqtt, capability_mwo_raw
 ) -> None:
-    download_url = "https://capfiles.example.com/W11650000.json"
+    download_url = "https://capfiles.example.com/W11788386.json"
     session = _FakeSession({download_url: capability_mwo_raw})
     downloader = CapabilityDownloader(fake_mqtt, session)  # type: ignore[arg-type]
 
     said = "WPR1A00000001"
     model = "KMMC5019JBS"
-    part = "W11650000"
+    part = "W11788386"
 
     async def fire_response() -> None:
         # Give downloader time to subscribe + publish.
@@ -116,7 +116,7 @@ async def test_downloader_publishes_request_and_returns_profile(
 async def test_downloader_in_memory_cache_hit_skips_mqtt(
     fake_mqtt, capability_mwo_raw
 ) -> None:
-    download_url = "https://capfiles.example.com/W11650000.json"
+    download_url = "https://capfiles.example.com/W11788386.json"
     session = _FakeSession({download_url: capability_mwo_raw})
     downloader = CapabilityDownloader(fake_mqtt, session)  # type: ignore[arg-type]
 
@@ -125,11 +125,11 @@ async def test_downloader_in_memory_cache_hit_skips_mqtt(
         await asyncio.sleep(0)
         await fake_mqtt.inject(
             "api/capability/download/KMMC5019JBS/WPR1A00000001/response",
-            {"url": download_url, "capabilityPartNumber": "W11650000"},
+            {"url": download_url, "capabilityPartNumber": "W11788386"},
         )
 
     task = asyncio.create_task(
-        downloader.get("WPR1A00000001", "KMMC5019JBS", "W11650000")
+        downloader.get("WPR1A00000001", "KMMC5019JBS", "W11788386")
     )
     await fire_response()
     await task
@@ -137,8 +137,8 @@ async def test_downloader_in_memory_cache_hit_skips_mqtt(
     fake_mqtt.clear_published()
 
     # Second call should hit in-memory cache and NOT publish.
-    profile = await downloader.get("WPR1A00000001", "KMMC5019JBS", "W11650000")
-    assert profile.part_number == "W11650000"
+    profile = await downloader.get("WPR1A00000001", "KMMC5019JBS", "W11788386")
+    assert profile.part_number == "W11788386"
     assert fake_mqtt.published == []
 
 
@@ -157,13 +157,13 @@ async def test_downloader_disk_cache_hit(
 ) -> None:
     cache_dir = tmp_path / "caps"
     cache_dir.mkdir()
-    (cache_dir / "W11650000.json").write_text(json.dumps(capability_mwo_raw))
+    (cache_dir / "W11788386.json").write_text(json.dumps(capability_mwo_raw))
 
     session = _FakeSession({})
     downloader = CapabilityDownloader(
         fake_mqtt, session, cache_dir=cache_dir  # type: ignore[arg-type]
     )
 
-    profile = await downloader.get("SAID", "MODEL", "W11650000")
-    assert profile.part_number == "W11650000"
+    profile = await downloader.get("SAID", "MODEL", "W11788386")
+    assert profile.part_number == "W11788386"
     assert fake_mqtt.published == []

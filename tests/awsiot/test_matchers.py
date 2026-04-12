@@ -36,12 +36,12 @@ def test_has_addressee(profile, profile_no_hood, thing_mwo):
 
 
 def test_has_command(profile, thing_mwo):
-    assert has_command("primaryCavity", "run")(profile, thing_mwo) is True
+    assert has_command("primaryCavity", "microwave")(profile, thing_mwo) is True
     assert has_command("primaryCavity", "detonate")(profile, thing_mwo) is False
 
 
 def test_model_prefix(profile, thing_mwo):
-    assert model_prefix("KMMC")(profile, thing_mwo) is True
+    assert model_prefix("KMML")(profile, thing_mwo) is True
     assert model_prefix("ABCD")(profile, thing_mwo) is False
 
 

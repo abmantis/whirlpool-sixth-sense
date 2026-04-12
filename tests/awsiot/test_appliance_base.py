@@ -75,7 +75,7 @@ def test_get_path_traverses_nested(connected: _ConcreteAppliance, state_mwo_full
     assert connected._get_path_str("primaryCavity.cavityState") == "idle"
     assert connected._get_path_int("primaryCavity.mwoPowerLevel") == 0
     assert connected._get_path_str("hoodFan.userFanSpeed") == "off"
-    assert connected._get_path_str("hoodLight") == "off"
+    assert connected._get_path_str("hoodLight") == "med"
 
 
 def test_get_path_type_coercion_none_on_mismatch(connected: _ConcreteAppliance):

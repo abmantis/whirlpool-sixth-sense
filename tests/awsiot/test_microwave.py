@@ -90,7 +90,7 @@ def test_hood_fan_speed(mwo: Microwave):
 
 
 def test_hood_light_level(mwo: Microwave):
-    assert mwo.get_hood_light_level() == HoodLightLevel.Off
+    assert mwo.get_hood_light_level() == HoodLightLevel.Medium
 
 
 def test_hood_light_color(mwo: Microwave):

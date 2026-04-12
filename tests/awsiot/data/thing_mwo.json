@@ -1,12 +1,10 @@
 {
-  "thingName": "WPR1A00000001",
-  "thingTypeName": "KMMC5019JBS",
+  "thingName": "WPR46LXMVF6DE",
+  "thingTypeName": "KMML550RPS00",
   "attributes": {
-    "Name": "4b69746368656e204d6963726f77617665",
+    "Name": "4d6963726f77617665",
     "Category": "Cooking",
-    "Brand": "KITCHENAID",
-    "Serial": "D12345678",
-    "CapabilityPartNumber": "W11650000",
-    "supportsRemoteRecipes": "true"
+    "Serial": "TRD4210615",
+    "CapabilityPartNumber": "W11788386"
   }
 }

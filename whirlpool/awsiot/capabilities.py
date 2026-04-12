@@ -53,45 +53,86 @@ class CapabilityProfile:
 def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
     """Normalize a raw capability file dict into a CapabilityProfile.
 
-    Shape assumptions (provisional until real files are captured):
-      - `capabilityPartNumber`: str (required)
-      - `features`: list[str]
-      - `addressees`: dict[name -> {"commands": list[str]}]
-      - `metadata`: optional dict
+    Supports two schemas:
+      1. Real device files: top-level `partNumber`, `cavities` dict for cavity
+         addressees, top-level `hoodFan`/`hoodLight`/`hoodLightColor` dicts,
+         `appliance.features` dict.
+      2. Test fixtures: `capabilityPartNumber`, `features` list, `addressees` dict.
     """
-    part_number = raw.get("capabilityPartNumber")
+    # --- Part number ---
+    part_number = raw.get("partNumber") or raw.get("capabilityPartNumber")
     if not isinstance(part_number, str) or not part_number:
         raise CapabilityDownloadError(
-            "Capability file is missing 'capabilityPartNumber'"
+            "Capability file is missing 'partNumber' or 'capabilityPartNumber'"
         )
 
-    features_list = raw.get("features") or []
-    if not isinstance(features_list, list):
-        raise CapabilityDownloadError("Capability 'features' is not a list")
-    features = frozenset(str(f) for f in features_list)
-
-    addressees_obj = raw.get("addressees") or {}
-    if not isinstance(addressees_obj, dict):
-        raise CapabilityDownloadError("Capability 'addressees' is not a dict")
-
+    features: set[str] = set()
+    addressee_names: set[str] = set()
     commands: dict[str, frozenset[str]] = {}
-    for name, spec in addressees_obj.items():
-        cmds: list[str] = []
-        if isinstance(spec, dict):
-            cmd_list = spec.get("commands") or []
-            if isinstance(cmd_list, list):
-                cmds = [str(c) for c in cmd_list]
-        commands[str(name)] = frozenset(cmds)
 
-    metadata = raw.get("metadata") or {}
-    if not isinstance(metadata, dict):
-        metadata = {}
+    # --- Real schema: top-level cavities / hoodFan / appliance.features ---
+    if "cavities" in raw or "appliance" in raw:
+        # Features from appliance.features (keys are feature names)
+        app_features = raw.get("appliance", {})
+        if isinstance(app_features, dict):
+            feat_dict = app_features.get("features") or {}
+            if isinstance(feat_dict, dict):
+                features.update(feat_dict.keys())
+
+        # Cavities → addressees
+        cavities = raw.get("cavities") or {}
+        if isinstance(cavities, dict):
+            for cav_name, cav_spec in cavities.items():
+                addressee_names.add(cav_name)
+                if isinstance(cav_spec, dict):
+                    # Derive microwaveOven feature if mwoConfig present
+                    if "mwoConfig" in cav_spec:
+                        features.add("microwaveOven")
+                    # Recipes → commands for this cavity
+                    recipes = cav_spec.get("recipes") or {}
+                    if isinstance(recipes, dict):
+                        commands[cav_name] = frozenset(recipes.keys())
+
+        # Top-level addressees: hoodFan, hoodLight, hoodLightColor, etc.
+        _KNOWN_ADDRESSEES = ("hoodFan", "hoodLight", "hoodLightColor")
+        for addr in _KNOWN_ADDRESSEES:
+            if addr in raw and isinstance(raw[addr], dict):
+                addressee_names.add(addr)
+
+        # Metadata from misc top-level keys
+        metadata: dict[str, Any] = {}
+        for key in ("generatorInfo", "productVariant", "autoShutOffTime",
+                     "supportsTemperatureUnitChange", "supportsHmiControlLockout",
+                     "quietMode", "contentManagementProject"):
+            if key in raw:
+                metadata[key] = raw[key]
+
+    # --- Test fixture schema: flat features list + addressees dict ---
+    else:
+        features_list = raw.get("features") or []
+        if isinstance(features_list, list):
+            features.update(str(f) for f in features_list)
+
+        addressees_obj = raw.get("addressees") or {}
+        if isinstance(addressees_obj, dict):
+            for name, spec in addressees_obj.items():
+                addressee_names.add(str(name))
+                cmds: list[str] = []
+                if isinstance(spec, dict):
+                    cmd_list = spec.get("commands") or []
+                    if isinstance(cmd_list, list):
+                        cmds = [str(c) for c in cmd_list]
+                commands[str(name)] = frozenset(cmds)
+
+        metadata = raw.get("metadata") or {}
+        if not isinstance(metadata, dict):
+            metadata = {}
 
     return CapabilityProfile(
         part_number=part_number,
         raw=raw,
-        features=features,
-        addressees=frozenset(commands.keys()),
+        features=frozenset(features),
+        addressees=frozenset(addressee_names),
         commands=commands,
         metadata=metadata,
     )

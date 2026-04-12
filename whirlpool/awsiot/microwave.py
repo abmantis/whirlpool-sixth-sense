@@ -68,10 +68,14 @@ class Microwave(Appliance, MicrowaveABC):
 
     @override
     def get_door_locked(self) -> bool | None:
-        raw = self._get_path_str("primaryCavity.doorLockStatus")
-        if raw is None:
+        value = self._get_path("primaryCavity.doorLockStatus")
+        if value is None:
             return None
-        return raw == "locked"
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value == "locked"
+        return None
 
     @override
     def get_cavity_light(self) -> bool | None:
@@ -96,9 +100,9 @@ class Microwave(Appliance, MicrowaveABC):
     @override
     def get_turntable_enabled(self) -> bool | None:
         raw = self._get_path_str("primaryCavity.turnTable")
-        if raw is None:
+        if raw is None or raw == "":
             return None
-        return raw == "enabled"
+        return raw == "on"
 
     # --- cook / timer ----------------------------------------------------
 
