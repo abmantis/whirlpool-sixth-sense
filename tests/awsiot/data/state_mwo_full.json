@@ -1,0 +1,28 @@
+{
+  "primaryCavity": {
+    "cavityState": "idle",
+    "doorStatus": "closed",
+    "doorLockStatus": "unlocked",
+    "recipeId": "",
+    "recipeExecutionState": "IDLE",
+    "mwoPowerLevel": 0,
+    "cavityLight": false,
+    "turnTable": "enabled",
+    "ovenDisplayTemperature": 0,
+    "cookTimer": {
+      "state": "idle",
+      "time": 0,
+      "timeComplete": 0
+    }
+  },
+  "hoodFan": {
+    "userFanSpeed": "off"
+  },
+  "hoodLight": "off",
+  "hoodLightColor": "warmWhite",
+  "temperatureUnit": "fahrenheit",
+  "remoteStartEnable": true,
+  "hmiControlLockout": false,
+  "quietMode": false,
+  "sabbathMode": false
+}

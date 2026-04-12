@@ -1,0 +1,28 @@
+{
+  "primaryCavity": {
+    "cavityState": "cooking",
+    "doorStatus": "closed",
+    "doorLockStatus": "unlocked",
+    "recipeId": "microwave",
+    "recipeExecutionState": "RUNNING",
+    "mwoPowerLevel": 80,
+    "cavityLight": true,
+    "turnTable": "enabled",
+    "ovenDisplayTemperature": 0,
+    "cookTimer": {
+      "state": "running",
+      "time": 30,
+      "timeComplete": 1712345708
+    }
+  },
+  "hoodFan": {
+    "userFanSpeed": "off"
+  },
+  "hoodLight": "off",
+  "hoodLightColor": "warmWhite",
+  "temperatureUnit": "fahrenheit",
+  "remoteStartEnable": true,
+  "hmiControlLockout": false,
+  "quietMode": false,
+  "sabbathMode": false
+}

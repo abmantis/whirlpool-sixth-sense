@@ -1,0 +1,24 @@
+{
+  "capabilityPartNumber": "W11650001",
+  "modelFamily": "KitchenAid MWO CT",
+  "features": [
+    "microwaveOven",
+    "cavityLight",
+    "remoteStart",
+    "controlLockout",
+    "quietMode",
+    "sabbathMode"
+  ],
+  "addressees": {
+    "appliance": {
+      "commands": ["getState"]
+    },
+    "primaryCavity": {
+      "commands": ["run", "set", "cancel", "pause", "resume"]
+    }
+  },
+  "metadata": {
+    "applianceType": "microwave",
+    "overTheRange": false
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "capabilityPartNumber": "W11650000",
+  "modelFamily": "KitchenAid MWO",
+  "features": [
+    "microwaveOven",
+    "hoodFan",
+    "hoodLight",
+    "hoodLightColor",
+    "cavityLight",
+    "remoteStart",
+    "controlLockout",
+    "quietMode",
+    "sabbathMode"
+  ],
+  "addressees": {
+    "appliance": {
+      "commands": ["getState"]
+    },
+    "primaryCavity": {
+      "commands": ["run", "set", "cancel", "pause", "resume"]
+    },
+    "hoodFan": {
+      "commands": ["set"]
+    },
+    "hoodLight": {
+      "commands": ["set"]
+    },
+    "hoodLightColor": {
+      "commands": ["set"]
+    }
+  },
+  "metadata": {
+    "applianceType": "microwave",
+    "overTheRange": true
+  }
+}
