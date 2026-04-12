@@ -237,12 +237,22 @@ class Appliance(BaseAppliance):
         if topic == self._presence_connected_topic():
             self._online = True
             self._fire_attr_callbacks()
+            asyncio.create_task(self._refetch_on_presence())
             return
 
         if topic == self._presence_disconnected_topic():
             self._online = False
             self._fire_attr_callbacks()
             return
+
+    async def _refetch_on_presence(self) -> None:
+        """Re-fetch state when the device comes back online."""
+        try:
+            await self.fetch_data()
+        except Exception:
+            LOGGER.exception(
+                "Failed to refetch state after device presence for %s", self.said
+            )
 
     async def _on_reconnect(self) -> None:
         try:
