@@ -99,6 +99,12 @@ def test_decorator_registers_in_default_factory(mwo_profile, thing_mwo, info):
         pass
 
     marker.append(Decorated)
-    built = DEFAULT_FACTORY.build(object(), mwo_profile, thing_mwo, info)
-    # Decorated should win vs anything else already registered at a lower priority.
-    assert isinstance(built, marker[0])
+    try:
+        built = DEFAULT_FACTORY.build(object(), mwo_profile, thing_mwo, info)
+        # Decorated should win vs anything else already registered at a lower priority.
+        assert isinstance(built, marker[0])
+    finally:
+        # Clean up to avoid polluting DEFAULT_FACTORY for other tests.
+        DEFAULT_FACTORY._registrations = [
+            r for r in DEFAULT_FACTORY._registrations if r.cls is not Decorated
+        ]
