@@ -102,17 +102,19 @@ class AppliancesManager:
     # --- lifecycle -------------------------------------------------------
 
     async def connect(self) -> bool:
-        try:
-            if not await self._mqtt.connect():
-                LOGGER.error("Failed to connect to MQTT broker")
-                return False
+        if not await self._mqtt.connect():
+            LOGGER.error("Failed to connect to MQTT broker")
+            return False
 
+        try:
             things = await Things(self._aws_auth, self._session).list_things()
         except AuthException as e:
             LOGGER.error("AWS auth failed: %s", e)
+            await self._mqtt.disconnect()
             return False
         except Exception:
             LOGGER.exception("Unexpected error during AWS connect")
+            await self._mqtt.disconnect()
             return False
 
         if not things:

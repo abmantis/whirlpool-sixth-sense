@@ -136,3 +136,25 @@ async def test_one_failing_appliance_does_not_abort_others(
     assert ok is True
     # Second one should have been registered despite the first's failure.
     assert any(m.said == "SECOND" for m in manager.microwaves)
+
+
+async def test_connect_disconnects_mqtt_on_list_things_failure(
+    patched_manager, fake_mqtt, client_session_fixture
+):
+    from whirlpool.awsiot.auth import AuthException
+
+    class _FailingThings:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def list_things(self) -> list[dict[str, Any]]:
+            raise AuthException("Auth token expired")
+
+    manager = AppliancesManager(
+        _FakeWhirlpoolAuth(), client_session_fixture, lambda: None
+    )
+    with patch("whirlpool.awsiot.appliancesmanager.Things", _FailingThings):
+        ok = await manager.connect()
+
+    assert ok is False
+    assert not fake_mqtt.is_connected()
