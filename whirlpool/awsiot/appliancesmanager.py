@@ -40,7 +40,7 @@ class AppliancesManager:
         self._refrigerators: dict[str, Any] = {}
 
         self._aws_auth = Auth(self._whirlpool_auth, self._session)
-        self._mqtt = MqttClient(self._aws_auth, self._handle_mqtt_message)
+        self._mqtt = MqttClient(self._aws_auth)
 
     @cached_property
     def all_appliances(self) -> dict[str, Appliance]:
