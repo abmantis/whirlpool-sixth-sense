@@ -3,16 +3,21 @@ from typing import override
 from ..refrigerator import Refrigerator as BaseRefrigerator
 from ..types import ApplianceInfo
 from .appliance import Appliance
+from .capabilities import CapabilityProfile
+from .factory import register_appliance
+from .matchers import thing_category
 from .mqttclient import MqttClient
 
 
+@register_appliance(matcher=thing_category("refrigerator"), priority=5)
 class Refrigerator(BaseRefrigerator, Appliance):
     def __init__(
         self,
         mqttclient: MqttClient,
         appliance_info: ApplianceInfo,
+        capability_profile: CapabilityProfile,
     ):
-        super().__init__(mqttclient, appliance_info)
+        super().__init__(mqttclient, appliance_info, capability_profile)
 
     @override
     def get_offset_temp(self) -> int | None:

@@ -10,16 +10,21 @@ from ..oven import (
 from ..oven import Oven as BaseOven
 from ..types import ApplianceInfo
 from .appliance import Appliance
+from .capabilities import CapabilityProfile
+from .factory import register_appliance
+from .matchers import thing_category
 from .mqttclient import MqttClient
 
 
+@register_appliance(matcher=thing_category("cooking"), priority=5)
 class Oven(BaseOven, Appliance):
     def __init__(
         self,
         mqttclient: MqttClient,
         appliance_info: ApplianceInfo,
+        capability_profile: CapabilityProfile,
     ):
-        super().__init__(mqttclient, appliance_info)
+        super().__init__(mqttclient, appliance_info, capability_profile)
 
     @override
     def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper) -> bool | None:
