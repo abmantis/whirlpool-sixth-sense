@@ -9,6 +9,7 @@ from .awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
 from .backendselector import BackendSelector
 from .dryer import Dryer
 from .httpapi.appliancesmanager import AppliancesManager as HttpAppliancesManager
+from .microwave import Microwave
 from .oven import Oven
 from .refrigerator import Refrigerator
 from .washer import Washer
@@ -62,6 +63,14 @@ class AppliancesManager:
         return (
             self._http_appliances_manager.refrigerators
             + self._aws_appliances_manager.refrigerators
+        )
+
+    # TODO: use cached_property
+    @property
+    def microwaves(self) -> list[Microwave]:
+        return (
+            self._http_appliances_manager.microwaves
+            + self._aws_appliances_manager.microwaves
         )
 
     def _update_appliances(self) -> None:
