@@ -49,6 +49,6 @@
   "temperatureUnit": "fahrenheit",
   "quietMode": false,
   "sabbathMode": false,
-  "currentTime": 1776032900,
+  "currentTime": 1700000000,
   "systemVersion": "0.2.0"
 }
