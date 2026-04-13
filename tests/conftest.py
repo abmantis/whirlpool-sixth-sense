@@ -6,10 +6,10 @@ import pytest
 import pytest_asyncio
 from aioresponses import aioresponses
 
-from whirlpool_aws.appliancesmanager import AppliancesManager
-from whirlpool_aws.auth import Auth
-from whirlpool_aws.backendselector import BackendSelector
-from whirlpool_aws.types import Brand, Region
+from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.auth import Auth
+from whirlpool.backendselector import BackendSelector
+from whirlpool.types import Brand, Region
 
 from . import ACCOUNT_ID, DATA_DIR
 

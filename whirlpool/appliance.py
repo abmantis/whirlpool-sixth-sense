@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any
 
-from whirlpool_aws.types import ApplianceInfo
+from whirlpool.types import ApplianceInfo
 
 LOGGER = logging.getLogger(__name__)
 

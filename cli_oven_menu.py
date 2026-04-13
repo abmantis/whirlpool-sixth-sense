@@ -2,7 +2,7 @@ import json
 
 import aioconsole
 
-from whirlpool_aws.oven import Cavity, CookMode, KitchenTimerState, Oven
+from whirlpool.oven import Cavity, CookMode, KitchenTimerState, Oven
 
 
 async def show_oven_menu(ov: Oven) -> None:

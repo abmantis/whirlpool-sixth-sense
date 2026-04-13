@@ -3,13 +3,13 @@ from typing import Any
 
 import pytest
 
-from whirlpool_aws.awsiot.appliance import Appliance, deep_merge
-from whirlpool_aws.awsiot.capabilities import (
+from whirlpool.awsiot.appliance import Appliance, deep_merge
+from whirlpool.awsiot.capabilities import (
     CapabilityProfile,
     parse_capability_profile,
 )
-from whirlpool_aws.awsiot.mqttclient import MqttClient
-from whirlpool_aws.types import ApplianceInfo
+from whirlpool.awsiot.mqttclient import MqttClient
+from whirlpool.types import ApplianceInfo
 
 
 class _ConcreteAppliance(Appliance):
@@ -83,7 +83,7 @@ def test_deep_merge_type_mismatch_keeps_existing_and_warns(
     base = {"a": {"nested": 1}}
     import logging
 
-    with caplog.at_level(logging.WARNING, logger="whirlpool_aws.awsiot.appliance"):
+    with caplog.at_level(logging.WARNING, logger="whirlpool.awsiot.appliance"):
         deep_merge(base, {"a": "scalar"})
     assert base["a"] == {"nested": 1}
     assert any("type mismatch" in r.message.lower() for r in caplog.records)

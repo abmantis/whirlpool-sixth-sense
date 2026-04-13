@@ -87,12 +87,12 @@ from typing import Any
 
 import aiohttp
 
-from whirlpool_aws.auth import Auth
-from whirlpool_aws.awsiot.appliancesmanager import (
+from whirlpool.auth import Auth
+from whirlpool.awsiot.appliancesmanager import (
     AppliancesManager as AwsAppliancesManager,
 )
-from whirlpool_aws.backendselector import BackendSelector
-from whirlpool_aws.types import Brand, Region
+from whirlpool.backendselector import BackendSelector
+from whirlpool.types import Brand, Region
 
 LOGGER = logging.getLogger("capture_fixtures")
 

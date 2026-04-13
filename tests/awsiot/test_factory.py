@@ -3,10 +3,10 @@ from typing import Any
 
 import pytest
 
-from whirlpool_aws.awsiot.capabilities import parse_capability_profile
-from whirlpool_aws.awsiot.factory import ApplianceFactory, register_appliance
-from whirlpool_aws.awsiot.matchers import has_addressee, has_feature
-from whirlpool_aws.types import ApplianceInfo
+from whirlpool.awsiot.capabilities import parse_capability_profile
+from whirlpool.awsiot.factory import ApplianceFactory, register_appliance
+from whirlpool.awsiot.matchers import has_addressee, has_feature
+from whirlpool.types import ApplianceInfo
 
 
 class _StubBase:
@@ -81,14 +81,14 @@ def test_tie_break_first_registered_wins(
     factory.register(First, matcher=has_addressee("primaryCavity"), priority=5)
     factory.register(Second, matcher=has_addressee("primaryCavity"), priority=5)
 
-    with caplog.at_level(logging.WARNING, logger="whirlpool_aws.awsiot.factory"):
+    with caplog.at_level(logging.WARNING, logger="whirlpool.awsiot.factory"):
         built = factory.build(object(), mwo_profile, thing_mwo, info)
     assert isinstance(built, First)
     assert any("tie" in r.message.lower() for r in caplog.records)
 
 
 def test_decorator_registers_in_default_factory(mwo_profile, thing_mwo, info):
-    from whirlpool_aws.awsiot.factory import DEFAULT_FACTORY
+    from whirlpool.awsiot.factory import DEFAULT_FACTORY
 
     marker: list[type] = []
 

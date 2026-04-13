@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from whirlpool_aws.types import ApplianceInfo
+from whirlpool.types import ApplianceInfo
 
 from . import DATA_DIR
 

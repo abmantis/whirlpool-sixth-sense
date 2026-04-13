@@ -1,5 +1,5 @@
-from whirlpool_aws.appliancesmanager import AppliancesManager
-from whirlpool_aws.washer import MachineState
+from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.washer import MachineState
 
 
 async def test_attributes(appliances_manager: AppliancesManager):

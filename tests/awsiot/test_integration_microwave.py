@@ -2,13 +2,13 @@ import copy
 from typing import Any
 from unittest.mock import patch
 
-from whirlpool_aws.awsiot.appliancesmanager import AppliancesManager
-from whirlpool_aws.awsiot.capabilities import (
+from whirlpool.awsiot.appliancesmanager import AppliancesManager
+from whirlpool.awsiot.capabilities import (
     CapabilityProfile,
     parse_capability_profile,
 )
-from whirlpool_aws.microwave import HoodFanSpeed, MicrowaveCavityState
-from whirlpool_aws.microwave import Microwave as MicrowaveABC
+from whirlpool.microwave import HoodFanSpeed, MicrowaveCavityState
+from whirlpool.microwave import Microwave as MicrowaveABC
 
 
 class _FakeWhirlpoolAuth:
@@ -23,7 +23,7 @@ async def test_full_chain_start_and_state_update(
     thing_mwo,
     state_mwo_full,
 ):
-    import whirlpool_aws.awsiot.microwave  # noqa: F401
+    import whirlpool.awsiot.microwave  # noqa: F401
 
     async def fake_fetch(self) -> bool:
         self._state = copy.deepcopy(state_mwo_full)
@@ -41,17 +41,17 @@ async def test_full_chain_start_and_state_update(
             return [thing_mwo]
 
     with (
-        patch("whirlpool_aws.awsiot.appliancesmanager.Things", _FakeThings),
+        patch("whirlpool.awsiot.appliancesmanager.Things", _FakeThings),
         patch(
-            "whirlpool_aws.awsiot.appliancesmanager.MqttClient",
+            "whirlpool.awsiot.appliancesmanager.MqttClient",
             return_value=fake_mqtt,
         ),
         patch(
-            "whirlpool_aws.awsiot.capabilities.CapabilityDownloader.get",
+            "whirlpool.awsiot.capabilities.CapabilityDownloader.get",
             fake_download,
         ),
         patch(
-            "whirlpool_aws.awsiot.appliance.Appliance.fetch_data",
+            "whirlpool.awsiot.appliance.Appliance.fetch_data",
             fake_fetch,
         ),
     ):

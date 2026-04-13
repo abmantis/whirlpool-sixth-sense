@@ -2,7 +2,7 @@ import json
 
 import aioconsole
 
-from whirlpool_aws.refrigerator import Refrigerator
+from whirlpool.refrigerator import Refrigerator
 
 
 async def show_refrigerator_menu(rf: Refrigerator) -> None:

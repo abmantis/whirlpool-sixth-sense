@@ -7,9 +7,9 @@ from aioresponses import aioresponses
 from yarl import URL
 
 from tests import ACCOUNT_ID
-from whirlpool_aws.auth import AccountLockedError, Auth
-from whirlpool_aws.backendselector import BackendSelector
-from whirlpool_aws.types import Brand, Region
+from whirlpool.auth import AccountLockedError, Auth
+from whirlpool.backendselector import BackendSelector
+from whirlpool.types import Brand, Region
 
 AUTH_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",

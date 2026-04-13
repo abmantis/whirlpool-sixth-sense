@@ -1,5 +1,5 @@
-from whirlpool_aws.appliancesmanager import AppliancesManager
-from whirlpool_aws.dryer import (
+from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.dryer import (
     Cycle,
     Dryness,
     MachineState,

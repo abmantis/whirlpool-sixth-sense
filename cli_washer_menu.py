@@ -2,7 +2,7 @@ import json
 
 import aioconsole
 
-from whirlpool_aws.washer import Washer
+from whirlpool.washer import Washer
 
 
 async def show_washer_menu(wr: Washer) -> None:

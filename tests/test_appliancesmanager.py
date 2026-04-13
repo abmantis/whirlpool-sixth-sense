@@ -2,8 +2,8 @@ import pytest
 from aioresponses import aioresponses
 
 from tests import ACCOUNT_ID
-from whirlpool_aws.auth import Auth
-from whirlpool_aws.backendselector import BackendSelector
+from whirlpool.auth import Auth
+from whirlpool.backendselector import BackendSelector
 
 
 @pytest.mark.usefixtures("appliances_manager")

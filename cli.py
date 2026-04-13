@@ -11,10 +11,10 @@ from cli_dryer_menu import show_dryer_menu
 from cli_oven_menu import show_oven_menu
 from cli_refrigerator_menu import show_refrigerator_menu
 from cli_washer_menu import show_washer_menu
-from whirlpool_aws.appliance import Appliance
-from whirlpool_aws.appliancesmanager import AppliancesManager
-from whirlpool_aws.auth import Auth
-from whirlpool_aws.backendselector import BackendSelector, Brand, Region
+from whirlpool.appliance import Appliance
+from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.auth import Auth
+from whirlpool.backendselector import BackendSelector, Brand, Region
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--email", help="Email address")

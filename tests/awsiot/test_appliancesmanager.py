@@ -4,12 +4,12 @@ from unittest.mock import patch
 
 import pytest
 
-from whirlpool_aws.awsiot.appliancesmanager import AppliancesManager
-from whirlpool_aws.awsiot.capabilities import (
+from whirlpool.awsiot.appliancesmanager import AppliancesManager
+from whirlpool.awsiot.capabilities import (
     CapabilityProfile,
     parse_capability_profile,
 )
-from whirlpool_aws.microwave import Microwave as MicrowaveABC
+from whirlpool.microwave import Microwave as MicrowaveABC
 
 
 class _FakeWhirlpoolAuth:
@@ -44,17 +44,17 @@ def patched_manager(
         return True
 
     with (
-        patch("whirlpool_aws.awsiot.appliancesmanager.Things", _FakeThings),
+        patch("whirlpool.awsiot.appliancesmanager.Things", _FakeThings),
         patch(
-            "whirlpool_aws.awsiot.appliancesmanager.MqttClient",
+            "whirlpool.awsiot.appliancesmanager.MqttClient",
             return_value=fake_mqtt,
         ),
         patch(
-            "whirlpool_aws.awsiot.capabilities.CapabilityDownloader.get",
+            "whirlpool.awsiot.capabilities.CapabilityDownloader.get",
             fake_download,
         ),
         patch(
-            "whirlpool_aws.awsiot.appliance.Appliance.fetch_data",
+            "whirlpool.awsiot.appliance.Appliance.fetch_data",
             fake_fetch_data,
         ),
     ):
@@ -65,7 +65,7 @@ async def test_connect_registers_microwave(
     patched_manager, fake_mqtt, client_session_fixture
 ):
     # Ensure Microwave registration is loaded before factory build.
-    import whirlpool_aws.awsiot.microwave  # noqa: F401
+    import whirlpool.awsiot.microwave  # noqa: F401
 
     manager = AppliancesManager(
         _FakeWhirlpoolAuth(), client_session_fixture, lambda: None  # type: ignore[arg-type]
@@ -108,8 +108,8 @@ async def test_thing_without_capability_part_number_is_skipped(
 async def test_one_failing_appliance_does_not_abort_others(
     patched_manager, client_session_fixture, thing_mwo, capability_mwo_raw
 ):
-    import whirlpool_aws.awsiot.microwave  # noqa: F401
-    from whirlpool_aws.awsiot.capabilities import (
+    import whirlpool.awsiot.microwave  # noqa: F401
+    from whirlpool.awsiot.capabilities import (
         CapabilityDownloadError,
         parse_capability_profile,
     )
@@ -129,7 +129,7 @@ async def test_one_failing_appliance_does_not_abort_others(
         return parse_capability_profile(capability_mwo_raw)
 
     with patch(
-        "whirlpool_aws.awsiot.capabilities.CapabilityDownloader.get",
+        "whirlpool.awsiot.capabilities.CapabilityDownloader.get",
         selective_download,
     ):
         manager = AppliancesManager(
@@ -144,7 +144,7 @@ async def test_one_failing_appliance_does_not_abort_others(
 async def test_connect_disconnects_mqtt_on_list_things_failure(
     patched_manager, fake_mqtt, client_session_fixture
 ):
-    from whirlpool_aws.awsiot.auth import AuthException
+    from whirlpool.awsiot.auth import AuthException
 
     class _FailingThings:
         def __init__(self, *args, **kwargs):
@@ -156,7 +156,7 @@ async def test_connect_disconnects_mqtt_on_list_things_failure(
     manager = AppliancesManager(
         _FakeWhirlpoolAuth(), client_session_fixture, lambda: None  # type: ignore[arg-type]
     )
-    with patch("whirlpool_aws.awsiot.appliancesmanager.Things", _FailingThings):
+    with patch("whirlpool.awsiot.appliancesmanager.Things", _FailingThings):
         ok = await manager.connect()
 
     assert ok is False
