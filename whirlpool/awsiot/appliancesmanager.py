@@ -88,8 +88,10 @@ class AppliancesManager:
         for thing in things_list:
             await self._add_appliance(thing)
 
-        # TODO: remove this after appliances are implemented (so CLI can be used)
-        await asyncio.sleep(5)
+        await asyncio.gather(
+            *[appliance.fetch_data() for appliance in self.all_appliances.values()],
+        )
+
         return True
 
     async def disconnect(self):
@@ -122,7 +124,6 @@ class AppliancesManager:
         elif appliance_data.category == "cooking":
             appliance = Oven(self._mqtt, appliance_data)
             self._ovens[appliance_data.said] = appliance
-        # elif appliance_data.category == "dishwasher":
         elif appliance_data.category == "fabriccare":
             appliance = Dryer(self._mqtt, appliance_data)
             self._dryers[appliance_data.said] = appliance
@@ -141,7 +142,6 @@ class AppliancesManager:
             return
 
         await appliance.subscribe_topics()
-        await appliance.fetch_data()
 
         # Invalidate cached property
         self.__dict__.pop("all_appliances", None)

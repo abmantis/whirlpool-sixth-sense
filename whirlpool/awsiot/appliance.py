@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 import uuid
@@ -22,6 +23,7 @@ class Appliance(BaseAppliance):
         self._mqttclient = mqttclient
 
         self._data_dict: dict = {}
+        self._initial_data_event = asyncio.Event()
 
     def __repr__(self):
         return f"<{self.__class__.__name__}> {self.said} | {self.name}"
@@ -57,14 +59,19 @@ class Appliance(BaseAppliance):
     def update_state(self, new_state: dict[str, Any]):
         """Update appliance state and call callbacks."""
         self._data_dict = new_state
+        self._initial_data_event.set()
         for callback in self._attr_changed:
             callback()
 
     @override
     async def fetch_data(self) -> bool:
-        """Fetch appliance data from web api"""
+        """Fetch appliance data."""
         self._send_command("getState")
-        # TODO: wait for response?
+        try:
+            await asyncio.wait_for(self._initial_data_event.wait(), timeout=30)
+        except TimeoutError:
+            LOGGER.error("Timeout waiting for data for appliance %s", self.said)
+            return False
         return True
 
     @override

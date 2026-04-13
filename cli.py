@@ -102,7 +102,6 @@ async def start():
 
             if args.dump:
                 for appliance in all_appliances:
-                    await appliance.fetch_data()
                     print(f"== {appliance} ==")
                     print("Appliance info:")
                     print(json.dumps(asdict(appliance.appliance_info), indent=2))
