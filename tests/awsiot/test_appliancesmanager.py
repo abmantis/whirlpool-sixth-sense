@@ -5,7 +5,10 @@ from unittest.mock import patch
 import pytest
 
 from whirlpool_aws.awsiot.appliancesmanager import AppliancesManager
-from whirlpool_aws.awsiot.capabilities import CapabilityProfile, parse_capability_profile
+from whirlpool_aws.awsiot.capabilities import (
+    CapabilityProfile,
+    parse_capability_profile,
+)
 from whirlpool_aws.microwave import Microwave as MicrowaveABC
 
 

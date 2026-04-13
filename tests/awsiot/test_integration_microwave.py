@@ -3,7 +3,10 @@ from typing import Any
 from unittest.mock import patch
 
 from whirlpool_aws.awsiot.appliancesmanager import AppliancesManager
-from whirlpool_aws.awsiot.capabilities import CapabilityProfile, parse_capability_profile
+from whirlpool_aws.awsiot.capabilities import (
+    CapabilityProfile,
+    parse_capability_profile,
+)
 from whirlpool_aws.microwave import HoodFanSpeed, MicrowaveCavityState
 from whirlpool_aws.microwave import Microwave as MicrowaveABC
 
