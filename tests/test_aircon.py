@@ -5,10 +5,10 @@ import pytest
 from aioresponses import aioresponses
 from yarl import URL
 
-from whirlpool.aircon import Aircon, FanSpeed, Mode
-from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.auth import Auth
-from whirlpool.backendselector import BackendSelector
+from whirlpool_aws.aircon import Aircon, FanSpeed, Mode
+from whirlpool_aws.appliancesmanager import AppliancesManager
+from whirlpool_aws.auth import Auth
+from whirlpool_aws.backendselector import BackendSelector
 
 
 async def test_attributes(appliances_manager: AppliancesManager):

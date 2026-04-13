@@ -2,7 +2,7 @@ import json
 
 import aioconsole
 
-from whirlpool.dryer import Dryer
+from whirlpool_aws.dryer import Dryer
 
 
 async def show_dryer_menu(dr: Dryer) -> None:

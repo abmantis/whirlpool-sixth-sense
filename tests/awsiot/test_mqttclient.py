@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from whirlpool.awsiot.mqttclient import MqttClient
+from whirlpool_aws.awsiot.mqttclient import MqttClient
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def fake_paho() -> MagicMock:
 
 async def _build_client(mock_aws_auth: AsyncMock, fake_paho: MagicMock) -> MqttClient:
     with patch(
-        "whirlpool.awsiot.mqttclient.mqtt.Client", return_value=fake_paho
+        "whirlpool_aws.awsiot.mqttclient.mqtt.Client", return_value=fake_paho
     ):
         client = MqttClient(mock_aws_auth)
 

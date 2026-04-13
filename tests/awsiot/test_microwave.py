@@ -3,9 +3,9 @@ import logging
 
 import pytest
 
-from whirlpool.awsiot.capabilities import parse_capability_profile
-from whirlpool.awsiot.microwave import Microwave
-from whirlpool.microwave import (
+from whirlpool_aws.awsiot.capabilities import parse_capability_profile
+from whirlpool_aws.awsiot.microwave import Microwave
+from whirlpool_aws.microwave import (
     HoodFanSpeed,
     HoodLightColor,
     HoodLightLevel,
@@ -13,7 +13,7 @@ from whirlpool.microwave import (
     MicrowaveDoorStatus,
     RecipeId,
 )
-from whirlpool.types import ApplianceInfo
+from whirlpool_aws.types import ApplianceInfo
 
 
 @pytest.fixture
@@ -187,7 +187,7 @@ async def test_start_cook_requires_remote_start(
     mwo._state["remoteStartEnable"] = False
     fake_mqtt.clear_published()
 
-    with caplog.at_level(logging.WARNING, logger="whirlpool.awsiot.microwave"):
+    with caplog.at_level(logging.WARNING, logger="whirlpool_aws.awsiot.microwave"):
         ok = await mwo.start_cook(RecipeId.Microwave, 50, 30)
     assert ok is False
     assert fake_mqtt.published == []
@@ -222,7 +222,7 @@ async def test_hood_fan_setter_skipped_when_feature_absent(
     await app.connect()
     fake_mqtt.clear_published()
 
-    with caplog.at_level(logging.WARNING, logger="whirlpool.awsiot.microwave"):
+    with caplog.at_level(logging.WARNING, logger="whirlpool_aws.awsiot.microwave"):
         ok = await app.set_hood_fan_speed(HoodFanSpeed.High)
     assert ok is False
     assert fake_mqtt.published == []

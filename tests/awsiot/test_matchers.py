@@ -2,8 +2,8 @@ from typing import Any
 
 import pytest
 
-from whirlpool.awsiot.capabilities import parse_capability_profile
-from whirlpool.awsiot.matchers import (
+from whirlpool_aws.awsiot.capabilities import parse_capability_profile
+from whirlpool_aws.awsiot.matchers import (
     all_of,
     any_of,
     has_addressee,

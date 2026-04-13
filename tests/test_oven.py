@@ -4,10 +4,10 @@ import pytest
 from aioresponses import aioresponses
 from yarl import URL
 
-from whirlpool.appliancesmanager import AppliancesManager
-from whirlpool.auth import Auth
-from whirlpool.backendselector import BackendSelector
-from whirlpool.oven import Cavity, CavityState, CookMode, Oven
+from whirlpool_aws.appliancesmanager import AppliancesManager
+from whirlpool_aws.auth import Auth
+from whirlpool_aws.backendselector import BackendSelector
+from whirlpool_aws.oven import Cavity, CavityState, CookMode, Oven
 
 
 async def test_attributes(appliances_manager: AppliancesManager):

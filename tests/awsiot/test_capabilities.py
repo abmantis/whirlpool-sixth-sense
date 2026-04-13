@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from whirlpool.awsiot.capabilities import (
+from whirlpool_aws.awsiot.capabilities import (
     CapabilityDownloader,
     CapabilityDownloadError,
     CapabilityProfile,

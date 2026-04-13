@@ -2,7 +2,7 @@ import json
 
 import aioconsole
 
-from whirlpool.aircon import Aircon, Mode
+from whirlpool_aws.aircon import Aircon, Mode
 
 
 async def show_aircon_menu(ac: Aircon) -> None:
