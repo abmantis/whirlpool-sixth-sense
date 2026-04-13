@@ -67,7 +67,7 @@ async def _amain(args: argparse.Namespace) -> int:
     backend = BackendSelector(brand, region)
 
     async with aiohttp.ClientSession() as session:
-        auth = Auth(backend, args.email, args.password, session, store=True)
+        auth = Auth(backend, args.email, args.password, session)
         await auth.do_auth()
 
         manager = AwsAppliancesManager(auth, session, lambda: None)
