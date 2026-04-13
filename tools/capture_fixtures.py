@@ -1,27 +1,57 @@
 """Capture fixture data for any Whirlpool/KitchenAid/Maytag AWS IoT appliance.
 
-Usage:
-    python -m tools.capture_fixtures \
-        --email you@example.com \
-        --password 'password' \
-        --brand KitchenAid \
-        --region US \
+NAME
+    capture_fixtures - connect to AWS IoT and dump appliance fixture data
+
+SYNOPSIS
+    python -m tools.capture_fixtures --email EMAIL --password PASSWORD
+        [--brand BRAND] [--region REGION] --said SAID
+        [--output-dir DIR] [--verbose]
+
+    python -m tools.capture_fixtures --email EMAIL --password PASSWORD
+        [--brand BRAND] [--region REGION] --list [--verbose]
+
+OPTIONS
+    --email EMAIL       Whirlpool account email (required)
+    --password PASSWORD Whirlpool account password (required)
+    --brand BRAND       One of: KitchenAid, Whirlpool, Maytag
+                        (default: KitchenAid)
+    --region REGION     One of: US, EU (default: US)
+    --said SAID         SAID of the appliance to capture
+                        (required unless --list)
+    --list              List all discovered appliances and exit
+    --output-dir DIR    Directory for output files
+                        (default: tests/awsiot/data/)
+    --verbose           Enable debug logging
+
+OUTPUT FILES
+    Filenames use the appliance type as prefix (e.g. "microwave",
+    "dryer", "aircon", "oven", "refrigerator", "washer"):
+
+        thing_{type}.json       - IoT thing record
+        capability_{type}.json  - capability profile (raw XML-derived)
+        state_{type}_full.json  - full MQTT state snapshot
+
+EXAMPLES
+    # List all appliances on a KitchenAid US account:
+    python -m tools.capture_fixtures \\
+        --email you@example.com --password secret --list
+
+    # Capture microwave fixtures to the default test data dir:
+    python -m tools.capture_fixtures \\
+        --email you@example.com --password secret \\
         --said WPR1A00000001
 
-    # List all discovered appliances without capturing:
-    python -m tools.capture_fixtures \
-        --email you@example.com \
-        --password 'password' \
-        --list
+    # Capture a Whirlpool EU dryer to a custom directory:
+    python -m tools.capture_fixtures \\
+        --email you@example.com --password secret \\
+        --brand Whirlpool --region EU \\
+        --said WPR2B00000002 --output-dir /tmp/fixtures
 
-Writes (using appliance type as prefix, e.g. "microwave"):
-    {output-dir}/thing_{type}.json
-    {output-dir}/capability_{type}.json
-    {output-dir}/state_{type}_full.json
-
-The capability file is captured by reading the downloader's disk cache
-after the first connect(), so this script also doubles as a smoke test
-for the full discovery path.
+NOTES
+    The capability file is read from the downloader's disk cache after
+    connect(), so this script also doubles as a smoke test for the full
+    AWS IoT discovery path.
 """
 
 from __future__ import annotations
