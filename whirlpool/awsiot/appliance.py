@@ -73,6 +73,11 @@ class Appliance(BaseAppliance):
         """Get online state for appliance"""
         raise NotImplementedError
 
+    @override
+    def get_raw_data(self) -> dict[str, Any] | None:
+        """Return the raw data dict for the appliance."""
+        return self._data_dict if self._data_dict else None
+
     def _send_command(self, command: str, payload_extra: dict | None = None):
         """Send a command to the appliance."""
         request_id = str(uuid.uuid4())

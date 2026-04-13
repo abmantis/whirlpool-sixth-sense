@@ -12,7 +12,6 @@ async def show_dryer_menu(dr: Dryer) -> None:
         print("u. Update status from server")
         print("p. Print status")
         print("v. Print raw status")
-        print("c. Custom command")
         print("q. Exit")
         print(67 * "-")
 
@@ -62,11 +61,7 @@ async def show_dryer_menu(dr: Dryer) -> None:
             await dr.fetch_data()
             print_status(dr)
         elif choice == "v":
-            print(json.dumps(dr._data_dict, indent=4))
-        elif choice == "c":
-            cmd = await aioconsole.ainput("Command: ")
-            val = await aioconsole.ainput("Value: ")
-            await dr.send_attributes({cmd: val})
+            print(json.dumps(dr.get_raw_data(), indent=4))
         elif choice == "q":
             print("Bye")
             loop = False

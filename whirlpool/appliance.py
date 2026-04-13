@@ -1,6 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from collections.abc import Callable
+from typing import Any
 
 from whirlpool.types import ApplianceInfo
 
@@ -38,6 +39,11 @@ class Appliance(ABC):
     @abstractmethod
     def get_online(self) -> bool | None:
         """Get the online state of the appliance"""
+        pass
+
+    @abstractmethod
+    def get_raw_data(self) -> dict[str, Any] | None:
+        """Return the raw data dict for the appliance."""
         pass
 
     def register_attr_callback(self, update_callback: Callable):

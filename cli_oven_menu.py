@@ -19,7 +19,6 @@ async def show_oven_menu(ov: Oven) -> None:
         print("s. Toggle Sabbath mode")
         print("p. Print status")
         print("v. Print raw status")
-        print("c. Custom command")
         print("q. Exit")
         print(67 * "-")
 
@@ -124,11 +123,7 @@ async def show_oven_menu(ov: Oven) -> None:
             await ov.fetch_data()
             print_status(ov)
         elif choice == "v":
-            print(json.dumps(ov._data_dict, indent=4))
-        elif choice == "c":
-            cmd = await aioconsole.ainput("Command: ")
-            val = await aioconsole.ainput("Value: ")
-            await ov.send_attributes({cmd: val})
+            print(json.dumps(ov.get_raw_data(), indent=4))
         elif choice == "q":
             print("Bye")
             loop = False

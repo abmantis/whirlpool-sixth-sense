@@ -99,6 +99,11 @@ class Appliance(BaseAppliance):
         """Get online state for appliance"""
         return self.attr_value_to_bool(self._get_attribute(ATTR_ONLINE))
 
+    @override
+    def get_raw_data(self) -> dict[str, Any] | None:
+        """Return the raw data dict for the appliance."""
+        return self._data_dict if self._data_dict else None
+
     def update_attributes(self, attrs: dict[str, Any], timestamp: int):
         for attr, val in attrs.items():
             if self.has_attribute(attr):
