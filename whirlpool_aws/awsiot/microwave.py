@@ -214,13 +214,40 @@ class Microwave(Appliance, MicrowaveABC):
     def get_remote_start_enabled(self) -> bool | None:
         return self._get_path_bool("remoteStartEnable")
 
+    # --- capability gates ------------------------------------------------
+    # Per Android decompile (ComplementaryCommand.java) each of these
+    # features is its own addressee with a generic `value` payload — the
+    # cloud rejects the command (bouncing the device's IoT session) when
+    # the model doesn't declare support.
+
+    @property
+    def supports_control_lock(self) -> bool:
+        return (
+            self._capability_profile.metadata.get("supportsHmiControlLockout")
+            is True
+        )
+
+    @property
+    def supports_quiet_mode(self) -> bool:
+        return self._capability_profile.metadata.get("quietMode") is True
+
+    @property
+    def supports_sabbath_mode(self) -> bool:
+        return (
+            self._capability_profile.has_feature("sabbathMode")
+            or self._capability_profile.metadata.get("sabbathMode") is True
+        )
+
     @override
     def get_control_locked(self) -> bool | None:
         return self._get_path_bool("hmiControlLockout")
 
     @override
     async def set_control_locked(self, on: bool) -> bool:
-        await self._send_command("appliance", "set", hmiControlLockout=on)
+        if not self.supports_control_lock:
+            LOGGER.warning("Model %s does not support control lock", self.said)
+            return False
+        await self._send_command("hmiControlLockout", "set", value=on)
         return True
 
     @override
@@ -229,7 +256,10 @@ class Microwave(Appliance, MicrowaveABC):
 
     @override
     async def set_quiet_mode(self, on: bool) -> bool:
-        await self._send_command("appliance", "set", quietMode=on)
+        if not self.supports_quiet_mode:
+            LOGGER.warning("Model %s does not support quiet mode", self.said)
+            return False
+        await self._send_command("quietMode", "set", value=on)
         return True
 
     @override
@@ -238,5 +268,8 @@ class Microwave(Appliance, MicrowaveABC):
 
     @override
     async def set_sabbath_mode(self, on: bool) -> bool:
-        await self._send_command("appliance", "set", sabbathMode=on)
+        if not self.supports_sabbath_mode:
+            LOGGER.warning("Model %s does not support sabbath mode", self.said)
+            return False
+        await self._send_command("sabbathMode", "set", value=on)
         return True

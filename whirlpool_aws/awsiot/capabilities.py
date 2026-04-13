@@ -103,7 +103,7 @@ def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
         metadata: dict[str, Any] = {}
         for key in ("generatorInfo", "productVariant", "autoShutOffTime",
                      "supportsTemperatureUnitChange", "supportsHmiControlLockout",
-                     "quietMode", "contentManagementProject"):
+                     "quietMode", "sabbathMode", "contentManagementProject"):
             if key in raw:
                 metadata[key] = raw[key]
 

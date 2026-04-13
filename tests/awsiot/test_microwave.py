@@ -153,11 +153,40 @@ async def test_set_hood_light_color(mwo: Microwave, fake_mqtt):
 
 async def test_set_quiet_mode(mwo: Microwave, fake_mqtt):
     fake_mqtt.clear_published()
-    await mwo.set_quiet_mode(True)
+    ok = await mwo.set_quiet_mode(True)
+    assert ok is True
     _, payload = fake_mqtt.published[-1]
-    assert payload["payload"]["addressee"] == "appliance"
+    assert payload["payload"]["addressee"] == "quietMode"
     assert payload["payload"]["command"] == "set"
-    assert payload["payload"]["quietMode"] is True
+    assert payload["payload"]["value"] is True
+
+
+async def test_set_control_locked_skipped_when_unsupported(
+    mwo: Microwave, fake_mqtt, caplog: pytest.LogCaptureFixture
+):
+    # The default capability fixture has supportsHmiControlLockout: false.
+    fake_mqtt.clear_published()
+    with caplog.at_level(logging.WARNING, logger="whirlpool_aws.awsiot.microwave"):
+        ok = await mwo.set_control_locked(True)
+    assert ok is False
+    assert fake_mqtt.published == []
+
+
+async def test_set_sabbath_mode_skipped_when_unsupported(
+    mwo: Microwave, fake_mqtt, caplog: pytest.LogCaptureFixture
+):
+    # The default capability fixture has no sabbathMode declaration.
+    fake_mqtt.clear_published()
+    with caplog.at_level(logging.WARNING, logger="whirlpool_aws.awsiot.microwave"):
+        ok = await mwo.set_sabbath_mode(True)
+    assert ok is False
+    assert fake_mqtt.published == []
+
+
+def test_capability_gates(mwo: Microwave):
+    assert mwo.supports_quiet_mode is True
+    assert mwo.supports_control_lock is False
+    assert mwo.supports_sabbath_mode is False
 
 
 # --- start_cook validation -----------------------------------------------
