@@ -13,12 +13,6 @@ from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector, Brand, Region
 
-logging.basicConfig(format="%(asctime)s [%(name)s %(levelname)s]: %(message)s")
-logging.getLogger("whirlpool").setLevel(logging.DEBUG)
-logging.getLogger("whirlpool.eventsocket").setLevel(logging.INFO)
-
-LOGGER = logging.getLogger(__name__)
-
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--email", help="Email address")
 parser.add_argument("-p", "--password", help="Password")
@@ -31,7 +25,17 @@ parser.add_argument(
 parser.add_argument("-r", "--region", help="Region (EU/US)", default="EU")
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
 parser.add_argument("-s", "--said", help="The appliance to load")
+parser.add_argument("-v", "--verbose", help="Enable verbose logging", action="store_true")
 args = parser.parse_args()
+
+if args.verbose:
+    logging.basicConfig(format="%(asctime)s [%(name)s %(levelname)s]: %(message)s")
+    logging.getLogger("whirlpool").setLevel(logging.DEBUG)
+    logging.getLogger("whirlpool.eventsocket").setLevel(logging.INFO)
+else:
+    logging.disable(logging.CRITICAL)
+
+LOGGER = logging.getLogger(__name__)
 
 
 async def start():
