@@ -27,7 +27,6 @@ def _generate_client_id(identity_id: str) -> str:
     return f"{identity_id}_{random_suffix}"
 
 
-# TODO: the mqtt methods here should be made async-safe
 class MqttClient:
     """Async MQTT client for Whirlpool appliance communication."""
 
@@ -149,7 +148,7 @@ class MqttClient:
 
     def _on_connect(
         self,
-        client: mqtt.Client,
+        _client: mqtt.Client,
         _userdata: Any,
         _connect_flags: mqtt.ConnectFlags,
         reason_code: ReasonCode,
@@ -160,14 +159,21 @@ class MqttClient:
             LOGGER.error("MQTT connection failed: %s", reason_code)
             return
 
+        self._loop.call_soon_threadsafe(self._resubscribe_and_set_connected)
+
+    def _resubscribe_and_set_connected(self) -> None:
+        """Resubscribe to all topics and mark as connected. Runs on the event loop."""
+        if not self._client:
+            return
+
         LOGGER.debug(
             "MQTT connected, subscribing %d to topics...", len(self._subscribed_topics)
         )
         for topic in self._subscribed_topics:
             LOGGER.debug("  - %s", topic)
-            client.subscribe(topic, qos=1)
+            self._client.subscribe(topic, qos=1)
 
-        self._loop.call_soon_threadsafe(self._connected.set)
+        self._connected.set()
 
     def _on_message(
         self, _client: mqtt.Client, _userdata: Any, msg: mqtt.MQTTMessage
@@ -184,7 +190,7 @@ class MqttClient:
         LOGGER.debug("Payload: %s", json.dumps(payload, indent=2))
 
         if self._message_callback:
-            self._message_callback(msg.topic, payload)
+            self._loop.call_soon_threadsafe(self._message_callback, msg.topic, payload)
 
     def _on_disconnect(
         self,
