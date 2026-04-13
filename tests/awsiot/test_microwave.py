@@ -40,7 +40,13 @@ def profile_no_hood(capability_mwo_no_hood_raw):
 @pytest.fixture
 async def mwo(fake_mqtt, profile, info, state_mwo_full) -> Microwave:
     await fake_mqtt.connect()
-    app = Microwave(fake_mqtt, info, profile)
+    app = Microwave(
+        fake_mqtt,
+        info,
+        profile,
+        initial_state_timeout=0.05,
+        heartbeat_interval=0,
+    )
     await app.connect()
     # Seed state directly for getter tests.
     app._state = copy.deepcopy(state_mwo_full)
@@ -208,7 +214,13 @@ async def test_hood_fan_getter_returns_none_when_absent(
     fake_mqtt, profile_no_hood, info
 ):
     await fake_mqtt.connect()
-    app = Microwave(fake_mqtt, info, profile_no_hood)
+    app = Microwave(
+        fake_mqtt,
+        info,
+        profile_no_hood,
+        initial_state_timeout=0.05,
+        heartbeat_interval=0,
+    )
     await app.connect()
     app._state = {"primaryCavity": {"cavityState": "idle"}}
     assert app.get_hood_fan_speed() is None
@@ -218,7 +230,13 @@ async def test_hood_fan_setter_skipped_when_feature_absent(
     fake_mqtt, profile_no_hood, info, caplog: pytest.LogCaptureFixture
 ):
     await fake_mqtt.connect()
-    app = Microwave(fake_mqtt, info, profile_no_hood)
+    app = Microwave(
+        fake_mqtt,
+        info,
+        profile_no_hood,
+        initial_state_timeout=0.05,
+        heartbeat_interval=0,
+    )
     await app.connect()
     fake_mqtt.clear_published()
 

@@ -21,6 +21,7 @@ from .mqttclient import MqttClient
 LOGGER = logging.getLogger(__name__)
 
 INITIAL_STATE_TIMEOUT_SECONDS = 5.0
+HEARTBEAT_INTERVAL_SECONDS = 60.0
 
 
 def deep_merge(base: dict[str, Any], update: dict[str, Any]) -> dict[str, Any]:
@@ -54,15 +55,18 @@ class Appliance(BaseAppliance):
         appliance_info: ApplianceInfo,
         capability_profile: CapabilityProfile,
         initial_state_timeout: float = INITIAL_STATE_TIMEOUT_SECONDS,
+        heartbeat_interval: float = HEARTBEAT_INTERVAL_SECONDS,
     ) -> None:
         super().__init__(appliance_info)
         self._mqtt = mqtt
         self._capability_profile = capability_profile
         self._initial_state_timeout = initial_state_timeout
+        self._heartbeat_interval = heartbeat_interval
 
         self._state: dict[str, Any] = {}
         self._online: bool | None = None
         self._initial_state_event: asyncio.Event = asyncio.Event()
+        self._heartbeat_task: asyncio.Task[None] | None = None
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}> {self.said} | {self.name}"
@@ -113,9 +117,21 @@ class Appliance(BaseAppliance):
         self._mqtt.add_message_handler(self._handle_mqtt_message)
         self._mqtt.add_connection_handler(on_connect=self._on_reconnect)
 
-        await self.fetch_data()
+        ok = await self.fetch_data()
+        self._set_online(ok)
+
+        if self._heartbeat_task is None and self._heartbeat_interval > 0:
+            self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
 
     async def disconnect(self) -> None:
+        if self._heartbeat_task is not None:
+            self._heartbeat_task.cancel()
+            try:
+                await self._heartbeat_task
+            except asyncio.CancelledError:
+                pass
+            self._heartbeat_task = None
+
         self._mqtt.remove_message_handler(self._handle_mqtt_message)
         for topic in (
             self._response_topic(),
@@ -235,14 +251,12 @@ class Appliance(BaseAppliance):
             return
 
         if topic == self._presence_connected_topic():
-            self._online = True
-            self._fire_attr_callbacks()
+            self._set_online(True)
             asyncio.create_task(self._refetch_on_presence())
             return
 
         if topic == self._presence_disconnected_topic():
-            self._online = False
-            self._fire_attr_callbacks()
+            self._set_online(False)
             return
 
     async def _refetch_on_presence(self) -> None:
@@ -256,11 +270,42 @@ class Appliance(BaseAppliance):
 
     async def _on_reconnect(self) -> None:
         try:
-            await self.fetch_data()
+            ok = await self.fetch_data()
         except Exception:
             LOGGER.exception(
                 "Failed to refetch state after reconnect for %s", self.said
             )
+            return
+        self._set_online(ok)
+
+    async def _heartbeat_loop(self) -> None:
+        """Periodically probe the device to recover from stale `_online` state.
+
+        Presence events can be missed (e.g. we receive `disconnected` but the
+        corresponding `connected` arrives while our own MQTT client is
+        reconnecting), leaving `_online = False` indefinitely even though the
+        device is reachable. A successful `getState` round-trip proves the
+        device is online and fixes that.
+        """
+        while True:
+            try:
+                await asyncio.sleep(self._heartbeat_interval)
+                if self._mqtt.client_id is None:
+                    continue
+                ok = await self.fetch_data()
+                self._set_online(ok)
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                LOGGER.exception(
+                    "Heartbeat iteration failed for %s", self.said
+                )
+
+    def _set_online(self, value: bool) -> None:
+        if self._online == value:
+            return
+        self._online = value
+        self._fire_attr_callbacks()
 
     def _fire_attr_callbacks(self) -> None:
         for cb in list(self._attr_changed):

@@ -1,14 +1,41 @@
 import asyncio
+from typing import Any
 
 import pytest
 
 from whirlpool_aws.awsiot.appliance import Appliance, deep_merge
-from whirlpool_aws.awsiot.capabilities import parse_capability_profile
+from whirlpool_aws.awsiot.capabilities import (
+    CapabilityProfile,
+    parse_capability_profile,
+)
+from whirlpool_aws.awsiot.mqttclient import MqttClient
 from whirlpool_aws.types import ApplianceInfo
 
 
 class _ConcreteAppliance(Appliance):
-    """Minimal subclass so tests can instantiate the ABC."""
+    """Minimal subclass so tests can instantiate the ABC.
+
+    Defaults `initial_state_timeout` to a tight value and disables the
+    heartbeat so tests don't block on real-world timeouts or stray tasks.
+    """
+
+    def __init__(
+        self,
+        mqtt: MqttClient,
+        appliance_info: ApplianceInfo,
+        capability_profile: CapabilityProfile,
+        initial_state_timeout: float = 0.05,
+        heartbeat_interval: float = 0,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            mqtt,
+            appliance_info,
+            capability_profile,
+            initial_state_timeout=initial_state_timeout,
+            heartbeat_interval=heartbeat_interval,
+            **kwargs,
+        )
 
 
 @pytest.fixture
@@ -249,3 +276,119 @@ async def test_reconnect_handler_refetches_state(
         f"cmd/{info.model_number}/{info.said}/request/{fake_mqtt.client_id}"
     )
     assert any(t == request_topic for t, _ in fake_mqtt.published)
+
+
+# --- _online recovery ---------------------------------------------------
+
+
+async def _respond_to_getstate(
+    fake_mqtt, info: ApplianceInfo, payload: dict[str, Any]
+) -> None:
+    """Inject a getState response on the appliance's response topic."""
+    await fake_mqtt.inject(
+        f"cmd/{info.model_number}/{info.said}/response/{fake_mqtt.client_id}",
+        {"requestId": "r", "timestamp": 1, "payload": payload},
+    )
+
+
+async def test_online_set_from_successful_fetch_on_initial_connect(
+    fake_mqtt, profile, info, state_mwo_full
+) -> None:
+    await fake_mqtt.connect()
+    app = _ConcreteAppliance(fake_mqtt, info, profile)
+
+    async def feed_response() -> None:
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+        await _respond_to_getstate(fake_mqtt, info, state_mwo_full)
+
+    responder = asyncio.create_task(feed_response())
+    await app.connect()
+    await responder
+    assert app.get_online() is True
+
+
+async def test_online_set_false_when_initial_fetch_times_out(
+    fake_mqtt, profile, info
+) -> None:
+    await fake_mqtt.connect()
+    app = _ConcreteAppliance(fake_mqtt, info, profile)
+    await app.connect()
+    assert app.get_online() is False
+
+
+async def test_reconnect_recovers_online_after_stale_disconnected(
+    fake_mqtt, profile, info, state_mwo_full
+) -> None:
+    """Regression: missed presence/connected shouldn't leave us stuck offline.
+
+    The real-world failure mode: device's AWS IoT session bounced briefly
+    after an unsupported command, we saw presence/disconnected but the
+    subsequent presence/connected was lost. `_on_reconnect` now refreshes
+    `_online` based on a live `fetch_data` round-trip.
+    """
+    await fake_mqtt.connect()
+    app = _ConcreteAppliance(fake_mqtt, info, profile)
+    await app.connect()
+
+    # Simulate the spurious disconnected event without a matching connected.
+    await fake_mqtt.inject(
+        f"$aws/events/presence/disconnected/{info.said}", {}
+    )
+    assert app.get_online() is False
+
+    # Our MQTT client reconnects. The reconnect handler calls fetch_data.
+    # Feed a getState response so it resolves as success.
+    async def feed_response() -> None:
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+        await _respond_to_getstate(fake_mqtt, info, state_mwo_full)
+
+    responder = asyncio.create_task(feed_response())
+    await fake_mqtt.simulate_reconnect()
+    await responder
+    assert app.get_online() is True
+
+
+async def test_heartbeat_recovers_online_when_device_reachable(
+    fake_mqtt, profile, info, state_mwo_full
+) -> None:
+    """Heartbeat flips `_online` back to True without needing a reconnect."""
+    await fake_mqtt.connect()
+    # Short heartbeat so the test doesn't wait.
+    app = _ConcreteAppliance(
+        fake_mqtt, info, profile, heartbeat_interval=0.01
+    )
+    await app.connect()
+
+    # Put us in the stale-offline state.
+    await fake_mqtt.inject(
+        f"$aws/events/presence/disconnected/{info.said}", {}
+    )
+    assert app.get_online() is False
+
+    # Next heartbeat tick will call fetch_data. Feed a response.
+    async def feed_until_online() -> None:
+        for _ in range(50):
+            await asyncio.sleep(0.02)
+            await _respond_to_getstate(fake_mqtt, info, state_mwo_full)
+            if app.get_online() is True:
+                return
+
+    await feed_until_online()
+    assert app.get_online() is True
+
+    await app.disconnect()
+
+
+async def test_heartbeat_task_is_cancelled_on_disconnect(
+    fake_mqtt, profile, info
+) -> None:
+    await fake_mqtt.connect()
+    app = _ConcreteAppliance(
+        fake_mqtt, info, profile, heartbeat_interval=60
+    )
+    await app.connect()
+    assert app._heartbeat_task is not None
+    await app.disconnect()
+    assert app._heartbeat_task is None
