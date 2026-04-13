@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Sequence
 
 import aiohttp
 
@@ -31,33 +32,33 @@ class AppliancesManager:
 
     # TODO: use cached_property
     @property
-    def aircons(self) -> list[Aircon]:
+    def aircons(self) -> Sequence[Aircon]:
         return (
             self._http_appliances_manager.aircons + self._aws_appliances_manager.aircons
         )
 
     # TODO: use cached_property
     @property
-    def dryers(self) -> list[Dryer]:
+    def dryers(self) -> Sequence[Dryer]:
         return (
             self._http_appliances_manager.dryers + self._aws_appliances_manager.dryers
         )
 
     # TODO: use cached_property
     @property
-    def washers(self) -> list[Washer]:
+    def washers(self) -> Sequence[Washer]:
         return (
             self._http_appliances_manager.washers + self._aws_appliances_manager.washers
         )
 
     # TODO: use cached_property
     @property
-    def ovens(self) -> list[Oven]:
+    def ovens(self) -> Sequence[Oven]:
         return self._http_appliances_manager.ovens + self._aws_appliances_manager.ovens
 
     # TODO: use cached_property
     @property
-    def refrigerators(self) -> list[Refrigerator]:
+    def refrigerators(self) -> Sequence[Refrigerator]:
         return (
             self._http_appliances_manager.refrigerators
             + self._aws_appliances_manager.refrigerators

@@ -1,6 +1,8 @@
 import argparse
 import asyncio
+import json
 import logging
+from dataclasses import asdict
 
 import aiohttp
 
@@ -24,9 +26,14 @@ parser.add_argument(
 )
 parser.add_argument("-r", "--region", help="Region (EU/US)", default="EU")
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
+parser.add_argument("-d", "--dump", help="Dump appliance info and raw data", action="store_true")
 parser.add_argument("-s", "--said", help="The appliance to load")
 parser.add_argument("-v", "--verbose", help="Enable verbose logging", action="store_true")
 args = parser.parse_args()
+
+if not args.email or not args.password:
+    parser.print_help()
+    raise SystemExit(1)
 
 if args.verbose:
     logging.basicConfig(format="%(asctime)s [%(name)s %(levelname)s]: %(message)s")
@@ -92,6 +99,24 @@ async def start():
 
                 if appliance_manager.refrigerators:
                     print("\n".join(map(str, appliance_manager.refrigerators)))
+                return
+
+            if args.dump:
+                all_appliances = (
+                    appliance_manager.aircons
+                    + appliance_manager.dryers
+                    + appliance_manager.washers
+                    + appliance_manager.ovens
+                    + appliance_manager.refrigerators
+                )
+                for appliance in all_appliances:
+                    await appliance.fetch_data()
+                    print(f"== {appliance} ==")
+                    print("Appliance info:")
+                    print(json.dumps(asdict(appliance.appliance_info), indent=2))
+                    print("Raw data:")
+                    print(json.dumps(appliance.get_raw_data(), indent=2))
+                    print()
                 return
 
             if not args.said:
