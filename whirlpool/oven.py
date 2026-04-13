@@ -51,15 +51,15 @@ class KitchenTimerOperations(Enum):
 
 class KitchenTimer(ABC):
     @abstractmethod
-    def get_total_time(self):
+    def get_total_time(self) -> str | None:
         pass
 
     @abstractmethod
-    def get_remaining_time(self):
+    def get_remaining_time(self) -> str | None:
         pass
 
     @abstractmethod
-    def get_state(self):
+    def get_state(self) -> KitchenTimerState | None:
         pass
 
     @abstractmethod
@@ -77,11 +77,11 @@ class KitchenTimer(ABC):
 
 class Oven(Appliance, ABC):
     @abstractmethod
-    def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper):
+    def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper) -> bool | None:
         pass
 
     @abstractmethod
-    def get_door_opened(self, cavity: Cavity = Cavity.Upper):
+    def get_door_opened(self, cavity: Cavity = Cavity.Upper) -> bool | None:
         pass
 
     @abstractmethod
@@ -93,11 +93,11 @@ class Oven(Appliance, ABC):
         pass
 
     @abstractmethod
-    def get_cook_time(self, cavity: Cavity = Cavity.Upper):
+    def get_cook_time(self, cavity: Cavity = Cavity.Upper) -> int | None:
         pass
 
     @abstractmethod
-    def get_control_locked(self):
+    def get_control_locked(self) -> bool | None:
         pass
 
     @abstractmethod
@@ -105,7 +105,7 @@ class Oven(Appliance, ABC):
         pass
 
     @abstractmethod
-    def get_light(self, cavity: Cavity = Cavity.Upper):
+    def get_light(self, cavity: Cavity = Cavity.Upper) -> bool | None:
         pass
 
     @abstractmethod
@@ -113,27 +113,27 @@ class Oven(Appliance, ABC):
         pass
 
     @abstractmethod
-    def get_temp(self, cavity: Cavity = Cavity.Upper):
+    def get_temp(self, cavity: Cavity = Cavity.Upper) -> float | None:
         pass
 
     @abstractmethod
-    def get_target_temp(self, cavity: Cavity = Cavity.Upper):
+    def get_target_temp(self, cavity: Cavity = Cavity.Upper) -> float | None:
         pass
 
     @abstractmethod
-    def get_cavity_state(self, cavity: Cavity = Cavity.Upper):
+    def get_cavity_state(self, cavity: Cavity = Cavity.Upper) -> CavityState | None:
         pass
 
     @abstractmethod
-    def get_oven_cavity_exists(self, cavity: Cavity):
+    def get_oven_cavity_exists(self, cavity: Cavity) -> bool:
         pass
 
     @abstractmethod
-    def get_kitchen_timer(self, timer_id=1):
+    def get_kitchen_timer(self, timer_id: int = 1) -> KitchenTimer:
         pass
 
     @abstractmethod
-    def get_cook_mode(self, cavity: Cavity = Cavity.Upper):
+    def get_cook_mode(self, cavity: Cavity = Cavity.Upper) -> CookMode | None:
         pass
 
     @abstractmethod
@@ -154,7 +154,7 @@ class Oven(Appliance, ABC):
         pass
 
     @abstractmethod
-    def get_sabbath_mode(self):
+    def get_sabbath_mode(self) -> bool | None:
         pass
 
     @abstractmethod

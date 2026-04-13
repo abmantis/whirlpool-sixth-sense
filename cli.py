@@ -15,7 +15,6 @@ from whirlpool.backendselector import BackendSelector, Brand, Region
 
 logging.basicConfig(format="%(asctime)s [%(name)s %(levelname)s]: %(message)s")
 logging.getLogger("whirlpool").setLevel(logging.DEBUG)
-
 logging.getLogger("whirlpool.eventsocket").setLevel(logging.INFO)
 
 LOGGER = logging.getLogger(__name__)

@@ -1,9 +1,7 @@
 import asyncio
-from functools import cached_property
 import logging
-import time
-import uuid
 from collections.abc import Callable
+from functools import cached_property
 from typing import Any
 
 import aiohttp
@@ -12,15 +10,15 @@ from whirlpool.awsiot.appliance import Appliance
 from whirlpool.eventsocket import EventSocket
 from whirlpool.types import ApplianceInfo
 
-from ..aircon import Aircon
 from ..auth import Auth as WhirlpoolAuth
-from ..dryer import Dryer
-from ..oven import Oven
-from ..refrigerator import Refrigerator
-from ..washer import Washer
+from .aircon import Aircon
 from .auth import Auth, AuthException
+from .dryer import Dryer
 from .mqttclient import MqttClient
+from .oven import Oven
+from .refrigerator import Refrigerator
 from .things import Things
+from .washer import Washer
 
 LOGGER = logging.getLogger(__name__)
 
@@ -119,27 +117,29 @@ class AppliancesManager:
         )
 
         if appliance_data.category == "airconditioner":
-            pass
+            appliance = Aircon(self._mqtt, appliance_data)
+            self._aircons[appliance_data.said] = appliance
         elif appliance_data.category == "cooking":
-            pass
-        elif appliance_data.category == "dishwasher":
-            pass
+            appliance = Oven(self._mqtt, appliance_data)
+            self._ovens[appliance_data.said] = appliance
+        # elif appliance_data.category == "dishwasher":
         elif appliance_data.category == "fabriccare":
-            pass
+            appliance = Dryer(self._mqtt, appliance_data)
+            self._dryers[appliance_data.said] = appliance
         elif appliance_data.category == "laundry":
-            pass
+            appliance = Washer(self._mqtt, appliance_data)
+            self._washers[appliance_data.said] = appliance
         elif appliance_data.category == "refrigerator":
-            pass
+            appliance = Refrigerator(self._mqtt, appliance_data)
+            self._refrigerators[appliance_data.said] = appliance
         else:
             LOGGER.warning(
-                "Unsupported appliance category %s for thing %s",
+                "Unsupported appliance category %s for %s",
                 appliance_data.category,
                 thing["thingName"],
             )
             return
 
-        # TODO: replace this by actual appliance classes once implemented
-        appliance = Appliance(self._mqtt, appliance_data)
         await appliance.subscribe_topics()
         await appliance.fetch_data()
 

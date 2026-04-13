@@ -110,17 +110,17 @@ class KitchenTimer(BaseKitchenTimer):
         self._appliance = appliance
         self._attr_prefix = f"KitchenTimer{timer_id:02d}_"
 
-    def get_total_time(self):
+    def get_total_time(self) -> str | None:
         return self._appliance._get_attribute(
             self._attr_prefix + ATTR_POSTFIX_KITCHEN_TIMER_SET_TIME
         )
 
-    def get_remaining_time(self):
+    def get_remaining_time(self) -> str | None:
         return self._appliance._get_attribute(
             self._attr_prefix + ATTR_POSTFIX_KITCHEN_TIMER_TIME_REMAINING
         )
 
-    def get_state(self):
+    def get_state(self) -> KitchenTimerState | None:
         state_raw = self._appliance._get_attribute(
             self._attr_prefix + ATTR_POSTFIX_KITCHEN_TIMER_STATUS
         )
@@ -160,7 +160,7 @@ class KitchenTimer(BaseKitchenTimer):
 
 class Oven(BaseOven, Appliance):
     @override
-    def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper):
+    def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper) -> bool | None:
         return self.attr_value_to_bool(
             self._get_attribute(
                 CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_MEAT_PROBE_STATUS
@@ -168,7 +168,7 @@ class Oven(BaseOven, Appliance):
         )
 
     @override
-    def get_door_opened(self, cavity: Cavity = Cavity.Upper):
+    def get_door_opened(self, cavity: Cavity = Cavity.Upper) -> bool | None:
         return self.attr_value_to_bool(
             self._get_attribute(
                 CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_DOOR_OPEN_STATUS
@@ -185,14 +185,14 @@ class Oven(BaseOven, Appliance):
         return await self.send_attributes({ATTR_DISPLAY_BRIGHTNESS: str(pct)})
 
     @override
-    def get_cook_time(self, cavity: Cavity = Cavity.Upper):
+    def get_cook_time(self, cavity: Cavity = Cavity.Upper) -> int | None:
         time = self._get_attribute(
             CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_COOK_TIME
         )
         return int(time) if time is not None else None
 
     @override
-    def get_control_locked(self):
+    def get_control_locked(self) -> bool | None:
         return self.attr_value_to_bool(self._get_attribute(ATTR_CONTROL_LOCK))
 
     @override
@@ -202,7 +202,7 @@ class Oven(BaseOven, Appliance):
         )
 
     @override
-    def get_light(self, cavity: Cavity = Cavity.Upper):
+    def get_light(self, cavity: Cavity = Cavity.Upper) -> bool | None:
         return self.attr_value_to_bool(
             self._get_attribute(
                 CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_LIGHT_STATUS
@@ -220,7 +220,7 @@ class Oven(BaseOven, Appliance):
         )
 
     @override
-    def get_temp(self, cavity: Cavity = Cavity.Upper):
+    def get_temp(self, cavity: Cavity = Cavity.Upper) -> float | None:
         reported_temp = self._get_int_attribute(
             CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_TEMP
         )
@@ -232,7 +232,7 @@ class Oven(BaseOven, Appliance):
         return reported_temp / 10
 
     @override
-    def get_target_temp(self, cavity: Cavity = Cavity.Upper):
+    def get_target_temp(self, cavity: Cavity = Cavity.Upper) -> float | None:
         reported_temp = self._get_int_attribute(
             CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_TARGET_TEMP
         )
@@ -244,7 +244,7 @@ class Oven(BaseOven, Appliance):
         return reported_temp / 10
 
     @override
-    def get_cavity_state(self, cavity: Cavity = Cavity.Upper):
+    def get_cavity_state(self, cavity: Cavity = Cavity.Upper) -> CavityState | None:
         state_raw = self._get_attribute(
             CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_STATUS_STATE
         )
@@ -255,17 +255,17 @@ class Oven(BaseOven, Appliance):
         return None
 
     @override
-    def get_oven_cavity_exists(self, cavity: Cavity):
+    def get_oven_cavity_exists(self, cavity: Cavity) -> bool:
         cavity_state = self.get_cavity_state(cavity=cavity)
         return cavity_state is not None and cavity_state != CavityState.NotPresent
 
     @override
-    def get_kitchen_timer(self, timer_id=1):
+    def get_kitchen_timer(self, timer_id: int = 1) -> KitchenTimer:
         timer = KitchenTimer(appliance=self, timer_id=timer_id)
         return timer
 
     @override
-    def get_cook_mode(self, cavity: Cavity = Cavity.Upper):
+    def get_cook_mode(self, cavity: Cavity = Cavity.Upper) -> CookMode | None:
         cook_mode_raw = self._get_attribute(
             CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_COOK_MODE
         )
@@ -312,7 +312,7 @@ class Oven(BaseOven, Appliance):
         )
 
     @override
-    def get_sabbath_mode(self):
+    def get_sabbath_mode(self) -> bool | None:
         return self.attr_value_to_bool(self._get_attribute(ATTR_SABBATH_MODE))
 
     @override
