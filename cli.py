@@ -11,6 +11,7 @@ from cli_dryer_menu import show_dryer_menu
 from cli_oven_menu import show_oven_menu
 from cli_refrigerator_menu import show_refrigerator_menu
 from cli_washer_menu import show_washer_menu
+from whirlpool.appliance import Appliance
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector, Brand, Region
@@ -26,9 +27,13 @@ parser.add_argument(
 )
 parser.add_argument("-r", "--region", help="Region (EU/US)", default="EU")
 parser.add_argument("-l", "--list", help="List appliances", action="store_true")
-parser.add_argument("-d", "--dump", help="Dump appliance info and raw data", action="store_true")
+parser.add_argument(
+    "-d", "--dump", help="Dump appliance info and raw data", action="store_true"
+)
 parser.add_argument("-s", "--said", help="The appliance to load")
-parser.add_argument("-v", "--verbose", help="Enable verbose logging", action="store_true")
+parser.add_argument(
+    "-v", "--verbose", help="Enable verbose logging", action="store_true"
+)
 args = parser.parse_args()
 
 if not args.email or not args.password:
@@ -84,31 +89,18 @@ async def start():
         appliance_manager = AppliancesManager(backend_selector, auth, session)
 
         async with ConnectionManager(appliance_manager):
+            all_appliances: list[Appliance] = [
+                *appliance_manager.aircons,
+                *appliance_manager.dryers,
+                *appliance_manager.washers,
+                *appliance_manager.ovens,
+                *appliance_manager.refrigerators,
+            ]
             if args.list:
-                if appliance_manager.aircons:
-                    print("\n".join(map(str, appliance_manager.aircons)))
-
-                if appliance_manager.dryers:
-                    print("\n".join(map(str, appliance_manager.dryers)))
-
-                if appliance_manager.washers:
-                    print("\n".join(map(str, appliance_manager.washers)))
-
-                if appliance_manager.ovens:
-                    print("\n".join(map(str, appliance_manager.ovens)))
-
-                if appliance_manager.refrigerators:
-                    print("\n".join(map(str, appliance_manager.refrigerators)))
+                print("\n".join(map(str, all_appliances)))
                 return
 
             if args.dump:
-                all_appliances = (
-                    appliance_manager.aircons
-                    + appliance_manager.dryers
-                    + appliance_manager.washers
-                    + appliance_manager.ovens
-                    + appliance_manager.refrigerators
-                )
                 for appliance in all_appliances:
                     await appliance.fetch_data()
                     print(f"== {appliance} ==")

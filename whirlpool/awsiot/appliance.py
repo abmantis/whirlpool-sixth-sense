@@ -1,7 +1,6 @@
 import logging
 import time
 import uuid
-from collections.abc import Callable
 from typing import Any, override
 
 from ..appliance import Appliance as BaseAppliance
