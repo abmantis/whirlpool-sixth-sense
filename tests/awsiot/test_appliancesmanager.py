@@ -65,7 +65,7 @@ async def test_connect_registers_microwave(
     import whirlpool.awsiot.microwave  # noqa: F401
 
     manager = AppliancesManager(
-        _FakeWhirlpoolAuth(), client_session_fixture, lambda: None
+        _FakeWhirlpoolAuth(), client_session_fixture, lambda: None  # type: ignore[arg-type]
     )
     ok = await manager.connect()
     assert ok is True
@@ -78,7 +78,7 @@ async def test_connect_with_empty_things_still_succeeds(
 ):
     patched_manager.clear()
     manager = AppliancesManager(
-        _FakeWhirlpoolAuth(), client_session_fixture, lambda: None
+        _FakeWhirlpoolAuth(), client_session_fixture, lambda: None  # type: ignore[arg-type]
     )
     ok = await manager.connect()
     assert ok is True
@@ -95,7 +95,7 @@ async def test_thing_without_capability_part_number_is_skipped(
     patched_manager.append(broken)
 
     manager = AppliancesManager(
-        _FakeWhirlpoolAuth(), client_session_fixture, lambda: None
+        _FakeWhirlpoolAuth(), client_session_fixture, lambda: None  # type: ignore[arg-type]
     )
     ok = await manager.connect()
     assert ok is True
@@ -130,7 +130,7 @@ async def test_one_failing_appliance_does_not_abort_others(
         selective_download,
     ):
         manager = AppliancesManager(
-            _FakeWhirlpoolAuth(), client_session_fixture, lambda: None
+            _FakeWhirlpoolAuth(), client_session_fixture, lambda: None  # type: ignore[arg-type]
         )
         ok = await manager.connect()
     assert ok is True
@@ -151,7 +151,7 @@ async def test_connect_disconnects_mqtt_on_list_things_failure(
             raise AuthException("Auth token expired")
 
     manager = AppliancesManager(
-        _FakeWhirlpoolAuth(), client_session_fixture, lambda: None
+        _FakeWhirlpoolAuth(), client_session_fixture, lambda: None  # type: ignore[arg-type]
     )
     with patch("whirlpool.awsiot.appliancesmanager.Things", _FailingThings):
         ok = await manager.connect()

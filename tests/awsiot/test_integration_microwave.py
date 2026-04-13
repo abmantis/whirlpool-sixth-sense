@@ -53,7 +53,7 @@ async def test_full_chain_start_and_state_update(
         ),
     ):
         manager = AppliancesManager(
-            _FakeWhirlpoolAuth(), client_session_fixture, lambda: None
+            _FakeWhirlpoolAuth(), client_session_fixture, lambda: None  # type: ignore[arg-type]
         )
         ok = await manager.connect()
     assert ok is True

@@ -26,6 +26,7 @@ import json
 import logging
 import sys
 from pathlib import Path
+from typing import Any
 
 import aiohttp
 
@@ -89,6 +90,9 @@ async def _amain(args: argparse.Namespace) -> int:
 
         LOGGER.info("Capturing fixtures for %s (%s)", mwo.said, mwo.name)
 
+        # Cast to Any — this tool intentionally accesses awsiot internals.
+        mwo_impl: Any = mwo
+
         # Thing record: reconstruct what the manager saw.
         # (We only have ApplianceInfo here, so we write a reduced shape
         #  that satisfies the test fixtures.)
@@ -99,7 +103,7 @@ async def _amain(args: argparse.Namespace) -> int:
                 "Name": mwo.name.encode("utf-8").hex(),
                 "Category": mwo.appliance_info.category.capitalize(),
                 "Serial": mwo.appliance_info.serial_number,
-                "CapabilityPartNumber": mwo.capability_profile.part_number,
+                "CapabilityPartNumber": mwo_impl.capability_profile.part_number,
             },
         }
         (DATA_DIR / "thing_mwo.json").write_text(
@@ -108,12 +112,12 @@ async def _amain(args: argparse.Namespace) -> int:
 
         # Capability: dump the raw dict preserved on the profile.
         (DATA_DIR / "capability_mwo.json").write_text(
-            json.dumps(mwo.capability_profile.raw, indent=2)
+            json.dumps(mwo_impl.capability_profile.raw, indent=2)
         )
 
         # State: dump the full accumulated state.
         (DATA_DIR / "state_mwo_full.json").write_text(
-            json.dumps(mwo._state, indent=2)
+            json.dumps(mwo_impl._state, indent=2)
         )
 
         LOGGER.info("Wrote fixtures to %s", DATA_DIR)

@@ -60,19 +60,19 @@ class _FakeSession:
         body = self._url_to_body[url]
 
         class _Ctx:
-            async def __aenter__(self_inner):
+            async def __aenter__(self):
                 class _Resp:
                     status = 200
 
-                    async def json(self_r):
+                    async def json(self):
                         return body
 
-                    async def text(self_r):
+                    async def text(self):
                         return json.dumps(body)
 
                 return _Resp()
 
-            async def __aexit__(self_inner, *args):
+            async def __aexit__(self, *args):
                 return None
 
         return _Ctx()
