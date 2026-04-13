@@ -5,8 +5,8 @@ NAME
 
 SYNOPSIS
     python -m tools.capture_fixtures --email EMAIL --password PASSWORD
-        [--brand BRAND] [--region REGION] --said SAID
-        [--output-dir DIR] [--verbose]
+        [--brand BRAND] [--region REGION] (--said SAID | --all)
+        [--output-dir DIR] [--redact] [--verbose]
 
     python -m tools.capture_fixtures --email EMAIL --password PASSWORD
         [--brand BRAND] [--region REGION] --list [--verbose]
@@ -17,20 +17,30 @@ OPTIONS
     --brand BRAND       One of: KitchenAid, Whirlpool, Maytag
                         (default: KitchenAid)
     --region REGION     One of: US, EU (default: US)
-    --said SAID         SAID of the appliance to capture
-                        (required unless --list)
+    --said SAID         SAID of a single appliance to capture
+    --all               Capture fixtures for every discovered appliance
+                        (one of --said or --all is required unless --list)
     --list              List all discovered appliances and exit
     --output-dir DIR    Directory for output files
                         (default: tests/awsiot/data/)
+    --redact            Scrub SAID, serial, wifi MAC, and user IDs from
+                        the dumped JSON. SAID values are replaced with
+                        the same short hash used in filenames so the
+                        fixtures remain cross-referenceable.
     --verbose           Enable debug logging
 
 OUTPUT FILES
-    Filenames use the appliance type as prefix (e.g. "microwave",
-    "dryer", "aircon", "oven", "refrigerator", "washer"):
+    Filenames embed the appliance type, the device model number, and a
+    short hash of the SAID. This lets multiple appliances — even two of
+    the same model — be captured into the same directory without
+    overwriting each other, while keeping the filename safe to share
+    (no raw SAID):
 
-        thing_{type}.json       - IoT thing record
-        capability_{type}.json  - capability profile (raw XML-derived)
-        state_{type}_full.json  - full MQTT state snapshot
+        thing_{type}_{model}-{hash}.json       - IoT thing record
+        capability_{type}_{model}-{hash}.json  - capability profile (raw)
+        state_{type}_{model}-{hash}_full.json  - full MQTT state snapshot
+
+    If the model number is unavailable, only the hash is used.
 
 EXAMPLES
     # List all appliances on a KitchenAid US account:
@@ -48,6 +58,16 @@ EXAMPLES
         --brand Whirlpool --region EU \\
         --said WPR2B00000002 --output-dir /tmp/fixtures
 
+    # Capture with sensitive identifiers scrubbed, safe to share:
+    python -m tools.capture_fixtures \\
+        --email you@example.com --password secret \\
+        --said WPR1A00000001 --redact
+
+    # Capture every appliance on the account in one pass:
+    python -m tools.capture_fixtures \\
+        --email you@example.com --password secret \\
+        --brand Maytag --all --redact --output-dir /tmp/fixtures
+
 NOTES
     The capability file is read from the downloader's disk cache after
     connect(), so this script also doubles as a smoke test for the full
@@ -58,6 +78,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 import logging
 import sys
@@ -96,6 +117,49 @@ def _appliance_tag(appliance: Any) -> str:
     return _TYPE_TAG.get(cls_name, cls_name.lower())
 
 
+# Keys whose values identify a specific user or device. Redacted under --redact.
+# SAID-like keys get the SAID token so filenames and contents stay linkable;
+# everything else gets a generic "REDACTED" placeholder.
+_SAID_KEYS = frozenset({"thingName", "SAID", "said"})
+_REDACTED_KEYS = frozenset({
+    "Serial", "serial", "serialNumber", "serial_number",
+    "WifiMacAddress", "wifi_mac", "wifiMacAddress",
+    "UserId", "userId",
+})
+
+
+def _said_token(said: str) -> str:
+    """Short, non-reversible identifier for a SAID (8 hex chars)."""
+    return hashlib.sha256(said.encode("utf-8")).hexdigest()[:8]
+
+
+def _fixture_suffix(model: str, said: str) -> str:
+    """Build the '{model}-{hash}' suffix used in fixture filenames."""
+    token = _said_token(said)
+    return f"{model}-{token}" if model else token
+
+
+def _redact(obj: Any, said: str) -> Any:
+    """Recursively scrub sensitive keys from a JSON-like structure."""
+    token = _said_token(said)
+
+    def _walk(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {
+                k: (
+                    token if k in _SAID_KEYS
+                    else "REDACTED" if k in _REDACTED_KEYS
+                    else _walk(v)
+                )
+                for k, v in value.items()
+            }
+        if isinstance(value, list):
+            return [_walk(v) for v in value]
+        return value
+
+    return _walk(obj)
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Capture AWS IoT fixture data for any appliance."
@@ -117,12 +181,23 @@ def _parse_args() -> argparse.Namespace:
         help="List all discovered appliances and exit",
     )
     parser.add_argument(
+        "--all",
+        action="store_true",
+        dest="capture_all",
+        help="Capture fixtures for every discovered appliance",
+    )
+    parser.add_argument(
         "--output-dir",
         type=Path,
         default=DEFAULT_OUTPUT_DIR,
         help=f"Directory for output files (default: {DEFAULT_OUTPUT_DIR})",
     )
     parser.add_argument("--verbose", action="store_true")
+    parser.add_argument(
+        "--redact",
+        action="store_true",
+        help="Scrub SAID, serial, wifi MAC, and user IDs from dumped JSON",
+    )
     return parser.parse_args()
 
 
@@ -162,62 +237,81 @@ async def _amain(args: argparse.Namespace) -> int:
             await manager.disconnect()
             return 0
 
-        # Capture mode: --said is required.
-        if not args.said:
+        # Capture mode: need --all or --said.
+        if not args.capture_all and not args.said:
             LOGGER.error(
-                "No --said specified. Use --list to see available appliances."
+                "No --said or --all specified. Use --list to see available"
+                " appliances."
             )
             await manager.disconnect()
             return 3
 
-        appliance = all_appliances.get(args.said)
-        if appliance is None:
-            LOGGER.error(
-                "SAID %s not found. Use --list to see available appliances.",
-                args.said,
-            )
-            await manager.disconnect()
-            return 4
-
-        tag = _appliance_tag(appliance)
-        LOGGER.info(
-            "Capturing fixtures for %s (%s, type=%s)",
-            appliance.said, appliance.name, tag,
-        )
-
-        # Access awsiot internals for fixture capture.
-        impl: Any = appliance
-
         output_dir: Path = args.output_dir
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Thing record.
-        thing_out = {
-            "thingName": appliance.said,
-            "thingTypeName": appliance.appliance_info.model_number,
-            "attributes": {
-                "Name": appliance.name.encode("utf-8").hex(),
-                "Category": appliance.appliance_info.category.capitalize(),
-                "Serial": appliance.appliance_info.serial_number,
-                "CapabilityPartNumber": impl.capability_profile.part_number,
-            },
-        }
-        thing_path = output_dir / f"thing_{tag}.json"
-        thing_path.write_text(json.dumps(thing_out, indent=2))
-        LOGGER.info("Wrote %s", thing_path)
+        if args.capture_all:
+            targets = list(all_appliances.values())
+        else:
+            appliance = all_appliances.get(args.said)
+            if appliance is None:
+                LOGGER.error(
+                    "SAID %s not found. Use --list to see available appliances.",
+                    args.said,
+                )
+                await manager.disconnect()
+                return 4
+            targets = [appliance]
 
-        # Capability profile.
-        cap_path = output_dir / f"capability_{tag}.json"
-        cap_path.write_text(json.dumps(impl.capability_profile.raw, indent=2))
-        LOGGER.info("Wrote %s", cap_path)
-
-        # Full state snapshot.
-        state_path = output_dir / f"state_{tag}_full.json"
-        state_path.write_text(json.dumps(impl._state, indent=2))
-        LOGGER.info("Wrote %s", state_path)
+        for appliance in targets:
+            try:
+                _capture_one(appliance, output_dir, redact=args.redact)
+            except Exception:
+                LOGGER.exception(
+                    "Failed to capture fixtures for %s", appliance.said
+                )
 
         await manager.disconnect()
     return 0
+
+
+def _capture_one(appliance: Any, output_dir: Path, *, redact: bool) -> None:
+    """Write thing/capability/state fixture files for a single appliance."""
+    tag = _appliance_tag(appliance)
+    LOGGER.info(
+        "Capturing fixtures for %s (%s, type=%s)",
+        appliance.said, appliance.name, tag,
+    )
+
+    impl: Any = appliance
+
+    thing_out = {
+        "thingName": appliance.said,
+        "thingTypeName": appliance.appliance_info.model_number,
+        "attributes": {
+            "Name": appliance.name.encode("utf-8").hex(),
+            "Category": appliance.appliance_info.category.capitalize(),
+            "Serial": appliance.appliance_info.serial_number,
+            "CapabilityPartNumber": impl.capability_profile.part_number,
+        },
+    }
+    suffix = _fixture_suffix(appliance.appliance_info.model_number, appliance.said)
+
+    def _maybe_redact(data: Any) -> Any:
+        return _redact(data, appliance.said) if redact else data
+
+    thing_path = output_dir / f"thing_{tag}_{suffix}.json"
+    thing_path.write_text(json.dumps(_maybe_redact(thing_out), indent=2))
+    LOGGER.info("Wrote %s", thing_path)
+
+    cap_path = output_dir / f"capability_{tag}_{suffix}.json"
+    cap_path.write_text(
+        json.dumps(_maybe_redact(impl.capability_profile.raw), indent=2)
+    )
+    LOGGER.info("Wrote %s", cap_path)
+
+    state_path = output_dir / f"state_{tag}_{suffix}_full.json"
+    state_path.write_text(json.dumps(_maybe_redact(impl._state), indent=2))
+    LOGGER.info("Wrote %s", state_path)
 
 
 def main() -> None:
