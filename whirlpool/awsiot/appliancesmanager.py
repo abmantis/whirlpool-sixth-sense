@@ -14,6 +14,7 @@ from ..auth import Auth as WhirlpoolAuth
 from .aircon import Aircon
 from .auth import Auth, AuthException
 from .dryer import Dryer
+from .microwave import Microwave
 from .mqttclient import MqttClient
 from .oven import Oven
 from .refrigerator import Refrigerator
@@ -37,6 +38,7 @@ class AppliancesManager:
         self._dryers: dict[str, Any] = {}
         self._washers: dict[str, Any] = {}
         self._ovens: dict[str, Any] = {}
+        self._microwaves: dict[str, Any] = {}
         self._refrigerators: dict[str, Any] = {}
 
         self._aws_auth = Auth(self._whirlpool_auth, self._session)
@@ -49,6 +51,7 @@ class AppliancesManager:
             **self._dryers,
             **self._washers,
             **self._ovens,
+            **self._microwaves,
             **self._refrigerators,
         }
 
@@ -67,6 +70,10 @@ class AppliancesManager:
     @property
     def ovens(self) -> list[Oven]:
         return list(self._ovens.values())
+
+    @property
+    def microwaves(self) -> list[Microwave]:
+        return list(self._microwaves.values())
 
     @property
     def refrigerators(self) -> list[Refrigerator]:
@@ -122,8 +129,8 @@ class AppliancesManager:
             appliance = Aircon(self._mqtt, appliance_data)
             self._aircons[appliance_data.said] = appliance
         elif appliance_data.category == "cooking":
-            appliance = Oven(self._mqtt, appliance_data)
-            self._ovens[appliance_data.said] = appliance
+            appliance = Microwave(self._mqtt, appliance_data)
+            self._microwaves[appliance_data.said] = appliance
         elif appliance_data.category == "fabriccare":
             appliance = Dryer(self._mqtt, appliance_data)
             self._dryers[appliance_data.said] = appliance
