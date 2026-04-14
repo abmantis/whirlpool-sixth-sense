@@ -155,6 +155,19 @@ class AppliancesManager:
 
     def _handle_mqtt_message(self, topic: str, payload: dict[str, Any]) -> None:
         LOGGER.debug("Received MQTT message on topic %s: %s", topic, payload)
+
+        if topic.startswith("$aws/events/presence/"):
+            parts = topic.split("/")
+            # $aws/events/presence/{connected|disconnected}/{said}
+            if len(parts) != 5:
+                return
+            event, said = parts[3], parts[4]
+            appliance = self.all_appliances.get(said)
+            if appliance is None:
+                return
+            appliance.update_online(event == "connected")
+            return
+
         parts = topic.split("/")
         if len(parts) < 3:
             return

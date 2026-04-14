@@ -24,6 +24,7 @@ class Appliance(BaseAppliance):
 
         self._data_dict: dict[str, Any] = {}
         self._initial_data_event = asyncio.Event()
+        self._online: bool | None = None
 
     def __repr__(self):
         return f"<{self.__class__.__name__}> {self.said} | {self.name}"
@@ -63,6 +64,12 @@ class Appliance(BaseAppliance):
         for callback in self._attr_changed:
             callback()
 
+    def update_online(self, online: bool):
+        """Update presence state and call callbacks."""
+        self._online = online
+        for callback in self._attr_changed:
+            callback()
+
     @override
     async def fetch_data(self) -> bool:
         """Fetch appliance data."""
@@ -76,8 +83,11 @@ class Appliance(BaseAppliance):
 
     @override
     def get_online(self) -> bool | None:
-        """Get online state for appliance"""
-        raise NotImplementedError
+        """Get online state for appliance.
+
+        Returns None until the first AWS IoT presence event is received.
+        """
+        return self._online
 
     @override
     def get_raw_data(self) -> dict[str, Any] | None:
