@@ -48,12 +48,12 @@ class Appliance(BaseAppliance):
         )
 
         # TODO: implement capability download and handling
-        # self._mqtt.subscribe(
-        #     f"api/capability/download/{self.appliance_info.model_number}/{self.appliance_info.said}/response",
-        # )
+        # model = self.appliance_info.model_number
+        # said = self.appliance_info.said
+        # self._mqtt.subscribe(f"api/capability/download/{model}/{said}/response")
         # self._mqtt.publish(
-        #     f"api/capability/download/{self.appliance_info.model_number}/{self.appliance_info.said}",
-        #     {"capabilityPartNumber": f"{thing_attrs.get('CapabilityPartNumber', '')}"},
+        #     f"api/capability/download/{model}/{said}",
+        #     {"capabilityPartNumber": thing_attrs.get("CapabilityPartNumber", "")},
         # )
 
     def update_state(self, new_state: dict[str, Any]):
