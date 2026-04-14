@@ -4,6 +4,7 @@ from ..types import ApplianceInfo
 from ..washer import MachineState
 from ..washer import Washer as BaseWasher
 from .appliance import Appliance
+from .capabilities import CapabilityProfile
 from .mqttclient import MqttClient
 
 
@@ -12,8 +13,9 @@ class Washer(BaseWasher, Appliance):
         self,
         mqttclient: MqttClient,
         appliance_info: ApplianceInfo,
+        capability_profile: CapabilityProfile,
     ):
-        super().__init__(mqttclient, appliance_info)
+        super().__init__(mqttclient, appliance_info, capability_profile)
 
     @override
     def get_machine_state(self) -> MachineState | None:

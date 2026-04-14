@@ -1,6 +1,7 @@
 """Concrete awsiot Microwave — translates MQTT state to the Microwave ABC."""
 
-from typing import override
+import logging
+from typing import Any, override
 
 from ..microwave import (
     HoodFanSpeed,
@@ -13,6 +14,8 @@ from ..microwave import (
     Microwave as MicrowaveABC,
 )
 from .appliance import Appliance
+
+LOGGER = logging.getLogger(__name__)
 
 _CAVITY_STATE_MAP: dict[str, MicrowaveCavityState] = {
     "idle": MicrowaveCavityState.Idle,
@@ -161,3 +164,40 @@ class Microwave(MicrowaveABC, Appliance):
     @override
     def get_sabbath_mode(self) -> bool | None:
         return self._get_path_bool("sabbathMode")
+
+    async def _set_gated(
+        self, addressee: str, value: Any, label: str
+    ) -> bool:
+        if not self.capability_profile.has_addressee(addressee):
+            LOGGER.warning("Model %s has no %s", self.said, label)
+            return False
+        self._send_command(
+            "set", {"addressee": addressee, "value": value}
+        )
+        return True
+
+    @override
+    async def set_hood_fan_speed(self, speed: HoodFanSpeed) -> bool:
+        return await self._set_gated("hoodFan", speed.value, "hood fan")
+
+    @override
+    async def set_hood_light_level(self, level: HoodLightLevel) -> bool:
+        return await self._set_gated("hoodLight", level.value, "hood light")
+
+    @override
+    async def set_hood_light_color(self, color: HoodLightColor) -> bool:
+        return await self._set_gated(
+            "hoodLightColor", color.value, "hood light color control"
+        )
+
+    @override
+    async def set_control_locked(self, on: bool) -> bool:
+        return await self._set_gated("hmiControlLockout", on, "control lock")
+
+    @override
+    async def set_quiet_mode(self, on: bool) -> bool:
+        return await self._set_gated("quietMode", on, "quiet mode")
+
+    @override
+    async def set_sabbath_mode(self, on: bool) -> bool:
+        return await self._set_gated("sabbathMode", on, "sabbath mode")

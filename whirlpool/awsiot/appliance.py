@@ -7,6 +7,7 @@ from typing import Any, override
 from ..appliance import Appliance as BaseAppliance
 from ..awsiot.mqttclient import MqttClient
 from ..types import ApplianceInfo
+from .capabilities import CapabilityProfile
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,9 +19,11 @@ class Appliance(BaseAppliance):
         self,
         mqttclient: MqttClient,
         appliance_info: ApplianceInfo,
+        capability_profile: CapabilityProfile,
     ):
         super().__init__(appliance_info)
         self._mqttclient = mqttclient
+        self.capability_profile = capability_profile
 
         self._data_dict: dict[str, Any] = {}
         self._initial_data_event = asyncio.Event()
@@ -47,15 +50,6 @@ class Appliance(BaseAppliance):
         self._mqttclient.subscribe(
             f"$aws/events/presence/disconnected/{self.appliance_info.said}",
         )
-
-        # TODO: implement capability download and handling
-        # model = self.appliance_info.model_number
-        # said = self.appliance_info.said
-        # self._mqtt.subscribe(f"api/capability/download/{model}/{said}/response")
-        # self._mqtt.publish(
-        #     f"api/capability/download/{model}/{said}",
-        #     {"capabilityPartNumber": thing_attrs.get("CapabilityPartNumber", "")},
-        # )
 
     def update_state(self, new_state: dict[str, Any]):
         """Update appliance state and call callbacks."""
