@@ -20,6 +20,7 @@ LOGGER = logging.getLogger(__name__)
 
 MQTT_ENDPOINT = "wt.applianceconnect.net"
 CONNECT_TIMEOUT_SECONDS = 10.0
+RECONNECT_BACKOFF_INITIAL_SECONDS = 1.0
 RECONNECT_BACKOFF_CAP_SECONDS = 30.0
 
 MessageHandler = Callable[[str, dict[str, Any]], Awaitable[None]]
@@ -50,6 +51,8 @@ class MqttClient:
         self._loop = asyncio.get_running_loop()
         self._incoming: asyncio.Queue[tuple[str, dict[str, Any]]] = asyncio.Queue()
         self._dispatch_task: asyncio.Task[None] | None = None
+        self._reconnect_task: asyncio.Task[None] | None = None
+        self._shutting_down = False
 
         self._message_handlers: list[MessageHandler] = []
         self._on_connect_handlers: list[ConnectionHandler] = []
@@ -115,10 +118,21 @@ class MqttClient:
             return False
 
         self._client_id = client_id
-        self._dispatch_task = self._loop.create_task(self._dispatch_loop())
+        if self._dispatch_task is None or self._dispatch_task.done():
+            self._dispatch_task = self._loop.create_task(self._dispatch_loop())
         return True
 
     async def disconnect(self) -> None:
+        self._shutting_down = True
+
+        if self._reconnect_task is not None:
+            self._reconnect_task.cancel()
+            try:
+                await self._reconnect_task
+            except asyncio.CancelledError:
+                pass
+            self._reconnect_task = None
+
         if self._dispatch_task is not None:
             self._dispatch_task.cancel()
             try:
@@ -281,6 +295,59 @@ class MqttClient:
 
         self._loop.call_soon_threadsafe(self._connected.clear)
         self._loop.call_soon_threadsafe(self._fire_on_disconnect_handlers)
+
+        if reason_code.is_failure:
+            self._loop.call_soon_threadsafe(self._schedule_reconnect)
+
+    def _schedule_reconnect(self) -> None:
+        """Start a reconnect task if one isn't already running."""
+        if self._shutting_down:
+            return
+        if self._reconnect_task is not None and not self._reconnect_task.done():
+            return
+        self._reconnect_task = self._loop.create_task(self._reconnect_loop())
+
+    async def _reconnect_loop(self) -> None:
+        """Rebuild the MQTT client with fresh auth, using exponential backoff.
+
+        Each attempt drives the full connect() path, which fetches a new
+        SigV4-signed websocket URL. The old paho client (if any) is stopped
+        before building the new one. `_resubscribe_and_set_connected`
+        (called from on_connect) reapplies `self._subscribed_topics` so
+        existing subscriptions survive the rebuild.
+        """
+        delay = RECONNECT_BACKOFF_INITIAL_SECONDS
+        while not self._shutting_down:
+            LOGGER.info("MQTT reconnecting in %.1fs", delay)
+            try:
+                await asyncio.sleep(delay)
+            except asyncio.CancelledError:
+                return
+
+            if self._shutting_down:
+                return
+
+            if self._client is not None:
+                old = self._client
+                self._client = None
+                try:
+                    await self._loop.run_in_executor(None, old.loop_stop)
+                except Exception:
+                    LOGGER.debug("Error stopping old MQTT client loop", exc_info=True)
+
+            try:
+                ok = await self.connect()
+            except asyncio.CancelledError:
+                return
+            except Exception:
+                LOGGER.exception("MQTT reconnect attempt raised")
+                ok = False
+
+            if ok:
+                LOGGER.info("MQTT reconnected")
+                return
+
+            delay = min(delay * 2 if delay > 0 else 1.0, RECONNECT_BACKOFF_CAP_SECONDS)
 
     def _on_subscribe(
         self,
