@@ -1,6 +1,7 @@
 """AWS Cognito authentication for Whirlpool appliances."""
 
 import logging
+import time
 from typing import Any
 
 import aiohttp
@@ -81,10 +82,16 @@ class Auth:
         """
         Get temporary AWS credentials for IoT access.
 
-        The result is cached.
+        The result is cached until expiration.
         """
         if self._aws_credentials:
-            return self._aws_credentials
+            expiration = self._aws_credentials.get("Expiration", 0)
+            if time.time() < expiration - 60:
+                return self._aws_credentials
+            LOGGER.info("AWS credentials expired, refreshing")
+            self._aws_credentials = None
+            self._cognito_identity_id = None
+            self._cognito_token = None
 
         identity_id = await self.get_cognito_identity_id()
         if not identity_id or not self._cognito_token:
