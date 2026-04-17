@@ -61,6 +61,8 @@ class MqttClient:
     # --- lifecycle -------------------------------------------------------
 
     async def connect(self) -> bool:
+        self._connected.clear()
+
         signed_url = await self._aws_auth.create_signed_url(MQTT_ENDPOINT)
         client_id = await self._generate_client_id_async()
 
@@ -73,6 +75,7 @@ class MqttClient:
             protocol=MQTTProtocolVersion.MQTTv311,
             callback_api_version=CallbackAPIVersion.VERSION2,
         )
+        client._reconnect_on_failure = False  # type: ignore[attr-defined]  # noqa: SLF001
         client.on_connect = self._on_connect
         client.on_message = self._on_message
         client.on_disconnect = self._on_disconnect
@@ -318,7 +321,7 @@ class MqttClient:
         """
         delay = RECONNECT_BACKOFF_INITIAL_SECONDS
         while not self._shutting_down:
-            LOGGER.info("MQTT reconnecting in %.1fs", delay)
+            LOGGER.warning("MQTT reconnecting in %.1fs", delay)
             try:
                 await asyncio.sleep(delay)
             except asyncio.CancelledError:
@@ -344,7 +347,7 @@ class MqttClient:
                 ok = False
 
             if ok:
-                LOGGER.info("MQTT reconnected")
+                LOGGER.warning("MQTT reconnected successfully")
                 return
 
             delay = min(delay * 2 if delay > 0 else 1.0, RECONNECT_BACKOFF_CAP_SECONDS)
