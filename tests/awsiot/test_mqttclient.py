@@ -23,6 +23,16 @@ async def _flush() -> None:
     await asyncio.sleep(0)
 
 
+async def _wait_for(
+    predicate, *, attempts: int = 100, message: str = "condition not met"
+) -> None:
+    for _ in range(attempts):
+        if predicate():
+            return
+        await _flush()
+    raise AssertionError(message)
+
+
 @pytest.fixture
 def fake_paho() -> MagicMock:
     """A MagicMock standing in for paho.mqtt.client.Client.
@@ -47,14 +57,16 @@ async def _build_client(mock_aws_auth: AsyncMock, fake_paho: MagicMock) -> MqttC
             return await client.connect()
 
         task = asyncio.create_task(do_connect())
-        # Let connect() schedule the paho connect + start the loop.
-        await _flush()
+        await _wait_for(
+            lambda: client._client is fake_paho,  # pyright: ignore[reportPrivateUsage]
+            message="MQTT client was not installed",
+        )
         # Simulate paho firing on_connect callback.
         fake_paho.on_connect(
             fake_paho, None, MagicMock(), MagicMock(is_failure=False), None
         )
         await _flush()
-        connected = await task
+        connected = await asyncio.wait_for(task, timeout=1)
         assert connected is True
     return client
 
@@ -88,6 +100,29 @@ class TestConnectAndPublish:
         await client.subscribe("topic/y")
         fake_paho.subscribe.assert_called_with("topic/y", qos=1)
         await client.disconnect()
+
+    async def test_connect_timeout_tears_down_timed_out_client(
+        self, mock_aws_auth: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        paho = MagicMock(name="paho.Client")
+        paho.connect.return_value = None
+
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.mqtt.Client", lambda **_kwargs: paho
+        )
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.CONNECT_TIMEOUT_SECONDS",
+            0.01,
+        )
+
+        client = MqttClient(mock_aws_auth)
+        assert await client.connect() is False
+
+        paho.loop_start.assert_called_once()
+        paho.loop_stop.assert_called_once()
+        paho.disconnect.assert_called_once()
+        assert client.client_id is None
+        assert not client.is_connected()
 
 
 class TestDispatchLoop:
@@ -238,7 +273,11 @@ class TestReconnect:
 
         client = MqttClient(mock_aws_auth)
         connect_task = asyncio.create_task(client.connect())
-        await _flush()
+        await _wait_for(
+            lambda: len(paho_clients) >= 1
+            and client._client is paho_clients[0],  # pyright: ignore[reportPrivateUsage]
+            message="initial paho client was not installed",
+        )
         _fire_connack(paho_clients[0])
         await _flush()
         assert await connect_task is True
@@ -249,15 +288,13 @@ class TestReconnect:
 
         _fire_failure_disconnect(paho_clients[0])
 
-        # Drive the reconnect to completion. We don't know exactly when
-        # each await in connect() resolves, so keep flushing and firing
-        # on_connect on the newest paho client until is_connected is set.
-        for _ in range(100):
-            await _flush()
-            if client.is_connected():
-                break
-            if len(paho_clients) >= 2:
-                _fire_connack(paho_clients[-1])
+        await _wait_for(
+            lambda: len(paho_clients) >= 2
+            and client._client is paho_clients[-1],  # pyright: ignore[reportPrivateUsage]
+            message="replacement paho client was not installed",
+        )
+        _fire_connack(paho_clients[-1])
+        await _wait_for(client.is_connected, message="MQTT client did not reconnect")
 
         assert len(paho_clients) >= 2, (
             f"expected reconnect to build a new paho client, got "
@@ -321,7 +358,11 @@ class TestReconnect:
 
         client = MqttClient(mock_aws_auth)
         connect_task = asyncio.create_task(client.connect())
-        await _flush()
+        await _wait_for(
+            lambda: len(paho_clients) >= 1
+            and client._client is paho_clients[0],  # pyright: ignore[reportPrivateUsage]
+            message="initial paho client was not installed",
+        )
         _fire_connack(paho_clients[0])
         await _flush()
         assert await connect_task is True
@@ -330,12 +371,13 @@ class TestReconnect:
         assert first_client_id is not None
 
         _fire_failure_disconnect(paho_clients[0])
-        for _ in range(100):
-            await _flush()
-            if client.is_connected():
-                break
-            if len(paho_clients) >= 2:
-                _fire_connack(paho_clients[-1])
+        await _wait_for(
+            lambda: len(paho_clients) >= 2
+            and client._client is paho_clients[-1],  # pyright: ignore[reportPrivateUsage]
+            message="replacement paho client was not installed",
+        )
+        _fire_connack(paho_clients[-1])
+        await _wait_for(client.is_connected, message="MQTT client did not reconnect")
 
         assert len(paho_clients) >= 2
         assert client.client_id == first_client_id
@@ -368,7 +410,11 @@ class TestReconnect:
 
         client = MqttClient(mock_aws_auth)
         connect_task = asyncio.create_task(client.connect())
-        await _flush()
+        await _wait_for(
+            lambda: len(paho_clients) >= 1
+            and client._client is paho_clients[0],  # pyright: ignore[reportPrivateUsage]
+            message="initial paho client was not installed",
+        )
         _fire_connack(paho_clients[0])
         await _flush()
         assert await connect_task is True
@@ -386,3 +432,50 @@ class TestReconnect:
         assert client._reconnect_task is None  # pyright: ignore[reportPrivateUsage]
         # No second paho client should have been built.
         assert len(paho_clients) == 1
+
+    async def test_stale_disconnect_from_timed_out_client_is_ignored(
+        self, mock_aws_auth: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        paho_clients: list[MagicMock] = []
+
+        def paho_factory(**_kwargs: Any) -> MagicMock:
+            instance = MagicMock(name=f"paho.Client[{len(paho_clients)}]")
+            instance.connect.return_value = None
+            instance.publish.return_value = None
+            instance.subscribe.return_value = None
+            instance.unsubscribe.return_value = None
+            paho_clients.append(instance)
+            return instance
+
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
+        )
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.CONNECT_TIMEOUT_SECONDS",
+            0.01,
+        )
+
+        client = MqttClient(mock_aws_auth)
+        assert await client.connect() is False
+        assert len(paho_clients) == 1
+
+        connect_task = asyncio.create_task(client.connect())
+        await _wait_for(
+            lambda: len(paho_clients) >= 2
+            and client._client is paho_clients[1],  # pyright: ignore[reportPrivateUsage]
+            message="replacement paho client was not installed",
+        )
+        _fire_connack(paho_clients[1])
+        await _flush()
+        assert await connect_task is True
+        assert client.is_connected()
+
+        mock_aws_auth.create_signed_url.reset_mock()
+        _fire_failure_disconnect(paho_clients[0])
+        for _ in range(10):
+            await _flush()
+
+        assert client.is_connected()
+        mock_aws_auth.create_signed_url.assert_not_called()
+
+        await client.disconnect()

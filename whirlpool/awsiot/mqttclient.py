@@ -62,6 +62,7 @@ class MqttClient:
     # --- lifecycle -------------------------------------------------------
 
     async def connect(self) -> bool:
+        self._shutting_down = False
         self._connected.clear()
 
         signed_url = await self._aws_auth.create_signed_url(MQTT_ENDPOINT)
@@ -92,12 +93,15 @@ class MqttClient:
             },
         )
         client.username_pw_set(username="?SDK=Android&Version=2.75.0", password=None)
-        client.tls_set(
-            ca_certs=None,
-            certfile=None,
-            keyfile=None,
-            cert_reqs=ssl.CERT_REQUIRED,
-            tls_version=ssl.PROTOCOL_TLS_CLIENT,
+        await self._loop.run_in_executor(
+            None,
+            lambda: client.tls_set(
+                ca_certs=None,
+                certfile=None,
+                keyfile=None,
+                cert_reqs=ssl.CERT_REQUIRED,
+                tls_version=ssl.PROTOCOL_TLS_CLIENT,
+            ),
         )
 
         try:
@@ -117,8 +121,7 @@ class MqttClient:
             )
         except TimeoutError:
             LOGGER.error("MQTT connection timeout")
-            client.loop_stop()
-            self._client = None
+            await self._teardown_client(client)
             return False
 
         self._client_id = client_id
@@ -147,9 +150,9 @@ class MqttClient:
 
         if self._client is not None:
             client = self._client
+            self._client = None
             await self._loop.run_in_executor(None, client.loop_stop)
             await self._loop.run_in_executor(None, client.disconnect)
-            self._client = None
 
         self._connected.clear()
         self._client_id = None
@@ -227,14 +230,32 @@ class MqttClient:
                         "Message handler raised for topic %s", topic
                     )
 
+    async def _teardown_client(self, client: mqtt.Client) -> None:
+        if self._client is client:
+            self._client = None
+        try:
+            await self._loop.run_in_executor(None, client.loop_stop)
+        except Exception:
+            LOGGER.debug("Error stopping MQTT client loop", exc_info=True)
+        try:
+            await self._loop.run_in_executor(None, client.disconnect)
+        except Exception:
+            LOGGER.debug("Error disconnecting MQTT client", exc_info=True)
+
+    def _is_active_client(self, client: mqtt.Client) -> bool:
+        return self._client is client
+
     def _on_connect(
         self,
-        _client: mqtt.Client,
+        client: mqtt.Client,
         _userdata: Any,
         _connect_flags: mqtt.ConnectFlags,
         reason_code: ReasonCode,
         _properties: Properties | None = None,
     ) -> None:
+        if not self._is_active_client(client):
+            LOGGER.debug("Ignoring on_connect from stale MQTT client")
+            return
         if reason_code.is_failure:
             LOGGER.error("MQTT connection failed: %s", reason_code)
             return
@@ -271,10 +292,13 @@ class MqttClient:
             LOGGER.exception("Connection handler raised")
 
     def _on_message(
-        self, _client: mqtt.Client, _userdata: Any, msg: mqtt.MQTTMessage
+        self, client: mqtt.Client, _userdata: Any, msg: mqtt.MQTTMessage
     ) -> None:
         # Runs on paho's network thread. Must NOT touch asyncio state
         # directly — marshal onto the event loop.
+        if not self._is_active_client(client):
+            LOGGER.debug("Ignoring message from stale MQTT client on %s", msg.topic)
+            return
         try:
             payload = json.loads(msg.payload.decode("utf-8"))
         except (json.JSONDecodeError, UnicodeDecodeError) as e:
@@ -286,12 +310,15 @@ class MqttClient:
 
     def _on_disconnect(
         self,
-        _client: mqtt.Client,
+        client: mqtt.Client,
         _userdata: Any,
         _disconnect_flags: mqtt.DisconnectFlags,
         reason_code: ReasonCode,
         _properties: Properties | None = None,
     ) -> None:
+        if not self._is_active_client(client):
+            LOGGER.debug("Ignoring on_disconnect from stale MQTT client")
+            return
         if reason_code.is_failure:
             LOGGER.warning("MQTT unexpected disconnect: %s", reason_code)
         else:
@@ -332,12 +359,7 @@ class MqttClient:
                 return
 
             if self._client is not None:
-                old = self._client
-                self._client = None
-                try:
-                    await self._loop.run_in_executor(None, old.loop_stop)
-                except Exception:
-                    LOGGER.debug("Error stopping old MQTT client loop", exc_info=True)
+                await self._teardown_client(self._client)
 
             try:
                 ok = await self.connect()
@@ -355,12 +377,15 @@ class MqttClient:
 
     def _on_subscribe(
         self,
-        _client: mqtt.Client,
+        client: mqtt.Client,
         _userdata: Any,
         mid: int,
         granted_qos: list[ReasonCode],
         _properties: Properties | None = None,
     ) -> None:
+        if not self._is_active_client(client):
+            LOGGER.debug("Ignoring subscribe ack from stale MQTT client")
+            return
         LOGGER.debug(
             "MQTT subscription confirmed (mid=%d, qos=%s)", mid, granted_qos
         )
