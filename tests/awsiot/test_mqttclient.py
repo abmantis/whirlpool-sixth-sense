@@ -291,6 +291,57 @@ class TestReconnect:
 
         await client.disconnect()
 
+    async def test_client_id_is_stable_across_reconnect(
+        self, mock_aws_auth: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The MQTT client_id must stay the same across reconnects, so the
+        request/response topics built by subscribers remain valid. If the
+        client_id changed, the broker would resubscribe us to the old
+        response topic while the device publishes responses under the new
+        client_id, leaving us permanently unable to complete getState."""
+
+        paho_clients: list[MagicMock] = []
+
+        def paho_factory(**_kwargs: Any) -> MagicMock:
+            instance = MagicMock(name=f"paho.Client[{len(paho_clients)}]")
+            instance.connect.return_value = None
+            instance.publish.return_value = None
+            instance.subscribe.return_value = None
+            instance.unsubscribe.return_value = None
+            paho_clients.append(instance)
+            return instance
+
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
+        )
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.RECONNECT_BACKOFF_INITIAL_SECONDS",
+            0.0,
+        )
+
+        client = MqttClient(mock_aws_auth)
+        connect_task = asyncio.create_task(client.connect())
+        await _flush()
+        _fire_connack(paho_clients[0])
+        await _flush()
+        assert await connect_task is True
+
+        first_client_id = client.client_id
+        assert first_client_id is not None
+
+        _fire_failure_disconnect(paho_clients[0])
+        for _ in range(100):
+            await _flush()
+            if client.is_connected():
+                break
+            if len(paho_clients) >= 2:
+                _fire_connack(paho_clients[-1])
+
+        assert len(paho_clients) >= 2
+        assert client.client_id == first_client_id
+
+        await client.disconnect()
+
     async def test_explicit_disconnect_cancels_pending_reconnect(
         self, mock_aws_auth: AsyncMock, monkeypatch: pytest.MonkeyPatch
     ) -> None:

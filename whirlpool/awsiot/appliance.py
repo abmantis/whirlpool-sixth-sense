@@ -20,7 +20,7 @@ from .mqttclient import MqttClient
 
 LOGGER = logging.getLogger(__name__)
 
-INITIAL_STATE_TIMEOUT_SECONDS = 5.0
+INITIAL_STATE_TIMEOUT_SECONDS = 15.0
 HEARTBEAT_INTERVAL_SECONDS = 60.0
 
 
@@ -66,6 +66,7 @@ class Appliance(BaseAppliance):
         self._state: dict[str, Any] = {}
         self._online: bool | None = None
         self._initial_state_event: asyncio.Event = asyncio.Event()
+        self._fetch_lock: asyncio.Lock = asyncio.Lock()
         self._heartbeat_task: asyncio.Task[None] | None = None
 
     def __repr__(self) -> str:
@@ -143,19 +144,22 @@ class Appliance(BaseAppliance):
 
     @override
     async def fetch_data(self) -> bool:
-        self._initial_state_event.clear()
-        await self._send_command_raw(addressee="appliance", command="getState")
-        try:
-            await asyncio.wait_for(
-                self._initial_state_event.wait(),
-                timeout=self._initial_state_timeout,
-            )
-            return True
-        except TimeoutError:
-            LOGGER.warning(
-                "Timed out waiting for initial state of %s", self.said
-            )
-            return False
+        # Serialize so concurrent callers (heartbeat, presence, reconnect)
+        # don't race on clear()/wait() of the shared event.
+        async with self._fetch_lock:
+            self._initial_state_event.clear()
+            await self._send_command_raw(addressee="appliance", command="getState")
+            try:
+                await asyncio.wait_for(
+                    self._initial_state_event.wait(),
+                    timeout=self._initial_state_timeout,
+                )
+                return True
+            except TimeoutError:
+                LOGGER.warning(
+                    "Timed out waiting for initial state of %s", self.said
+                )
+                return False
 
     @override
     def get_online(self) -> bool | None:

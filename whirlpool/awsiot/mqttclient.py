@@ -27,12 +27,6 @@ MessageHandler = Callable[[str, dict[str, Any]], Awaitable[None]]
 ConnectionHandler = Callable[[], Awaitable[None]]
 
 
-def _generate_client_id(identity_id: str) -> str:
-    """Generate a client ID in the format used by the Android app."""
-    random_suffix = secrets.token_hex(8)  # 16 hex chars
-    return f"{identity_id}_{random_suffix}"
-
-
 class MqttClient:
     """Async-safe MQTT client for Whirlpool AWS IoT.
 
@@ -47,6 +41,13 @@ class MqttClient:
         self._connected = asyncio.Event()
         self._subscribed_topics: set[str] = set()
         self._client_id: str | None = None
+        # Random suffix is generated once per MqttClient instance so that the
+        # client_id (identity_id + suffix) remains stable across reconnects.
+        # Subscribers that built response topics using `client_id` therefore
+        # stay valid after a reconnect; otherwise the device would send
+        # responses to `.../response/<new_id>` while we're still subscribed
+        # to `.../response/<old_id>`.
+        self._client_id_suffix: str = secrets.token_hex(8)
 
         self._loop = asyncio.get_running_loop()
         self._incoming: asyncio.Queue[tuple[str, dict[str, Any]]] = asyncio.Queue()
@@ -213,7 +214,7 @@ class MqttClient:
         identity_id = await self._aws_auth.get_cognito_identity_id()
         if not identity_id:
             raise RuntimeError("Failed to get Cognito identity ID")
-        return _generate_client_id(identity_id)
+        return f"{identity_id}_{self._client_id_suffix}"
 
     async def _dispatch_loop(self) -> None:
         while True:
