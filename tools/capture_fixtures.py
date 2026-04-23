@@ -101,12 +101,24 @@ _TYPE_TAG: dict[str, str] = {
     "Refrigerator": "refrigerator",
     "Washer": "washer",
 }
+_THING_CATEGORY_TAG: dict[str, str] = {
+    "airconditioner": "AirConditioner",
+    "cooking": "Cooking",
+    "fabriccare": "FabricCare",
+    "laundry": "Laundry",
+    "refrigerator": "Refrigerator",
+}
 
 
 def _appliance_tag(appliance: Any) -> str:
     """Derive a short tag from the appliance's class name."""
     cls_name = type(appliance).__name__
     return _TYPE_TAG.get(cls_name, cls_name.lower())
+
+
+def _thing_category(category: str) -> str:
+    """Map internal lowercase categories back to AWS thing metadata values."""
+    return _THING_CATEGORY_TAG.get(category, category)
 
 
 _SAID_KEYS = frozenset({"thingName", "SAID", "said"})
@@ -132,16 +144,29 @@ def _redact(obj: Any, said: str) -> Any:
     """Recursively scrub sensitive keys from a JSON-like structure."""
     token = _said_token(said)
 
-    def _walk(value: Any) -> Any:
+    def _redact_key_value(key: str, value: Any) -> Any:
+        replacement = (
+            token
+            if key in _SAID_KEYS
+            else "REDACTED" if key in _REDACTED_KEYS else None
+        )
+        if replacement is None:
+            return _walk(value)
         if isinstance(value, dict):
             return {
-                k: (
-                    token if k in _SAID_KEYS
-                    else "REDACTED" if k in _REDACTED_KEYS
-                    else _walk(v)
-                )
+                k: replacement if k == "value" else _walk(v)
                 for k, v in value.items()
             }
+        if isinstance(value, list):
+            return [
+                _walk(v) if isinstance(v, dict | list) else replacement
+                for v in value
+            ]
+        return replacement
+
+    def _walk(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {k: _redact_key_value(k, v) for k, v in value.items()}
         if isinstance(value, list):
             return [_walk(v) for v in value]
         return value
@@ -249,16 +274,23 @@ async def _amain(args: argparse.Namespace) -> int:
                 return 4
             targets = [appliance]
 
+        capture_failures = 0
         for appliance in targets:
             try:
                 _capture_one(appliance, output_dir, redact=args.redact)
             except Exception:
+                capture_failures += 1
                 LOGGER.exception(
                     "Failed to capture fixtures for %s", appliance.said
                 )
 
+        if capture_failures:
+            LOGGER.error(
+                "Fixture capture failed for %d appliance(s)", capture_failures
+            )
+
         await manager.disconnect()
-    return 0
+    return 5 if capture_failures else 0
 
 
 def _capture_one(appliance: Any, output_dir: Path, *, redact: bool) -> None:
@@ -274,7 +306,7 @@ def _capture_one(appliance: Any, output_dir: Path, *, redact: bool) -> None:
         "thingTypeName": appliance.appliance_info.model_number,
         "attributes": {
             "Name": appliance.name.encode("utf-8").hex(),
-            "Category": appliance.appliance_info.category.capitalize(),
+            "Category": _thing_category(appliance.appliance_info.category),
             "Serial": appliance.appliance_info.serial_number,
         },
     }
@@ -286,12 +318,16 @@ def _capture_one(appliance: Any, output_dir: Path, *, redact: bool) -> None:
         return _redact(data, appliance.said) if redact else data
 
     thing_path = output_dir / f"thing_{tag}_{suffix}.json"
-    thing_path.write_text(json.dumps(_maybe_redact(thing_out), indent=2))
+    thing_path.write_text(
+        json.dumps(_maybe_redact(thing_out), indent=2) + "\n",
+        encoding="utf-8",
+    )
     LOGGER.info("Wrote %s", thing_path)
 
     state_path = output_dir / f"state_{tag}_{suffix}_full.json"
     state_path.write_text(
-        json.dumps(_maybe_redact(appliance.get_raw_data() or {}), indent=2)
+        json.dumps(_maybe_redact(appliance.get_raw_data() or {}), indent=2) + "\n",
+        encoding="utf-8",
     )
     LOGGER.info("Wrote %s", state_path)
 

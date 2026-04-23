@@ -50,8 +50,12 @@ class Appliance(BaseAppliance):
         # TODO: implement capability download and handling
         # model = self.appliance_info.model_number
         # said = self.appliance_info.said
-        # self._mqtt.subscribe(f"api/capability/download/{model}/{said}/response")
-        # self._mqtt.publish(
+        # thing_attrs is not available in subscribe_topics(); obtain it before
+        # this call (for example, pass it into this method or store it on self).
+        # self._mqttclient.subscribe(
+        #     f"api/capability/download/{model}/{said}/response"
+        # )
+        # self._mqttclient.publish(
         #     f"api/capability/download/{model}/{said}",
         #     {"capabilityPartNumber": thing_attrs.get("CapabilityPartNumber", "")},
         # )
