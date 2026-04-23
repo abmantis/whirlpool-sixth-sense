@@ -1,0 +1,10 @@
+{
+  "thingName": "WPR000EXAMPLE",
+  "thingTypeName": "KMML550RPS00",
+  "attributes": {
+    "Name": "4d6963726f77617665",
+    "Category": "Cooking",
+    "Serial": "XYZ0000000",
+    "CapabilityPartNumber": "W11788386"
+  }
+}

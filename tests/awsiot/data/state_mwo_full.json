@@ -1,0 +1,54 @@
+{
+  "hoodLight": "med",
+  "hoodLightColor": "warmWhite",
+  "hoodFan": {
+    "userFanSpeed": "off",
+    "systemFanSpeed": "off",
+    "controlMode": "user"
+  },
+  "cooktopStatus": false,
+  "primaryCavity": {
+    "recipeId": "",
+    "timedPreheat": false,
+    "currentStepIndex": 0,
+    "recipeExecutionState": "IDLE",
+    "cavityState": "idle",
+    "ovenDisplayTemperature": 25,
+    "targetTemperature": 0,
+    "probeTargetTemperature": 0,
+    "probeTemperature": 0,
+    "whenDone": "",
+    "amount": 0,
+    "panSize": "",
+    "doneness": "",
+    "foodType": "",
+    "weight": 0,
+    "preheat": "",
+    "mwoPowerLevel": 0,
+    "turnTable": "",
+    "probeState": false,
+    "cavityLight": false,
+    "cookTimer": {
+      "time": 0,
+      "state": "idle",
+      "timePaused": 0
+    },
+    "delayTimer": {
+      "time": 0,
+      "state": "idle",
+      "timePaused": 0
+    },
+    "doorStatus": "closed",
+    "doorLockStatus": false,
+    "sessionId": ""
+  },
+  "capabilityFilePartNumber": "W11788386",
+  "remoteStartEnable": true,
+  "hmiControlLockout": false,
+  "weightUnit": "metric",
+  "temperatureUnit": "fahrenheit",
+  "quietMode": false,
+  "sabbathMode": false,
+  "currentTime": 1700000000,
+  "systemVersion": "0.2.0"
+}

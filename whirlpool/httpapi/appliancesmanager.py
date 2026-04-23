@@ -13,6 +13,7 @@ from ..types import ApplianceInfo
 from .aircon import Aircon
 from .appliance import Appliance
 from .dryer import Dryer
+from .microwave import Microwave
 from .oven import Oven
 from .refrigerator import Refrigerator
 from .washer import Washer
@@ -37,6 +38,7 @@ class AppliancesManager:
         self._washers: dict[str, Any] = {}
         self._ovens: dict[str, Any] = {}
         self._refrigerators: dict[str, Any] = {}
+        self._microwaves: dict[str, Any] = {}
 
     @cached_property
     def all_appliances(self) -> dict[str, Appliance]:
@@ -46,6 +48,7 @@ class AppliancesManager:
             **self._washers,
             **self._ovens,
             **self._refrigerators,
+            **self._microwaves,
         }
 
     @property
@@ -67,6 +70,10 @@ class AppliancesManager:
     @property
     def refrigerators(self) -> list[Refrigerator]:
         return list(self._refrigerators.values())
+
+    @property
+    def microwaves(self) -> list[Microwave]:
+        return list(self._microwaves.values())
 
     def _add_appliance(self, appliance: dict[str, Any]) -> None:
         appliance_data = ApplianceInfo(

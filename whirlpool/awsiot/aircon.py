@@ -4,16 +4,21 @@ from ..aircon import Aircon as BaseAircon
 from ..aircon import FanSpeed, Mode
 from ..types import ApplianceInfo
 from .appliance import Appliance
+from .capabilities import CapabilityProfile
+from .factory import register_appliance
+from .matchers import thing_category
 from .mqttclient import MqttClient
 
 
+@register_appliance(matcher=thing_category("airconditioner"), priority=5)
 class Aircon(BaseAircon, Appliance):
     def __init__(
         self,
         mqttclient: MqttClient,
         appliance_info: ApplianceInfo,
+        capability_profile: CapabilityProfile,
     ):
-        super().__init__(mqttclient, appliance_info)
+        super().__init__(mqttclient, appliance_info, capability_profile)
 
     @override
     def get_current_temp(self) -> float | None:
