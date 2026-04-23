@@ -1,9 +1,6 @@
 """Concrete awsiot Microwave — translates MQTT state to the Microwave ABC."""
 
-from __future__ import annotations
-
-import time
-from typing import Any, override
+from typing import override
 
 from ..microwave import (
     HoodFanSpeed,
@@ -30,58 +27,36 @@ _DOOR_STATUS_MAP: dict[str, MicrowaveDoorStatus] = {
     "closed": MicrowaveDoorStatus.Closed,
 }
 
-_HOOD_FAN_MAP: dict[str, HoodFanSpeed] = {e.value: e for e in HoodFanSpeed}
-_HOOD_LIGHT_MAP: dict[str, HoodLightLevel] = {e.value: e for e in HoodLightLevel}
+_HOOD_FAN_MAP: dict[str, HoodFanSpeed] = {
+    "off": HoodFanSpeed.Off,
+    "low": HoodFanSpeed.Low,
+    "med": HoodFanSpeed.Medium,
+    "high": HoodFanSpeed.High,
+    "boost": HoodFanSpeed.Boost,
+}
+_HOOD_LIGHT_MAP: dict[str, HoodLightLevel] = {
+    "off": HoodLightLevel.Off,
+    "low": HoodLightLevel.Low,
+    "med": HoodLightLevel.Medium,
+    "high": HoodLightLevel.High,
+}
 _HOOD_LIGHT_COLOR_MAP: dict[str, HoodLightColor] = {
-    e.value: e for e in HoodLightColor
+    "warmWhite": HoodLightColor.WarmWhite,
+    "naturalWhite": HoodLightColor.NaturalWhite,
+    "coolWhite": HoodLightColor.CoolWhite,
 }
 
 
 class Microwave(MicrowaveABC, Appliance):
-    def _get_path(self, *path: str) -> Any:
-        """Walk the state dict along `path`; return None if any step is missing."""
-        value: Any = self._data_dict
-        for key in path:
-            if not isinstance(value, dict):
-                return None
-            value = value.get(key)
-            if value is None:
-                return None
-        return value
-
-    def _get_path_str(self, *path: str) -> str | None:
-        value = self._get_path(*path)
-        return value if isinstance(value, str) else None
-
-    def _get_path_bool(self, *path: str) -> bool | None:
-        value = self._get_path(*path)
-        return value if isinstance(value, bool) else None
-
-    def _get_path_int(self, *path: str) -> int | None:
-        value = self._get_path(*path)
-        if isinstance(value, bool):
-            return None
-        return int(value) if isinstance(value, (int, float)) else None
-
-    def _get_path_float(self, *path: str) -> float | None:
-        value = self._get_path(*path)
-        if isinstance(value, bool):
-            return None
-        return float(value) if isinstance(value, (int, float)) else None
-
     @override
-    def get_cavity_state(self) -> MicrowaveCavityState:
+    def get_cavity_state(self) -> MicrowaveCavityState | None:
         raw = self._get_path_str("primaryCavity", "cavityState")
-        if raw is None:
-            return MicrowaveCavityState.Unknown
-        return _CAVITY_STATE_MAP.get(raw, MicrowaveCavityState.Unknown)
+        return _CAVITY_STATE_MAP.get(raw) if raw is not None else None
 
     @override
-    def get_door_status(self) -> MicrowaveDoorStatus:
+    def get_door_status(self) -> MicrowaveDoorStatus | None:
         raw = self._get_path_str("primaryCavity", "doorStatus")
-        if raw is None:
-            return MicrowaveDoorStatus.Unknown
-        return _DOOR_STATUS_MAP.get(raw, MicrowaveDoorStatus.Unknown)
+        return _DOOR_STATUS_MAP.get(raw) if raw is not None else None
 
     @override
     def get_door_locked(self) -> bool | None:
@@ -89,7 +64,10 @@ class Microwave(MicrowaveABC, Appliance):
         if isinstance(value, bool):
             return value
         if isinstance(value, str):
-            return value == "locked"
+            if value == "locked":
+                return True
+            if value == "unlocked":
+                return False
         return None
 
     @override
@@ -112,14 +90,21 @@ class Microwave(MicrowaveABC, Appliance):
         raw = self._get_path_str("temperatureUnit")
         if raw is None:
             return None
-        return "F" if raw.lower().startswith("f") else "C"
+        normalized = raw.strip().lower()
+        if normalized in {"f", "fahrenheit"}:
+            return "F"
+        if normalized in {"c", "celsius"}:
+            return "C"
+        return None
 
     @override
     def get_turntable_enabled(self) -> bool | None:
         raw = self._get_path_str("primaryCavity", "turnTable")
-        if raw is None or raw == "":
-            return None
-        return raw == "on"
+        if raw == "on":
+            return True
+        if raw == "off":
+            return False
+        return None
 
     @override
     def get_active_recipe_id(self) -> str | None:
@@ -143,28 +128,23 @@ class Microwave(MicrowaveABC, Appliance):
         return self._get_path_int("primaryCavity", "cookTimer", "time")
 
     @override
-    def get_cook_timer_remaining_seconds(self) -> int | None:
-        time_complete = self._get_path_int(
-            "primaryCavity", "cookTimer", "timeComplete"
-        )
-        if time_complete is not None:
-            return max(0, time_complete - int(time.time()))
-        return self.get_cook_timer_total_seconds()
+    def get_cook_timer_time_complete(self) -> int | None:
+        return self._get_path_int("primaryCavity", "cookTimer", "timeComplete")
 
     @override
     def get_hood_fan_speed(self) -> HoodFanSpeed | None:
         raw = self._get_path_str("hoodFan", "userFanSpeed")
-        return _HOOD_FAN_MAP.get(raw) if raw else None
+        return _HOOD_FAN_MAP.get(raw) if raw is not None else None
 
     @override
     def get_hood_light_level(self) -> HoodLightLevel | None:
         raw = self._get_path_str("hoodLight")
-        return _HOOD_LIGHT_MAP.get(raw) if raw else None
+        return _HOOD_LIGHT_MAP.get(raw) if raw is not None else None
 
     @override
     def get_hood_light_color(self) -> HoodLightColor | None:
         raw = self._get_path_str("hoodLightColor")
-        return _HOOD_LIGHT_COLOR_MAP.get(raw) if raw else None
+        return _HOOD_LIGHT_COLOR_MAP.get(raw) if raw is not None else None
 
     @override
     def get_remote_start_enabled(self) -> bool | None:

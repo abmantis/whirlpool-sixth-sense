@@ -12,13 +12,11 @@ class MicrowaveCavityState(Enum):
     Paused = "paused"
     Completed = "completed"
     TurningOff = "turningOff"
-    Unknown = "unknown"
 
 
 class MicrowaveDoorStatus(Enum):
     Open = "open"
     Closed = "closed"
-    Unknown = "unknown"
 
 
 class HoodFanSpeed(Enum):
@@ -46,10 +44,10 @@ class Microwave(Appliance, ABC):
     """Public API for a microwave oven. Implementations live in transport modules."""
 
     @abstractmethod
-    def get_cavity_state(self) -> MicrowaveCavityState: ...
+    def get_cavity_state(self) -> MicrowaveCavityState | None: ...
 
     @abstractmethod
-    def get_door_status(self) -> MicrowaveDoorStatus: ...
+    def get_door_status(self) -> MicrowaveDoorStatus | None: ...
 
     @abstractmethod
     def get_door_locked(self) -> bool | None: ...
@@ -85,7 +83,7 @@ class Microwave(Appliance, ABC):
     def get_cook_timer_total_seconds(self) -> int | None: ...
 
     @abstractmethod
-    def get_cook_timer_remaining_seconds(self) -> int | None: ...
+    def get_cook_timer_time_complete(self) -> int | None: ...
 
     @abstractmethod
     def get_hood_light_level(self) -> HoodLightLevel | None: ...

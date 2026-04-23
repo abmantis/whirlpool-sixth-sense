@@ -205,6 +205,7 @@ async def test_initial_state_populates_getters(
     assert mwo.get_mwo_power_level() == 0
     assert mwo.get_cook_timer_state() == "stopped"
     assert mwo.get_cook_timer_total_seconds() == 0
+    assert mwo.get_cook_timer_time_complete() is None
     assert mwo.get_hood_fan_speed() == HoodFanSpeed.Off
     assert mwo.get_hood_light_level() == HoodLightLevel.Medium
     assert mwo.get_hood_light_color() == HoodLightColor.WarmWhite
@@ -214,7 +215,7 @@ async def test_initial_state_populates_getters(
     assert mwo.get_sabbath_mode() is False
 
 
-async def test_missing_fields_return_none_or_unknown(
+async def test_missing_fields_return_none(
     auth: Auth,
     client_session_fixture: aiohttp.ClientSession,
 ) -> None:
@@ -243,8 +244,11 @@ async def test_missing_fields_return_none_or_unknown(
 
     mwo = manager.microwaves[0]
     assert mwo.get_cavity_state() == MicrowaveCavityState.Idle
-    assert mwo.get_door_status() == MicrowaveDoorStatus.Unknown
+    assert mwo.get_door_status() is None
     assert mwo.get_door_locked() is None
+    assert mwo.get_display_temperature_unit() is None
+    assert mwo.get_turntable_enabled() is None
+    assert mwo.get_cook_timer_time_complete() is None
     assert mwo.get_hood_fan_speed() is None
     assert mwo.get_hood_light_level() is None
 
@@ -303,7 +307,7 @@ async def test_set_cavity_light_publishes_expected_command(
     assert payload["payload"]["cavityLight"] is True
 
 
-async def test_unknown_cavity_state_maps_to_unknown(
+async def test_unknown_cavity_state_maps_to_none(
     aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
 ) -> None:
     manager, fake_mqtt = aws_manager
@@ -313,4 +317,26 @@ async def test_unknown_cavity_state_maps_to_unknown(
         f"dt/{MWO_MODEL}/{MWO_SAID}/state/update",
         {**STATE, "primaryCavity": {**STATE["primaryCavity"], "cavityState": "bogus"}},
     )
-    assert mwo.get_cavity_state() == MicrowaveCavityState.Unknown
+    assert mwo.get_cavity_state() is None
+
+
+async def test_cook_timer_time_complete_returns_timestamp(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+
+    fake_mqtt.inject(
+        f"dt/{MWO_MODEL}/{MWO_SAID}/state/update",
+        {
+            **STATE,
+            "primaryCavity": {
+                **STATE["primaryCavity"],
+                "cookTimer": {
+                    **STATE["primaryCavity"]["cookTimer"],
+                    "timeComplete": 1_776_101_159,
+                },
+            },
+        },
+    )
+    assert mwo.get_cook_timer_time_complete() == 1_776_101_159

@@ -22,7 +22,7 @@ class Appliance(BaseAppliance):
         super().__init__(appliance_info)
         self._mqttclient = mqttclient
 
-        self._data_dict: dict = {}
+        self._data_dict: dict[str, Any] = {}
         self._initial_data_event = asyncio.Event()
 
     def __repr__(self):
@@ -83,6 +83,37 @@ class Appliance(BaseAppliance):
     def get_raw_data(self) -> dict[str, Any] | None:
         """Return the raw data dict for the appliance."""
         return self._data_dict if self._data_dict else None
+
+    def _get_path(self, *path: str) -> Any | None:
+        """Walk the state dict along `path`; return None if any step is missing."""
+        value: Any = self._data_dict
+        for key in path:
+            if not isinstance(value, dict):
+                return None
+            value = value.get(key)
+            if value is None:
+                return None
+        return value
+
+    def _get_path_str(self, *path: str) -> str | None:
+        value = self._get_path(*path)
+        return value if isinstance(value, str) else None
+
+    def _get_path_bool(self, *path: str) -> bool | None:
+        value = self._get_path(*path)
+        return value if isinstance(value, bool) else None
+
+    def _get_path_int(self, *path: str) -> int | None:
+        value = self._get_path(*path)
+        if isinstance(value, bool):
+            return None
+        return int(value) if isinstance(value, (int, float)) else None
+
+    def _get_path_float(self, *path: str) -> float | None:
+        value = self._get_path(*path)
+        if isinstance(value, bool):
+            return None
+        return float(value) if isinstance(value, (int, float)) else None
 
     def _send_command(self, command: str, payload_extra: dict | None = None):
         """Send a command to the appliance."""
