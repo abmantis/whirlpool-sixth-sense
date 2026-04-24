@@ -56,14 +56,19 @@ async def appliances_manager_fixture(
         mock_data = json.load(f)
 
     aioresponses_mock.get(
-        backend_selector.user_details_url, payload={"accountId": ACCOUNT_ID}
+        backend_selector.user_details_url,
+        payload={"accountId": ACCOUNT_ID},
+        repeat=True,
     )
     aioresponses_mock.get(
         backend_selector.get_owned_appliances_url(ACCOUNT_ID),
         payload={ACCOUNT_ID: owned_appliance_data},
+        repeat=True,
     )
     aioresponses_mock.get(
-        backend_selector.shared_appliances_url, payload=shared_appliance_data
+        backend_selector.shared_appliances_url,
+        payload=shared_appliance_data,
+        repeat=True,
     )
 
     aioresponses_mock.get(
@@ -72,16 +77,17 @@ async def appliances_manager_fixture(
         repeat=True,
     )
 
+    # Pre-set data URL mocks for all known SAIDs before connect(),
+    # since connect() now internally fetches appliances.
+    for said, data in mock_data.items():
+        aioresponses_mock.get(
+            backend_selector.get_appliance_data_url(said),
+            payload=data,
+        )
+
     appliances_manager = AppliancesManager(
         backend_selector, auth, client_session_fixture
     )
-    await appliances_manager.fetch_appliances()
-
-    for said in appliances_manager.all_appliances.keys():
-        aioresponses_mock.get(
-            backend_selector.get_appliance_data_url(said),
-            payload=mock_data[said],
-        )
     await appliances_manager.connect()
     yield appliances_manager
     await appliances_manager.disconnect()

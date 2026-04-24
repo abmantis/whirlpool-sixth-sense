@@ -9,6 +9,7 @@ from .awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
 from .backendselector import BackendSelector
 from .dryer import Dryer
 from .httpapi.appliancesmanager import AppliancesManager as HttpAppliancesManager
+from .microwave import Microwave
 from .oven import Oven
 from .refrigerator import Refrigerator
 from .washer import Washer
@@ -55,6 +56,11 @@ class AppliancesManager:
     @property
     def ovens(self) -> Sequence[Oven]:
         return self._http_appliances_manager.ovens + self._aws_appliances_manager.ovens
+
+    # TODO: use cached_property
+    @property
+    def microwaves(self) -> Sequence[Microwave]:
+        return self._aws_appliances_manager.microwaves
 
     # TODO: use cached_property
     @property
