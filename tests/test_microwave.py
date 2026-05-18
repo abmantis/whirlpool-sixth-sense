@@ -340,3 +340,73 @@ async def test_cook_timer_time_complete_returns_timestamp(
         },
     )
     assert mwo.get_cook_timer_time_complete() == 1_776_101_159
+
+
+async def test_get_online_is_none_before_any_presence_event(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, _ = aws_manager
+    mwo = manager.microwaves[0]
+    assert mwo.get_online() is None
+
+
+async def test_presence_connected_sets_online_true(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+
+    fake_mqtt.inject(
+        f"$aws/events/presence/connected/{MWO_SAID}",
+        {"eventType": "connected", "clientId": "device", "timestamp": 1},
+    )
+    assert mwo.get_online() is True
+
+
+async def test_presence_disconnected_sets_online_false(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+
+    fake_mqtt.inject(
+        f"$aws/events/presence/connected/{MWO_SAID}",
+        {"eventType": "connected", "clientId": "device", "timestamp": 1},
+    )
+    fake_mqtt.inject(
+        f"$aws/events/presence/disconnected/{MWO_SAID}",
+        {"eventType": "disconnected", "clientId": "device", "timestamp": 2},
+    )
+    assert mwo.get_online() is False
+
+
+async def test_presence_event_fires_attr_callback(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    calls: list[bool | None] = []
+    mwo.register_attr_callback(lambda: calls.append(mwo.get_online()))
+
+    fake_mqtt.inject(
+        f"$aws/events/presence/connected/{MWO_SAID}",
+        {"eventType": "connected", "clientId": "device", "timestamp": 1},
+    )
+    fake_mqtt.inject(
+        f"$aws/events/presence/disconnected/{MWO_SAID}",
+        {"eventType": "disconnected", "clientId": "device", "timestamp": 2},
+    )
+    assert calls == [True, False]
+
+
+async def test_presence_for_unknown_said_is_ignored(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+
+    fake_mqtt.inject(
+        "$aws/events/presence/connected/UNKNOWN_SAID",
+        {"eventType": "connected", "clientId": "device", "timestamp": 1},
+    )
+    assert mwo.get_online() is None
