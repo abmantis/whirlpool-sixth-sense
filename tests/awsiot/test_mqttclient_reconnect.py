@@ -7,12 +7,15 @@ paho's own auto-reconnect reuses the original signed URL, which expires.
 """
 
 import asyncio
+import logging
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from whirlpool.awsiot.mqttclient import MqttClient
+
+LOGGER_NAME = "whirlpool.awsiot.mqttclient"
 
 
 @pytest.fixture
@@ -103,6 +106,142 @@ class TestReconnect:
         mock_aws_auth.create_signed_url.assert_called()
         assert client.is_connected()
         paho_clients[-1].subscribe.assert_any_call("topic/a", qos=1)
+
+        await client.disconnect()
+
+    async def test_successful_reconnect_uses_quiet_progress_logs(
+        self,
+        mock_aws_auth: AsyncMock,
+        monkeypatch: pytest.MonkeyPatch,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Retry progress and success should not flood HA warnings."""
+
+        caplog.set_level(logging.DEBUG, logger=LOGGER_NAME)
+        paho_clients: list[MagicMock] = []
+
+        def paho_factory(**_kwargs: Any) -> MagicMock:
+            instance = MagicMock(name=f"paho.Client[{len(paho_clients)}]")
+            instance.connect.return_value = None
+            paho_clients.append(instance)
+            return instance
+
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
+        )
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.RECONNECT_BACKOFF_INITIAL_SECONDS",
+            0.0,
+        )
+
+        client = MqttClient(mock_aws_auth)
+        connect_task = asyncio.create_task(client.connect())
+        await _flush()
+        _fire_connack(paho_clients[0])
+        await _flush()
+        assert await connect_task is True
+
+        _fire_failure_disconnect(paho_clients[0])
+        for _ in range(100):
+            await _flush()
+            if len(paho_clients) >= 2:
+                _fire_connack(paho_clients[-1])
+            if client.is_connected() and len(paho_clients) >= 2:
+                break
+
+        records = [record for record in caplog.records if record.name == LOGGER_NAME]
+        assert any(
+            record.levelno == logging.WARNING
+            and record.message.startswith("MQTT unexpected disconnect")
+            for record in records
+        )
+        assert any(
+            record.levelno == logging.DEBUG
+            and record.message == "MQTT reconnecting in 0.0s"
+            for record in records
+        )
+        assert any(
+            record.levelno == logging.INFO
+            and record.message == "MQTT reconnected successfully"
+            for record in records
+        )
+        assert not any(
+            record.levelno >= logging.WARNING
+            and record.message.startswith("MQTT reconnecting in")
+            for record in records
+        )
+        assert not any(
+            record.levelno >= logging.WARNING
+            and record.message == "MQTT reconnected successfully"
+            for record in records
+        )
+
+        await client.disconnect()
+
+    async def test_failed_reconnect_logs_concise_warning_and_debug_traceback(
+        self,
+        mock_aws_auth: AsyncMock,
+        monkeypatch: pytest.MonkeyPatch,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Repeated reconnect failures should avoid warning-level tracebacks."""
+
+        caplog.set_level(logging.DEBUG, logger=LOGGER_NAME)
+        paho_clients: list[MagicMock] = []
+
+        def paho_factory(**_kwargs: Any) -> MagicMock:
+            instance = MagicMock(name=f"paho.Client[{len(paho_clients)}]")
+            instance.connect.return_value = None
+            paho_clients.append(instance)
+            return instance
+
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
+        )
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.RECONNECT_BACKOFF_INITIAL_SECONDS",
+            0.0,
+        )
+
+        client = MqttClient(mock_aws_auth)
+        connect_task = asyncio.create_task(client.connect())
+        await _flush()
+        _fire_connack(paho_clients[0])
+        await _flush()
+        assert await connect_task is True
+
+        mock_aws_auth.create_signed_url.side_effect = RuntimeError(
+            "temporary auth failure"
+        )
+        _fire_failure_disconnect(paho_clients[0])
+
+        for _ in range(100):
+            await _flush()
+            if any(
+                "temporary auth failure" in record.message
+                for record in caplog.records
+            ):
+                break
+
+        records = [record for record in caplog.records if record.name == LOGGER_NAME]
+        assert any(
+            record.levelno == logging.WARNING
+            and record.message
+            == "MQTT reconnect attempt failed: temporary auth failure"
+            and record.exc_info is None
+            for record in records
+        )
+        assert any(
+            record.levelno == logging.DEBUG
+            and record.message == "MQTT reconnect attempt traceback"
+            and record.exc_info is not None
+            for record in records
+        )
+        assert not any(
+            record.levelno >= logging.WARNING
+            and record.message == "MQTT reconnect attempt raised"
+            for record in records
+        )
 
         await client.disconnect()
 

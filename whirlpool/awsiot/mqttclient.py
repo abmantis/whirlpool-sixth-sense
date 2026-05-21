@@ -45,7 +45,7 @@ class MqttClient:
         self._reconnect_task: asyncio.Task[None] | None = None
         self._shutting_down: bool = False
 
-    async def connect(self) -> bool:
+    async def connect(self, *, log_failures: bool = True) -> bool:
         """Connect to the MQTT broker."""
         self._shutting_down = False
         self._connected.clear()
@@ -88,7 +88,10 @@ class MqttClient:
         try:
             client.connect(MQTT_ENDPOINT, port=443, keepalive=30)
         except Exception as e:
-            LOGGER.error("Failed to connect to MQTT broker: %s", e)
+            if log_failures:
+                LOGGER.error("Failed to connect to MQTT broker: %s", e)
+            else:
+                LOGGER.debug("Failed to connect to MQTT broker", exc_info=True)
             return False
 
         self._client = client
@@ -97,7 +100,10 @@ class MqttClient:
         try:
             await asyncio.wait_for(self._connected.wait(), timeout=10.0)
         except TimeoutError:
-            LOGGER.error("MQTT connection timeout")
+            if log_failures:
+                LOGGER.error("MQTT connection timeout")
+            else:
+                LOGGER.debug("MQTT connection timeout during reconnect")
             client.loop_stop()
             self._client = None
             return False
@@ -256,7 +262,7 @@ class MqttClient:
         """
         delay = RECONNECT_BACKOFF_INITIAL_SECONDS
         while not self._shutting_down:
-            LOGGER.warning("MQTT reconnecting in %.1fs", delay)
+            LOGGER.debug("MQTT reconnecting in %.1fs", delay)
             try:
                 await asyncio.sleep(delay)
             except asyncio.CancelledError:
@@ -277,17 +283,23 @@ class MqttClient:
                 except Exception:
                     LOGGER.debug("Error disconnecting old MQTT client", exc_info=True)
 
+            failure_logged = False
             try:
-                ok = await self.connect()
+                ok = await self.connect(log_failures=False)
             except asyncio.CancelledError:
                 return
-            except Exception:
-                LOGGER.exception("MQTT reconnect attempt raised")
+            except Exception as e:
+                LOGGER.warning("MQTT reconnect attempt failed: %s", e)
+                LOGGER.debug("MQTT reconnect attempt traceback", exc_info=True)
                 ok = False
+                failure_logged = True
 
             if ok:
-                LOGGER.warning("MQTT reconnected successfully")
+                LOGGER.info("MQTT reconnected successfully")
                 return
+
+            if not failure_logged:
+                LOGGER.warning("MQTT reconnect attempt failed")
 
             delay = min(delay * 2 if delay > 0 else 1.0, RECONNECT_BACKOFF_CAP_SECONDS)
 
