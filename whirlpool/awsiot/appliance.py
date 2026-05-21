@@ -60,6 +60,8 @@ class Appliance(BaseAppliance):
 
     def update_online(self, online: bool):
         """Update presence state and call callbacks."""
+        if self._online == online:
+            return
         self._online = online
         for callback in self._attr_changed:
             callback()

@@ -384,53 +384,43 @@ async def test_get_online_is_none_before_any_presence_event(
     assert mwo.get_online() is None
 
 
-async def test_presence_connected_sets_online_true(
+@pytest.mark.parametrize(
+    ("events", "expected_online", "expected_callback_states"),
+    (
+        pytest.param(("connected",), True, [True], id="connected"),
+        pytest.param(
+            ("connected", "disconnected"),
+            False,
+            [True, False],
+            id="disconnected",
+        ),
+        pytest.param(
+            ("connected", "connected", "disconnected", "disconnected"),
+            False,
+            [True, False],
+            id="unchanged-events",
+        ),
+    ),
+)
+async def test_presence_events_update_online_and_fire_callback_on_changes(
     aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
-) -> None:
-    manager, fake_mqtt = aws_manager
-    mwo = manager.microwaves[0]
-
-    fake_mqtt.inject(
-        f"$aws/events/presence/connected/{MWO_SAID}",
-        {"eventType": "connected", "clientId": "device", "timestamp": 1},
-    )
-    assert mwo.get_online() is True
-
-
-async def test_presence_disconnected_sets_online_false(
-    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
-) -> None:
-    manager, fake_mqtt = aws_manager
-    mwo = manager.microwaves[0]
-
-    fake_mqtt.inject(
-        f"$aws/events/presence/connected/{MWO_SAID}",
-        {"eventType": "connected", "clientId": "device", "timestamp": 1},
-    )
-    fake_mqtt.inject(
-        f"$aws/events/presence/disconnected/{MWO_SAID}",
-        {"eventType": "disconnected", "clientId": "device", "timestamp": 2},
-    )
-    assert mwo.get_online() is False
-
-
-async def test_presence_event_fires_attr_callback(
-    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+    events: tuple[str, ...],
+    expected_online: bool,
+    expected_callback_states: list[bool],
 ) -> None:
     manager, fake_mqtt = aws_manager
     mwo = manager.microwaves[0]
     calls: list[bool | None] = []
     mwo.register_attr_callback(lambda: calls.append(mwo.get_online()))
 
-    fake_mqtt.inject(
-        f"$aws/events/presence/connected/{MWO_SAID}",
-        {"eventType": "connected", "clientId": "device", "timestamp": 1},
-    )
-    fake_mqtt.inject(
-        f"$aws/events/presence/disconnected/{MWO_SAID}",
-        {"eventType": "disconnected", "clientId": "device", "timestamp": 2},
-    )
-    assert calls == [True, False]
+    for timestamp, event in enumerate(events, start=1):
+        fake_mqtt.inject(
+            f"$aws/events/presence/{event}/{MWO_SAID}",
+            {"eventType": event, "clientId": "device", "timestamp": timestamp},
+        )
+
+    assert mwo.get_online() is expected_online
+    assert calls == expected_callback_states
 
 
 async def test_presence_for_unknown_said_is_ignored(
