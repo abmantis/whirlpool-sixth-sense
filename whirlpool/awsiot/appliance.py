@@ -22,8 +22,9 @@ class Appliance(BaseAppliance):
         super().__init__(appliance_info)
         self._mqttclient = mqttclient
 
-        self._data_dict: dict = {}
+        self._data_dict: dict[str, Any] = {}
         self._initial_data_event = asyncio.Event()
+        self._online: bool | None = None
 
     def __repr__(self):
         return f"<{self.__class__.__name__}> {self.said} | {self.name}"
@@ -50,12 +51,8 @@ class Appliance(BaseAppliance):
         # TODO: implement capability download and handling
         # model = self.appliance_info.model_number
         # said = self.appliance_info.said
-        # thing_attrs is not available in subscribe_topics(); obtain it before
-        # this call (for example, pass it into this method or store it on self).
-        # self._mqttclient.subscribe(
-        #     f"api/capability/download/{model}/{said}/response"
-        # )
-        # self._mqttclient.publish(
+        # self._mqtt.subscribe(f"api/capability/download/{model}/{said}/response")
+        # self._mqtt.publish(
         #     f"api/capability/download/{model}/{said}",
         #     {"capabilityPartNumber": thing_attrs.get("CapabilityPartNumber", "")},
         # )
@@ -64,6 +61,12 @@ class Appliance(BaseAppliance):
         """Update appliance state and call callbacks."""
         self._data_dict = new_state
         self._initial_data_event.set()
+        for callback in self._attr_changed:
+            callback()
+
+    def update_online(self, online: bool):
+        """Update presence state and call callbacks."""
+        self._online = online
         for callback in self._attr_changed:
             callback()
 
@@ -80,13 +83,47 @@ class Appliance(BaseAppliance):
 
     @override
     def get_online(self) -> bool | None:
-        """Get online state for appliance"""
-        raise NotImplementedError
+        """Get online state for appliance.
+
+        Returns None until the first AWS IoT presence event is received.
+        """
+        return self._online
 
     @override
     def get_raw_data(self) -> dict[str, Any] | None:
         """Return the raw data dict for the appliance."""
         return self._data_dict if self._data_dict else None
+
+    def _get_path(self, *path: str) -> Any | None:
+        """Walk the state dict along `path`; return None if any step is missing."""
+        value: Any = self._data_dict
+        for key in path:
+            if not isinstance(value, dict):
+                return None
+            value = value.get(key)
+            if value is None:
+                return None
+        return value
+
+    def _get_path_str(self, *path: str) -> str | None:
+        value = self._get_path(*path)
+        return value if isinstance(value, str) else None
+
+    def _get_path_bool(self, *path: str) -> bool | None:
+        value = self._get_path(*path)
+        return value if isinstance(value, bool) else None
+
+    def _get_path_int(self, *path: str) -> int | None:
+        value = self._get_path(*path)
+        if isinstance(value, bool):
+            return None
+        return int(value) if isinstance(value, (int, float)) else None
+
+    def _get_path_float(self, *path: str) -> float | None:
+        value = self._get_path(*path)
+        if isinstance(value, bool):
+            return None
+        return float(value) if isinstance(value, (int, float)) else None
 
     def _send_command(self, command: str, payload_extra: dict | None = None):
         """Send a command to the appliance."""
