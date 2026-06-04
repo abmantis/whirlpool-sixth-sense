@@ -31,82 +31,77 @@ class CapabilityDownloadError(Exception):
 
 @dataclass(frozen=True)
 class CapabilityProfile:
-    """Normalized capability metadata for a single appliance model."""
+    """Normalized capability metadata for a single appliance model.
+
+    Holds only generic primitives read directly from the real capability
+    file. Appliance classes layer their own semantic ``supports_*`` helpers
+    on top of these queries.
+    """
 
     part_number: str
     features: frozenset[str]
-    addressees: frozenset[str]
-    commands: dict[str, frozenset[str]] = field(default_factory=dict)
+    cavity_types: frozenset[str]
+    sections: frozenset[str]
+    flags: dict[str, bool] = field(default_factory=dict)
+    sabbath_recipes_present: bool = False
 
     def has_feature(self, feature: str) -> bool:
         return feature in self.features
 
-    def has_addressee(self, addressee: str) -> bool:
-        return addressee in self.addressees
+    def has_cavity_type(self, cavity_type: str) -> bool:
+        return cavity_type in self.cavity_types
 
-    def supports_command(self, addressee: str, command: str) -> bool:
-        return command in self.commands.get(addressee, frozenset())
+    def has_section(self, name: str) -> bool:
+        return name in self.sections
+
+    def flag(self, name: str, default: bool = False) -> bool:
+        return self.flags.get(name, default)
 
 
 def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
-    """Normalize a raw capability JSON dict into a CapabilityProfile.
+    """Normalize a raw Whirlpool capability JSON dict into a CapabilityProfile.
 
-    Supports two schemas:
-      1. Real-device files: top-level `partNumber`, `appliance.features` dict,
-         `cavities` dict for cavity addressees, top-level `hoodFan`/`hoodLight`
-         /`hoodLightColor` dicts.
-      2. Test fixtures: `capabilityPartNumber` string, `features` list,
-         optional `addressees` dict mapping addressee → command list.
+    The real schema is: top-level ``partNumber``; ``appliance.features`` dict;
+    ``cavities`` dict whose members may carry a ``cavityType`` and a
+    ``sabbathRecipes`` dict; top-level control sections such as ``hoodFan`` /
+    ``hoodLight`` / ``hoodLightColor``; and top-level boolean capability flags
+    such as ``quietMode`` and ``supportsHmiControlLockout``.
     """
-    part_number = raw.get("partNumber") or raw.get("capabilityPartNumber")
+    part_number = raw.get("partNumber")
     if not isinstance(part_number, str) or not part_number:
-        raise CapabilityDownloadError(
-            "Capability file missing 'partNumber' / 'capabilityPartNumber'"
-        )
+        raise CapabilityDownloadError("Capability file missing 'partNumber'")
 
     features: set[str] = set()
-    addressees: set[str] = set()
-    commands: dict[str, frozenset[str]] = {}
+    app = raw.get("appliance")
+    if isinstance(app, dict):
+        feat_dict = app.get("features")
+        if isinstance(feat_dict, dict):
+            features.update(feat_dict.keys())
 
-    # Real-device schema
-    if "cavities" in raw or "appliance" in raw:
-        app = raw.get("appliance", {})
-        if isinstance(app, dict):
-            feat_dict = app.get("features")
-            if isinstance(feat_dict, dict):
-                features.update(feat_dict.keys())
-        cavities = raw.get("cavities")
-        if isinstance(cavities, dict):
-            for addr, meta in cavities.items():
-                addressees.add(addr)
-                if isinstance(meta, dict):
-                    cmds = meta.get("commands")
-                    if isinstance(cmds, list):
-                        commands[addr] = frozenset(cmds)
-        for addr in ("hoodFan", "hoodLight", "hoodLightColor"):
-            section = raw.get(addr)
-            if isinstance(section, dict):
-                addressees.add(addr)
-                cmds = section.get("commands")
-                if isinstance(cmds, list):
-                    commands[addr] = frozenset(cmds)
+    cavity_types: set[str] = set()
+    sabbath_recipes_present = False
+    cavities = raw.get("cavities")
+    if isinstance(cavities, dict):
+        for meta in cavities.values():
+            if not isinstance(meta, dict):
+                continue
+            cavity_type = meta.get("cavityType")
+            if isinstance(cavity_type, str) and cavity_type:
+                cavity_types.add(cavity_type)
+            sabbath = meta.get("sabbathRecipes")
+            if isinstance(sabbath, dict) and sabbath:
+                sabbath_recipes_present = True
 
-    # Test-fixture schema (also merges with real schema if both keys present)
-    feat_list = raw.get("features")
-    if isinstance(feat_list, list):
-        features.update(str(f) for f in feat_list)
-    fixture_addr = raw.get("addressees")
-    if isinstance(fixture_addr, dict):
-        for addr, cmds in fixture_addr.items():
-            addressees.add(addr)
-            if isinstance(cmds, list):
-                commands[addr] = frozenset(cmds)
+    sections = {k for k, v in raw.items() if isinstance(v, dict) and v}
+    flags = {k: v for k, v in raw.items() if isinstance(v, bool)}
 
     return CapabilityProfile(
         part_number=part_number,
         features=frozenset(features),
-        addressees=frozenset(addressees),
-        commands=commands,
+        cavity_types=frozenset(cavity_types),
+        sections=frozenset(sections),
+        flags=flags,
+        sabbath_recipes_present=sabbath_recipes_present,
     )
 
 

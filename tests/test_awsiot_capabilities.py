@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from pathlib import Path
 from typing import Any
 
 import aiohttp
@@ -17,95 +18,72 @@ from whirlpool.awsiot.capabilities import (
     parse_capability_profile,
 )
 
+DATA_DIR = Path(__file__).parent / "data"
 
-class TestParserFixtureSchema:
-    """The simpler schema used in our own JSON test fixtures."""
 
-    def test_minimal_fixture(self) -> None:
+def _load(name: str) -> dict[str, Any]:
+    return json.loads((DATA_DIR / name).read_text())
+
+
+class TestParseRealCapability:
+    def test_microwave_with_hood(self) -> None:
+        profile = parse_capability_profile(_load("capability_mwo.json"))
+        assert profile.part_number == "W11788386"
+        assert profile.has_feature("temperatureUnit")
+        assert profile.has_cavity_type("microwaveOven")
+        assert profile.has_section("hoodFan")
+        assert profile.has_section("hoodLight")
+        assert profile.has_section("hoodLightColor")
+        assert profile.flag("quietMode") is True
+        assert profile.flag("supportsHmiControlLockout") is False
+        assert profile.flag("missing", default=True) is True
+        assert profile.sabbath_recipes_present is False
+
+    def test_microwave_without_hood(self) -> None:
+        profile = parse_capability_profile(_load("capability_mwo_no_hood.json"))
+        assert profile.part_number == "W11650001"
+        assert profile.has_cavity_type("microwaveOven")
+        assert not profile.has_section("hoodFan")
+        assert not profile.has_section("hoodLight")
+        assert not profile.has_section("hoodLightColor")
+        assert profile.flag("quietMode") is True
+
+    @pytest.mark.parametrize(
+        "raw",
+        [{"appliance": {"features": {}}}, {"partNumber": ""}],
+    )
+    def test_invalid_part_number_raises(self, raw: dict[str, Any]) -> None:
+        with pytest.raises(CapabilityDownloadError):
+            parse_capability_profile(raw)
+
+    def test_tolerates_odd_substructures(self) -> None:
         profile = parse_capability_profile(
-            {
-                "capabilityPartNumber": "W11111111",
-                "features": ["microwaveOven", "hoodFan"],
-                "addressees": {
-                    "primaryCavity": ["set"],
-                    "hoodFan": ["set"],
-                },
-            }
+            {"partNumber": "X1", "appliance": "nope", "cavities": [1, 2]}
         )
-        assert profile.part_number == "W11111111"
-        assert profile.has_feature("microwaveOven")
-        assert profile.has_feature("hoodFan")
-        assert not profile.has_feature("turbojet")
-        assert profile.has_addressee("primaryCavity")
-        assert profile.has_addressee("hoodFan")
-        assert not profile.has_addressee("nonsense")
-        assert profile.supports_command("primaryCavity", "set")
-        assert not profile.supports_command("primaryCavity", "launch")
-
-    def test_missing_part_number_raises(self) -> None:
-        with pytest.raises(CapabilityDownloadError):
-            parse_capability_profile({"features": ["microwaveOven"]})
-
-    def test_empty_part_number_raises(self) -> None:
-        with pytest.raises(CapabilityDownloadError):
-            parse_capability_profile({"capabilityPartNumber": ""})
+        assert profile.part_number == "X1"
+        assert profile.features == frozenset()
+        assert profile.cavity_types == frozenset()
+        assert profile.sections == frozenset()
+        assert profile.flags == {}
 
 
-class TestParserRealDeviceSchema:
-    """The schema that Whirlpool's capability files actually use."""
-
-    def test_real_device_microwave_profile(self) -> None:
-        raw = {
-            "partNumber": "W10000001",
-            "appliance": {
-                "features": {
-                    "microwaveOven": {"supported": True},
-                    "hoodVent": {"supported": True},
-                },
-            },
-            "cavities": {
-                "primaryCavity": {"commands": ["set", "run", "cancel"]},
-            },
-            "hoodFan": {"commands": ["set"]},
-            "hoodLight": {"commands": ["set"]},
-        }
-        profile = parse_capability_profile(raw)
-        assert profile.part_number == "W10000001"
-        assert profile.has_feature("microwaveOven")
-        assert profile.has_feature("hoodVent")
-        assert profile.has_addressee("primaryCavity")
-        assert profile.has_addressee("hoodFan")
-        assert profile.has_addressee("hoodLight")
-        assert profile.supports_command("primaryCavity", "run")
-        assert not profile.supports_command("primaryCavity", "launch")
-
-    def test_real_device_oven_profile_no_microwave_feature(self) -> None:
-        """A cooking-category Oven profile should NOT have microwaveOven."""
-        raw = {
-            "partNumber": "W20000002",
-            "appliance": {"features": {"oven": {"supported": True}}},
-            "cavities": {"primaryCavity": {"commands": ["set"]}},
-        }
-        profile = parse_capability_profile(raw)
-        assert not profile.has_feature("microwaveOven")
-        assert profile.has_feature("oven")
-
-
-class TestProfileIsHashable:
-    """Frozen dataclass — should be usable in sets/dict keys."""
+class TestProfileEquality:
+    """CapabilityProfile equality is value-based."""
 
     def test_profile_equality(self) -> None:
         a = CapabilityProfile(
             part_number="X1",
             features=frozenset(),
-            addressees=frozenset(),
-            commands={},
+            cavity_types=frozenset(),
+            sections=frozenset(),
+            flags={},
         )
         b = CapabilityProfile(
             part_number="X1",
             features=frozenset(),
-            addressees=frozenset(),
-            commands={},
+            cavity_types=frozenset(),
+            sections=frozenset(),
+            flags={},
         )
         assert a == b
 
@@ -117,9 +95,9 @@ REQ_TOPIC = f"api/capability/download/{MODEL}/{SAID}"
 RESP_TOPIC = f"{REQ_TOPIC}/response"
 CAP_URL = "https://caps.example.com/profile.json"
 FIXTURE_JSON = {
-    "capabilityPartNumber": PART,
-    "features": ["microwaveOven"],
-    "addressees": {"primaryCavity": ["set"]},
+    "partNumber": PART,
+    "appliance": {"features": {"microwaveOven": {}}},
+    "cavities": {"primaryCavity": {"cavityType": "microwaveOven"}},
 }
 
 
