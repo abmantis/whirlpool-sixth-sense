@@ -34,18 +34,13 @@ from whirlpool.types import ApplianceInfo
 
 MWO_SAID = "WPR1A00000001"
 MWO_MODEL = "KMMC5019JBS"
-MWO_CAP_PART = "W11043387"
+MWO_CAP_PART = "W11788386"
 
-MWO_CAPABILITY_PROFILE: dict[str, Any] = {
-    "capabilityPartNumber": MWO_CAP_PART,
-    "features": ["microwaveOven", "hoodFan", "hoodLight", "hoodLightColor"],
-    "addressees": {
-        "primaryCavity": ["set"],
-        "hoodFan": ["set"],
-        "hoodLight": ["set"],
-        "hoodLightColor": ["set"],
-    },
-}
+_CAP_DIR = Path(__file__).parent / "data"
+
+MWO_CAPABILITY_PROFILE: dict[str, Any] = json.loads(
+    (_CAP_DIR / "capability_mwo.json").read_text()
+)
 
 THING = {
     "thingName": MWO_SAID,
@@ -447,8 +442,8 @@ async def test_capability_profile_exposed_on_appliance(
     manager, _ = aws_manager
     mwo = manager.microwaves[0]
     assert mwo.capability_profile.part_number == MWO_CAP_PART
-    assert mwo.capability_profile.has_feature("microwaveOven")
-    assert mwo.capability_profile.has_addressee("hoodFan")
+    assert mwo.capability_profile.has_cavity_type("microwaveOven")
+    assert mwo.capability_profile.has_section("hoodFan")
 
 
 async def _build_manager_with_things(
@@ -492,9 +487,8 @@ async def test_cooking_without_microwave_feature_routes_to_oven(
 ) -> None:
     oven_part = "W99999999"
     oven_profile = {
-        "capabilityPartNumber": oven_part,
-        "features": ["oven"],
-        "addressees": {"primaryCavity": ["set"]},
+        "partNumber": oven_part,
+        "cavities": {"primaryCavity": {"cavityType": "oven"}},
     }
     oven_thing = {
         **THING,
@@ -626,10 +620,11 @@ async def test_setters_return_false_when_capability_missing(
     client_session_fixture: aiohttp.ClientSession,
 ) -> None:
     """Setters must not publish, must warn, must return False."""
+    # Real-schema microwave that advertises no hood sections, no capability
+    # flags, and no sabbath recipes -> every supports_* is False.
     minimal_profile = {
-        "capabilityPartNumber": MWO_CAP_PART,
-        "features": ["microwaveOven"],
-        "addressees": {"primaryCavity": ["set"]},  # no hood/mode addressees
+        "partNumber": MWO_CAP_PART,
+        "cavities": {"primaryCavity": {"cavityType": "microwaveOven"}},
     }
     manager, fake_mqtt = await _manager_with_profile(
         auth, client_session_fixture, minimal_profile
@@ -653,14 +648,16 @@ async def test_mode_setters_publish_when_supported(
     client_session_fixture: aiohttp.ClientSession,
 ) -> None:
     full_profile = {
-        "capabilityPartNumber": MWO_CAP_PART,
-        "features": ["microwaveOven"],
-        "addressees": {
-            "primaryCavity": ["set"],
-            "hmiControlLockout": ["set"],
-            "quietMode": ["set"],
-            "sabbathMode": ["set"],
+        "partNumber": MWO_CAP_PART,
+        "cavities": {
+            "primaryCavity": {
+                "cavityType": "microwaveOven",
+                # A non-empty sabbathRecipes dict is what marks sabbath as supported.
+                "sabbathRecipes": {"sabbath": {}},
+            }
         },
+        "supportsHmiControlLockout": True,
+        "quietMode": True,
     }
     manager, fake_mqtt = await _manager_with_profile(
         auth, client_session_fixture, full_profile
@@ -680,9 +677,6 @@ async def test_mode_setters_publish_when_supported(
     _, p3 = fake_mqtt.published[-1]
     assert p3["payload"]["addressee"] == "sabbathMode"
     assert p3["payload"]["value"] is False
-
-
-_CAP_DIR = Path(__file__).parent / "data"
 
 
 def _profile(name: str) -> CapabilityProfile:
@@ -716,6 +710,8 @@ class TestMicrowaveSupports:
         assert mw.supports_hood_light_level() is False
         assert mw.supports_hood_light_color() is False
         assert mw.supports_quiet_mode() is True
+        assert mw.supports_control_lock() is False
+        assert mw.supports_sabbath_mode() is False
 
     async def test_unsupported_setter_is_gated_and_sends_nothing(self) -> None:
         mw = _microwave(_profile("capability_mwo_no_hood.json"))

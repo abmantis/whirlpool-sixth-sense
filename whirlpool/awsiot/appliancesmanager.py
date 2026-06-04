@@ -150,7 +150,7 @@ class AppliancesManager:
             appliance = Aircon(self._mqtt, appliance_data, profile)
             self._aircons[appliance_data.said] = appliance
         elif appliance_data.category == "cooking":
-            if profile.has_feature("microwaveOven"):
+            if profile.has_cavity_type("microwaveOven"):
                 appliance = Microwave(self._mqtt, appliance_data, profile)
                 self._microwaves[appliance_data.said] = appliance
             else:
