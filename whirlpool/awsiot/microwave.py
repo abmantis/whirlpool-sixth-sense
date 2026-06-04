@@ -165,39 +165,74 @@ class Microwave(MicrowaveABC, Appliance):
     def get_sabbath_mode(self) -> bool | None:
         return self._get_path_bool("sabbathMode")
 
+    @override
+    def supports_hood_fan(self) -> bool:
+        return self.capability_profile.has_section("hoodFan")
+
+    @override
+    def supports_hood_light_level(self) -> bool:
+        return self.capability_profile.has_section("hoodLight")
+
+    @override
+    def supports_hood_light_color(self) -> bool:
+        return self.capability_profile.has_section("hoodLightColor")
+
+    @override
+    def supports_quiet_mode(self) -> bool:
+        return self.capability_profile.flag("quietMode")
+
+    @override
+    def supports_control_lock(self) -> bool:
+        return self.capability_profile.flag("supportsHmiControlLockout")
+
+    @override
+    def supports_sabbath_mode(self) -> bool:
+        return self.capability_profile.sabbath_recipes_present
+
     async def _set_gated(
-        self, addressee: str, value: Any, label: str
+        self, supported: bool, addressee: str, value: Any, label: str
     ) -> bool:
-        if not self.capability_profile.has_addressee(addressee):
+        if not supported:
             LOGGER.warning("Model %s has no %s", self.said, label)
             return False
-        self._send_command(
-            "set", {"addressee": addressee, "value": value}
-        )
+        self._send_command("set", {"addressee": addressee, "value": value})
         return True
 
     @override
     async def set_hood_fan_speed(self, speed: HoodFanSpeed) -> bool:
-        return await self._set_gated("hoodFan", speed.value, "hood fan")
+        return await self._set_gated(
+            self.supports_hood_fan(), "hoodFan", speed.value, "hood fan"
+        )
 
     @override
     async def set_hood_light_level(self, level: HoodLightLevel) -> bool:
-        return await self._set_gated("hoodLight", level.value, "hood light")
+        return await self._set_gated(
+            self.supports_hood_light_level(), "hoodLight", level.value, "hood light"
+        )
 
     @override
     async def set_hood_light_color(self, color: HoodLightColor) -> bool:
         return await self._set_gated(
-            "hoodLightColor", color.value, "hood light color control"
+            self.supports_hood_light_color(),
+            "hoodLightColor",
+            color.value,
+            "hood light color control",
         )
 
     @override
     async def set_control_locked(self, on: bool) -> bool:
-        return await self._set_gated("hmiControlLockout", on, "control lock")
+        return await self._set_gated(
+            self.supports_control_lock(), "hmiControlLockout", on, "control lock"
+        )
 
     @override
     async def set_quiet_mode(self, on: bool) -> bool:
-        return await self._set_gated("quietMode", on, "quiet mode")
+        return await self._set_gated(
+            self.supports_quiet_mode(), "quietMode", on, "quiet mode"
+        )
 
     @override
     async def set_sabbath_mode(self, on: bool) -> bool:
-        return await self._set_gated("sabbathMode", on, "sabbath mode")
+        return await self._set_gated(
+            self.supports_sabbath_mode(), "sabbathMode", on, "sabbath mode"
+        )
