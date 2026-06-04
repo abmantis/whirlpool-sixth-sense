@@ -19,6 +19,7 @@ from .auth import Auth
 LOGGER = logging.getLogger(__name__)
 
 MQTT_ENDPOINT = "wt.applianceconnect.net"
+CONNECT_TIMEOUT_SECONDS = 10.0
 RECONNECT_BACKOFF_INITIAL_SECONDS = 1.0
 RECONNECT_BACKOFF_CAP_SECONDS = 30.0
 
@@ -45,10 +46,32 @@ class MqttClient:
         self._reconnect_task: asyncio.Task[None] | None = None
         self._shutting_down: bool = False
 
-    async def connect(self, *, log_failures: bool = True) -> bool:
+    def _teardown_client(self) -> None:
+        """Best-effort stop and disconnect of the current paho client, if any.
+
+        Drops the reference first so callbacks from the old client are treated
+        as stale by `_is_active_client`.
+        """
+        if self._client is None:
+            return
+        old = self._client
+        self._client = None
+        try:
+            old.loop_stop()
+        except Exception:
+            LOGGER.debug("Error stopping MQTT client loop", exc_info=True)
+        try:
+            old.disconnect()
+        except Exception:
+            LOGGER.debug("Error disconnecting MQTT client", exc_info=True)
+
+    async def connect(self) -> bool:
         """Connect to the MQTT broker."""
         self._shutting_down = False
         self._connected.clear()
+        # Tear down any previous client so we don't leak its loop thread/socket
+        # if connect() is called again without a disconnect() in between.
+        self._teardown_client()
 
         signed_url = await self._aws_auth.create_signed_url(MQTT_ENDPOINT)
         client_id = await self._generate_client_id()
@@ -61,8 +84,8 @@ class MqttClient:
             transport="websockets",
             protocol=MQTTProtocolVersion.MQTTv311,
             callback_api_version=CallbackAPIVersion.VERSION2,
+            reconnect_on_failure=False,
         )
-        client._reconnect_on_failure = False  # type: ignore[attr-defined]  # noqa: SLF001
         client.on_connect = self._on_connect
         client.on_message = self._on_message
         client.on_disconnect = self._on_disconnect
@@ -87,25 +110,20 @@ class MqttClient:
 
         try:
             client.connect(MQTT_ENDPOINT, port=443, keepalive=30)
-        except Exception as e:
-            if log_failures:
-                LOGGER.error("Failed to connect to MQTT broker: %s", e)
-            else:
-                LOGGER.debug("Failed to connect to MQTT broker", exc_info=True)
+        except Exception:
+            LOGGER.debug("Failed to connect to MQTT broker", exc_info=True)
             return False
 
         self._client = client
         client.loop_start()
 
         try:
-            await asyncio.wait_for(self._connected.wait(), timeout=10.0)
+            await asyncio.wait_for(
+                self._connected.wait(), timeout=CONNECT_TIMEOUT_SECONDS
+            )
         except TimeoutError:
-            if log_failures:
-                LOGGER.error("MQTT connection timeout")
-            else:
-                LOGGER.debug("MQTT connection timeout during reconnect")
-            client.loop_stop()
-            self._client = None
+            LOGGER.debug("MQTT connection timeout")
+            self._teardown_client()
             return False
 
         self._client_id = client_id
@@ -123,10 +141,7 @@ class MqttClient:
                 pass
             self._reconnect_task = None
 
-        if self._client:
-            self._client.loop_stop()
-            self._client.disconnect()
-            self._client = None
+        self._teardown_client()
         self._connected.clear()
         self._client_id = None
 
@@ -255,10 +270,10 @@ class MqttClient:
         """Rebuild the MQTT client with fresh auth, using exponential backoff.
 
         Each attempt drives the full connect() path, which fetches a new
-        SigV4-signed websocket URL. The old paho client (if any) is stopped
-        before building the new one. `_resubscribe_and_set_connected`
-        (called from on_connect) reapplies `self._subscribed_topics` so
-        existing subscriptions survive the rebuild.
+        SigV4-signed websocket URL and tears down the old paho client before
+        building the new one. `_resubscribe_and_set_connected` (called from
+        on_connect) reapplies `self._subscribed_topics` so existing
+        subscriptions survive the rebuild.
         """
         delay = RECONNECT_BACKOFF_INITIAL_SECONDS
         while not self._shutting_down:
@@ -271,37 +286,17 @@ class MqttClient:
             if self._shutting_down:
                 return
 
-            if self._client is not None:
-                old = self._client
-                self._client = None
-                try:
-                    old.loop_stop()
-                except Exception:
-                    LOGGER.debug("Error stopping old MQTT client loop", exc_info=True)
-                try:
-                    old.disconnect()
-                except Exception:
-                    LOGGER.debug("Error disconnecting old MQTT client", exc_info=True)
-
-            failure_logged = False
             try:
-                ok = await self.connect(log_failures=False)
+                if await self.connect():
+                    LOGGER.info("MQTT reconnected successfully")
+                    return
             except asyncio.CancelledError:
                 return
             except Exception as e:
                 LOGGER.warning("MQTT reconnect attempt failed: %s", e)
                 LOGGER.debug("MQTT reconnect attempt traceback", exc_info=True)
-                ok = False
-                failure_logged = True
 
-            if ok:
-                LOGGER.info("MQTT reconnected successfully")
-                return
-
-            if not failure_logged:
-                LOGGER.warning("MQTT reconnect attempt failed")
-
-            delay = min(delay * 2 if delay > 0 else 1.0, RECONNECT_BACKOFF_CAP_SECONDS)
+            delay = min(delay * 2, RECONNECT_BACKOFF_CAP_SECONDS)
 
     def _on_subscribe(
         self,

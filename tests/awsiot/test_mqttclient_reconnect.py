@@ -372,6 +372,99 @@ class TestReconnect:
 
         await client.disconnect()
 
+    async def test_connect_disables_paho_auto_reconnect(
+        self, mock_aws_auth: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """We drive reconnects ourselves (to re-sign the URL), so paho's own
+        auto-reconnect must be disabled via the public constructor arg."""
+
+        paho_clients: list[MagicMock] = []
+        captured_kwargs: list[dict[str, Any]] = []
+
+        def paho_factory(**kwargs: Any) -> MagicMock:
+            captured_kwargs.append(kwargs)
+            instance = MagicMock(name="paho.Client")
+            instance.connect.return_value = None
+            paho_clients.append(instance)
+            return instance
+
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
+
+        client = MqttClient(mock_aws_auth)
+        connect_task = asyncio.create_task(client.connect())
+        await _flush()
+        _fire_connack(paho_clients[0])
+        await _flush()
+        assert await connect_task is True
+
+        assert captured_kwargs[0]["reconnect_on_failure"] is False
+
+        await client.disconnect()
+
+    async def test_connect_reentry_tears_down_previous_client(
+        self, mock_aws_auth: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Calling connect() again must tear down the previous paho client so
+        its loop thread and socket are not leaked."""
+
+        paho_clients: list[MagicMock] = []
+
+        def paho_factory(**_kwargs: Any) -> MagicMock:
+            instance = MagicMock(name=f"paho.Client[{len(paho_clients)}]")
+            instance.connect.return_value = None
+            paho_clients.append(instance)
+            return instance
+
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
+
+        client = MqttClient(mock_aws_auth)
+        connect_task = asyncio.create_task(client.connect())
+        await _flush()
+        _fire_connack(paho_clients[0])
+        await _flush()
+        assert await connect_task is True
+
+        # Second connect() without a disconnect() in between.
+        connect_task = asyncio.create_task(client.connect())
+        await _flush()
+        _fire_connack(paho_clients[-1])
+        await _flush()
+        assert await connect_task is True
+
+        assert len(paho_clients) == 2
+        paho_clients[0].loop_stop.assert_called()
+        paho_clients[0].disconnect.assert_called()
+
+        await client.disconnect()
+
+    async def test_connect_timeout_disconnects_paho_client(
+        self, mock_aws_auth: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """On connect timeout (no CONNACK) the paho client must be stopped and
+        disconnected so we don't leave the socket/loop thread behind."""
+
+        paho_clients: list[MagicMock] = []
+
+        def paho_factory(**_kwargs: Any) -> MagicMock:
+            instance = MagicMock(name=f"paho.Client[{len(paho_clients)}]")
+            instance.connect.return_value = None
+            paho_clients.append(instance)
+            return instance
+
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
+        monkeypatch.setattr(
+            "whirlpool.awsiot.mqttclient.CONNECT_TIMEOUT_SECONDS", 0.01
+        )
+
+        client = MqttClient(mock_aws_auth)
+        # Never fire CONNACK, so connect() hits the timeout path.
+        assert await client.connect() is False
+
+        assert len(paho_clients) == 1
+        paho_clients[0].loop_stop.assert_called()
+        paho_clients[0].disconnect.assert_called()
+        assert not client.is_connected()
+
     async def test_explicit_disconnect_cancels_pending_reconnect(
         self, mock_aws_auth: AsyncMock, monkeypatch: pytest.MonkeyPatch
     ) -> None:
