@@ -113,11 +113,12 @@ def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
 class CapabilityDownloader:
     """Fetches and caches capability profiles per model (part number).
 
-    The MQTT client is expected to be already connected. The downloader does
-    not own topic subscriptions long-term — it subscribes/unsubscribes around
-    each request. Incoming responses are delivered by the AppliancesManager's
-    MQTT message dispatcher, which calls `handle_message` for every message;
-    the downloader consumes only topics matching pending requests.
+    Issues an MQTT request for a capability file, awaits the response carrying
+    a download URL, then fetches and parses the JSON body. Subscribes/unsubscribes
+    around each request so subscriptions are not long-term.
+    MQTT messages should be delivered to `handle_message()`.
+    Results are cached per part number so repeated lookups are served without another
+    round-trip.
     """
 
     def __init__(
@@ -166,6 +167,13 @@ class CapabilityDownloader:
                 return profile
             except (TimeoutError, CapabilityDownloadError) as e:
                 last_err = e
+                LOGGER.debug(
+                    "Capability download attempt %d/%d for %s failed: %s",
+                    attempt + 1,
+                    self._retries,
+                    said,
+                    e,
+                )
                 if attempt < self._retries - 1:
                     await asyncio.sleep(2**attempt)
 
@@ -178,7 +186,7 @@ class CapabilityDownloader:
         self, said: str, model_number: str, capability_part_number: str
     ) -> CapabilityProfile:
         request_topic = f"api/capability/download/{model_number}/{said}"
-        response_topic = f"api/capability/download/{model_number}/{said}/response"
+        response_topic = f"{request_topic}/response"
 
         future: asyncio.Future[dict[str, Any]] = (
             asyncio.get_running_loop().create_future()
@@ -200,25 +208,25 @@ class CapabilityDownloader:
                     f"Timed out waiting for capability response for {said}"
                 ) from e
 
-            raw = await self._fetch_body(response)
+            raw = await self._download_file(response)
             return parse_capability_profile(raw)
         finally:
             self._pending.pop(response_topic, None)
             self._mqtt.unsubscribe(response_topic)
 
-    async def _fetch_body(self, response: dict[str, Any]) -> dict[str, Any]:
-        url = response.get("url") or response.get("downloadUrl")
-        if isinstance(url, str) and url.startswith("http"):
-            async with self._session.get(url) as resp:
-                if resp.status != 200:
-                    raise CapabilityDownloadError(
-                        f"Capability URL returned HTTP {resp.status}"
-                    )
-                text = await resp.text()
-                try:
-                    return json.loads(text)
-                except json.JSONDecodeError as e:
-                    raise CapabilityDownloadError(
-                        f"Capability body is not valid JSON: {e}"
-                    ) from e
-        return response
+    async def _download_file(self, mqtt_response: dict[str, Any]) -> dict[str, Any]:
+        url = mqtt_response.get("url")
+        if not isinstance(url, str) or not url.startswith("http"):
+            return mqtt_response
+        async with self._session.get(url) as resp:
+            if resp.status != 200:
+                raise CapabilityDownloadError(
+                    f"Capability URL returned HTTP {resp.status}"
+                )
+            text = await resp.text()
+            try:
+                return json.loads(text)
+            except json.JSONDecodeError as e:
+                raise CapabilityDownloadError(
+                    f"Capability body is not valid JSON: {e}"
+                ) from e
