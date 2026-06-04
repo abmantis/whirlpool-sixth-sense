@@ -120,18 +120,9 @@ class CapabilityDownloader:
         self,
         mqtt_client: Any,
         session: aiohttp.ClientSession,
-        *,
-        timeout: float | None = None,
-        retries: int | None = None,
     ) -> None:
         self._mqtt = mqtt_client
         self._session = session
-        self._timeout = (
-            timeout if timeout is not None else CAPABILITY_DOWNLOAD_TIMEOUT
-        )
-        self._retries = (
-            retries if retries is not None else CAPABILITY_DOWNLOAD_RETRIES
-        )
         self._cache: dict[str, CapabilityProfile] = {}
         self._pending: dict[str, asyncio.Future[dict[str, Any]]] = {}
 
@@ -153,7 +144,7 @@ class CapabilityDownloader:
             return self._cache[capability_part_number]
 
         last_err: Exception | None = None
-        for attempt in range(self._retries):
+        for attempt in range(CAPABILITY_DOWNLOAD_RETRIES):
             try:
                 profile = await self._download(
                     said, model_number, capability_part_number
@@ -165,16 +156,16 @@ class CapabilityDownloader:
                 LOGGER.debug(
                     "Capability download attempt %d/%d for %s failed: %s",
                     attempt + 1,
-                    self._retries,
+                    CAPABILITY_DOWNLOAD_RETRIES,
                     said,
                     e,
                 )
-                if attempt < self._retries - 1:
+                if attempt < CAPABILITY_DOWNLOAD_RETRIES - 1:
                     await asyncio.sleep(2**attempt)
 
         raise CapabilityDownloadError(
-            f"Capability download for {said} failed after {self._retries} "
-            f"attempts: {last_err}"
+            f"Capability download for {said} failed after "
+            f"{CAPABILITY_DOWNLOAD_RETRIES} attempts: {last_err}"
         )
 
     async def _download(
@@ -197,7 +188,9 @@ class CapabilityDownloader:
                 },
             )
             try:
-                response = await asyncio.wait_for(future, timeout=self._timeout)
+                response = await asyncio.wait_for(
+                    future, timeout=CAPABILITY_DOWNLOAD_TIMEOUT
+                )
             except TimeoutError as e:
                 raise CapabilityDownloadError(
                     f"Timed out waiting for capability response for {said}"
