@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 import aiohttp
 import pytest
-from aioresponses import aioresponses
+from aiointercept import aiointercept
 from yarl import URL
 
 from tests import ACCOUNT_ID
@@ -32,7 +32,7 @@ def get_auth_data(backend_selector: BackendSelector) -> dict[str, str]:
 
 
 async def test_auth_success(
-    auth: Auth, backend_selector: BackendSelector, aioresponses_mock: aioresponses
+    auth: Auth, backend_selector: BackendSelector, aiointercept_mock: aiointercept
 ):
     mock_resp_data = {
         "access_token": "acess_token_123",
@@ -49,7 +49,7 @@ async def test_auth_success(
 
     # don't need repeat here because the first one will succeed
     # so we will only call this url once
-    aioresponses_mock.post(auth_url, payload=mock_resp_data)
+    aiointercept_mock.post(auth_url, payload=mock_resp_data)
 
     assert await auth.do_auth(store=False)
     assert auth.is_access_token_valid()
@@ -57,22 +57,23 @@ async def test_auth_success(
     assert str(await auth.get_account_id()) == ACCOUNT_ID
 
     # assert that the proper method and url were used
-    assert ("POST", URL(auth_url)) in aioresponses_mock.requests
+    assert ("POST", URL(auth_url)) in aiointercept_mock.requests
 
     # get the calls for the method/url and assert length
-    calls = aioresponses_mock.requests[("POST", URL(auth_url))]
+    calls = aiointercept_mock.requests[("POST", URL(auth_url))]
     assert len(calls) == 1
 
-    # actual call, as a tuple
+    # actual captured request
     call = calls[0]
-    assert call[1]["data"] == get_auth_data(backend_selector)
-    assert call[1]["headers"] == AUTH_HEADERS
+    assert dict(await call.post()) == get_auth_data(backend_selector)
+    for header, value in AUTH_HEADERS.items():
+        assert call.headers.get(header) == value
 
 
 async def test_auth_will_check_all_client_creds(
     auth: Auth,
     backend_selector: BackendSelector,
-    aioresponses_mock: aioresponses,
+    aiointercept_mock: aiointercept,
     caplog: pytest.LogCaptureFixture,
 ):
     # need to capture at debug level to get status - we don't return status or have any
@@ -88,7 +89,7 @@ async def test_auth_will_check_all_client_creds(
         # (or run out)
         status = HTTPStatus.NOT_FOUND if i != len(client_creds) else HTTPStatus.OK
         expected.append({"status": status})
-        aioresponses_mock.post(auth_url, status=status)
+        aiointercept_mock.post(auth_url, status=status)
 
     assert not await auth.do_auth(store=False)
 
@@ -106,12 +107,12 @@ async def test_auth_will_check_all_client_creds(
 
 
 async def test_auth_bad_credentials(
-    auth: Auth, backend_selector: BackendSelector, aioresponses_mock: aioresponses
+    auth: Auth, backend_selector: BackendSelector, aiointercept_mock: aiointercept
 ):
     auth_url = get_auth_url(backend_selector)
 
     # need to repeat for the multiple client credentials mock
-    aioresponses_mock.post(auth_url, status=HTTPStatus.BAD_REQUEST, repeat=True)
+    aiointercept_mock.post(auth_url, status=HTTPStatus.BAD_REQUEST, repeat=True)
 
     assert not await auth.do_auth(store=False)
 
@@ -120,23 +121,24 @@ async def test_auth_bad_credentials(
     assert auth.get_said_list() is None
 
     # assert that the proper method and url were used
-    assert ("POST", URL(auth_url)) in aioresponses_mock.requests
+    assert ("POST", URL(auth_url)) in aiointercept_mock.requests
 
     # get the calls for the method/url and assert length - should be the same as the
     # number of client credentials
-    calls = aioresponses_mock.requests[("POST", URL(auth_url))]
+    calls = aiointercept_mock.requests[("POST", URL(auth_url))]
     assert len(calls) == len(backend_selector.client_credentials)
 
     call = calls[0]
-    assert call[1]["data"] == get_auth_data(backend_selector)
-    assert call[1]["headers"] == AUTH_HEADERS
+    assert dict(await call.post()) == get_auth_data(backend_selector)
+    for header, value in AUTH_HEADERS.items():
+        assert call.headers.get(header) == value
 
 
 async def test_auth_account_locked(
-    auth: Auth, backend_selector: BackendSelector, aioresponses_mock: aioresponses
+    auth: Auth, backend_selector: BackendSelector, aiointercept_mock: aiointercept
 ):
     auth_url = get_auth_url(backend_selector)
-    aioresponses_mock.post(auth_url, status=HTTPStatus.LOCKED, repeat=True)
+    aiointercept_mock.post(auth_url, status=HTTPStatus.LOCKED, repeat=True)
 
     with pytest.raises(AccountLockedError):
         await auth.do_auth(store=False)
@@ -146,9 +148,9 @@ async def test_auth_account_locked(
 
 
 async def test_user_details_requested_only_once(
-    auth: Auth, backend_selector: BackendSelector, aioresponses_mock: aioresponses
+    auth: Auth, backend_selector: BackendSelector, aiointercept_mock: aiointercept
 ):
-    aioresponses_mock.get(
+    aiointercept_mock.get(
         backend_selector.user_details_url, payload={"accountId": ACCOUNT_ID}
     )
 
@@ -162,19 +164,18 @@ async def test_user_details_requested_only_once(
 
     await auth.get_account_id()
 
-    aioresponses_mock.assert_called_with(
+    aiointercept_mock.assert_called_with(
         backend_selector.user_details_url, "GET", headers=headers
     )
 
     assert auth._auth_dict["accountId"] == ACCOUNT_ID
 
-    # aioresponses_mock.clear does not reset the requests list, so I'm
-    # just checking that the length doesn't change instead
-    curr_request_count = len(aioresponses_mock.requests)
+    # the second call should use the cached account id and issue no request
+    aiointercept_mock.clear()
 
     await auth.get_account_id()
 
-    assert len(aioresponses_mock.requests) == curr_request_count
+    aiointercept_mock.assert_not_called()
 
 
 async def test_auth_invalid_region_brand_combo(
