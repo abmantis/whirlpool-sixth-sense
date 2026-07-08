@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
 import pytest
-from aioresponses import aioresponses
+from aiointercept import aiointercept
 from yarl import URL
 
 from whirlpool.appliancesmanager import AppliancesManager
@@ -151,7 +151,7 @@ async def test_setters(
     appliances_manager: AppliancesManager,
     auth: Auth,
     backend_selector: BackendSelector,
-    aioresponses_mock: aioresponses,
+    aiointercept_mock: aiointercept,
     method: Callable,
     arguments: dict,
     expected_json: dict,
@@ -169,16 +169,15 @@ async def test_setters(
         "method": "POST",
         "data": None,
         "json": expected_payload["json"],
-        "allow_redirects": True,
         "headers": auth.create_headers(),
     }
 
     url = backend_selector.appliance_command_url
 
     # add call, call method
-    aioresponses_mock.post(url, payload=expected_payload)
+    aiointercept_mock.post(url, payload=expected_payload)
     assert await method(oven, **arguments)
 
     # assert args and length
-    aioresponses_mock.assert_called_with(**post_request_call_kwargs)
-    assert len(aioresponses_mock.requests[("POST", URL(url))]) == 1
+    aiointercept_mock.assert_called_with(**post_request_call_kwargs)
+    assert len(aiointercept_mock.requests[("POST", URL(url))]) == 1
