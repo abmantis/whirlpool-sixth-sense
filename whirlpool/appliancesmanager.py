@@ -240,8 +240,8 @@ class AppliancesManager:
                 continue
             try:
                 await appliance.fetch_data()
-            except (aiohttp.ClientError, TimeoutError) as ex:
-                LOGGER.warning(f"Keepalive fetch failed: {ex}")
+            except Exception as ex:
+                LOGGER.warning("Keepalive fetch failed: %s", ex)
 
     def _event_socket_callback(self, msg: str):
         json_msg = json.loads(msg)
