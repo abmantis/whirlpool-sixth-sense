@@ -14,7 +14,7 @@ import asyncio
 import json
 import logging
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import aiohttp
@@ -42,7 +42,7 @@ class CapabilityProfile:
     features: frozenset[str]
     cavity_types: frozenset[str]
     sections: frozenset[str]
-    flags: dict[str, bool] = field(default_factory=dict)
+    flags: frozenset[str] = frozenset()
     sabbath_recipes_present: bool = False
 
     def has_feature(self, feature: str) -> bool:
@@ -54,8 +54,8 @@ class CapabilityProfile:
     def has_section(self, name: str) -> bool:
         return name in self.sections
 
-    def flag(self, name: str, default: bool = False) -> bool:
-        return self.flags.get(name, default)
+    def has_flag(self, name: str) -> bool:
+        return name in self.flags
 
 
 def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
@@ -93,14 +93,14 @@ def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
                 sabbath_recipes_present = True
 
     sections = {k for k, v in raw.items() if isinstance(v, dict) and v}
-    flags = {k: v for k, v in raw.items() if isinstance(v, bool)}
+    flags = {k for k, v in raw.items() if v is True}
 
     return CapabilityProfile(
         part_number=part_number,
         features=frozenset(features),
         cavity_types=frozenset(cavity_types),
         sections=frozenset(sections),
-        flags=flags,
+        flags=frozenset(flags),
         sabbath_recipes_present=sabbath_recipes_present,
     )
 

@@ -179,11 +179,11 @@ class Microwave(MicrowaveABC, Appliance):
 
     @override
     def supports_quiet_mode(self) -> bool:
-        return self.capability_profile.flag("quietMode")
+        return self.capability_profile.has_flag("quietMode")
 
     @override
     def supports_control_lock(self) -> bool:
-        return self.capability_profile.flag("supportsHmiControlLockout")
+        return self.capability_profile.has_flag("supportsHmiControlLockout")
 
     @override
     def supports_sabbath_mode(self) -> bool:

@@ -34,9 +34,9 @@ class TestParseRealCapability:
         assert profile.has_section("hoodFan")
         assert profile.has_section("hoodLight")
         assert profile.has_section("hoodLightColor")
-        assert profile.flag("quietMode") is True
-        assert profile.flag("supportsHmiControlLockout") is False
-        assert profile.flag("missing", default=True) is True
+        assert profile.has_flag("quietMode")
+        assert not profile.has_flag("supportsHmiControlLockout")
+        assert not profile.has_flag("missing")
         assert profile.sabbath_recipes_present is False
 
     def test_microwave_without_hood(self) -> None:
@@ -46,7 +46,7 @@ class TestParseRealCapability:
         assert not profile.has_section("hoodFan")
         assert not profile.has_section("hoodLight")
         assert not profile.has_section("hoodLightColor")
-        assert profile.flag("quietMode") is True
+        assert profile.has_flag("quietMode")
 
     @pytest.mark.parametrize(
         "raw",
@@ -64,7 +64,7 @@ class TestParseRealCapability:
         assert profile.features == frozenset()
         assert profile.cavity_types == frozenset()
         assert profile.sections == frozenset()
-        assert profile.flags == {}
+        assert profile.flags == frozenset()
 
 
 class TestProfileEquality:
@@ -76,14 +76,14 @@ class TestProfileEquality:
             features=frozenset(),
             cavity_types=frozenset(),
             sections=frozenset(),
-            flags={},
+            flags=frozenset(),
         )
         b = CapabilityProfile(
             part_number="X1",
             features=frozenset(),
             cavity_types=frozenset(),
             sections=frozenset(),
-            flags={},
+            flags=frozenset(),
         )
         assert a == b
 
