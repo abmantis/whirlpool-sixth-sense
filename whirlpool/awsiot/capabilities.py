@@ -58,11 +58,16 @@ class CapabilityProfile:
         return name in self.flags
 
 
-def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
-    """Normalize a raw Whirlpool capability JSON dict into a CapabilityProfile."""
+def _read_part_number(raw: dict[str, Any]) -> str:
     part_number = raw.get("partNumber")
     if not isinstance(part_number, str) or not part_number:
         raise CapabilityDownloadError("Capability file missing 'partNumber'")
+    return part_number
+
+
+def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
+    """Normalize a raw Whirlpool capability JSON dict into a CapabilityProfile."""
+    part_number = _read_part_number(raw)
 
     features: set[str] = set()
     app = raw.get("appliance")
@@ -99,14 +104,14 @@ def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
 
 
 class CapabilityDownloader:
-    """Fetches and caches capability profiles per model (part number).
+    """Fetches and caches raw capability files per model (part number).
 
     Issues an MQTT request for a capability file, awaits the response carrying
-    a download URL, then fetches and parses the JSON body. Subscribes/unsubscribes
+    a download URL, then fetches the JSON body. Subscribes/unsubscribes
     around each request so subscriptions are not long-term.
     MQTT messages should be delivered to `handle_message()`.
-    Results are cached per part number so repeated lookups are served without another
-    round-trip.
+    Raw documents are cached per part number so repeated lookups are served
+    without another round-trip; parsing them is the caller's concern.
     """
 
     def __init__(
@@ -116,7 +121,7 @@ class CapabilityDownloader:
     ) -> None:
         self._mqtt = mqtt_client
         self._session = session
-        self._cache: dict[str, CapabilityProfile] = {}
+        self._cache: dict[str, dict[str, Any]] = {}
         self._pending: dict[str, asyncio.Future[dict[str, Any]]] = {}
 
     def handle_message(self, topic: str, payload: dict[str, Any]) -> bool:
@@ -132,18 +137,18 @@ class CapabilityDownloader:
 
     async def get(
         self, said: str, model_number: str, capability_part_number: str
-    ) -> CapabilityProfile:
+    ) -> dict[str, Any]:
         if capability_part_number in self._cache:
             return self._cache[capability_part_number]
 
         last_err: Exception | None = None
         for attempt in range(CAPABILITY_DOWNLOAD_RETRIES):
             try:
-                profile = await self._download(
+                raw = await self._download(
                     said, model_number, capability_part_number
                 )
-                self._cache[capability_part_number] = profile
-                return profile
+                self._cache[capability_part_number] = raw
+                return raw
             except (TimeoutError, CapabilityDownloadError) as e:
                 last_err = e
                 LOGGER.debug(
@@ -163,7 +168,7 @@ class CapabilityDownloader:
 
     async def _download(
         self, said: str, model_number: str, capability_part_number: str
-    ) -> CapabilityProfile:
+    ) -> dict[str, Any]:
         request_topic = f"api/capability/download/{model_number}/{said}"
         response_topic = f"{request_topic}/response"
 
@@ -190,7 +195,8 @@ class CapabilityDownloader:
                 ) from e
 
             raw = await self._download_file(response)
-            return parse_capability_profile(raw)
+            _read_part_number(raw)  # sanity-check before caching
+            return raw
         finally:
             self._pending.pop(response_topic, None)
             self._mqtt.unsubscribe(response_topic)

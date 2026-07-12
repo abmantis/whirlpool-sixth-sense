@@ -163,11 +163,11 @@ class TestHandleMessageDispatch:
             consumed = downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
             assert consumed is True
 
-        _, profile = await asyncio.gather(
+        _, raw = await asyncio.gather(
             respond(),
             downloader.get(SAID, MODEL, PART),
         )
-        assert profile.part_number == PART
+        assert raw["partNumber"] == PART
         assert len(mqtt.published) == 1
         topic, payload = mqtt.published[0]
         assert topic == REQ_TOPIC
@@ -229,10 +229,10 @@ class TestDownloaderRetry:
                 await asyncio.sleep(0.01)
             downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
 
-        _, profile = await asyncio.gather(
+        _, raw = await asyncio.gather(
             respond_on_third(), downloader.get(SAID, MODEL, PART)
         )
-        assert profile.part_number == PART
+        assert raw["partNumber"] == PART
         assert len(mqtt.published) == 3
 
     async def test_raises_after_exhausting_retries(
@@ -278,6 +278,29 @@ class TestDownloaderFetchBody:
         with pytest.raises(CapabilityDownloadError):
             await asyncio.gather(respond(), downloader.get(SAID, MODEL, PART))
 
+    async def test_document_without_part_number_is_download_error(
+        self, http_session: aiohttp.ClientSession, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A response that is not a capability file must not be cached."""
+        monkeypatch.setattr(
+            "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_TIMEOUT", 1.0
+        )
+        monkeypatch.setattr(
+            "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_RETRIES", 1
+        )
+        mqtt = FakeMqttClient()
+        downloader = CapabilityDownloader(mqtt, http_session)
+
+        async def respond() -> None:
+            for _ in range(50):
+                if mqtt.published:
+                    break
+                await asyncio.sleep(0)
+            downloader.handle_message(RESP_TOPIC, {"unexpected": "payload"})
+
+        with pytest.raises(CapabilityDownloadError):
+            await asyncio.gather(respond(), downloader.get(SAID, MODEL, PART))
+
     async def test_inline_payload_without_url(
         self, http_session: aiohttp.ClientSession, monkeypatch: pytest.MonkeyPatch
     ) -> None:
@@ -298,7 +321,7 @@ class TestDownloaderFetchBody:
                 await asyncio.sleep(0)
             downloader.handle_message(RESP_TOPIC, FIXTURE_JSON)
 
-        _, profile = await asyncio.gather(
+        _, raw = await asyncio.gather(
             respond(), downloader.get(SAID, MODEL, PART)
         )
-        assert profile.part_number == PART
+        assert raw["partNumber"] == PART

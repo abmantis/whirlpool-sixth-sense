@@ -13,7 +13,11 @@ from whirlpool.types import ApplianceInfo
 from ..auth import Auth as WhirlpoolAuth
 from .aircon import Aircon
 from .auth import Auth, AuthException
-from .capabilities import CapabilityDownloader, CapabilityDownloadError
+from .capabilities import (
+    CapabilityDownloader,
+    CapabilityDownloadError,
+    parse_capability_profile,
+)
 from .dryer import Dryer
 from .microwave import Microwave
 from .mqttclient import MqttClient
@@ -135,7 +139,7 @@ class AppliancesManager:
             )
             return
         try:
-            profile = await self._capability_downloader.get(
+            raw_capabilities = await self._capability_downloader.get(
                 appliance_data.said, appliance_data.model_number, cap_part
             )
         except CapabilityDownloadError as e:
@@ -145,6 +149,7 @@ class AppliancesManager:
                 e,
             )
             return
+        profile = parse_capability_profile(raw_capabilities)
 
         if appliance_data.category == "airconditioner":
             appliance = Aircon(self._mqtt, appliance_data, profile)
