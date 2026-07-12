@@ -1,11 +1,20 @@
 from typing import override
 
+from ..types import ApplianceInfo
 from ..washer import MachineState
 from ..washer import Washer as BaseWasher
 from .appliance import Appliance
+from .mqttclient import MqttClient
 
 
 class Washer(BaseWasher, Appliance):
+    def __init__(
+        self,
+        mqttclient: MqttClient,
+        appliance_info: ApplianceInfo,
+    ):
+        super().__init__(mqttclient, appliance_info)
+
     @override
     def get_machine_state(self) -> MachineState | None:
         raise NotImplementedError()

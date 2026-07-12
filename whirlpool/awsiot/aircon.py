@@ -2,10 +2,19 @@ from typing import override
 
 from ..aircon import Aircon as BaseAircon
 from ..aircon import FanSpeed, Mode
+from ..types import ApplianceInfo
 from .appliance import Appliance
+from .mqttclient import MqttClient
 
 
 class Aircon(BaseAircon, Appliance):
+    def __init__(
+        self,
+        mqttclient: MqttClient,
+        appliance_info: ApplianceInfo,
+    ):
+        super().__init__(mqttclient, appliance_info)
+
     @override
     def get_current_temp(self) -> float | None:
         raise NotImplementedError()

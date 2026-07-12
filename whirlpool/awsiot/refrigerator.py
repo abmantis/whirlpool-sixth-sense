@@ -1,10 +1,19 @@
 from typing import override
 
 from ..refrigerator import Refrigerator as BaseRefrigerator
+from ..types import ApplianceInfo
 from .appliance import Appliance
+from .mqttclient import MqttClient
 
 
 class Refrigerator(BaseRefrigerator, Appliance):
+    def __init__(
+        self,
+        mqttclient: MqttClient,
+        appliance_info: ApplianceInfo,
+    ):
+        super().__init__(mqttclient, appliance_info)
+
     @override
     def get_offset_temp(self) -> int | None:
         raise NotImplementedError()

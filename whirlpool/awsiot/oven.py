@@ -8,10 +8,19 @@ from ..oven import (
     KitchenTimer,
 )
 from ..oven import Oven as BaseOven
+from ..types import ApplianceInfo
 from .appliance import Appliance
+from .mqttclient import MqttClient
 
 
 class Oven(BaseOven, Appliance):
+    def __init__(
+        self,
+        mqttclient: MqttClient,
+        appliance_info: ApplianceInfo,
+    ):
+        super().__init__(mqttclient, appliance_info)
+
     @override
     def get_meat_probe_status(self, cavity: Cavity = Cavity.Upper) -> bool | None:
         raise NotImplementedError()
