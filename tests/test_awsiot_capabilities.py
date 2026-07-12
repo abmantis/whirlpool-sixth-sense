@@ -85,8 +85,11 @@ class TestParseMicrowaveCapability:
 
 
 class TestHasMicrowaveCavity:
-    def test_real_microwave_file(self) -> None:
-        assert has_microwave_cavity(_load("capability_mwo.json"))
+    @pytest.mark.parametrize(
+        "fixture", ["capability_mwo.json", "capability_mwo_no_hood.json"]
+    )
+    def test_real_microwave_files(self, fixture: str) -> None:
+        assert has_microwave_cavity(_load(fixture))
 
     def test_oven_cavity(self) -> None:
         assert not has_microwave_cavity(
@@ -313,6 +316,21 @@ class TestDownloaderFetchBody:
 
         with pytest.raises(CapabilityDownloadError):
             await asyncio.gather(respond(), downloader.get(SAID, MODEL, PART))
+
+        # The bogus document must not have been cached: a later get() issues a
+        # fresh request instead of serving the bad payload.
+        async def respond_valid() -> None:
+            for _ in range(50):
+                if len(mqtt.published) >= 2:
+                    break
+                await asyncio.sleep(0)
+            downloader.handle_message(RESP_TOPIC, FIXTURE_JSON)
+
+        _, raw = await asyncio.gather(
+            respond_valid(), downloader.get(SAID, MODEL, PART)
+        )
+        assert raw["partNumber"] == PART
+        assert len(mqtt.published) == 2
 
     async def test_inline_payload_without_url(
         self, http_session: aiohttp.ClientSession, monkeypatch: pytest.MonkeyPatch
