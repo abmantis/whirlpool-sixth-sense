@@ -59,14 +59,7 @@ class CapabilityProfile:
 
 
 def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
-    """Normalize a raw Whirlpool capability JSON dict into a CapabilityProfile.
-
-    The real schema is: top-level ``partNumber``; ``appliance.features`` dict;
-    ``cavities`` dict whose members may carry a ``cavityType`` and a
-    ``sabbathRecipes`` dict; top-level control sections such as ``hoodFan`` /
-    ``hoodLight`` / ``hoodLightColor``; and top-level boolean capability flags
-    such as ``quietMode`` and ``supportsHmiControlLockout``.
-    """
+    """Normalize a raw Whirlpool capability JSON dict into a CapabilityProfile."""
     part_number = raw.get("partNumber")
     if not isinstance(part_number, str) or not part_number:
         raise CapabilityDownloadError("Capability file missing 'partNumber'")
