@@ -1,4 +1,5 @@
 import asyncio
+import functools
 import logging
 import time
 import uuid
@@ -9,6 +10,22 @@ from ..awsiot.mqttclient import MqttClient
 from ..types import ApplianceInfo
 
 LOGGER = logging.getLogger(__name__)
+
+
+def gated_set(support_check, label):
+    """Gate a setter behind a capability check."""
+
+    def decorator(func):
+        @functools.wraps(func)
+        async def wrapper(self, *args, **kwargs):
+            if not support_check(self):
+                LOGGER.warning("Model %s has no %s", self.said, label)
+                return False
+            return await func(self, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 class Appliance(BaseAppliance):

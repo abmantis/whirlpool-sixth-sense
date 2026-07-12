@@ -1,7 +1,7 @@
 """Concrete awsiot Microwave — translates MQTT state to the Microwave ABC."""
 
 import logging
-from typing import Any, override
+from typing import override
 
 from ..microwave import (
     HoodFanSpeed,
@@ -14,7 +14,7 @@ from ..microwave import (
     Microwave as MicrowaveABC,
 )
 from ..types import ApplianceInfo
-from .appliance import Appliance
+from .appliance import Appliance, gated_set
 from .capabilities import MicrowaveCapabilityProfile
 from .mqttclient import MqttClient
 
@@ -201,50 +201,40 @@ class Microwave(MicrowaveABC, Appliance):
     def supports_sabbath_mode(self) -> bool:
         return self.capability_profile.supports_sabbath_mode
 
-    async def _set_gated(
-        self, supported: bool, addressee: str, value: Any, label: str
-    ) -> bool:
-        if not supported:
-            LOGGER.warning("Model %s has no %s", self.said, label)
-            return False
-        self._send_command("set", {"addressee": addressee, "value": value})
+    @override
+    @gated_set(supports_hood_fan, "hood fan")
+    async def set_hood_fan_speed(self, speed: HoodFanSpeed) -> bool:
+        self._send_command("set", {"addressee": "hoodFan", "value": speed.value})
         return True
 
     @override
-    async def set_hood_fan_speed(self, speed: HoodFanSpeed) -> bool:
-        return await self._set_gated(
-            self.supports_hood_fan(), "hoodFan", speed.value, "hood fan"
-        )
-
-    @override
+    @gated_set(supports_hood_light_level, "hood light")
     async def set_hood_light_level(self, level: HoodLightLevel) -> bool:
-        return await self._set_gated(
-            self.supports_hood_light_level(), "hoodLight", level.value, "hood light"
-        )
+        self._send_command("set", {"addressee": "hoodLight", "value": level.value})
+        return True
 
     @override
+    @gated_set(supports_hood_light_color, "hood light color control")
     async def set_hood_light_color(self, color: HoodLightColor) -> bool:
-        return await self._set_gated(
-            self.supports_hood_light_color(),
-            "hoodLightColor",
-            color.value,
-            "hood light color control",
+        self._send_command(
+            "set", {"addressee": "hoodLightColor", "value": color.value}
         )
+        return True
 
     @override
+    @gated_set(supports_control_lock, "control lock")
     async def set_control_locked(self, on: bool) -> bool:
-        return await self._set_gated(
-            self.supports_control_lock(), "hmiControlLockout", on, "control lock"
-        )
+        self._send_command("set", {"addressee": "hmiControlLockout", "value": on})
+        return True
 
     @override
+    @gated_set(supports_quiet_mode, "quiet mode")
     async def set_quiet_mode(self, on: bool) -> bool:
-        return await self._set_gated(
-            self.supports_quiet_mode(), "quietMode", on, "quiet mode"
-        )
+        self._send_command("set", {"addressee": "quietMode", "value": on})
+        return True
 
     @override
+    @gated_set(supports_sabbath_mode, "sabbath mode")
     async def set_sabbath_mode(self, on: bool) -> bool:
-        return await self._set_gated(
-            self.supports_sabbath_mode(), "sabbathMode", on, "sabbath mode"
-        )
+        self._send_command("set", {"addressee": "sabbathMode", "value": on})
+        return True
