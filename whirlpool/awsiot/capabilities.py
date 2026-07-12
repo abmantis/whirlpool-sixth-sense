@@ -4,8 +4,9 @@ Whirlpool's cloud exposes per-model "capability files" over MQTT: publish a
 request to `api/capability/download/{model}/{said}` with the CapabilityPartNumber,
 receive a response carrying an HTTPS URL, fetch the URL for the JSON body.
 
-This module owns that flow and produces a normalized CapabilityProfile that
-callers use to gate setters and route appliances to the correct subclass.
+This module owns that flow and parses the raw files into per-appliance
+profiles that callers use to gate setters and route appliances to the
+correct subclass.
 """
 
 from __future__ import annotations
@@ -30,32 +31,16 @@ class CapabilityDownloadError(Exception):
 
 
 @dataclass(frozen=True)
-class CapabilityProfile:
-    """Normalized capability metadata for a single appliance model.
-
-    Holds only generic primitives read directly from the real capability
-    file. Appliance classes layer their own semantic ``supports_*`` helpers
-    on top of these queries.
-    """
+class MicrowaveCapabilityProfile:
+    """The capability switches the Microwave class currently uses."""
 
     part_number: str
-    features: frozenset[str]
-    cavity_types: frozenset[str]
-    sections: frozenset[str]
-    flags: frozenset[str] = frozenset()
-    sabbath_recipes_present: bool = False
-
-    def has_feature(self, feature: str) -> bool:
-        return feature in self.features
-
-    def has_cavity_type(self, cavity_type: str) -> bool:
-        return cavity_type in self.cavity_types
-
-    def has_section(self, name: str) -> bool:
-        return name in self.sections
-
-    def has_flag(self, name: str) -> bool:
-        return name in self.flags
+    supports_hood_fan: bool
+    supports_hood_light_level: bool
+    supports_hood_light_color: bool
+    supports_quiet_mode: bool
+    supports_control_lock: bool
+    supports_sabbath_mode: bool
 
 
 def _read_part_number(raw: dict[str, Any]) -> str:
@@ -65,41 +50,41 @@ def _read_part_number(raw: dict[str, Any]) -> str:
     return part_number
 
 
-def parse_capability_profile(raw: dict[str, Any]) -> CapabilityProfile:
-    """Normalize a raw Whirlpool capability JSON dict into a CapabilityProfile."""
-    part_number = _read_part_number(raw)
+def _has_section(raw: dict[str, Any], name: str) -> bool:
+    section = raw.get(name)
+    return isinstance(section, dict) and bool(section)
 
-    features: set[str] = set()
-    app = raw.get("appliance")
-    if isinstance(app, dict):
-        feat_dict = app.get("features")
-        if isinstance(feat_dict, dict):
-            features.update(feat_dict.keys())
 
-    cavity_types: set[str] = set()
-    sabbath_recipes_present = False
+def _cavity_metas(raw: dict[str, Any]) -> list[dict[str, Any]]:
     cavities = raw.get("cavities")
-    if isinstance(cavities, dict):
-        for meta in cavities.values():
-            if not isinstance(meta, dict):
-                continue
-            cavity_type = meta.get("cavityType")
-            if isinstance(cavity_type, str) and cavity_type:
-                cavity_types.add(cavity_type)
-            sabbath = meta.get("sabbathRecipes")
-            if isinstance(sabbath, dict) and sabbath:
-                sabbath_recipes_present = True
+    if not isinstance(cavities, dict):
+        return []
+    return [meta for meta in cavities.values() if isinstance(meta, dict)]
 
-    sections = {k for k, v in raw.items() if isinstance(v, dict) and v}
-    flags = {k for k, v in raw.items() if v is True}
 
-    return CapabilityProfile(
-        part_number=part_number,
-        features=frozenset(features),
-        cavity_types=frozenset(cavity_types),
-        sections=frozenset(sections),
-        flags=frozenset(flags),
-        sabbath_recipes_present=sabbath_recipes_present,
+def has_microwave_cavity(raw: dict[str, Any]) -> bool:
+    """Whether the capability file declares a microwave oven cavity."""
+    return any(
+        meta.get("cavityType") == "microwaveOven" for meta in _cavity_metas(raw)
+    )
+
+
+def parse_microwave_capability_profile(
+    raw: dict[str, Any],
+) -> MicrowaveCapabilityProfile:
+    """Extract the microwave-relevant switches from a raw capability file."""
+    supports_sabbath_mode = any(
+        isinstance(meta.get("sabbathRecipes"), dict) and meta["sabbathRecipes"]
+        for meta in _cavity_metas(raw)
+    )
+    return MicrowaveCapabilityProfile(
+        part_number=_read_part_number(raw),
+        supports_hood_fan=_has_section(raw, "hoodFan"),
+        supports_hood_light_level=_has_section(raw, "hoodLight"),
+        supports_hood_light_color=_has_section(raw, "hoodLightColor"),
+        supports_quiet_mode=raw.get("quietMode") is True,
+        supports_control_lock=raw.get("supportsHmiControlLockout") is True,
+        supports_sabbath_mode=supports_sabbath_mode,
     )
 
 

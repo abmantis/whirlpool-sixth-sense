@@ -13,7 +13,10 @@ from ..microwave import (
 from ..microwave import (
     Microwave as MicrowaveABC,
 )
+from ..types import ApplianceInfo
 from .appliance import Appliance
+from .capabilities import MicrowaveCapabilityProfile
+from .mqttclient import MqttClient
 
 LOGGER = logging.getLogger(__name__)
 
@@ -51,6 +54,15 @@ _HOOD_LIGHT_COLOR_MAP: dict[str, HoodLightColor] = {
 
 
 class Microwave(MicrowaveABC, Appliance):
+    def __init__(
+        self,
+        mqttclient: MqttClient,
+        appliance_info: ApplianceInfo,
+        capability_profile: MicrowaveCapabilityProfile,
+    ):
+        super().__init__(mqttclient, appliance_info)
+        self.capability_profile = capability_profile
+
     @override
     def get_cavity_state(self) -> MicrowaveCavityState | None:
         raw = self._get_path_str("primaryCavity", "cavityState")
@@ -167,27 +179,27 @@ class Microwave(MicrowaveABC, Appliance):
 
     @override
     def supports_hood_fan(self) -> bool:
-        return self.capability_profile.has_section("hoodFan")
+        return self.capability_profile.supports_hood_fan
 
     @override
     def supports_hood_light_level(self) -> bool:
-        return self.capability_profile.has_section("hoodLight")
+        return self.capability_profile.supports_hood_light_level
 
     @override
     def supports_hood_light_color(self) -> bool:
-        return self.capability_profile.has_section("hoodLightColor")
+        return self.capability_profile.supports_hood_light_color
 
     @override
     def supports_quiet_mode(self) -> bool:
-        return self.capability_profile.has_flag("quietMode")
+        return self.capability_profile.supports_quiet_mode
 
     @override
     def supports_control_lock(self) -> bool:
-        return self.capability_profile.has_flag("supportsHmiControlLockout")
+        return self.capability_profile.supports_control_lock
 
     @override
     def supports_sabbath_mode(self) -> bool:
-        return self.capability_profile.sabbath_recipes_present
+        return self.capability_profile.supports_sabbath_mode
 
     async def _set_gated(
         self, supported: bool, addressee: str, value: Any, label: str

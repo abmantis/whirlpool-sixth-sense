@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from collections.abc import AsyncGenerator, Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from unittest.mock import patch
 
 import aiohttp
@@ -21,8 +21,12 @@ import pytest_asyncio
 
 from whirlpool.auth import Auth
 from whirlpool.awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
-from whirlpool.awsiot.capabilities import CapabilityProfile, parse_capability_profile
+from whirlpool.awsiot.capabilities import (
+    MicrowaveCapabilityProfile,
+    parse_microwave_capability_profile,
+)
 from whirlpool.awsiot.microwave import Microwave
+from whirlpool.awsiot.mqttclient import MqttClient
 from whirlpool.microwave import (
     HoodFanSpeed,
     HoodLightColor,
@@ -442,8 +446,8 @@ async def test_capability_profile_exposed_on_appliance(
     manager, _ = aws_manager
     mwo = manager.microwaves[0]
     assert mwo.capability_profile.part_number == MWO_CAP_PART
-    assert mwo.capability_profile.has_cavity_type("microwaveOven")
-    assert mwo.capability_profile.has_section("hoodFan")
+    assert mwo.capability_profile.supports_hood_fan
+    assert mwo.capability_profile.supports_quiet_mode
 
 
 async def _build_manager_with_things(
@@ -679,11 +683,15 @@ async def test_mode_setters_publish_when_supported(
     assert p3["payload"]["value"] is False
 
 
-def _profile(name: str) -> CapabilityProfile:
-    return parse_capability_profile(json.loads((_CAP_DIR / name).read_text()))
+def _profile(name: str) -> MicrowaveCapabilityProfile:
+    return parse_microwave_capability_profile(
+        json.loads((_CAP_DIR / name).read_text())
+    )
 
 
-def _microwave(profile: CapabilityProfile) -> Microwave:
+def _microwave(
+    profile: MicrowaveCapabilityProfile,
+) -> tuple[Microwave, FakeMqttClient]:
     appliance_info = ApplianceInfo(
         said="S1",
         name="MW",
@@ -691,12 +699,13 @@ def _microwave(profile: CapabilityProfile) -> Microwave:
         model_number="MODEL1",
         serial_number="SN1",
     )
-    return Microwave(FakeMqttClient(), appliance_info, profile)
+    mqtt = FakeMqttClient()
+    return Microwave(cast(MqttClient, mqtt), appliance_info, profile), mqtt
 
 
 class TestMicrowaveSupports:
     def test_hood_model_supports_hood(self) -> None:
-        mw = _microwave(_profile("capability_mwo.json"))
+        mw, _ = _microwave(_profile("capability_mwo.json"))
         assert mw.supports_hood_fan() is True
         assert mw.supports_hood_light_level() is True
         assert mw.supports_hood_light_color() is True
@@ -705,7 +714,7 @@ class TestMicrowaveSupports:
         assert mw.supports_sabbath_mode() is False
 
     def test_no_hood_model_lacks_hood(self) -> None:
-        mw = _microwave(_profile("capability_mwo_no_hood.json"))
+        mw, _ = _microwave(_profile("capability_mwo_no_hood.json"))
         assert mw.supports_hood_fan() is False
         assert mw.supports_hood_light_level() is False
         assert mw.supports_hood_light_color() is False
@@ -714,14 +723,12 @@ class TestMicrowaveSupports:
         assert mw.supports_sabbath_mode() is False
 
     async def test_unsupported_setter_is_gated_and_sends_nothing(self) -> None:
-        mw = _microwave(_profile("capability_mwo_no_hood.json"))
-        mqtt = mw._mqttclient
+        mw, mqtt = _microwave(_profile("capability_mwo_no_hood.json"))
         assert await mw.set_hood_light_level(HoodLightLevel.High) is False
         assert mqtt.published == []
 
     async def test_supported_setter_publishes(self) -> None:
-        mw = _microwave(_profile("capability_mwo.json"))
-        mqtt = mw._mqttclient
+        mw, mqtt = _microwave(_profile("capability_mwo.json"))
         assert await mw.set_hood_light_level(HoodLightLevel.High) is True
         assert any("hoodLight" in str(payload) for _topic, payload in mqtt.published)
 

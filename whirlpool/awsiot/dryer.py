@@ -2,21 +2,10 @@ from typing import override
 
 from ..dryer import Cycle, Dryness, MachineState, Temperature, WrinkleShield
 from ..dryer import Dryer as BaseDryer
-from ..types import ApplianceInfo
 from .appliance import Appliance
-from .capabilities import CapabilityProfile
-from .mqttclient import MqttClient
 
 
 class Dryer(BaseDryer, Appliance):
-    def __init__(
-        self,
-        mqttclient: MqttClient,
-        appliance_info: ApplianceInfo,
-        capability_profile: CapabilityProfile,
-    ):
-        super().__init__(mqttclient, appliance_info, capability_profile)
-
     @override
     def get_machine_state(self) -> MachineState | None:
         raise NotImplementedError()

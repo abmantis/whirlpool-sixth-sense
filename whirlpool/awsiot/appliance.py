@@ -7,7 +7,6 @@ from typing import Any, override
 from ..appliance import Appliance as BaseAppliance
 from ..awsiot.mqttclient import MqttClient
 from ..types import ApplianceInfo
-from .capabilities import CapabilityProfile
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,11 +18,9 @@ class Appliance(BaseAppliance):
         self,
         mqttclient: MqttClient,
         appliance_info: ApplianceInfo,
-        capability_profile: CapabilityProfile,
     ):
         super().__init__(appliance_info)
         self._mqttclient = mqttclient
-        self.capability_profile = capability_profile
 
         self._data_dict: dict[str, Any] = {}
         self._initial_data_event = asyncio.Event()

@@ -16,7 +16,8 @@ from .auth import Auth, AuthException
 from .capabilities import (
     CapabilityDownloader,
     CapabilityDownloadError,
-    parse_capability_profile,
+    has_microwave_cavity,
+    parse_microwave_capability_profile,
 )
 from .dryer import Dryer
 from .microwave import Microwave
@@ -149,26 +150,29 @@ class AppliancesManager:
                 e,
             )
             return
-        profile = parse_capability_profile(raw_capabilities)
 
         if appliance_data.category == "airconditioner":
-            appliance = Aircon(self._mqtt, appliance_data, profile)
+            appliance = Aircon(self._mqtt, appliance_data)
             self._aircons[appliance_data.said] = appliance
         elif appliance_data.category == "cooking":
-            if profile.has_cavity_type("microwaveOven"):
-                appliance = Microwave(self._mqtt, appliance_data, profile)
+            if has_microwave_cavity(raw_capabilities):
+                appliance = Microwave(
+                    self._mqtt,
+                    appliance_data,
+                    parse_microwave_capability_profile(raw_capabilities),
+                )
                 self._microwaves[appliance_data.said] = appliance
             else:
-                appliance = Oven(self._mqtt, appliance_data, profile)
+                appliance = Oven(self._mqtt, appliance_data)
                 self._ovens[appliance_data.said] = appliance
         elif appliance_data.category == "fabriccare":
-            appliance = Dryer(self._mqtt, appliance_data, profile)
+            appliance = Dryer(self._mqtt, appliance_data)
             self._dryers[appliance_data.said] = appliance
         elif appliance_data.category == "laundry":
-            appliance = Washer(self._mqtt, appliance_data, profile)
+            appliance = Washer(self._mqtt, appliance_data)
             self._washers[appliance_data.said] = appliance
         elif appliance_data.category == "refrigerator":
-            appliance = Refrigerator(self._mqtt, appliance_data, profile)
+            appliance = Refrigerator(self._mqtt, appliance_data)
             self._refrigerators[appliance_data.said] = appliance
         else:
             LOGGER.warning(

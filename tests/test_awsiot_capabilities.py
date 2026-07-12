@@ -14,8 +14,8 @@ from aioresponses import aioresponses
 from whirlpool.awsiot.capabilities import (
     CapabilityDownloader,
     CapabilityDownloadError,
-    CapabilityProfile,
-    parse_capability_profile,
+    has_microwave_cavity,
+    parse_microwave_capability_profile,
 )
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -25,28 +25,40 @@ def _load(name: str) -> dict[str, Any]:
     return json.loads((DATA_DIR / name).read_text())
 
 
-class TestParseRealCapability:
+class TestParseMicrowaveCapability:
     def test_microwave_with_hood(self) -> None:
-        profile = parse_capability_profile(_load("capability_mwo.json"))
+        profile = parse_microwave_capability_profile(_load("capability_mwo.json"))
         assert profile.part_number == "W11788386"
-        assert profile.has_feature("temperatureUnit")
-        assert profile.has_cavity_type("microwaveOven")
-        assert profile.has_section("hoodFan")
-        assert profile.has_section("hoodLight")
-        assert profile.has_section("hoodLightColor")
-        assert profile.has_flag("quietMode")
-        assert not profile.has_flag("supportsHmiControlLockout")
-        assert not profile.has_flag("missing")
-        assert profile.sabbath_recipes_present is False
+        assert profile.supports_hood_fan
+        assert profile.supports_hood_light_level
+        assert profile.supports_hood_light_color
+        assert profile.supports_quiet_mode
+        assert not profile.supports_control_lock
+        assert not profile.supports_sabbath_mode
 
     def test_microwave_without_hood(self) -> None:
-        profile = parse_capability_profile(_load("capability_mwo_no_hood.json"))
+        profile = parse_microwave_capability_profile(
+            _load("capability_mwo_no_hood.json")
+        )
         assert profile.part_number == "W11650001"
-        assert profile.has_cavity_type("microwaveOven")
-        assert not profile.has_section("hoodFan")
-        assert not profile.has_section("hoodLight")
-        assert not profile.has_section("hoodLightColor")
-        assert profile.has_flag("quietMode")
+        assert not profile.supports_hood_fan
+        assert not profile.supports_hood_light_level
+        assert not profile.supports_hood_light_color
+        assert profile.supports_quiet_mode
+
+    def test_sabbath_recipes_mark_sabbath_supported(self) -> None:
+        profile = parse_microwave_capability_profile(
+            {
+                "partNumber": "X1",
+                "cavities": {
+                    "primaryCavity": {
+                        "cavityType": "microwaveOven",
+                        "sabbathRecipes": {"sabbath": {}},
+                    }
+                },
+            }
+        )
+        assert profile.supports_sabbath_mode
 
     @pytest.mark.parametrize(
         "raw",
@@ -54,38 +66,39 @@ class TestParseRealCapability:
     )
     def test_invalid_part_number_raises(self, raw: dict[str, Any]) -> None:
         with pytest.raises(CapabilityDownloadError):
-            parse_capability_profile(raw)
+            parse_microwave_capability_profile(raw)
 
     def test_tolerates_odd_substructures(self) -> None:
-        profile = parse_capability_profile(
+        profile = parse_microwave_capability_profile(
             {"partNumber": "X1", "appliance": "nope", "cavities": [1, 2]}
         )
         assert profile.part_number == "X1"
-        assert profile.features == frozenset()
-        assert profile.cavity_types == frozenset()
-        assert profile.sections == frozenset()
-        assert profile.flags == frozenset()
+        assert not profile.supports_hood_fan
+        assert not profile.supports_quiet_mode
+        assert not profile.supports_sabbath_mode
+
+    def test_profile_equality_is_value_based(self) -> None:
+        raw = _load("capability_mwo.json")
+        assert parse_microwave_capability_profile(
+            raw
+        ) == parse_microwave_capability_profile(json.loads(json.dumps(raw)))
 
 
-class TestProfileEquality:
-    """CapabilityProfile equality is value-based."""
+class TestHasMicrowaveCavity:
+    def test_real_microwave_file(self) -> None:
+        assert has_microwave_cavity(_load("capability_mwo.json"))
 
-    def test_profile_equality(self) -> None:
-        a = CapabilityProfile(
-            part_number="X1",
-            features=frozenset(),
-            cavity_types=frozenset(),
-            sections=frozenset(),
-            flags=frozenset(),
+    def test_oven_cavity(self) -> None:
+        assert not has_microwave_cavity(
+            {"cavities": {"primaryCavity": {"cavityType": "oven"}}}
         )
-        b = CapabilityProfile(
-            part_number="X1",
-            features=frozenset(),
-            cavity_types=frozenset(),
-            sections=frozenset(),
-            flags=frozenset(),
-        )
-        assert a == b
+
+    @pytest.mark.parametrize(
+        "raw",
+        [{}, {"cavities": [1, 2]}, {"cavities": {"primaryCavity": "nope"}}],
+    )
+    def test_tolerates_odd_substructures(self, raw: dict[str, Any]) -> None:
+        assert not has_microwave_cavity(raw)
 
 
 SAID = "SAID-1"
