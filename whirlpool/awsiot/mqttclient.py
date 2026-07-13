@@ -19,12 +19,9 @@ from .auth import Auth
 LOGGER = logging.getLogger(__name__)
 
 MQTT_ENDPOINT = "wt.applianceconnect.net"
-
-
-def _generate_client_id(identity_id: str) -> str:
-    """Generate a client ID in the format used by the Android app."""
-    random_suffix = secrets.token_hex(8)  # 16 hex chars
-    return f"{identity_id}_{random_suffix}"
+CONNECT_TIMEOUT_SECONDS = 10.0
+RECONNECT_BACKOFF_INITIAL_SECONDS = 1.0
+RECONNECT_BACKOFF_CAP_SECONDS = 30.0
 
 
 class MqttClient:
@@ -42,11 +39,39 @@ class MqttClient:
         self._connected = asyncio.Event()
         self._subscribed_topics: set[str] = set()
         self._client_id: str | None = None
+        # Keep response topics stable across reconnects.
+        self._client_id_suffix: str = secrets.token_hex(8)
 
         self._loop = asyncio.get_running_loop()
+        self._reconnect_task: asyncio.Task[None] | None = None
+        self._shutting_down: bool = False
+
+    def _teardown_client(self) -> None:
+        """Best-effort stop and disconnect of the current paho client, if any.
+
+        Drops the reference first so callbacks from the old client are treated
+        as stale by `_is_active_client`.
+        """
+        if self._client is None:
+            return
+        old = self._client
+        self._client = None
+        try:
+            old.loop_stop()
+        except Exception:
+            LOGGER.debug("Error stopping MQTT client loop", exc_info=True)
+        try:
+            old.disconnect()
+        except Exception:
+            LOGGER.debug("Error disconnecting MQTT client", exc_info=True)
 
     async def connect(self) -> bool:
         """Connect to the MQTT broker."""
+        self._shutting_down = False
+        self._connected.clear()
+        # Tear down any previous client so we don't leak its loop thread/socket
+        # if connect() is called again without a disconnect() in between.
+        self._teardown_client()
 
         signed_url = await self._aws_auth.create_signed_url(MQTT_ENDPOINT)
         client_id = await self._generate_client_id()
@@ -59,6 +84,7 @@ class MqttClient:
             transport="websockets",
             protocol=MQTTProtocolVersion.MQTTv311,
             callback_api_version=CallbackAPIVersion.VERSION2,
+            reconnect_on_failure=False,
         )
         client.on_connect = self._on_connect
         client.on_message = self._on_message
@@ -84,19 +110,20 @@ class MqttClient:
 
         try:
             client.connect(MQTT_ENDPOINT, port=443, keepalive=30)
-        except Exception as e:
-            LOGGER.error("Failed to connect to MQTT broker: %s", e)
+        except Exception:
+            LOGGER.debug("Failed to connect to MQTT broker", exc_info=True)
             return False
 
-        client.loop_start()
         self._client = client
+        client.loop_start()
 
         try:
-            await asyncio.wait_for(self._connected.wait(), timeout=10.0)
+            await asyncio.wait_for(
+                self._connected.wait(), timeout=CONNECT_TIMEOUT_SECONDS
+            )
         except TimeoutError:
-            LOGGER.error("MQTT connection timeout")
-            client.loop_stop()
-            self._client = None
+            LOGGER.debug("MQTT connection timeout")
+            self._teardown_client()
             return False
 
         self._client_id = client_id
@@ -104,11 +131,19 @@ class MqttClient:
 
     async def disconnect(self) -> None:
         """Disconnect from the MQTT broker."""
-        if self._client:
-            self._client.loop_stop()
-            self._client.disconnect()
-            self._client = None
+        self._shutting_down = True
+
+        if self._reconnect_task is not None:
+            self._reconnect_task.cancel()
+            try:
+                await self._reconnect_task
+            except asyncio.CancelledError:
+                pass
+            self._reconnect_task = None
+
+        self._teardown_client()
         self._connected.clear()
+        self._client_id = None
 
     def is_connected(self) -> bool:
         """Check if connected to the MQTT broker."""
@@ -144,17 +179,23 @@ class MqttClient:
         identity_id = await self._aws_auth.get_cognito_identity_id()
         if not identity_id:
             raise RuntimeError("Failed to get Cognito identity ID")
-        return _generate_client_id(identity_id)
+        return f"{identity_id}_{self._client_id_suffix}"
+
+    def _is_active_client(self, client: mqtt.Client) -> bool:
+        return self._client is client
 
     def _on_connect(
         self,
-        _client: mqtt.Client,
+        client: mqtt.Client,
         _userdata: Any,
         _connect_flags: mqtt.ConnectFlags,
         reason_code: ReasonCode,
         _properties: Properties | None = None,
     ) -> None:
         """Callback when connected to MQTT broker."""
+        if not self._is_active_client(client):
+            LOGGER.debug("Ignoring on_connect from stale MQTT client")
+            return
         if reason_code.is_failure:
             LOGGER.error("MQTT connection failed: %s", reason_code)
             return
@@ -176,9 +217,12 @@ class MqttClient:
         self._connected.set()
 
     def _on_message(
-        self, _client: mqtt.Client, _userdata: Any, msg: mqtt.MQTTMessage
+        self, client: mqtt.Client, _userdata: Any, msg: mqtt.MQTTMessage
     ) -> None:
         """Callback when a message is received."""
+        if not self._is_active_client(client):
+            LOGGER.debug("Ignoring message from stale MQTT client on %s", msg.topic)
+            return
         LOGGER.debug("MQTT message on topic: %s", msg.topic)
 
         try:
@@ -194,13 +238,16 @@ class MqttClient:
 
     def _on_disconnect(
         self,
-        _client: mqtt.Client,
+        client: mqtt.Client,
         _userdata: Any,
         _disconnect_flags: mqtt.DisconnectFlags,
         reason_code: ReasonCode,
         _properties: Properties | None = None,
     ) -> None:
         """Callback when disconnected from MQTT broker."""
+        if not self._is_active_client(client):
+            LOGGER.debug("Ignoring on_disconnect from stale MQTT client")
+            return
         if reason_code.is_failure:
             LOGGER.warning("MQTT unexpected disconnect: %s", reason_code)
         else:
@@ -208,13 +255,59 @@ class MqttClient:
 
         self._loop.call_soon_threadsafe(self._connected.clear)
 
+        if reason_code.is_failure:
+            self._loop.call_soon_threadsafe(self._schedule_reconnect)
+
+    def _schedule_reconnect(self) -> None:
+        """Start a reconnect task if one isn't already running."""
+        if self._shutting_down:
+            return
+        if self._reconnect_task is not None and not self._reconnect_task.done():
+            return
+        self._reconnect_task = self._loop.create_task(self._reconnect_loop())
+
+    async def _reconnect_loop(self) -> None:
+        """Rebuild the MQTT client with fresh auth, using exponential backoff.
+
+        Each attempt drives the full connect() path, which fetches a new
+        SigV4-signed websocket URL and tears down the old paho client before
+        building the new one. `_resubscribe_and_set_connected` (called from
+        on_connect) reapplies `self._subscribed_topics` so existing
+        subscriptions survive the rebuild.
+        """
+        delay = RECONNECT_BACKOFF_INITIAL_SECONDS
+        while not self._shutting_down:
+            LOGGER.debug("MQTT reconnecting in %.1fs", delay)
+            try:
+                await asyncio.sleep(delay)
+            except asyncio.CancelledError:
+                return
+
+            if self._shutting_down:
+                return
+
+            try:
+                if await self.connect():
+                    LOGGER.info("MQTT reconnected successfully")
+                    return
+            except asyncio.CancelledError:
+                return
+            except Exception as e:
+                LOGGER.warning("MQTT reconnect attempt failed: %s", e)
+                LOGGER.debug("MQTT reconnect attempt traceback", exc_info=True)
+
+            delay = min(delay * 2, RECONNECT_BACKOFF_CAP_SECONDS)
+
     def _on_subscribe(
         self,
-        _client: mqtt.Client,
+        client: mqtt.Client,
         _userdata: Any,
         mid: int,
         granted_qos: list[ReasonCode],
         _properties: Properties | None = None,
     ) -> None:
         """Callback when subscription is confirmed."""
+        if not self._is_active_client(client):
+            LOGGER.debug("Ignoring subscribe ack from stale MQTT client")
+            return
         LOGGER.debug("MQTT subscription confirmed (mid: %d, QoS: %s)", mid, granted_qos)

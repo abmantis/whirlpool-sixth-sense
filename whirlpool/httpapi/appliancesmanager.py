@@ -1,6 +1,8 @@
+import asyncio
 import json
 import logging
 from collections.abc import Callable
+from contextlib import suppress
 from functools import cached_property
 from typing import Any
 
@@ -19,6 +21,11 @@ from .washer import Washer
 
 LOGGER = logging.getLogger(__name__)
 
+# The backend stops sending events over the websocket after a while unless
+# there is some REST activity on the account, so periodically fetch data for
+# one appliance to keep the event subscription alive.
+KEEPALIVE_INTERVAL_SECONDS = 5 * 60
+
 
 class AppliancesManager:
     def __init__(
@@ -32,6 +39,7 @@ class AppliancesManager:
         self._auth = auth
         self._session: aiohttp.ClientSession = session
         self._event_socket: EventSocket | None = None
+        self._keepalive_task: asyncio.Task[None] | None = None
         self._aircons: dict[str, Any] = {}
         self._dryers: dict[str, Any] = {}
         self._washers: dict[str, Any] = {}
@@ -213,13 +221,36 @@ class AppliancesManager:
         )
         self._event_socket.start()
 
+        if self._keepalive_task is None:
+            self._keepalive_task = asyncio.get_event_loop().create_task(
+                self._keepalive()
+            )
+
     async def stop_event_listener(self):
         """Stop the appliance event listener"""
+        if self._keepalive_task is not None:
+            self._keepalive_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._keepalive_task
+            self._keepalive_task = None
+
         if self._event_socket is None:
             LOGGER.warning("Event socket is None")
             return
         await self._event_socket.stop()
         self._event_socket = None
+
+    async def _keepalive(self):
+        """Periodically fetch data for one appliance to keep events flowing."""
+        while True:
+            await asyncio.sleep(KEEPALIVE_INTERVAL_SECONDS)
+            appliance = next(iter(self.all_appliances.values()), None)
+            if appliance is None:
+                continue
+            try:
+                await appliance.fetch_data()
+            except Exception as ex:
+                LOGGER.warning("Keepalive fetch failed: %s", ex)
 
     def _event_socket_callback(self, msg: str):
         json_msg = json.loads(msg)
