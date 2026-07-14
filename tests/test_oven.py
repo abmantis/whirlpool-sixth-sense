@@ -7,7 +7,7 @@ from yarl import URL
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
-from whirlpool.oven import Cavity, CavityState, CookMode, Oven
+from whirlpool.oven import Cavity, CavityState, CookMode, KitchenTimerState, Oven
 
 
 async def test_attributes(appliances_manager: AppliancesManager):
@@ -26,6 +26,10 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert oven1.get_target_temp(Cavity.Upper) == 176.6
     assert oven1.get_cavity_state(Cavity.Upper) == CavityState.Preheating
     assert oven1.get_cook_mode(Cavity.Upper) == CookMode.Bake
+    timer1 = oven1.get_kitchen_timer()
+    assert timer1.get_total_time() == 300
+    assert timer1.get_remaining_time() == 180
+    assert timer1.get_state() == KitchenTimerState.Running
 
     oven2 = appliances_manager.ovens[1]
     assert oven2.get_online() is True
@@ -42,6 +46,10 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert oven2.get_target_temp(Cavity.Upper) is None
     assert oven2.get_cavity_state(Cavity.Upper) == CavityState.Standby
     assert oven2.get_cook_mode(Cavity.Upper) == CookMode.Standby
+    timer2 = oven2.get_kitchen_timer()
+    assert timer2.get_total_time() == 0
+    assert timer2.get_remaining_time() == 0
+    assert timer2.get_state() == KitchenTimerState.Standby
 
     oven3 = appliances_manager.ovens[2]
     assert oven3.get_online() is True
