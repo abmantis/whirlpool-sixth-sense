@@ -1030,7 +1030,7 @@
         "updateTime": 1642158986086
       },
       "KitchenTimer01_StatusTimeRemaining": {
-        "value": "0",
+        "value": "180",
         "updateTime": 1642158986082
       },
       "Sys_AlertStatusCustomerFaultCodeNotification": {
@@ -1182,7 +1182,7 @@
         "updateTime": 1615683489232
       },
       "KitchenTimer01_SetTimeSet": {
-        "value": "0",
+        "value": "300",
         "updateTime": 1642158986082
       },
       "XCat_WifiSetRebootWifiCommModule": {
@@ -1386,7 +1386,7 @@
         "updateTime": 1592663948975
       },
       "KitchenTimer01_StatusState": {
-        "value": "0",
+        "value": "1",
         "updateTime": 1642158986082
       },
       "OvenUpperCavity_TimeStatusCycleTimeElapsed": {
