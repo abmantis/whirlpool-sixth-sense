@@ -9,7 +9,8 @@ from typing import Any
 
 import aiohttp
 import pytest
-from aioresponses import aioresponses
+import pytest_asyncio
+from aiointercept import aiointercept
 
 from whirlpool.awsiot.capabilities import (
     CapabilityDownloader,
@@ -142,9 +143,9 @@ async def http_session():
     await session.close()
 
 
-@pytest.fixture
-def aio_mock():
-    with aioresponses() as m:
+@pytest_asyncio.fixture
+async def aio_mock():
+    async with aiointercept(mock_external_urls=True) as m:
         yield m
 
 
@@ -160,7 +161,7 @@ class TestHandleMessageDispatch:
     async def test_delivers_to_pending_future(
         self,
         http_session: aiohttp.ClientSession,
-        aio_mock: aioresponses,
+        aio_mock: aiointercept,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setattr(
@@ -197,7 +198,7 @@ class TestDownloaderCache:
     async def test_second_call_hits_cache(
         self,
         http_session: aiohttp.ClientSession,
-        aio_mock: aioresponses,
+        aio_mock: aiointercept,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setattr(
@@ -227,7 +228,7 @@ class TestDownloaderRetry:
     async def test_retries_on_timeout_then_succeeds(
         self,
         http_session: aiohttp.ClientSession,
-        aio_mock: aioresponses,
+        aio_mock: aiointercept,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setattr(
@@ -271,7 +272,7 @@ class TestDownloaderFetchBody:
     async def test_http_error_is_download_error(
         self,
         http_session: aiohttp.ClientSession,
-        aio_mock: aioresponses,
+        aio_mock: aiointercept,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setattr(
