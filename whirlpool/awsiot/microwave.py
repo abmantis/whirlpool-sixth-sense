@@ -1,5 +1,6 @@
 """Concrete awsiot Microwave — translates MQTT state to the Microwave ABC."""
 
+import logging
 from typing import override
 
 from ..microwave import (
@@ -12,7 +13,12 @@ from ..microwave import (
 from ..microwave import (
     Microwave as MicrowaveABC,
 )
-from .appliance import Appliance
+from ..types import ApplianceInfo
+from .appliance import Appliance, gated_set
+from .capabilities import MicrowaveCapabilityProfile
+from .mqttclient import MqttClient
+
+LOGGER = logging.getLogger(__name__)
 
 _CAVITY_STATE_MAP: dict[str, MicrowaveCavityState] = {
     "idle": MicrowaveCavityState.Idle,
@@ -48,6 +54,15 @@ _HOOD_LIGHT_COLOR_MAP: dict[str, HoodLightColor] = {
 
 
 class Microwave(MicrowaveABC, Appliance):
+    def __init__(
+        self,
+        mqttclient: MqttClient,
+        appliance_info: ApplianceInfo,
+        capability_profile: MicrowaveCapabilityProfile,
+    ):
+        super().__init__(mqttclient, appliance_info)
+        self.capability_profile = capability_profile
+
     @override
     def get_cavity_state(self) -> MicrowaveCavityState | None:
         raw = self._get_path_str("primaryCavity", "cavityState")
@@ -161,3 +176,65 @@ class Microwave(MicrowaveABC, Appliance):
     @override
     def get_sabbath_mode(self) -> bool | None:
         return self._get_path_bool("sabbathMode")
+
+    @override
+    def supports_hood_fan(self) -> bool:
+        return self.capability_profile.supports_hood_fan
+
+    @override
+    def supports_hood_light_level(self) -> bool:
+        return self.capability_profile.supports_hood_light_level
+
+    @override
+    def supports_hood_light_color(self) -> bool:
+        return self.capability_profile.supports_hood_light_color
+
+    @override
+    def supports_quiet_mode(self) -> bool:
+        return self.capability_profile.supports_quiet_mode
+
+    @override
+    def supports_control_lock(self) -> bool:
+        return self.capability_profile.supports_control_lock
+
+    @override
+    def supports_sabbath_mode(self) -> bool:
+        return self.capability_profile.supports_sabbath_mode
+
+    @override
+    @gated_set(supports_hood_fan, "hood fan")
+    async def set_hood_fan_speed(self, speed: HoodFanSpeed) -> bool:
+        self._send_command("set", {"addressee": "hoodFan", "value": speed.value})
+        return True
+
+    @override
+    @gated_set(supports_hood_light_level, "hood light")
+    async def set_hood_light_level(self, level: HoodLightLevel) -> bool:
+        self._send_command("set", {"addressee": "hoodLight", "value": level.value})
+        return True
+
+    @override
+    @gated_set(supports_hood_light_color, "hood light color control")
+    async def set_hood_light_color(self, color: HoodLightColor) -> bool:
+        self._send_command(
+            "set", {"addressee": "hoodLightColor", "value": color.value}
+        )
+        return True
+
+    @override
+    @gated_set(supports_control_lock, "control lock")
+    async def set_control_locked(self, on: bool) -> bool:
+        self._send_command("set", {"addressee": "hmiControlLockout", "value": on})
+        return True
+
+    @override
+    @gated_set(supports_quiet_mode, "quiet mode")
+    async def set_quiet_mode(self, on: bool) -> bool:
+        self._send_command("set", {"addressee": "quietMode", "value": on})
+        return True
+
+    @override
+    @gated_set(supports_sabbath_mode, "sabbath mode")
+    async def set_sabbath_mode(self, on: bool) -> bool:
+        self._send_command("set", {"addressee": "sabbathMode", "value": on})
+        return True

@@ -1,4 +1,5 @@
 import asyncio
+import functools
 import logging
 import time
 import uuid
@@ -9,6 +10,22 @@ from ..awsiot.mqttclient import MqttClient
 from ..types import ApplianceInfo
 
 LOGGER = logging.getLogger(__name__)
+
+
+def gated_set(support_check, label):
+    """Gate a setter behind a capability check."""
+
+    def decorator(func):
+        @functools.wraps(func)
+        async def wrapper(self, *args, **kwargs):
+            if not support_check(self):
+                LOGGER.warning("Model %s has no %s", self.said, label)
+                return False
+            return await func(self, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 class Appliance(BaseAppliance):
@@ -48,15 +65,6 @@ class Appliance(BaseAppliance):
             f"$aws/events/presence/disconnected/{self.appliance_info.said}",
         )
 
-        # TODO: implement capability download and handling
-        # model = self.appliance_info.model_number
-        # said = self.appliance_info.said
-        # self._mqtt.subscribe(f"api/capability/download/{model}/{said}/response")
-        # self._mqtt.publish(
-        #     f"api/capability/download/{model}/{said}",
-        #     {"capabilityPartNumber": thing_attrs.get("CapabilityPartNumber", "")},
-        # )
-
     def update_state(self, new_state: dict[str, Any]):
         """Update appliance state and call callbacks."""
         self._data_dict = new_state
@@ -66,6 +74,8 @@ class Appliance(BaseAppliance):
 
     def update_online(self, online: bool):
         """Update presence state and call callbacks."""
+        if self._online == online:
+            return
         self._online = online
         for callback in self._attr_changed:
             callback()

@@ -13,6 +13,12 @@ from whirlpool.types import ApplianceInfo
 from ..auth import Auth as WhirlpoolAuth
 from .aircon import Aircon
 from .auth import Auth, AuthException
+from .capabilities import (
+    CapabilityDownloader,
+    CapabilityDownloadError,
+    has_microwave_cavity,
+    parse_microwave_capability_profile,
+)
 from .dryer import Dryer
 from .microwave import Microwave
 from .mqttclient import MqttClient
@@ -43,6 +49,7 @@ class AppliancesManager:
 
         self._aws_auth = Auth(self._whirlpool_auth, self._session)
         self._mqtt = MqttClient(self._aws_auth, self._handle_mqtt_message)
+        self._capability_downloader = CapabilityDownloader(self._mqtt, self._session)
 
     @cached_property
     def all_appliances(self) -> dict[str, Appliance]:
@@ -125,12 +132,39 @@ class AppliancesManager:
             serial_number=thing_attrs.get("Serial", ""),
         )
 
+        cap_part = thing_attrs.get("CapabilityPartNumber")
+        if not cap_part:
+            LOGGER.error(
+                "Thing %s has no CapabilityPartNumber — skipping",
+                appliance_data.said,
+            )
+            return
+        try:
+            raw_capabilities = await self._capability_downloader.get(
+                appliance_data.said, appliance_data.model_number, cap_part
+            )
+        except CapabilityDownloadError as e:
+            LOGGER.error(
+                "Capability download failed for %s: %s — skipping",
+                appliance_data.said,
+                e,
+            )
+            return
+
         if appliance_data.category == "airconditioner":
             appliance = Aircon(self._mqtt, appliance_data)
             self._aircons[appliance_data.said] = appliance
         elif appliance_data.category == "cooking":
-            appliance = Microwave(self._mqtt, appliance_data)
-            self._microwaves[appliance_data.said] = appliance
+            if has_microwave_cavity(raw_capabilities):
+                appliance = Microwave(
+                    self._mqtt,
+                    appliance_data,
+                    parse_microwave_capability_profile(raw_capabilities),
+                )
+                self._microwaves[appliance_data.said] = appliance
+            else:
+                appliance = Oven(self._mqtt, appliance_data)
+                self._ovens[appliance_data.said] = appliance
         elif appliance_data.category == "fabriccare":
             appliance = Dryer(self._mqtt, appliance_data)
             self._dryers[appliance_data.said] = appliance
@@ -155,6 +189,9 @@ class AppliancesManager:
 
     def _handle_mqtt_message(self, topic: str, payload: dict[str, Any]) -> None:
         LOGGER.debug("Received MQTT message on topic %s: %s", topic, payload)
+
+        if self._capability_downloader.handle_message(topic, payload):
+            return
 
         if topic.startswith("$aws/events/presence/"):
             parts = topic.split("/")
