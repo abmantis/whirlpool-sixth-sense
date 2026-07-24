@@ -3,6 +3,7 @@ aioconsole>=0.3.1
 aiointercept==0.1.8
 pytest>=6.2.0
 pytest-asyncio>=0.15.0
+pytest-cov>=7.0.0
 pytest-mock>=3.6.0
 ruff
 basedpyright

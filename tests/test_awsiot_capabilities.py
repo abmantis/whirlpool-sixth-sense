@@ -19,7 +19,7 @@ from whirlpool.awsiot.capabilities import (
     parse_microwave_capability_profile,
 )
 
-DATA_DIR = Path(__file__).parent / "data"
+DATA_DIR = Path(__file__).parent / "data" / "awsiot"
 
 
 def _load(name: str) -> dict[str, Any]:
