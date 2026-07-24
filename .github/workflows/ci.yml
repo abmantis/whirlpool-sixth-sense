@@ -2,9 +2,13 @@ name: CI
 
 on: [push, pull_request]
 
+permissions: {}
+
 jobs:
   pyright:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         python-version: ["3.14"]
@@ -24,12 +28,16 @@ jobs:
 
   ruff:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: astral-sh/ruff-action@v3
 
   pytest:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         python-version: ["3.14"]
@@ -46,30 +54,3 @@ jobs:
       - name: Test with pytest
         run: |
           pytest --log-cli-level=debug
-
-  release:
-    runs-on: ubuntu-latest
-    concurrency: release
-    if: github.ref == 'refs/heads/master'
-    needs: [pyright, ruff, pytest]
-    permissions:
-      id-token: write
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.PAT_TOKEN }}
-
-      - name: Python Semantic Release
-        id: release
-        uses: python-semantic-release/python-semantic-release@v10.4.1
-        with:
-          github_token: ${{ secrets.PAT_TOKEN }}
-          changelog: false
-          vcs_release: false
-
-      - name: Publish package PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        if: steps.release.outputs.released == 'true'
