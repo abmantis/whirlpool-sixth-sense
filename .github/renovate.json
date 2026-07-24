@@ -15,6 +15,12 @@
         "zizmorcore/zizmor-pre-commit"
       ],
       "groupName": "zizmor"
+    },
+    {
+      "description": "The zizmor image is only referenced through the action's version input, which takes a plain version rather than an image reference; the action resolves the digest itself.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/zizmorcore/zizmor"],
+      "pinDigests": false
     }
   ]
 }
