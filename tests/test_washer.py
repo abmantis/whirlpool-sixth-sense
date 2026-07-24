@@ -15,5 +15,3 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert washer.get_dispense_1_level() == 4
     assert washer.get_door_open() is True
     assert washer.get_time_remaining() == 4080
-
-

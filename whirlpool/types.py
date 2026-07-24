@@ -22,4 +22,3 @@ class ApplianceInfo:
     category: str
     model_number: str
     serial_number: str
-
