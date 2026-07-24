@@ -5,5 +5,16 @@
     "helpers:pinGitHubActionDigests",
     ":enablePreCommit"
   ],
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Group zizmor updates",
+      "matchPackageNames": [
+        "ghcr.io/zizmorcore/zizmor",
+        "zizmorcore/zizmor-action",
+        "zizmorcore/zizmor-pre-commit"
+      ],
+      "groupName": "zizmor"
+    }
+  ]
 }
