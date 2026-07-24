@@ -176,7 +176,7 @@ async def test_setters(
 
     # add call, call method
     aiointercept_mock.post(url, payload=expected_payload)
-    assert await method(oven, **arguments)
+    assert await getattr(oven, method.__name__)(**arguments)
 
     # assert args and length
     aiointercept_mock.assert_called_with(**post_request_call_kwargs)
