@@ -1,0 +1,47 @@
+name-template: "$RESOLVED_VERSION"
+tag-template: "$RESOLVED_VERSION"
+change-template: "- #$NUMBER $TITLE @$AUTHOR"
+sort-direction: ascending
+
+categories:
+  - title: "🚨 Breaking changes"
+    semver-increment: major
+    when:
+      labels: ["breaking-change"]
+  - title: "✨ New features"
+    semver-increment: minor
+    when:
+      labels: ["new-feature"]
+  - title: "🐛 Bug fixes"
+    when:
+      labels: ["bugfix"]
+  - title: "🚀 Enhancements"
+    when:
+      labels: ["enhancement"]
+  - title: "🧰 Maintenance"
+    when:
+      labels: ["maintenance", "ci"]
+  - title: "📚 Documentation"
+    when:
+      labels: ["documentation"]
+  - title: "⬆️ Dependency updates"
+    collapse-after: 5
+    when:
+      labels: ["dependencies"]
+  # Version-bump overrides: adjust the resolved increment without rendering a
+  # changelog section of their own.
+  - type: version-resolver
+    semver-increment: major
+    when:
+      labels: ["major"]
+  - type: version-resolver
+    semver-increment: minor
+    when:
+      labels: ["minor"]
+
+template: |
+  ## What's changed
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...$RESOLVED_VERSION

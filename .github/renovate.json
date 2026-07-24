@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "helpers:pinGitHubActionDigests",
+    ":enablePreCommit"
+  ],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Group zizmor updates",
+      "matchPackageNames": [
+        "ghcr.io/zizmorcore/zizmor",
+        "zizmorcore/zizmor-action",
+        "zizmorcore/zizmor-pre-commit"
+      ],
+      "groupName": "zizmor"
+    }
+  ]
+}

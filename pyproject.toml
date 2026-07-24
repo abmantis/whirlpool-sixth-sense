@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "whirlpool_sixth_sense"
-version = "1.3.1"
+# Placeholder; the publish workflow injects the release tag as the version.
+version = "0.0.0"
 license = "MIT"
 authors = [{ name = "Abílio Costa", email = "amfcalt@gmail.com" }]
 description = "Unofficial API for Whirlpool's 6th Sense appliances"
@@ -54,12 +55,3 @@ max-complexity = 25
 
 [tool.pyright]
 typeCheckingMode = "standard"
-
-[tool.semantic_release]
-branch = "master"
-version_toml = ["pyproject.toml:project.version"]
-build_command = "pip install build && python -m build"
-tag_format = "{version}"
-
-[tool.semantic_release.publish]
-upload_to_vcs_release = false
