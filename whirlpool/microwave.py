@@ -19,6 +19,13 @@ class MicrowaveDoorStatus(Enum):
     Closed = "closed"
 
 
+class RecipeId(Enum):
+    Microwave = "microwave"
+    Reheat = "reheat"
+    Defrost = "defrost"
+    Soften = "soften"
+
+
 class HoodFanSpeed(Enum):
     Off = "off"
     Low = "low"
@@ -72,6 +79,17 @@ class Microwave(Appliance, ABC):
 
     @abstractmethod
     def get_recipe_execution_state(self) -> str | None: ...
+
+    @abstractmethod
+    async def start_cook(
+        self,
+        recipe: RecipeId,
+        power_level: int,
+        duration_seconds: int,
+    ) -> bool: ...
+
+    @abstractmethod
+    async def cancel_cook(self) -> bool: ...
 
     @abstractmethod
     def get_mwo_power_level(self) -> int | None: ...

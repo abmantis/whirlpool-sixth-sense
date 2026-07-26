@@ -39,6 +39,7 @@ from whirlpool.microwave import (
     HoodLightLevel,
     MicrowaveCavityState,
     MicrowaveDoorStatus,
+    RecipeId,
 )
 from whirlpool.types import ApplianceInfo
 
@@ -572,3 +573,107 @@ async def test_capability_cached_across_same_model_things(
         if t.startswith("api/capability/download/")
     ]
     assert len(cap_publishes) == 1
+
+
+async def test_start_cook_publishes_expected_payload(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+
+    before = len(fake_mqtt.published)
+    ok = await mwo.start_cook(RecipeId.Microwave, 50, 30)
+    assert ok is True
+
+    assert len(fake_mqtt.published) == before + 1
+    topic, payload = fake_mqtt.published[-1]
+    assert topic == f"cmd/{MWO_MODEL}/{MWO_SAID}/request/{fake_mqtt.client_id}"
+    body = payload["payload"]
+    assert body["addressee"] == "primaryCavity"
+    assert body["command"] == "run"
+    assert body["recipeID"] == "microwave"
+    assert body["mwoPowerLevel"] == 50.0
+    assert isinstance(body["mwoPowerLevel"], float)
+    assert body["cookTimer"] == {"command": "start", "time": 30}
+
+
+async def test_start_cook_returns_false_when_remote_start_disabled(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+
+    # Disable remote start via state update.
+    fake_mqtt.inject(
+        f"dt/{MWO_MODEL}/{MWO_SAID}/state/update",
+        {**STATE, "remoteStartEnable": False},
+    )
+
+    before = len(fake_mqtt.published)
+    ok = await mwo.start_cook(RecipeId.Reheat, 100, 60)
+    assert ok is False
+    assert len(fake_mqtt.published) == before  # nothing published
+
+
+@pytest.mark.parametrize("power_level", [0, -1, 101, 200])
+async def test_start_cook_rejects_invalid_power_level(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+    power_level: int,
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    before = len(fake_mqtt.published)
+    with pytest.raises(ValueError):
+        await mwo.start_cook(RecipeId.Microwave, power_level, 30)
+    assert len(fake_mqtt.published) == before
+
+
+@pytest.mark.parametrize("duration", [0, -5])
+async def test_start_cook_rejects_invalid_duration(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+    duration: int,
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    before = len(fake_mqtt.published)
+    with pytest.raises(ValueError):
+        await mwo.start_cook(RecipeId.Microwave, 50, duration)
+    assert len(fake_mqtt.published) == before
+
+
+async def test_cancel_cook_publishes_expected_payload(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+
+    before = len(fake_mqtt.published)
+    ok = await mwo.cancel_cook()
+    assert ok is True
+
+    assert len(fake_mqtt.published) == before + 1
+    _, payload = fake_mqtt.published[-1]
+    body = payload["payload"]
+    assert body["addressee"] == "primaryCavity"
+    assert body["command"] == "cancel"
+
+
+@pytest.mark.parametrize(
+    "recipe,wire_value",
+    [
+        (RecipeId.Microwave, "microwave"),
+        (RecipeId.Reheat, "reheat"),
+        (RecipeId.Defrost, "defrost"),
+        (RecipeId.Soften, "soften"),
+    ],
+)
+async def test_start_cook_recipe_enum_wire_value(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+    recipe: RecipeId,
+    wire_value: str,
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    await mwo.start_cook(recipe, 50, 30)
+    _, payload = fake_mqtt.published[-1]
+    assert payload["payload"]["recipeID"] == wire_value

@@ -9,6 +9,7 @@ from ..microwave import (
     HoodLightLevel,
     MicrowaveCavityState,
     MicrowaveDoorStatus,
+    RecipeId,
 )
 from ..microwave import (
     Microwave as MicrowaveABC,
@@ -237,4 +238,37 @@ class Microwave(MicrowaveABC, Appliance):
     @gated_set(supports_sabbath_mode, "sabbath mode")
     async def set_sabbath_mode(self, on: bool) -> bool:
         self._send_command("set", {"addressee": "sabbathMode", "value": on})
+        return True
+
+    @override
+    async def start_cook(
+        self,
+        recipe: RecipeId,
+        power_level: int,
+        duration_seconds: int,
+    ) -> bool:
+        if not 1 <= power_level <= 100:
+            raise ValueError("power_level must be between 1 and 100")
+        if duration_seconds < 1:
+            raise ValueError("duration_seconds must be >= 1")
+        if not self.get_remote_start_enabled():
+            LOGGER.warning(
+                "Remote start not enabled on %s — enable on the physical panel",
+                self.said,
+            )
+            return False
+        self._send_command(
+            "run",
+            {
+                "addressee": "primaryCavity",
+                "recipeID": recipe.value,
+                "mwoPowerLevel": float(power_level),
+                "cookTimer": {"command": "start", "time": duration_seconds},
+            },
+        )
+        return True
+
+    @override
+    async def cancel_cook(self) -> bool:
+        self._send_command("cancel", {"addressee": "primaryCavity"})
         return True
