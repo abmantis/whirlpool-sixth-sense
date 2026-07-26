@@ -113,15 +113,7 @@ def mock_aws_http_api(
     backend_selector: BackendSelector,
     things: list[dict[str, Any]],
 ) -> None:
-    """Register wire-level mocks for the AWS-side HTTP endpoints.
-
-    Covers the Whirlpool OAuth token renewal, the Whirlpool Cognito identity
-    endpoint, the AWS Cognito credentials endpoint, and the AWS IoT Things
-    endpoints: the thing-group listing (names only) plus a describe-thing
-    response per entry in `things`. The listing is split into two pages when
-    there is more than one thing, so the pagination path in
-    `Things.list_things` runs.
-    """
+    """Register wire-level mocks for the AWS-side HTTP endpoints."""
     http_mock.post(
         backend_selector.oauth_token_url,
         payload={"access_token": "fake_access_token", "expires_in": 3600},
@@ -149,6 +141,7 @@ def mock_aws_http_api(
     things_url = f"https://{AWS_IOT_ENDPOINT}/thing-groups/{group_name}/things"
     thing_names = [thing["thingName"] for thing in things]
     if len(thing_names) > 1:
+        # Split into two pages when there is more than one thing to test pagination
         http_mock.get(
             things_url,
             payload={"things": thing_names[:1], "nextToken": _THINGS_PAGE_TOKEN},
