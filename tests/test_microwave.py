@@ -26,9 +26,9 @@ from tests.awsiot.mocks import (
     STATE,
     THING,
     FakeMqttClient,
+    build_manager_with_profile,
     build_manager_with_things,
     make_mqtt_factory,
-    manager_with_profile,
     patch_aws_manager_internals,
 )
 from whirlpool.auth import Auth
@@ -162,9 +162,7 @@ async def test_state_update_reflected_via_mqtt_injection(
         "cavityState": "cooking",
         "cavityLight": True,
     }
-    fake_mqtt.inject(
-        f"dt/{MWO_MODEL}/{MWO_SAID}/state/update", new_state
-    )
+    fake_mqtt.inject(f"dt/{MWO_MODEL}/{MWO_SAID}/state/update", new_state)
 
     assert mwo.get_cavity_state() == MicrowaveCavityState.Cooking
     assert mwo.get_cavity_light() is True
@@ -178,9 +176,7 @@ async def test_attr_callback_fires_on_state_update(
     calls: list[int] = []
     mwo.register_attr_callback(lambda: calls.append(1))
 
-    fake_mqtt.inject(
-        f"dt/{MWO_MODEL}/{MWO_SAID}/state/update", STATE
-    )
+    fake_mqtt.inject(f"dt/{MWO_MODEL}/{MWO_SAID}/state/update", STATE)
     assert calls == [1]
 
 
@@ -196,9 +192,7 @@ async def test_set_cavity_light_publishes_expected_command(
 
     assert len(fake_mqtt.published) == before + 1
     topic, payload = fake_mqtt.published[-1]
-    assert topic == (
-        f"cmd/{MWO_MODEL}/{MWO_SAID}/request/{fake_mqtt.client_id}"
-    )
+    assert topic == (f"cmd/{MWO_MODEL}/{MWO_SAID}/request/{fake_mqtt.client_id}")
     assert payload["payload"]["addressee"] == "primaryCavity"
     assert payload["payload"]["command"] == "set"
     assert payload["payload"]["cavityLight"] is True
@@ -419,7 +413,7 @@ async def test_setters_return_false_when_capability_missing(
         "partNumber": MWO_CAP_PART,
         "cavities": {"primaryCavity": {"cavityType": "microwaveOven"}},
     }
-    manager, fake_mqtt = await manager_with_profile(
+    manager, fake_mqtt = await build_manager_with_profile(
         auth, client_session_fixture, minimal_profile
     )
     mwo = manager.microwaves[0]
@@ -452,7 +446,7 @@ async def test_mode_setters_publish_when_supported(
         "supportsHmiControlLockout": True,
         "quietMode": True,
     }
-    manager, fake_mqtt = await manager_with_profile(
+    manager, fake_mqtt = await build_manager_with_profile(
         auth, client_session_fixture, full_profile
     )
     mwo = manager.microwaves[0]
@@ -473,9 +467,7 @@ async def test_mode_setters_publish_when_supported(
 
 
 def _profile(name: str) -> MicrowaveCapabilityProfile:
-    return parse_microwave_capability_profile(
-        json.loads((_CAP_DIR / name).read_text())
-    )
+    return parse_microwave_capability_profile(json.loads((_CAP_DIR / name).read_text()))
 
 
 def _microwave(
@@ -544,9 +536,7 @@ async def test_capability_cached_across_same_model_things(
     )
 
     with patch_aws_manager_internals(mqtt_factory, [THING, second_thing]):
-        manager = AwsAppliancesManager(
-            auth, client_session_fixture, lambda: None
-        )
+        manager = AwsAppliancesManager(auth, client_session_fixture, lambda: None)
         await manager.connect()
 
     assert len(manager.microwaves) == 2

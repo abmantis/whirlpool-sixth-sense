@@ -1,16 +1,7 @@
-"""Shared fakes and manager-builder helpers for AWS IoT tests.
-
-`FakeMqttClient` and `FakeThings` stand in for the `MqttClient` and `Things`
-internals of `whirlpool.awsiot.appliancesmanager.AppliancesManager`, so tests
-exchange state as MQTT messages (initial getState reply, state-update deltas,
-command publishes) without touching the network. The helpers below patch those
-internals and build connected managers on top of the fakes.
-"""
-
-from __future__ import annotations
+"""Shared fakes and manager-builder helpers for AWS IoT tests."""
 
 import json
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, cast
@@ -32,7 +23,6 @@ MWO_CAPABILITY_PROFILE: dict[str, Any] = json.loads(
 )
 
 THING: dict[str, Any] = json.loads((_DATA_DIR / "microwave_thing.json").read_text())
-
 STATE: dict[str, Any] = json.loads((_DATA_DIR / "microwave_state.json").read_text())
 
 
@@ -124,9 +114,7 @@ class FakeThings:
 
     @classmethod
     def with_things(cls, things: list[dict[str, Any]]) -> type[FakeThings]:
-        return cast(
-            "type[FakeThings]", type(cls.__name__, (cls,), {"things": things})
-        )
+        return cast("type[FakeThings]", type(cls.__name__, (cls,), {"things": things}))
 
 
 def make_mqtt_factory(
@@ -161,7 +149,7 @@ def make_mqtt_factory(
 def patch_aws_manager_internals(
     mqtt_factory: Callable[..., FakeMqttClient],
     things: list[dict[str, Any]],
-) -> Iterator[None]:
+) -> Generator[None]:
     """Patch the manager's `MqttClient` and `Things` internals with fakes."""
     with (
         patch(
@@ -190,7 +178,7 @@ async def build_manager_with_things(
     return manager
 
 
-async def manager_with_profile(
+async def build_manager_with_profile(
     auth: Auth,
     session: aiohttp.ClientSession,
     profile: dict[str, Any],
