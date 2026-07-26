@@ -10,15 +10,27 @@ the wire contract that abmantis's review asked for.
 from __future__ import annotations
 
 import json
-from collections.abc import AsyncGenerator, Callable
+from collections.abc import AsyncGenerator
 from pathlib import Path
-from typing import Any, cast
-from unittest.mock import patch
+from typing import cast
 
 import aiohttp
 import pytest
 import pytest_asyncio
 
+from tests.awsiot.mocks import (
+    MWO_CAP_PART,
+    MWO_CAPABILITY_PROFILE,
+    MWO_MODEL,
+    MWO_SAID,
+    STATE,
+    THING,
+    FakeMqttClient,
+    build_manager_with_profile,
+    build_manager_with_things,
+    make_mqtt_factory,
+    patch_aws_manager_internals,
+)
 from whirlpool.auth import Auth
 from whirlpool.awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
 from whirlpool.awsiot.capabilities import (
@@ -36,130 +48,7 @@ from whirlpool.microwave import (
 )
 from whirlpool.types import ApplianceInfo
 
-MWO_SAID = "WPR1A00000001"
-MWO_MODEL = "KMMC5019JBS"
-MWO_CAP_PART = "W11788386"
-
-_CAP_DIR = Path(__file__).parent / "data"
-
-MWO_CAPABILITY_PROFILE: dict[str, Any] = json.loads(
-    (_CAP_DIR / "capability_mwo.json").read_text()
-)
-
-THING = {
-    "thingName": MWO_SAID,
-    "thingTypeName": MWO_MODEL,
-    "attributes": {
-        "Name": b"My Microwave".hex(),
-        "Category": "Cooking",
-        "Serial": "D1",
-        "CapabilityPartNumber": MWO_CAP_PART,
-    },
-}
-
-STATE: dict[str, Any] = {
-    "primaryCavity": {
-        "cavityState": "idle",
-        "doorStatus": "closed",
-        "doorLockStatus": "unlocked",
-        "cavityLight": False,
-        "mwoPowerLevel": 0,
-        "ovenDisplayTemperature": 22.5,
-        "turnTable": "on",
-        "recipeId": "",
-        "recipeExecutionState": "idle",
-        "cookTimer": {"state": "stopped", "time": 0},
-    },
-    "hoodFan": {"userFanSpeed": "off"},
-    "hoodLight": "med",
-    "hoodLightColor": "warmWhite",
-    "temperatureUnit": "F",
-    "remoteStartEnable": True,
-    "hmiControlLockout": False,
-    "quietMode": False,
-    "sabbathMode": False,
-}
-
-
-class FakeMqttClient:
-    """In-memory MQTT stand-in.
-
-    Captures `publish()` calls and lets tests `inject()` incoming messages
-    through the same callback that `AwsAppliancesManager` registers on the
-    real `MqttClient`. Automatically replies to a published `getState`
-    with a preconfigured payload so that `Appliance.fetch_data()` resolves.
-    """
-
-    def __init__(
-        self,
-        _aws_auth: Any = None,
-        message_callback: Callable[[str, dict[str, Any]], None] | None = None,
-    ) -> None:
-        self._message_callback = message_callback
-        self.client_id: str | None = "fake-client-id"
-        self.subscribed_topics: set[str] = set()
-        self.published: list[tuple[str, dict[str, Any]]] = []
-        self._connected = True
-        self._getstate_reply: dict[str, Any] | None = None
-        self._capability_replies: dict[str, dict[str, Any] | None] = {}
-
-    def set_getstate_reply(self, payload: dict[str, Any]) -> None:
-        self._getstate_reply = payload
-
-    def set_capability_reply(
-        self, part_number: str, payload: dict[str, Any] | None
-    ) -> None:
-        """Configure the inline profile JSON returned for a capability request.
-
-        Pass `None` to simulate no response (retry/timeout path).
-        """
-        self._capability_replies[part_number] = payload
-
-    async def connect(self) -> bool:
-        return True
-
-    async def disconnect(self) -> None:
-        self._connected = False
-
-    def is_connected(self) -> bool:
-        return self._connected
-
-    def subscribe(self, topic: str) -> None:
-        self.subscribed_topics.add(topic)
-
-    def unsubscribe(self, topic: str) -> None:
-        self.subscribed_topics.discard(topic)
-
-    def publish(self, topic: str, payload: dict[str, Any]) -> None:
-        self.published.append((topic, payload))
-        cmd = payload.get("payload", {}).get("command")
-        if cmd == "getState" and self._getstate_reply is not None:
-            parts = topic.split("/")
-            # cmd/{model}/{said}/request/{client_id}
-            if len(parts) >= 5 and parts[0] == "cmd" and parts[3] == "request":
-                model, said, cid = parts[1], parts[2], parts[4]
-                response_topic = f"cmd/{model}/{said}/response/{cid}"
-                self.inject(response_topic, {"payload": self._getstate_reply})
-        # Capability download: api/capability/download/{model}/{said}
-        if topic.startswith("api/capability/download/"):
-            part = payload.get("capabilityPartNumber", "")
-            reply = self._capability_replies.get(part)
-            if reply is not None:
-                self.inject(f"{topic}/response", reply)
-
-    def inject(self, topic: str, payload: dict[str, Any]) -> None:
-        if self._message_callback is not None:
-            self._message_callback(topic, payload)
-
-
-class _FakeThings:
-    things: list[dict[str, Any]] = [THING]
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        pass
-
-    async def list_things(self) -> list[dict[str, Any]]:
-        return self.things
+_CAP_DIR = Path(__file__).parent / "data" / "awsiot"
 
 
 @pytest_asyncio.fixture
@@ -170,27 +59,11 @@ async def aws_manager(
     """An AwsAppliancesManager connected to a fake MQTT + fake Things API."""
 
     fake_mqtt_holder: dict[str, FakeMqttClient] = {}
+    mqtt_factory = make_mqtt_factory(
+        STATE, {MWO_CAP_PART: MWO_CAPABILITY_PROFILE}, fake_mqtt_holder
+    )
 
-    def _mqtt_factory(
-        aws_auth: Any,
-        message_callback: Callable[[str, dict[str, Any]], None] | None = None,
-    ) -> FakeMqttClient:
-        fake = FakeMqttClient(aws_auth, message_callback)
-        fake.set_getstate_reply(STATE)
-        fake.set_capability_reply(MWO_CAP_PART, MWO_CAPABILITY_PROFILE)
-        fake_mqtt_holder["client"] = fake
-        return fake
-
-    with (
-        patch(
-            "whirlpool.awsiot.appliancesmanager.MqttClient",
-            side_effect=_mqtt_factory,
-        ),
-        patch(
-            "whirlpool.awsiot.appliancesmanager.Things",
-            _FakeThings,
-        ),
-    ):
+    with patch_aws_manager_internals(mqtt_factory, [THING]):
         manager = AwsAppliancesManager(auth, client_session_fixture, lambda: None)
         ok = await manager.connect()
         assert ok is True
@@ -257,25 +130,12 @@ async def test_missing_fields_return_none(
 ) -> None:
     """An appliance whose state only has a few fields shouldn't crash getters."""
 
-    def _mqtt_factory(
-        aws_auth: Any,
-        message_callback: Callable[[str, dict[str, Any]], None] | None = None,
-    ) -> FakeMqttClient:
-        fake = FakeMqttClient(aws_auth, message_callback)
-        fake.set_getstate_reply({"primaryCavity": {"cavityState": "idle"}})
-        fake.set_capability_reply(MWO_CAP_PART, MWO_CAPABILITY_PROFILE)
-        return fake
+    mqtt_factory = make_mqtt_factory(
+        {"primaryCavity": {"cavityState": "idle"}},
+        {MWO_CAP_PART: MWO_CAPABILITY_PROFILE},
+    )
 
-    with (
-        patch(
-            "whirlpool.awsiot.appliancesmanager.MqttClient",
-            side_effect=_mqtt_factory,
-        ),
-        patch(
-            "whirlpool.awsiot.appliancesmanager.Things",
-            _FakeThings,
-        ),
-    ):
+    with patch_aws_manager_internals(mqtt_factory, [THING]):
         manager = AwsAppliancesManager(auth, client_session_fixture, lambda: None)
         await manager.connect()
 
@@ -302,9 +162,7 @@ async def test_state_update_reflected_via_mqtt_injection(
         "cavityState": "cooking",
         "cavityLight": True,
     }
-    fake_mqtt.inject(
-        f"dt/{MWO_MODEL}/{MWO_SAID}/state/update", new_state
-    )
+    fake_mqtt.inject(f"dt/{MWO_MODEL}/{MWO_SAID}/state/update", new_state)
 
     assert mwo.get_cavity_state() == MicrowaveCavityState.Cooking
     assert mwo.get_cavity_light() is True
@@ -318,9 +176,7 @@ async def test_attr_callback_fires_on_state_update(
     calls: list[int] = []
     mwo.register_attr_callback(lambda: calls.append(1))
 
-    fake_mqtt.inject(
-        f"dt/{MWO_MODEL}/{MWO_SAID}/state/update", STATE
-    )
+    fake_mqtt.inject(f"dt/{MWO_MODEL}/{MWO_SAID}/state/update", STATE)
     assert calls == [1]
 
 
@@ -336,9 +192,7 @@ async def test_set_cavity_light_publishes_expected_command(
 
     assert len(fake_mqtt.published) == before + 1
     topic, payload = fake_mqtt.published[-1]
-    assert topic == (
-        f"cmd/{MWO_MODEL}/{MWO_SAID}/request/{fake_mqtt.client_id}"
-    )
+    assert topic == (f"cmd/{MWO_MODEL}/{MWO_SAID}/request/{fake_mqtt.client_id}")
     assert payload["payload"]["addressee"] == "primaryCavity"
     assert payload["payload"]["command"] == "set"
     assert payload["payload"]["cavityLight"] is True
@@ -450,41 +304,6 @@ async def test_capability_profile_exposed_on_appliance(
     assert mwo.capability_profile.supports_quiet_mode
 
 
-async def _build_manager_with_things(
-    auth: Auth,
-    session: aiohttp.ClientSession,
-    things: list[dict[str, Any]],
-    capability_replies: dict[str, dict[str, Any] | None],
-) -> AwsAppliancesManager:
-    def _mqtt_factory(
-        aws_auth: Any,
-        message_callback: Callable[[str, dict[str, Any]], None] | None = None,
-    ) -> FakeMqttClient:
-        fake = FakeMqttClient(aws_auth, message_callback)
-        fake.set_getstate_reply(STATE)
-        for part, reply in capability_replies.items():
-            fake.set_capability_reply(part, reply)
-        return fake
-
-    class _Things:
-        def __init__(self, *args: Any, **kwargs: Any) -> None:
-            pass
-
-        async def list_things(self) -> list[dict[str, Any]]:
-            return things
-
-    with (
-        patch(
-            "whirlpool.awsiot.appliancesmanager.MqttClient",
-            side_effect=_mqtt_factory,
-        ),
-        patch("whirlpool.awsiot.appliancesmanager.Things", _Things),
-    ):
-        manager = AwsAppliancesManager(auth, session, lambda: None)
-        await manager.connect()
-    return manager
-
-
 async def test_cooking_without_microwave_feature_routes_to_oven(
     auth: Auth,
     client_session_fixture: aiohttp.ClientSession,
@@ -499,7 +318,7 @@ async def test_cooking_without_microwave_feature_routes_to_oven(
         "attributes": {**THING["attributes"], "CapabilityPartNumber": oven_part},
     }
 
-    manager = await _build_manager_with_things(
+    manager = await build_manager_with_things(
         auth,
         client_session_fixture,
         [oven_thing],
@@ -518,7 +337,7 @@ async def test_missing_capability_part_number_skips_appliance(
     }
     bad_thing = {**THING, "attributes": attrs}
 
-    manager = await _build_manager_with_things(
+    manager = await build_manager_with_things(
         auth, client_session_fixture, [bad_thing], {}
     )
     assert manager.all_appliances == {}
@@ -535,7 +354,7 @@ async def test_capability_download_failure_skips_appliance(
     monkeypatch.setattr(cap_mod, "CAPABILITY_DOWNLOAD_TIMEOUT", 0.01)
     monkeypatch.setattr(cap_mod, "CAPABILITY_DOWNLOAD_RETRIES", 2)
 
-    manager = await _build_manager_with_things(
+    manager = await build_manager_with_things(
         auth,
         client_session_fixture,
         [THING],
@@ -583,42 +402,6 @@ async def test_set_hood_light_color_publishes_when_supported(
     assert payload["payload"]["value"] == "coolWhite"
 
 
-async def _manager_with_profile(
-    auth: Auth,
-    session: aiohttp.ClientSession,
-    profile: dict[str, Any],
-) -> tuple[AwsAppliancesManager, FakeMqttClient]:
-    holder: dict[str, FakeMqttClient] = {}
-
-    def _mqtt_factory(
-        aws_auth: Any,
-        message_callback: Callable[[str, dict[str, Any]], None] | None = None,
-    ) -> FakeMqttClient:
-        fake = FakeMqttClient(aws_auth, message_callback)
-        fake.set_getstate_reply(STATE)
-        fake.set_capability_reply(MWO_CAP_PART, profile)
-        holder["c"] = fake
-        return fake
-
-    class _Things:
-        def __init__(self, *args: Any, **kwargs: Any) -> None:
-            pass
-
-        async def list_things(self) -> list[dict[str, Any]]:
-            return [THING]
-
-    with (
-        patch(
-            "whirlpool.awsiot.appliancesmanager.MqttClient",
-            side_effect=_mqtt_factory,
-        ),
-        patch("whirlpool.awsiot.appliancesmanager.Things", _Things),
-    ):
-        manager = AwsAppliancesManager(auth, session, lambda: None)
-        await manager.connect()
-    return manager, holder["c"]
-
-
 async def test_setters_return_false_when_capability_missing(
     auth: Auth,
     client_session_fixture: aiohttp.ClientSession,
@@ -630,7 +413,7 @@ async def test_setters_return_false_when_capability_missing(
         "partNumber": MWO_CAP_PART,
         "cavities": {"primaryCavity": {"cavityType": "microwaveOven"}},
     }
-    manager, fake_mqtt = await _manager_with_profile(
+    manager, fake_mqtt = await build_manager_with_profile(
         auth, client_session_fixture, minimal_profile
     )
     mwo = manager.microwaves[0]
@@ -663,7 +446,7 @@ async def test_mode_setters_publish_when_supported(
         "supportsHmiControlLockout": True,
         "quietMode": True,
     }
-    manager, fake_mqtt = await _manager_with_profile(
+    manager, fake_mqtt = await build_manager_with_profile(
         auth, client_session_fixture, full_profile
     )
     mwo = manager.microwaves[0]
@@ -684,9 +467,7 @@ async def test_mode_setters_publish_when_supported(
 
 
 def _profile(name: str) -> MicrowaveCapabilityProfile:
-    return parse_microwave_capability_profile(
-        json.loads((_CAP_DIR / name).read_text())
-    )
+    return parse_microwave_capability_profile(json.loads((_CAP_DIR / name).read_text()))
 
 
 def _microwave(
@@ -750,34 +531,12 @@ async def test_capability_cached_across_same_model_things(
     }
 
     fake_mqtt_holder: dict[str, FakeMqttClient] = {}
+    mqtt_factory = make_mqtt_factory(
+        STATE, {MWO_CAP_PART: MWO_CAPABILITY_PROFILE}, fake_mqtt_holder
+    )
 
-    def _mqtt_factory(
-        aws_auth: Any,
-        message_callback: Callable[[str, dict[str, Any]], None] | None = None,
-    ) -> FakeMqttClient:
-        fake = FakeMqttClient(aws_auth, message_callback)
-        fake.set_getstate_reply(STATE)
-        fake.set_capability_reply(MWO_CAP_PART, MWO_CAPABILITY_PROFILE)
-        fake_mqtt_holder["client"] = fake
-        return fake
-
-    class _Things:
-        def __init__(self, *args: Any, **kwargs: Any) -> None:
-            pass
-
-        async def list_things(self) -> list[dict[str, Any]]:
-            return [THING, second_thing]
-
-    with (
-        patch(
-            "whirlpool.awsiot.appliancesmanager.MqttClient",
-            side_effect=_mqtt_factory,
-        ),
-        patch("whirlpool.awsiot.appliancesmanager.Things", _Things),
-    ):
-        manager = AwsAppliancesManager(
-            auth, client_session_fixture, lambda: None
-        )
+    with patch_aws_manager_internals(mqtt_factory, [THING, second_thing]):
+        manager = AwsAppliancesManager(auth, client_session_fixture, lambda: None)
         await manager.connect()
 
     assert len(manager.microwaves) == 2
