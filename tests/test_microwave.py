@@ -1,13 +1,4 @@
-"""Integration tests for the AWS IoT Microwave class.
-
-Rather than driving the Microwave's internal state directly, these tests
-construct the real `AwsAppliancesManager` with a fake MQTT client and a
-fake `Things` API. State is exchanged as MQTT messages (initial getState
-reply, state-update deltas, command publishes), so the test boundary is
-the wire contract that abmantis's review asked for.
-"""
-
-from __future__ import annotations
+"""Integration tests for the AWS IoT Microwave class."""
 
 import json
 from collections.abc import AsyncGenerator
@@ -17,6 +8,7 @@ from typing import cast
 import aiohttp
 import pytest
 import pytest_asyncio
+from aiointercept import aiointercept
 
 from tests.awsiot.mocks import (
     MWO_CAP_PART,
@@ -29,7 +21,8 @@ from tests.awsiot.mocks import (
     build_manager_with_profile,
     build_manager_with_things,
     make_mqtt_factory,
-    patch_aws_manager_internals,
+    mock_aws_http_api,
+    patch_aws_manager_mqtt,
 )
 from whirlpool.auth import Auth
 from whirlpool.awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
@@ -39,6 +32,7 @@ from whirlpool.awsiot.capabilities import (
 )
 from whirlpool.awsiot.microwave import Microwave
 from whirlpool.awsiot.mqttclient import MqttClient
+from whirlpool.backendselector import BackendSelector
 from whirlpool.microwave import (
     HoodFanSpeed,
     HoodLightColor,
@@ -54,16 +48,19 @@ _CAP_DIR = Path(__file__).parent / "data" / "awsiot"
 @pytest_asyncio.fixture
 async def aws_manager(
     auth: Auth,
+    backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
+    aiointercept_mock: aiointercept,
 ) -> AsyncGenerator[tuple[AwsAppliancesManager, FakeMqttClient]]:
-    """An AwsAppliancesManager connected to a fake MQTT + fake Things API."""
+    """An AwsAppliancesManager connected to a fake MQTT + wire-mocked HTTP."""
 
     fake_mqtt_holder: dict[str, FakeMqttClient] = {}
     mqtt_factory = make_mqtt_factory(
         STATE, {MWO_CAP_PART: MWO_CAPABILITY_PROFILE}, fake_mqtt_holder
     )
+    mock_aws_http_api(aiointercept_mock, backend_selector, [THING])
 
-    with patch_aws_manager_internals(mqtt_factory, [THING]):
+    with patch_aws_manager_mqtt(mqtt_factory):
         manager = AwsAppliancesManager(auth, client_session_fixture, lambda: None)
         ok = await manager.connect()
         assert ok is True
@@ -126,7 +123,9 @@ async def test_initial_state_populates_getters(
 
 async def test_missing_fields_return_none(
     auth: Auth,
+    backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
+    aiointercept_mock: aiointercept,
 ) -> None:
     """An appliance whose state only has a few fields shouldn't crash getters."""
 
@@ -134,8 +133,9 @@ async def test_missing_fields_return_none(
         {"primaryCavity": {"cavityState": "idle"}},
         {MWO_CAP_PART: MWO_CAPABILITY_PROFILE},
     )
+    mock_aws_http_api(aiointercept_mock, backend_selector, [THING])
 
-    with patch_aws_manager_internals(mqtt_factory, [THING]):
+    with patch_aws_manager_mqtt(mqtt_factory):
         manager = AwsAppliancesManager(auth, client_session_fixture, lambda: None)
         await manager.connect()
 
@@ -306,7 +306,9 @@ async def test_capability_profile_exposed_on_appliance(
 
 async def test_cooking_without_microwave_feature_routes_to_oven(
     auth: Auth,
+    backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
+    aiointercept_mock: aiointercept,
 ) -> None:
     oven_part = "W99999999"
     oven_profile = {
@@ -321,6 +323,8 @@ async def test_cooking_without_microwave_feature_routes_to_oven(
     manager = await build_manager_with_things(
         auth,
         client_session_fixture,
+        aiointercept_mock,
+        backend_selector,
         [oven_thing],
         {oven_part: oven_profile},
     )
@@ -330,7 +334,9 @@ async def test_cooking_without_microwave_feature_routes_to_oven(
 
 async def test_missing_capability_part_number_skips_appliance(
     auth: Auth,
+    backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
+    aiointercept_mock: aiointercept,
 ) -> None:
     attrs = {
         k: v for k, v in THING["attributes"].items() if k != "CapabilityPartNumber"
@@ -338,14 +344,21 @@ async def test_missing_capability_part_number_skips_appliance(
     bad_thing = {**THING, "attributes": attrs}
 
     manager = await build_manager_with_things(
-        auth, client_session_fixture, [bad_thing], {}
+        auth,
+        client_session_fixture,
+        aiointercept_mock,
+        backend_selector,
+        [bad_thing],
+        {},
     )
     assert manager.all_appliances == {}
 
 
 async def test_capability_download_failure_skips_appliance(
     auth: Auth,
+    backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
+    aiointercept_mock: aiointercept,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # Shrink the real 10s-per-attempt timeout so the retry path runs fast.
@@ -357,6 +370,8 @@ async def test_capability_download_failure_skips_appliance(
     manager = await build_manager_with_things(
         auth,
         client_session_fixture,
+        aiointercept_mock,
+        backend_selector,
         [THING],
         {MWO_CAP_PART: None},  # no reply → timeout → skip
     )
@@ -404,7 +419,9 @@ async def test_set_hood_light_color_publishes_when_supported(
 
 async def test_setters_return_false_when_capability_missing(
     auth: Auth,
+    backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
+    aiointercept_mock: aiointercept,
 ) -> None:
     """Setters must not publish, must warn, must return False."""
     # Real-schema microwave that advertises no hood sections, no capability
@@ -414,7 +431,11 @@ async def test_setters_return_false_when_capability_missing(
         "cavities": {"primaryCavity": {"cavityType": "microwaveOven"}},
     }
     manager, fake_mqtt = await build_manager_with_profile(
-        auth, client_session_fixture, minimal_profile
+        auth,
+        client_session_fixture,
+        aiointercept_mock,
+        backend_selector,
+        minimal_profile,
     )
     mwo = manager.microwaves[0]
     before = len(fake_mqtt.published)
@@ -432,7 +453,9 @@ async def test_setters_return_false_when_capability_missing(
 
 async def test_mode_setters_publish_when_supported(
     auth: Auth,
+    backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
+    aiointercept_mock: aiointercept,
 ) -> None:
     full_profile = {
         "partNumber": MWO_CAP_PART,
@@ -447,7 +470,7 @@ async def test_mode_setters_publish_when_supported(
         "quietMode": True,
     }
     manager, fake_mqtt = await build_manager_with_profile(
-        auth, client_session_fixture, full_profile
+        auth, client_session_fixture, aiointercept_mock, backend_selector, full_profile
     )
     mwo = manager.microwaves[0]
 
@@ -516,7 +539,9 @@ class TestMicrowaveSupports:
 
 async def test_capability_cached_across_same_model_things(
     auth: Auth,
+    backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
+    aiointercept_mock: aiointercept,
 ) -> None:
     second_said = "WPR1A00000002"
     second_thing = {
@@ -534,8 +559,9 @@ async def test_capability_cached_across_same_model_things(
     mqtt_factory = make_mqtt_factory(
         STATE, {MWO_CAP_PART: MWO_CAPABILITY_PROFILE}, fake_mqtt_holder
     )
+    mock_aws_http_api(aiointercept_mock, backend_selector, [THING, second_thing])
 
-    with patch_aws_manager_internals(mqtt_factory, [THING, second_thing]):
+    with patch_aws_manager_mqtt(mqtt_factory):
         manager = AwsAppliancesManager(auth, client_session_fixture, lambda: None)
         await manager.connect()
 

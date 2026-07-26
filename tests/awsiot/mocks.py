@@ -1,20 +1,31 @@
-"""Shared fakes and manager-builder helpers for AWS IoT tests."""
+"""Shared fakes, wire mocks, and manager-builder helpers for AWS IoT tests."""
 
 import json
+import time
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 from unittest.mock import patch
 
 import aiohttp
+from aiointercept import aiointercept
 
 from whirlpool.auth import Auth
 from whirlpool.awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
+from whirlpool.awsiot.auth import COGNITO_URL, WHIRLPOOL_COGNITO_URL
+from whirlpool.awsiot.things import AWS_IOT_ENDPOINT
+from whirlpool.backendselector import BackendSelector
 
 MWO_SAID = "WPR1A00000001"
 MWO_MODEL = "KMMC5019JBS"
 MWO_CAP_PART = "W11788386"
+
+# Shaped like a real Cognito identity id (`region:uuid`): `Things.list_things`
+# derives the thing-group name from the part after the colon.
+COGNITO_IDENTITY_ID = "us-east-2:11111111-2222-3333-4444-555555555555"
+
+_THINGS_PAGE_TOKEN = "next-page"
 
 _DATA_DIR = Path(__file__).parent.parent / "data" / "awsiot"
 
@@ -97,24 +108,59 @@ class FakeMqttClient:
             self._message_callback(topic, payload)
 
 
-class FakeThings:
-    """Fake `Things` API returning a configurable list of things.
+def mock_aws_http_api(
+    http_mock: aiointercept,
+    backend_selector: BackendSelector,
+    things: list[dict[str, Any]],
+) -> None:
+    """Register wire-level mocks for the AWS-side HTTP endpoints."""
+    http_mock.post(
+        backend_selector.oauth_token_url,
+        payload={"access_token": "fake_access_token", "expires_in": 3600},
+        repeat=True,
+    )
+    http_mock.get(
+        WHIRLPOOL_COGNITO_URL,
+        payload={"identityId": COGNITO_IDENTITY_ID, "token": "fake-cognito-token"},
+        repeat=True,
+    )
+    http_mock.post(
+        COGNITO_URL,
+        payload={
+            "Credentials": {
+                "AccessKeyId": "FAKEACCESSKEYID",
+                "SecretKey": "fake-secret-key",
+                "SessionToken": "fake-session-token",
+                "Expiration": time.time() + 3600,
+            }
+        },
+        repeat=True,
+    )
 
-    Use `with_things()` to build a class configured with a specific list,
-    suitable for patching `whirlpool.awsiot.appliancesmanager.Things`.
-    """
+    group_name = COGNITO_IDENTITY_ID.split(":")[1]
+    things_url = f"https://{AWS_IOT_ENDPOINT}/thing-groups/{group_name}/things"
+    thing_names = [thing["thingName"] for thing in things]
+    if len(thing_names) > 1:
+        # Split into two pages when there is more than one thing to test pagination
+        http_mock.get(
+            things_url,
+            payload={"things": thing_names[:1], "nextToken": _THINGS_PAGE_TOKEN},
+            repeat=True,
+        )
+        http_mock.get(
+            f"{things_url}?nextToken={_THINGS_PAGE_TOKEN}",
+            payload={"things": thing_names[1:]},
+            repeat=True,
+        )
+    else:
+        http_mock.get(things_url, payload={"things": thing_names}, repeat=True)
 
-    things: list[dict[str, Any]] = []
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        pass
-
-    async def list_things(self) -> list[dict[str, Any]]:
-        return self.things
-
-    @classmethod
-    def with_things(cls, things: list[dict[str, Any]]) -> type[FakeThings]:
-        return cast("type[FakeThings]", type(cls.__name__, (cls,), {"things": things}))
+    for thing in things:
+        http_mock.get(
+            f"https://{AWS_IOT_ENDPOINT}/things/{thing['thingName']}",
+            payload=thing,
+            repeat=True,
+        )
 
 
 def make_mqtt_factory(
@@ -146,20 +192,13 @@ def make_mqtt_factory(
 
 
 @contextmanager
-def patch_aws_manager_internals(
+def patch_aws_manager_mqtt(
     mqtt_factory: Callable[..., FakeMqttClient],
-    things: list[dict[str, Any]],
 ) -> Generator[None]:
-    """Patch the manager's `MqttClient` and `Things` internals with fakes."""
-    with (
-        patch(
-            "whirlpool.awsiot.appliancesmanager.MqttClient",
-            side_effect=mqtt_factory,
-        ),
-        patch(
-            "whirlpool.awsiot.appliancesmanager.Things",
-            FakeThings.with_things(things),
-        ),
+    """Patch the manager's `MqttClient` internal with a fake."""
+    with patch(
+        "whirlpool.awsiot.appliancesmanager.MqttClient",
+        side_effect=mqtt_factory,
     ):
         yield
 
@@ -167,12 +206,15 @@ def patch_aws_manager_internals(
 async def build_manager_with_things(
     auth: Auth,
     session: aiohttp.ClientSession,
+    http_mock: aiointercept,
+    backend_selector: BackendSelector,
     things: list[dict[str, Any]],
     capability_replies: dict[str, dict[str, Any] | None],
 ) -> AwsAppliancesManager:
     """A connected manager over the given things and capability replies."""
+    mock_aws_http_api(http_mock, backend_selector, things)
     mqtt_factory = make_mqtt_factory(STATE, capability_replies)
-    with patch_aws_manager_internals(mqtt_factory, things):
+    with patch_aws_manager_mqtt(mqtt_factory):
         manager = AwsAppliancesManager(auth, session, lambda: None)
         await manager.connect()
     return manager
@@ -181,12 +223,15 @@ async def build_manager_with_things(
 async def build_manager_with_profile(
     auth: Auth,
     session: aiohttp.ClientSession,
+    http_mock: aiointercept,
+    backend_selector: BackendSelector,
     profile: dict[str, Any],
 ) -> tuple[AwsAppliancesManager, FakeMqttClient]:
     """A connected manager whose microwave capability reply is `profile`."""
+    mock_aws_http_api(http_mock, backend_selector, [THING])
     holder: dict[str, FakeMqttClient] = {}
     mqtt_factory = make_mqtt_factory(STATE, {MWO_CAP_PART: profile}, holder)
-    with patch_aws_manager_internals(mqtt_factory, [THING]):
+    with patch_aws_manager_mqtt(mqtt_factory):
         manager = AwsAppliancesManager(auth, session, lambda: None)
         await manager.connect()
     return manager, holder["client"]
