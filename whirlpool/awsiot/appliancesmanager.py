@@ -30,6 +30,18 @@ from .washer import Washer
 LOGGER = logging.getLogger(__name__)
 
 
+def _is_dryer_model(model_number: str) -> bool:
+    """Whether a laundry model number denotes a dryer.
+
+    Whirlpool/Maytag/KitchenAid laundry model numbers encode the product type
+    in the third character: "D" for dryers (e.g. MGD/MED/WGD/WED) and "W" for
+    washers (e.g. MFW/MHW/WFW/WTW). Used to split the ambiguous "laundry"
+    category, since some dryers report category "laundry" instead of
+    "fabriccare".
+    """
+    return len(model_number) >= 3 and model_number[2:3].upper() == "D"
+
+
 class AppliancesManager:
     def __init__(
         self,
@@ -169,8 +181,14 @@ class AppliancesManager:
             appliance = Dryer(self._mqtt, appliance_data)
             self._dryers[appliance_data.said] = appliance
         elif appliance_data.category == "laundry":
-            appliance = Washer(self._mqtt, appliance_data)
-            self._washers[appliance_data.said] = appliance
+            # Some dryers report category "laundry" instead of "fabriccare",
+            # so disambiguate washers from dryers by model number.
+            if _is_dryer_model(appliance_data.model_number):
+                appliance = Dryer(self._mqtt, appliance_data)
+                self._dryers[appliance_data.said] = appliance
+            else:
+                appliance = Washer(self._mqtt, appliance_data)
+                self._washers[appliance_data.said] = appliance
         elif appliance_data.category == "refrigerator":
             appliance = Refrigerator(self._mqtt, appliance_data)
             self._refrigerators[appliance_data.said] = appliance
