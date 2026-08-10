@@ -97,6 +97,7 @@ class AppliancesManager:
             "ddm_cooking_bio_self_clean_steam_tourmaline_v2",  # <-- W9 Ovens
             "ddm_cooking_bi_mwo_self_clean_steam_tourmaline_v2",  # <-- W9 MWOs
             "ddm_cooking_bio_std_meat_probe_indigo_v2",
+            "ddm_cooking_ka_trs_bio_single_v1",
         ]
 
         LOGGER.debug("Adding appliance %s", appliance_data)
