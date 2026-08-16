@@ -9,7 +9,7 @@ from ..microwave import (
     HoodLightLevel,
     MicrowaveCavityState,
     MicrowaveDoorStatus,
-    RecipeId,
+    Recipe,
 )
 from ..microwave import (
     Microwave as MicrowaveABC,
@@ -243,7 +243,7 @@ class Microwave(MicrowaveABC, Appliance):
     @override
     async def start_cook(
         self,
-        recipe: RecipeId,
+        recipe: Recipe,
         power_level: int,
         duration_seconds: int,
     ) -> bool:

@@ -33,7 +33,7 @@ from whirlpool.microwave import (
     HoodLightLevel,
     MicrowaveCavityState,
     MicrowaveDoorStatus,
-    RecipeId,
+    Recipe,
 )
 from whirlpool.types import ApplianceInfo
 
@@ -797,7 +797,7 @@ async def test_start_cook_publishes_expected_payload(
     mwo = manager.microwaves[0]
 
     before = len(fake_mqtt.published)
-    ok = await mwo.start_cook(RecipeId.Microwave, 50, 30)
+    ok = await mwo.start_cook(Recipe.Microwave, 50, 30)
     assert ok is True
 
     assert len(fake_mqtt.published) == before + 1
@@ -825,7 +825,7 @@ async def test_start_cook_returns_false_when_remote_start_disabled(
     )
 
     before = len(fake_mqtt.published)
-    ok = await mwo.start_cook(RecipeId.Reheat, 100, 60)
+    ok = await mwo.start_cook(Recipe.Reheat, 100, 60)
     assert ok is False
     assert len(fake_mqtt.published) == before  # nothing published
 
@@ -839,7 +839,7 @@ async def test_start_cook_rejects_invalid_power_level(
     mwo = manager.microwaves[0]
     before = len(fake_mqtt.published)
     with pytest.raises(ValueError):
-        await mwo.start_cook(RecipeId.Microwave, power_level, 30)
+        await mwo.start_cook(Recipe.Microwave, power_level, 30)
     assert len(fake_mqtt.published) == before
 
 
@@ -852,7 +852,7 @@ async def test_start_cook_rejects_invalid_duration(
     mwo = manager.microwaves[0]
     before = len(fake_mqtt.published)
     with pytest.raises(ValueError):
-        await mwo.start_cook(RecipeId.Microwave, 50, duration)
+        await mwo.start_cook(Recipe.Microwave, 50, duration)
     assert len(fake_mqtt.published) == before
 
 
@@ -876,15 +876,15 @@ async def test_cancel_cook_publishes_expected_payload(
 @pytest.mark.parametrize(
     "recipe,wire_value",
     [
-        (RecipeId.Microwave, "microwave"),
-        (RecipeId.Reheat, "reheat"),
-        (RecipeId.Defrost, "defrost"),
-        (RecipeId.Soften, "soften"),
+        (Recipe.Microwave, "microwave"),
+        (Recipe.Reheat, "reheat"),
+        (Recipe.Defrost, "defrost"),
+        (Recipe.Soften, "soften"),
     ],
 )
 async def test_start_cook_recipe_enum_wire_value(
     aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
-    recipe: RecipeId,
+    recipe: Recipe,
     wire_value: str,
 ) -> None:
     manager, fake_mqtt = aws_manager

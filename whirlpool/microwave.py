@@ -19,7 +19,7 @@ class MicrowaveDoorStatus(Enum):
     Closed = "closed"
 
 
-class RecipeId(Enum):
+class Recipe(Enum):
     Microwave = "microwave"
     Reheat = "reheat"
     Defrost = "defrost"
@@ -83,7 +83,7 @@ class Microwave(Appliance, ABC):
     @abstractmethod
     async def start_cook(
         self,
-        recipe: RecipeId,
+        recipe: Recipe,
         power_level: int,
         duration_seconds: int,
     ) -> bool: ...
