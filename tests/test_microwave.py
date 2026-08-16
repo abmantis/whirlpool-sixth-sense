@@ -797,7 +797,7 @@ async def test_start_cook_publishes_expected_payload(
     mwo = manager.microwaves[0]
 
     before = len(fake_mqtt.published)
-    ok = await mwo.start_cook(Recipe.Microwave, 50, 30)
+    ok = await mwo.set_cook(Recipe.Microwave, 50, 30)
     assert ok is True
 
     assert len(fake_mqtt.published) == before + 1
@@ -825,7 +825,7 @@ async def test_start_cook_returns_false_when_remote_start_disabled(
     )
 
     before = len(fake_mqtt.published)
-    ok = await mwo.start_cook(Recipe.Reheat, 100, 60)
+    ok = await mwo.set_cook(Recipe.Reheat, 100, 60)
     assert ok is False
     assert len(fake_mqtt.published) == before  # nothing published
 
@@ -839,7 +839,7 @@ async def test_start_cook_rejects_invalid_power_level(
     mwo = manager.microwaves[0]
     before = len(fake_mqtt.published)
     with pytest.raises(ValueError):
-        await mwo.start_cook(Recipe.Microwave, power_level, 30)
+        await mwo.set_cook(Recipe.Microwave, power_level, 30)
     assert len(fake_mqtt.published) == before
 
 
@@ -852,7 +852,7 @@ async def test_start_cook_rejects_invalid_duration(
     mwo = manager.microwaves[0]
     before = len(fake_mqtt.published)
     with pytest.raises(ValueError):
-        await mwo.start_cook(Recipe.Microwave, 50, duration)
+        await mwo.set_cook(Recipe.Microwave, 50, duration)
     assert len(fake_mqtt.published) == before
 
 
@@ -863,7 +863,7 @@ async def test_cancel_cook_publishes_expected_payload(
     mwo = manager.microwaves[0]
 
     before = len(fake_mqtt.published)
-    ok = await mwo.cancel_cook()
+    ok = await mwo.stop_cook()
     assert ok is True
 
     assert len(fake_mqtt.published) == before + 1
@@ -889,6 +889,6 @@ async def test_start_cook_recipe_enum_wire_value(
 ) -> None:
     manager, fake_mqtt = aws_manager
     mwo = manager.microwaves[0]
-    await mwo.start_cook(recipe, 50, 30)
+    await mwo.set_cook(recipe, 50, 30)
     _, payload = fake_mqtt.published[-1]
     assert payload["payload"]["recipeID"] == wire_value

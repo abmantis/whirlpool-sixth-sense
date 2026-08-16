@@ -241,7 +241,7 @@ class Microwave(MicrowaveABC, Appliance):
         return True
 
     @override
-    async def start_cook(
+    async def set_cook(
         self,
         recipe: Recipe,
         power_level: int,
@@ -269,6 +269,6 @@ class Microwave(MicrowaveABC, Appliance):
         return True
 
     @override
-    async def cancel_cook(self) -> bool:
+    async def stop_cook(self) -> bool:
         self._send_command("cancel", {"addressee": "primaryCavity"})
         return True

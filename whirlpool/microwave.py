@@ -81,7 +81,7 @@ class Microwave(Appliance, ABC):
     def get_recipe_execution_state(self) -> str | None: ...
 
     @abstractmethod
-    async def start_cook(
+    async def set_cook(
         self,
         recipe: Recipe,
         power_level: int,
@@ -89,7 +89,7 @@ class Microwave(Appliance, ABC):
     ) -> bool: ...
 
     @abstractmethod
-    async def cancel_cook(self) -> bool: ...
+    async def stop_cook(self) -> bool: ...
 
     @abstractmethod
     def get_mwo_power_level(self) -> int | None: ...
