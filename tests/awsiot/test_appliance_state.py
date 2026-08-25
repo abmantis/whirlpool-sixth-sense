@@ -29,6 +29,33 @@ class TestUpdateState:
             "fan": "off",
         }
 
+    def test_nested_partial_update_keeps_sibling_keys(self) -> None:
+        appliance = _make_appliance()
+        appliance.update_state(
+            {
+                "hoodLight": "off",
+                "primaryCavity": {
+                    "doorStatus": "closed",
+                    "cavityState": "idle",
+                    "cookTimer": {"time": 0, "state": "idle"},
+                },
+            }
+        )
+
+        # e.g. a cook starting: only the cavity's changed fields are pushed
+        appliance.update_state(
+            {"primaryCavity": {"cavityState": "cooking", "cookTimer": {"time": 10}}}
+        )
+
+        assert appliance.get_raw_data() == {
+            "hoodLight": "off",
+            "primaryCavity": {
+                "doorStatus": "closed",
+                "cavityState": "cooking",
+                "cookTimer": {"time": 10, "state": "idle"},
+            },
+        }
+
     def test_update_sets_initial_data_event_and_fires_callbacks(self) -> None:
         appliance = _make_appliance()
         callback = MagicMock()
