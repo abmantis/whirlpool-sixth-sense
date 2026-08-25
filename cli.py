@@ -8,6 +8,7 @@ import aiohttp
 
 from cli_ac_menu import show_aircon_menu
 from cli_dryer_menu import show_dryer_menu
+from cli_microwave_menu import show_microwave_menu
 from cli_oven_menu import show_oven_menu
 from cli_refrigerator_menu import show_refrigerator_menu
 from cli_washer_menu import show_washer_menu
@@ -95,6 +96,7 @@ async def start():
                 *appliance_manager.washers,
                 *appliance_manager.ovens,
                 *appliance_manager.refrigerators,
+                *appliance_manager.microwaves,
             ]
             if args.list:
                 print("\n".join(map(str, all_appliances)))
@@ -137,6 +139,11 @@ async def start():
             for rf_data in appliance_manager.refrigerators:
                 if rf_data.said == args.said:
                     await show_refrigerator_menu(rf_data)
+                    return
+
+            for mw_data in appliance_manager.microwaves:
+                if mw_data.said == args.said:
+                    await show_microwave_menu(mw_data)
                     return
 
 
