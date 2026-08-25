@@ -187,7 +187,8 @@ class CapabilityDownloader:
             self._mqtt.unsubscribe(response_topic)
 
     async def _download_file(self, mqtt_response: dict[str, Any]) -> dict[str, Any]:
-        url = mqtt_response.get("url")
+        # The broker replies with {"responseCode": 200, "downloadUrl": "..."}.
+        url = mqtt_response.get("downloadUrl") or mqtt_response.get("url")
         if not isinstance(url, str) or not url.startswith("http"):
             return mqtt_response
         async with self._session.get(url) as resp:

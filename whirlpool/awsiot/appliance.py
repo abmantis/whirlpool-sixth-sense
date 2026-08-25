@@ -66,8 +66,13 @@ class Appliance(BaseAppliance):
         )
 
     def update_state(self, new_state: dict[str, Any]):
-        """Update appliance state and call callbacks."""
-        self._data_dict = new_state
+        """Merge a (possibly partial) state update and call callbacks.
+
+        `dt/.../state/update` messages only carry the attributes that changed,
+        so replacing the dict would drop everything else until the next
+        getState round-trip.
+        """
+        self._data_dict = {**self._data_dict, **new_state}
         self._initial_data_event.set()
         for callback in self._attr_changed:
             callback()

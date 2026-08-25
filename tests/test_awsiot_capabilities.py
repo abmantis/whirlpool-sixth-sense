@@ -111,6 +111,8 @@ PART = "W1111"
 REQ_TOPIC = f"api/capability/download/{MODEL}/{SAID}"
 RESP_TOPIC = f"{REQ_TOPIC}/response"
 CAP_URL = "https://caps.example.com/profile.json"
+# Shape of the broker's reply on api/capability/download/.../response
+CAP_RESPONSE = {"responseCode": 200, "downloadUrl": CAP_URL}
 FIXTURE_JSON = {
     "partNumber": PART,
     "appliance": {"features": {"microwaveOven": {}}},
@@ -177,7 +179,7 @@ class TestHandleMessageDispatch:
                 if mqtt.published:
                     break
                 await asyncio.sleep(0)
-            consumed = downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
+            consumed = downloader.handle_message(RESP_TOPIC, CAP_RESPONSE)
             assert consumed is True
 
         _, raw = await asyncio.gather(
@@ -213,7 +215,7 @@ class TestDownloaderCache:
                 if mqtt.published:
                     break
                 await asyncio.sleep(0)
-            downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
+            downloader.handle_message(RESP_TOPIC, CAP_RESPONSE)
 
         _, first = await asyncio.gather(
             respond_once(), downloader.get(SAID, MODEL, PART)
@@ -244,7 +246,7 @@ class TestDownloaderRetry:
         async def respond_on_third() -> None:
             while len(mqtt.published) < 3:
                 await asyncio.sleep(0.01)
-            downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
+            downloader.handle_message(RESP_TOPIC, CAP_RESPONSE)
 
         _, raw = await asyncio.gather(
             respond_on_third(), downloader.get(SAID, MODEL, PART)
@@ -290,7 +292,7 @@ class TestDownloaderFetchBody:
                 if mqtt.published:
                     break
                 await asyncio.sleep(0)
-            downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
+            downloader.handle_message(RESP_TOPIC, CAP_RESPONSE)
 
         with pytest.raises(CapabilityDownloadError):
             await asyncio.gather(respond(), downloader.get(SAID, MODEL, PART))
