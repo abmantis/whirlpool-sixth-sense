@@ -15,6 +15,7 @@ from aiointercept import aiointercept
 from whirlpool.awsiot.capabilities import (
     CapabilityDownloader,
     CapabilityDownloadError,
+    OptionRange,
     has_microwave_cavity,
     parse_microwave_capability_profile,
 )
@@ -78,6 +79,43 @@ class TestParseMicrowaveCapability:
         assert not profile.supports_quiet_mode
         assert not profile.supports_sabbath_mode
 
+    def test_recipe_options_parsed_from_real_file(self) -> None:
+        profile = parse_microwave_capability_profile(_load("capability_mwo.json"))
+        recipes = profile.recipes
+
+        microwave = recipes["microwave"]
+        assert microwave.power_level == OptionRange(
+            min=10, max=100, step=10, default=100
+        )
+        assert microwave.fixed_power_level is None
+        assert microwave.cook_time == OptionRange(min=5, max=5940, step=1, default=5)
+
+        reheat = recipes["reheat"]
+        assert reheat.power_level is None
+        assert reheat.fixed_power_level == 70
+        assert reheat.cook_time.default == 30
+
+        keep_warm = recipes["keepWarm"]
+        assert keep_warm.cook_time == OptionRange(
+            min=900, max=3600, step=900, default=1800
+        )
+
+        # Sensor/auto recipes keyed on amount/weight are not timed recipes.
+        assert "soupReheat" not in recipes
+        assert "meatDefrost" not in recipes
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        [(10, True), (100, True), (50, True), (55, False), (0, False), (110, False)],
+    )
+    def test_option_range_contains_respects_step(
+        self, value: int, expected: bool
+    ) -> None:
+        assert (
+            OptionRange(min=10, max=100, step=10, default=100).contains(value)
+            is expected
+        )
+
     def test_profile_equality_is_value_based(self) -> None:
         raw = _load("capability_mwo.json")
         assert parse_microwave_capability_profile(
@@ -111,6 +149,8 @@ PART = "W1111"
 REQ_TOPIC = f"api/capability/download/{MODEL}/{SAID}"
 RESP_TOPIC = f"{REQ_TOPIC}/response"
 CAP_URL = "https://caps.example.com/profile.json"
+# Shape of the broker's reply on api/capability/download/.../response
+CAP_RESPONSE = {"responseCode": 200, "downloadUrl": CAP_URL}
 FIXTURE_JSON = {
     "partNumber": PART,
     "appliance": {"features": {"microwaveOven": {}}},
@@ -177,7 +217,7 @@ class TestHandleMessageDispatch:
                 if mqtt.published:
                     break
                 await asyncio.sleep(0)
-            consumed = downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
+            consumed = downloader.handle_message(RESP_TOPIC, CAP_RESPONSE)
             assert consumed is True
 
         _, raw = await asyncio.gather(
@@ -213,7 +253,7 @@ class TestDownloaderCache:
                 if mqtt.published:
                     break
                 await asyncio.sleep(0)
-            downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
+            downloader.handle_message(RESP_TOPIC, CAP_RESPONSE)
 
         _, first = await asyncio.gather(
             respond_once(), downloader.get(SAID, MODEL, PART)
@@ -244,7 +284,7 @@ class TestDownloaderRetry:
         async def respond_on_third() -> None:
             while len(mqtt.published) < 3:
                 await asyncio.sleep(0.01)
-            downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
+            downloader.handle_message(RESP_TOPIC, CAP_RESPONSE)
 
         _, raw = await asyncio.gather(
             respond_on_third(), downloader.get(SAID, MODEL, PART)
@@ -290,9 +330,37 @@ class TestDownloaderFetchBody:
                 if mqtt.published:
                     break
                 await asyncio.sleep(0)
-            downloader.handle_message(RESP_TOPIC, {"url": CAP_URL})
+            downloader.handle_message(RESP_TOPIC, CAP_RESPONSE)
 
         with pytest.raises(CapabilityDownloadError):
+            await asyncio.gather(respond(), downloader.get(SAID, MODEL, PART))
+
+    async def test_non_200_response_code_is_download_error(
+        self,
+        http_session: aiohttp.ClientSession,
+        aio_mock: aiointercept,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        monkeypatch.setattr(
+            "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_TIMEOUT", 1.0
+        )
+        monkeypatch.setattr(
+            "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_RETRIES", 1
+        )
+        mqtt = FakeMqttClient()
+        downloader = CapabilityDownloader(mqtt, http_session)
+        aio_mock.get(CAP_URL, body=json.dumps(FIXTURE_JSON))
+
+        async def respond() -> None:
+            for _ in range(50):
+                if mqtt.published:
+                    break
+                await asyncio.sleep(0)
+            downloader.handle_message(
+                RESP_TOPIC, {"responseCode": 404, "downloadUrl": CAP_URL}
+            )
+
+        with pytest.raises(CapabilityDownloadError, match="responseCode 404"):
             await asyncio.gather(respond(), downloader.get(SAID, MODEL, PART))
 
     async def test_document_without_part_number_is_download_error(
@@ -353,7 +421,5 @@ class TestDownloaderFetchBody:
                 await asyncio.sleep(0)
             downloader.handle_message(RESP_TOPIC, FIXTURE_JSON)
 
-        _, raw = await asyncio.gather(
-            respond(), downloader.get(SAID, MODEL, PART)
-        )
+        _, raw = await asyncio.gather(respond(), downloader.get(SAID, MODEL, PART))
         assert raw["partNumber"] == PART

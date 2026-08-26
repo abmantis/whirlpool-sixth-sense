@@ -582,7 +582,7 @@ async def test_start_cook_publishes_expected_payload(
     mwo = manager.microwaves[0]
 
     before = len(fake_mqtt.published)
-    ok = await mwo.set_cook(Recipe.Microwave, 50, 30)
+    ok = await mwo.set_cook(Recipe.Microwave, 30, power_level=50)
     assert ok is True
 
     assert len(fake_mqtt.published) == before + 1
@@ -594,7 +594,7 @@ async def test_start_cook_publishes_expected_payload(
     assert body["recipeID"] == "microwave"
     assert body["mwoPowerLevel"] == 50.0
     assert isinstance(body["mwoPowerLevel"], float)
-    assert body["cookTimer"] == {"command": "start", "time": 30}
+    assert body["cookTimer"] == {"command": "run", "time": 30}
 
 
 async def test_start_cook_returns_false_when_remote_start_disabled(
@@ -610,13 +610,14 @@ async def test_start_cook_returns_false_when_remote_start_disabled(
     )
 
     before = len(fake_mqtt.published)
-    ok = await mwo.set_cook(Recipe.Reheat, 100, 60)
+    ok = await mwo.set_cook(Recipe.Reheat, 60)
     assert ok is False
     assert len(fake_mqtt.published) == before  # nothing published
 
 
-@pytest.mark.parametrize("power_level", [0, -1, 101, 200])
-async def test_start_cook_rejects_invalid_power_level(
+# capability_mwo.json: microwave.mwoPowerLevel range is 10..100 step 10
+@pytest.mark.parametrize("power_level", [0, -1, 5, 55, 101, 200])
+async def test_start_cook_rejects_power_level_outside_capability_range(
     aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
     power_level: int,
 ) -> None:
@@ -624,12 +625,24 @@ async def test_start_cook_rejects_invalid_power_level(
     mwo = manager.microwaves[0]
     before = len(fake_mqtt.published)
     with pytest.raises(ValueError):
-        await mwo.set_cook(Recipe.Microwave, power_level, 30)
+        await mwo.set_cook(Recipe.Microwave, 30, power_level=power_level)
     assert len(fake_mqtt.published) == before
 
 
-@pytest.mark.parametrize("duration", [0, -5])
-async def test_start_cook_rejects_invalid_duration(
+async def test_start_cook_requires_power_level_for_editable_recipe(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    before = len(fake_mqtt.published)
+    with pytest.raises(ValueError):
+        await mwo.set_cook(Recipe.Microwave, 30)
+    assert len(fake_mqtt.published) == before
+
+
+# capability_mwo.json: cookTime range is 5..5940 step 1
+@pytest.mark.parametrize("duration", [0, -5, 4, 5941])
+async def test_start_cook_rejects_duration_outside_capability_range(
     aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
     duration: int,
 ) -> None:
@@ -637,8 +650,62 @@ async def test_start_cook_rejects_invalid_duration(
     mwo = manager.microwaves[0]
     before = len(fake_mqtt.published)
     with pytest.raises(ValueError):
-        await mwo.set_cook(Recipe.Microwave, 50, duration)
+        await mwo.set_cook(Recipe.Microwave, duration, power_level=50)
     assert len(fake_mqtt.published) == before
+
+
+@pytest.mark.parametrize(
+    "recipe,fixed_power",
+    [(Recipe.Reheat, 70), (Recipe.Defrost, 20), (Recipe.Soften, 20)],
+)
+async def test_start_cook_fixed_power_recipes_omit_power_level(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+    recipe: Recipe,
+    fixed_power: int,
+) -> None:
+    """Recipes with mwoPowerLevel under nonEditableOptions must not send it."""
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+
+    options = mwo.get_recipe_options(recipe)
+    assert options is not None
+    assert options.power_level is None
+    assert options.fixed_power_level == fixed_power
+
+    ok = await mwo.set_cook(recipe, 60)
+    assert ok is True
+    body = fake_mqtt.published[-1][1]["payload"]
+    assert body["recipeID"] == recipe.value
+    assert "mwoPowerLevel" not in body
+    assert body["cookTimer"] == {"command": "run", "time": 60}
+
+
+async def test_start_cook_rejects_power_level_for_fixed_power_recipe(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    before = len(fake_mqtt.published)
+    with pytest.raises(ValueError, match="fixed power level of 70"):
+        await mwo.set_cook(Recipe.Reheat, 60, power_level=100)
+    assert len(fake_mqtt.published) == before
+
+
+async def test_command_acks_and_rejections_do_not_touch_state(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    before = mwo.get_raw_data()
+    topic = f"cmd/{MWO_MODEL}/{MWO_SAID}/response/{fake_mqtt.client_id}"
+
+    fake_mqtt.inject(topic, {"requestId": "1", "response": "accepted"})
+    fake_mqtt.inject(
+        topic,
+        {"requestId": "2", "response": "rejected", "payload": {"errorCode": "C000"}},
+    )
+
+    assert mwo.get_raw_data() == before
 
 
 async def test_cancel_cook_publishes_expected_payload(
@@ -674,6 +741,9 @@ async def test_start_cook_recipe_enum_wire_value(
 ) -> None:
     manager, fake_mqtt = aws_manager
     mwo = manager.microwaves[0]
-    await mwo.set_cook(recipe, 50, 30)
+    if recipe is Recipe.Microwave:
+        await mwo.set_cook(recipe, 30, power_level=50)
+    else:
+        await mwo.set_cook(recipe, 30)
     _, payload = fake_mqtt.published[-1]
     assert payload["payload"]["recipeID"] == wire_value
