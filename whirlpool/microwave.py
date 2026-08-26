@@ -84,9 +84,15 @@ class Microwave(Appliance, ABC):
     async def set_cook(
         self,
         recipe: Recipe,
-        power_level: int,
         duration_seconds: int,
-    ) -> bool: ...
+        power_level: int | None = None,
+    ) -> bool:
+        """Start `recipe` for `duration_seconds`.
+
+        `power_level` (percent) is required for recipes with an editable power
+        level (e.g. Microwave) and must be omitted for recipes whose power is
+        fixed by the appliance (e.g. Reheat, Defrost, Soften).
+        """
 
     @abstractmethod
     async def stop_cook(self) -> bool: ...

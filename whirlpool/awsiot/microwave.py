@@ -1,7 +1,7 @@
 """Concrete awsiot Microwave — translates MQTT state to the Microwave ABC."""
 
 import logging
-from typing import override
+from typing import Any, override
 
 from ..microwave import (
     HoodFanSpeed,
@@ -16,7 +16,7 @@ from ..microwave import (
 )
 from ..types import ApplianceInfo
 from .appliance import Appliance, gated_set
-from .capabilities import MicrowaveCapabilityProfile
+from .capabilities import MicrowaveCapabilityProfile, MicrowaveRecipeOptions
 from .mqttclient import MqttClient
 
 LOGGER = logging.getLogger(__name__)
@@ -92,9 +92,7 @@ class Microwave(MicrowaveABC, Appliance):
 
     @override
     async def set_cavity_light(self, on: bool) -> bool:
-        self._send_command(
-            "set", {"addressee": "primaryCavity", "cavityLight": on}
-        )
+        self._send_command("set", {"addressee": "primaryCavity", "cavityLight": on})
         return True
 
     @override
@@ -217,9 +215,7 @@ class Microwave(MicrowaveABC, Appliance):
     @override
     @gated_set(supports_hood_light_color, "hood light color control")
     async def set_hood_light_color(self, color: HoodLightColor) -> bool:
-        self._send_command(
-            "set", {"addressee": "hoodLightColor", "value": color.value}
-        )
+        self._send_command("set", {"addressee": "hoodLightColor", "value": color.value})
         return True
 
     @override
@@ -240,35 +236,58 @@ class Microwave(MicrowaveABC, Appliance):
         self._send_command("set", {"addressee": "sabbathMode", "value": on})
         return True
 
+    def get_recipe_options(self, recipe: Recipe) -> MicrowaveRecipeOptions | None:
+        """Editable ranges for `recipe` on this model, or None if unsupported."""
+        return self.capability_profile.recipes.get(recipe.value)
+
     @override
     async def set_cook(
         self,
         recipe: Recipe,
-        power_level: int,
         duration_seconds: int,
+        power_level: int | None = None,
     ) -> bool:
-        if not 1 <= power_level <= 100:
-            raise ValueError("power_level must be between 1 and 100")
-        if duration_seconds < 1:
-            raise ValueError("duration_seconds must be >= 1")
+        options = self.get_recipe_options(recipe)
+        if options is None:
+            raise ValueError(f"recipe {recipe.value!r} is not supported by {self.said}")
+
+        cook_time = options.cook_time
+        if not cook_time.contains(duration_seconds):
+            raise ValueError(
+                f"duration_seconds must be {cook_time.min}-{cook_time.max} s "
+                f"in steps of {cook_time.step} for recipe {recipe.value!r}"
+            )
+
+        payload: dict[str, Any] = {
+            "addressee": "primaryCavity",
+            "recipeID": recipe.value,
+            "cookTimer": {"command": "run", "time": duration_seconds},
+        }
+        if options.power_level is not None:
+            if power_level is None:
+                raise ValueError(f"recipe {recipe.value!r} requires power_level")
+            if not options.power_level.contains(power_level):
+                raise ValueError(
+                    f"power_level must be {options.power_level.min}-"
+                    f"{options.power_level.max} in steps of "
+                    f"{options.power_level.step} for recipe {recipe.value!r}"
+                )
+            payload["mwoPowerLevel"] = float(power_level)
+        elif power_level is not None:
+            fixed = options.fixed_power_level
+            raise ValueError(
+                f"recipe {recipe.value!r} has a fixed power level"
+                + (f" of {fixed}" if fixed is not None else "")
+                + "; omit power_level"
+            )
+
         if not self.get_remote_start_enabled():
             LOGGER.warning(
                 "Remote start not enabled on %s — enable on the physical panel",
                 self.said,
             )
             return False
-        self._send_command(
-            "run",
-            {
-                "addressee": "primaryCavity",
-                "recipeID": recipe.value,
-                "mwoPowerLevel": float(power_level),
-                # Timer commands are run/set/add (no "start"); the app uses
-                # "run" when starting a recipe. An unknown command is ignored
-                # and the recipe falls back to its default cookTime (5 s).
-                "cookTimer": {"command": "run", "time": duration_seconds},
-            },
-        )
+        self._send_command("run", payload)
         return True
 
     @override

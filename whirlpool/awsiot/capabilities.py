@@ -15,7 +15,7 @@ import asyncio
 import json
 import logging
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import aiohttp
@@ -31,6 +31,35 @@ class CapabilityDownloadError(Exception):
 
 
 @dataclass(frozen=True)
+class OptionRange:
+    """Inclusive numeric range with a step, as declared under whrOptions."""
+
+    min: int
+    max: int
+    step: int
+    default: int
+
+    def contains(self, value: int) -> bool:
+        if not self.min <= value <= self.max:
+            return False
+        return self.step <= 1 or (value - self.min) % self.step == 0
+
+
+@dataclass(frozen=True)
+class MicrowaveRecipeOptions:
+    """Editable options of one cavity recipe (e.g. "microwave", "reheat").
+
+    `power_level` is the editable mwoPowerLevel range, or None when the recipe
+    has a fixed power level (listed under nonEditableOptions) that must not be
+    sent. `cook_time` is the editable cookTime range in seconds.
+    """
+
+    cook_time: OptionRange
+    power_level: OptionRange | None = None
+    fixed_power_level: int | None = None
+
+
+@dataclass(frozen=True)
 class MicrowaveCapabilityProfile:
     """The capability switches the Microwave class currently uses."""
 
@@ -41,6 +70,7 @@ class MicrowaveCapabilityProfile:
     supports_quiet_mode: bool
     supports_control_lock: bool
     supports_sabbath_mode: bool
+    recipes: dict[str, MicrowaveRecipeOptions] = field(default_factory=dict)
 
 
 def _read_part_number(raw: dict[str, Any]) -> str:
@@ -64,9 +94,64 @@ def _cavity_metas(raw: dict[str, Any]) -> list[dict[str, Any]]:
 
 def has_microwave_cavity(raw: dict[str, Any]) -> bool:
     """Whether the capability file declares a microwave oven cavity."""
-    return any(
-        meta.get("cavityType") == "microwaveOven" for meta in _cavity_metas(raw)
+    return any(meta.get("cavityType") == "microwaveOven" for meta in _cavity_metas(raw))
+
+
+def _option_range(option: Any) -> OptionRange | None:
+    if not isinstance(option, dict):
+        return None
+    rng = option.get("range")
+    if not isinstance(rng, dict):
+        return None
+    try:
+        return OptionRange(
+            min=int(rng["min"]),
+            max=int(rng["max"]),
+            step=int(rng.get("step", 1)),
+            default=int(rng.get("default", rng["min"])),
+        )
+    except KeyError, TypeError, ValueError:
+        return None
+
+
+def _parse_recipe_options(recipe: Any) -> MicrowaveRecipeOptions | None:
+    if not isinstance(recipe, dict):
+        return None
+    options = recipe.get("whrOptions")
+    if not isinstance(options, dict):
+        return None
+    required = options.get("requiredOptions")
+    required = required if isinstance(required, dict) else {}
+    non_editable = options.get("nonEditableOptions")
+    non_editable = non_editable if isinstance(non_editable, dict) else {}
+
+    cook_time = _option_range(required.get("cookTime"))
+    if cook_time is None:
+        # Not a timed recipe (e.g. sensor/auto recipes keyed on amount/weight).
+        return None
+
+    fixed_power = non_editable.get("mwoPowerLevel")
+    return MicrowaveRecipeOptions(
+        cook_time=cook_time,
+        power_level=_option_range(required.get("mwoPowerLevel")),
+        fixed_power_level=fixed_power if isinstance(fixed_power, int) else None,
     )
+
+
+def _parse_recipes(raw: dict[str, Any]) -> dict[str, MicrowaveRecipeOptions]:
+    """Collect the timed recipes of the microwave cavity, keyed by wire name."""
+    recipes: dict[str, MicrowaveRecipeOptions] = {}
+    for meta in _cavity_metas(raw):
+        if meta.get("cavityType") != "microwaveOven":
+            continue
+        declared = meta.get("recipes")
+        if not isinstance(declared, dict):
+            continue
+        for name, recipe in declared.items():
+            parsed = _parse_recipe_options(recipe)
+            if parsed is not None:
+                recipes[name] = parsed
+    return recipes
 
 
 def parse_microwave_capability_profile(
@@ -85,6 +170,7 @@ def parse_microwave_capability_profile(
         supports_quiet_mode=raw.get("quietMode") is True,
         supports_control_lock=raw.get("supportsHmiControlLockout") is True,
         supports_sabbath_mode=supports_sabbath_mode,
+        recipes=_parse_recipes(raw),
     )
 
 
@@ -129,9 +215,7 @@ class CapabilityDownloader:
         last_err: Exception | None = None
         for attempt in range(CAPABILITY_DOWNLOAD_RETRIES):
             try:
-                raw = await self._download(
-                    said, model_number, capability_part_number
-                )
+                raw = await self._download(said, model_number, capability_part_number)
                 self._cache[capability_part_number] = raw
                 return raw
             except (TimeoutError, CapabilityDownloadError) as e:
@@ -179,6 +263,12 @@ class CapabilityDownloader:
                     f"Timed out waiting for capability response for {said}"
                 ) from e
 
+            response_code = response.get("responseCode")
+            if response_code is not None and response_code != 200:
+                raise CapabilityDownloadError(
+                    f"Capability request for {said} returned "
+                    f"responseCode {response_code}"
+                )
             raw = await self._download_file(response)
             _read_part_number(raw)  # sanity-check before caching
             return raw
@@ -188,7 +278,7 @@ class CapabilityDownloader:
 
     async def _download_file(self, mqtt_response: dict[str, Any]) -> dict[str, Any]:
         # The broker replies with {"responseCode": 200, "downloadUrl": "..."}.
-        url = mqtt_response.get("downloadUrl") or mqtt_response.get("url")
+        url = mqtt_response.get("downloadUrl")
         if not isinstance(url, str) or not url.startswith("http"):
             return mqtt_response
         async with self._session.get(url) as resp:
