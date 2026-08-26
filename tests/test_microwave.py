@@ -594,7 +594,7 @@ async def test_start_cook_publishes_expected_payload(
     assert body["recipeID"] == "microwave"
     assert body["mwoPowerLevel"] == 50.0
     assert isinstance(body["mwoPowerLevel"], float)
-    assert body["cookTimer"] == {"command": "start", "time": 30}
+    assert body["cookTimer"] == {"command": "run", "time": 30}
 
 
 async def test_start_cook_returns_false_when_remote_start_disabled(

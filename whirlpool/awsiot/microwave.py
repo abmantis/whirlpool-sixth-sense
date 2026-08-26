@@ -263,7 +263,10 @@ class Microwave(MicrowaveABC, Appliance):
                 "addressee": "primaryCavity",
                 "recipeID": recipe.value,
                 "mwoPowerLevel": float(power_level),
-                "cookTimer": {"command": "start", "time": duration_seconds},
+                # Timer commands are run/set/add (no "start"); the app uses
+                # "run" when starting a recipe. An unknown command is ignored
+                # and the recipe falls back to its default cookTime (5 s).
+                "cookTimer": {"command": "run", "time": duration_seconds},
             },
         )
         return True
