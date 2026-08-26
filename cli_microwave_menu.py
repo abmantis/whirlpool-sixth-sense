@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import aioconsole
 
@@ -81,12 +82,16 @@ async def show_microwave_menu(mw: Microwave) -> None:
         print("recipe execution state: " + str(mw.get_recipe_execution_state()))
         print("power level: " + str(mw.get_mwo_power_level()))
         print("cook timer state: " + str(mw.get_cook_timer_state()))
+        time_complete = mw.get_cook_timer_time_complete()
         print(
-            "cook timer time complete/total (seconds): "
-            + str(mw.get_cook_timer_time_complete())
-            + "/"
-            + str(mw.get_cook_timer_total_seconds())
+            "cook timer time complete: "
+            + (
+                datetime.fromtimestamp(time_complete).isoformat()
+                if time_complete
+                else str(time_complete)
+            )
         )
+        print("cook timer total (seconds): " + str(mw.get_cook_timer_total_seconds()))
         print("remote start enabled: " + str(mw.get_remote_start_enabled()))
         if mw.supports_hood_fan():
             print("hood fan speed: " + str(mw.get_hood_fan_speed()))
