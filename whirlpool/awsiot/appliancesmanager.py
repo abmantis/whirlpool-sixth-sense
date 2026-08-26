@@ -121,7 +121,7 @@ class AppliancesManager:
         thing_attrs = thing.get("attributes", {})
         try:
             name = bytes.fromhex(thing_attrs.get("Name", "")).decode("utf-8")
-        except (ValueError, UnicodeDecodeError):
+        except ValueError, UnicodeDecodeError:
             name = thing["thingName"]
 
         appliance_data = ApplianceInfo(
@@ -211,7 +211,14 @@ class AppliancesManager:
         said = parts[2]
 
         if topic.startswith("cmd/") and "response" in topic:
-            state = payload.get("payload", {})
+            # Only a getState response carries the state; plain command acks
+            # ({"response": "accepted"}) and rejections ({"errorCode": ...})
+            # must not be merged into the appliance state.
+            if payload.get("response") != "accepted":
+                return
+            state = payload.get("payload")
+            if not isinstance(state, dict) or not state:
+                return
         elif topic.startswith("dt/") and "state/update" in topic:
             state = payload
         else:

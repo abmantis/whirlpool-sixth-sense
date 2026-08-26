@@ -95,7 +95,14 @@ class FakeMqttClient:
             if len(parts) >= 5 and parts[0] == "cmd" and parts[3] == "request":
                 model, said, cid = parts[1], parts[2], parts[4]
                 response_topic = f"cmd/{model}/{said}/response/{cid}"
-                self.inject(response_topic, {"payload": self._getstate_reply})
+                self.inject(
+                    response_topic,
+                    {
+                        "requestId": payload.get("requestId"),
+                        "response": "accepted",
+                        "payload": self._getstate_reply,
+                    },
+                )
         # Capability download: api/capability/download/{model}/{said}
         if topic.startswith("api/capability/download/"):
             part = payload.get("capabilityPartNumber", "")

@@ -28,6 +28,18 @@ def gated_set(support_check, label):
     return decorator
 
 
+def _deep_merge(base: dict[str, Any], update: dict[str, Any]) -> dict[str, Any]:
+    """Return a copy of `base` with `update` merged in, recursing into dicts."""
+    merged = dict(base)
+    for key, value in update.items():
+        existing = merged.get(key)
+        if isinstance(existing, dict) and isinstance(value, dict):
+            merged[key] = _deep_merge(existing, value)
+        else:
+            merged[key] = value
+    return merged
+
+
 class Appliance(BaseAppliance):
     """Whirlpool awsiot appliance class"""
 
@@ -66,8 +78,13 @@ class Appliance(BaseAppliance):
         )
 
     def update_state(self, new_state: dict[str, Any]):
-        """Update appliance state and call callbacks."""
-        self._data_dict = new_state
+        """Merge a (possibly partial) state update and call callbacks.
+
+        `dt/.../state/update` messages only carry the attributes that changed,
+        so replacing the dict would drop everything else until the next
+        getState round-trip.
+        """
+        self._data_dict = _deep_merge(self._data_dict, new_state)
         self._initial_data_event.set()
         for callback in self._attr_changed:
             callback()
