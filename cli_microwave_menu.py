@@ -128,13 +128,18 @@ async def show_microwave_menu(mw: Microwave) -> None:
             if recipe is None:
                 print("Invalid recipe")
                 continue
-            power_level = await aioconsole.ainput("Enter power level (1-100): ")
             duration = await aioconsole.ainput("Enter cook duration (seconds): ")
-            await mw.set_cook(
-                recipe=recipe,
-                power_level=int(power_level),
-                duration_seconds=int(duration),
+            power_level = await aioconsole.ainput(
+                "Enter power level (empty for recipes with a fixed power level): "
             )
+            try:
+                await mw.set_cook(
+                    recipe=recipe,
+                    duration_seconds=int(duration),
+                    power_level=int(power_level) if power_level else None,
+                )
+            except ValueError as err:
+                print(f"Invalid cook settings: {err}")
         elif choice == "o":
             await mw.stop_cook()
         elif choice == "f":
