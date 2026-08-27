@@ -36,9 +36,7 @@ async def test_keepalive_periodically_fetches_an_appliance(
     aiointercept_mock: aiointercept,
     monkeypatch: pytest.MonkeyPatch,
 ):
-    monkeypatch.setattr(
-        http_appliancesmanager, "KEEPALIVE_INTERVAL_SECONDS", 0.01
-    )
+    monkeypatch.setattr(http_appliancesmanager, "KEEPALIVE_INTERVAL_SECONDS", 0.01)
     http_manager = appliances_manager._http_appliances_manager
 
     mocks = {
@@ -64,9 +62,7 @@ async def test_keepalive_stops_with_event_listener(
     aiointercept_mock: aiointercept,
     monkeypatch: pytest.MonkeyPatch,
 ):
-    monkeypatch.setattr(
-        http_appliancesmanager, "KEEPALIVE_INTERVAL_SECONDS", 0.01
-    )
+    monkeypatch.setattr(http_appliancesmanager, "KEEPALIVE_INTERVAL_SECONDS", 0.01)
     http_manager = appliances_manager._http_appliances_manager
 
     mocks = {

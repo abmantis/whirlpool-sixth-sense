@@ -122,11 +122,19 @@ def _thing_category(category: str) -> str:
 
 
 _SAID_KEYS = frozenset({"thingName", "SAID", "said"})
-_REDACTED_KEYS = frozenset({
-    "Serial", "serial", "serialNumber", "serial_number",
-    "WifiMacAddress", "wifi_mac", "wifiMacAddress",
-    "UserId", "userId",
-})
+_REDACTED_KEYS = frozenset(
+    {
+        "Serial",
+        "serial",
+        "serialNumber",
+        "serial_number",
+        "WifiMacAddress",
+        "wifi_mac",
+        "wifiMacAddress",
+        "UserId",
+        "userId",
+    }
+)
 
 
 def _said_token(said: str) -> str:
@@ -148,19 +156,19 @@ def _redact(obj: Any, said: str) -> Any:
         replacement = (
             token
             if key in _SAID_KEYS
-            else "REDACTED" if key in _REDACTED_KEYS else None
+            else "REDACTED"
+            if key in _REDACTED_KEYS
+            else None
         )
         if replacement is None:
             return _walk(value)
         if isinstance(value, dict):
             return {
-                k: replacement if k == "value" else _walk(v)
-                for k, v in value.items()
+                k: replacement if k == "value" else _walk(v) for k, v in value.items()
             }
         if isinstance(value, list):
             return [
-                _walk(v) if isinstance(v, dict | list) else replacement
-                for v in value
+                _walk(v) if isinstance(v, dict | list) else replacement for v in value
             ]
         return replacement
 
@@ -252,8 +260,7 @@ async def _amain(args: argparse.Namespace) -> int:
 
         if not args.capture_all and not args.said:
             LOGGER.error(
-                "No --said or --all specified. Use --list to see available"
-                " appliances."
+                "No --said or --all specified. Use --list to see available appliances."
             )
             await manager.disconnect()
             return 3
@@ -280,14 +287,10 @@ async def _amain(args: argparse.Namespace) -> int:
                 _capture_one(appliance, output_dir, redact=args.redact)
             except Exception:
                 capture_failures += 1
-                LOGGER.exception(
-                    "Failed to capture fixtures for %s", appliance.said
-                )
+                LOGGER.exception("Failed to capture fixtures for %s", appliance.said)
 
         if capture_failures:
-            LOGGER.error(
-                "Fixture capture failed for %d appliance(s)", capture_failures
-            )
+            LOGGER.error("Fixture capture failed for %d appliance(s)", capture_failures)
 
         await manager.disconnect()
     return 5 if capture_failures else 0
@@ -298,7 +301,9 @@ def _capture_one(appliance: Any, output_dir: Path, *, redact: bool) -> None:
     tag = _appliance_tag(appliance)
     LOGGER.info(
         "Capturing fixtures for %s (%s, type=%s)",
-        appliance.said, appliance.name, tag,
+        appliance.said,
+        appliance.name,
+        tag,
     )
 
     thing_out = {
@@ -310,9 +315,7 @@ def _capture_one(appliance: Any, output_dir: Path, *, redact: bool) -> None:
             "Serial": appliance.appliance_info.serial_number,
         },
     }
-    suffix = _fixture_suffix(
-        appliance.appliance_info.model_number, appliance.said
-    )
+    suffix = _fixture_suffix(appliance.appliance_info.model_number, appliance.said)
 
     def _maybe_redact(data: Any) -> Any:
         return _redact(data, appliance.said) if redact else data

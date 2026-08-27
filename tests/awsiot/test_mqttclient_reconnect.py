@@ -67,9 +67,7 @@ class TestReconnect:
             paho_clients.append(instance)
             return instance
 
-        monkeypatch.setattr(
-            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
-        )
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
         # Collapse the backoff so the reconnect loop doesn't slow tests.
         monkeypatch.setattr(
             "whirlpool.awsiot.mqttclient.RECONNECT_BACKOFF_INITIAL_SECONDS",
@@ -100,8 +98,7 @@ class TestReconnect:
                 _fire_connack(paho_clients[-1])
 
         assert len(paho_clients) >= 2, (
-            f"expected reconnect to build a new paho client, got "
-            f"{len(paho_clients)}"
+            f"expected reconnect to build a new paho client, got {len(paho_clients)}"
         )
         mock_aws_auth.create_signed_url.assert_called()
         assert client.is_connected()
@@ -126,9 +123,7 @@ class TestReconnect:
             paho_clients.append(instance)
             return instance
 
-        monkeypatch.setattr(
-            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
-        )
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
         monkeypatch.setattr(
             "whirlpool.awsiot.mqttclient.RECONNECT_BACKOFF_INITIAL_SECONDS",
             0.0,
@@ -195,9 +190,7 @@ class TestReconnect:
             paho_clients.append(instance)
             return instance
 
-        monkeypatch.setattr(
-            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
-        )
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
         monkeypatch.setattr(
             "whirlpool.awsiot.mqttclient.RECONNECT_BACKOFF_INITIAL_SECONDS",
             0.0,
@@ -218,8 +211,7 @@ class TestReconnect:
         for _ in range(100):
             await _flush()
             if any(
-                "temporary auth failure" in record.message
-                for record in caplog.records
+                "temporary auth failure" in record.message for record in caplog.records
             ):
                 break
 
@@ -254,9 +246,7 @@ class TestReconnect:
         fake_paho = MagicMock(name="paho.Client")
         fake_paho.connect.return_value = None
 
-        with patch(
-            "whirlpool.awsiot.mqttclient.mqtt.Client", return_value=fake_paho
-        ):
+        with patch("whirlpool.awsiot.mqttclient.mqtt.Client", return_value=fake_paho):
             client = MqttClient(mock_aws_auth)
             connect_task = asyncio.create_task(client.connect())
             await _flush()
@@ -295,9 +285,7 @@ class TestReconnect:
             paho_clients.append(instance)
             return instance
 
-        monkeypatch.setattr(
-            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
-        )
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
         monkeypatch.setattr(
             "whirlpool.awsiot.mqttclient.RECONNECT_BACKOFF_INITIAL_SECONDS",
             0.0,
@@ -338,9 +326,7 @@ class TestReconnect:
             paho_clients.append(instance)
             return instance
 
-        monkeypatch.setattr(
-            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
-        )
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
         monkeypatch.setattr(
             "whirlpool.awsiot.mqttclient.RECONNECT_BACKOFF_INITIAL_SECONDS",
             0.0,
@@ -452,9 +438,7 @@ class TestReconnect:
             return instance
 
         monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
-        monkeypatch.setattr(
-            "whirlpool.awsiot.mqttclient.CONNECT_TIMEOUT_SECONDS", 0.01
-        )
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.CONNECT_TIMEOUT_SECONDS", 0.01)
 
         client = MqttClient(mock_aws_auth)
         # Never fire CONNACK, so connect() hits the timeout path.
@@ -479,9 +463,7 @@ class TestReconnect:
             paho_clients.append(instance)
             return instance
 
-        monkeypatch.setattr(
-            "whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory
-        )
+        monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", paho_factory)
         # Use a non-zero backoff so the reconnect loop is still in
         # asyncio.sleep when we call disconnect().
         monkeypatch.setattr(
