@@ -2,41 +2,35 @@ name: CI
 
 on: [push, pull_request]
 
-jobs:
-  pyright:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.14"]
-    steps:
-      - uses: actions/checkout@v5
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
-      - name: Run pyright
-        run: |
-          basedpyright
+permissions: {}
 
-  ruff:
+jobs:
+  prek:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v5
-      - uses: astral-sh/ruff-action@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Run prek
+        uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
+        env:
+          RUFF_OUTPUT_FORMAT: github
 
   pytest:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         python-version: ["3.14"]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -47,29 +41,16 @@ jobs:
         run: |
           pytest --log-cli-level=debug
 
-  release:
+  zizmor:
     runs-on: ubuntu-latest
-    concurrency: release
-    if: github.ref == 'refs/heads/master'
-    needs: [pyright, ruff, pytest]
     permissions:
-      id-token: write
-      contents: write
-
+      contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
-          token: ${{ secrets.PAT_TOKEN }}
-
-      - name: Python Semantic Release
-        id: release
-        uses: python-semantic-release/python-semantic-release@v10.4.1
+          persist-credentials: false
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
         with:
-          github_token: ${{ secrets.PAT_TOKEN }}
-          changelog: false
-          vcs_release: false
-
-      - name: Publish package PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        if: steps.release.outputs.released == 'true'
+          advanced-security: false
+          version: 1.29.0

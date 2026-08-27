@@ -51,11 +51,11 @@ class KitchenTimerOperations(Enum):
 
 class KitchenTimer(ABC):
     @abstractmethod
-    def get_total_time(self) -> str | None:
+    def get_total_time(self) -> int | None:
         pass
 
     @abstractmethod
-    def get_remaining_time(self) -> str | None:
+    def get_remaining_time(self) -> int | None:
         pass
 
     @abstractmethod

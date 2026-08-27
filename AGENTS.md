@@ -4,7 +4,7 @@ This document provides essential information for AI coding agents working in thi
 
 ## Project Overview
 
-- **Language**: Python 3.11+
+- **Language**: Python 3.14+
 - **Type**: Asyncio-based API library for Whirlpool 6th Sense smart appliances
 - **Package**: `whirlpool_sixth_sense`
 
@@ -26,15 +26,16 @@ pytest tests/test_auth.py::test_auth_success
 # Run tests matching a pattern
 pytest -k "test_attributes"
 
-# Linting
+# Linting and formatting
 ruff check .              # Check for lint errors
 ruff check . --fix        # Auto-fix lint errors
+ruff format .             # Format code
 
 # Type checking
 basedpyright
 
-# Pre-commit (runs all checks)
-pre-commit run --all-files
+# Run all lint, format, type-check and workflow-audit hooks
+prek --all-files
 ```
 
 ## Code Style Guidelines
@@ -126,9 +127,27 @@ Max complexity: 25
 
 ## CI/CD Pipeline
 
-GitHub Actions runs on push/PR:
-1. **pyright** - Type checking (Python 3.12, 3.13)
-2. **ruff** - Linting
-3. **pytest** - Tests (Python 3.12, 3.13)
-4. **release** - Semantic release to PyPI (master branch only)
+GitHub Actions runs on push/PR (`.github/workflows/ci.yml`):
+1. **prek** - Lint, format and type checks (ruff, basedpyright) plus a zizmor
+   workflow audit
+2. **pytest** - Tests (Python 3.14)
+3. **zizmor** - Static analysis of the GitHub Actions workflows
 
+Other workflows:
+- **pr-labels** - Requires every PR to carry one of the release-drafter labels
+  (`breaking-change`, `bugfix`, `ci`, `dependencies`, `documentation`,
+  `enhancement`, `maintenance`, `new-feature`)
+- **release-drafter** - Keeps a draft release up to date on every push to
+  `master`, resolving the next version from the merged PRs' labels
+- **publish** - Triggered when a release is published: injects the release tag
+  as the package version, builds, and uploads to PyPI via trusted publishing
+
+### Releasing
+
+Releases are manual: publish the draft release that release-drafter maintains,
+and `publish.yml` takes it from there. The `version` in `pyproject.toml` is a
+`0.0.0` placeholder — the release tag is the source of truth, so do not bump it
+by hand.
+
+Dependency and action updates are handled by Renovate (`.github/renovate.json`);
+GitHub Actions are pinned to commit digests.

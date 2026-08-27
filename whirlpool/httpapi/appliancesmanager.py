@@ -91,11 +91,14 @@ class AppliancesManager:
             "cooking_minerva",
             "cooking_vsi",
             "cooking_u2",
+            "ddm_cooking_bio_std_tourmaline_v2",
             "ddm_cooking_bio_self_clean_tourmaline_v2",
             "ddm_cooking_bio_g3evo_pyro_bk_v1",
             "ddm_cooking_bio_self_clean_meat_probe_tourmaline_bk_v1",
             "ddm_cooking_bio_self_clean_steam_tourmaline_v2",  # <-- W9 Ovens
             "ddm_cooking_bi_mwo_self_clean_steam_tourmaline_v2",  # <-- W9 MWOs
+            "ddm_cooking_bio_std_meat_probe_indigo_v2",
+            "ddm_cooking_ka_trs_bio_single_v1",
         ]
 
         LOGGER.debug("Adding appliance %s", appliance_data)

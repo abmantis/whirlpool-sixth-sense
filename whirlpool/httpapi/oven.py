@@ -110,13 +110,13 @@ class KitchenTimer(BaseKitchenTimer):
         self._appliance = appliance
         self._attr_prefix = f"KitchenTimer{timer_id:02d}_"
 
-    def get_total_time(self) -> str | None:
-        return self._appliance._get_attribute(
+    def get_total_time(self) -> int | None:
+        return self._appliance._get_int_attribute(
             self._attr_prefix + ATTR_POSTFIX_KITCHEN_TIMER_SET_TIME
         )
 
-    def get_remaining_time(self) -> str | None:
-        return self._appliance._get_attribute(
+    def get_remaining_time(self) -> int | None:
+        return self._appliance._get_int_attribute(
             self._attr_prefix + ATTR_POSTFIX_KITCHEN_TIMER_TIME_REMAINING
         )
 
