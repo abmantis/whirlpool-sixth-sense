@@ -18,7 +18,6 @@ class Region(Enum):
 class ApplianceInfo:
     said: str
     name: str
-    data_model: str
     category: str
     model_number: str
     serial_number: str

@@ -31,8 +31,6 @@ class Auth:
         self._auth_dict: dict[str, Any] = {}
         self._session: aiohttp.ClientSession = session
 
-        self._renew_time: datetime | None = None
-
     def _save_auth_data(self):
         with open(AUTH_JSON_FILE, "w") as f:
             json.dump(self._auth_dict, f)

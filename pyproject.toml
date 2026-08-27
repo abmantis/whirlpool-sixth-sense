@@ -18,6 +18,7 @@ dependencies = [
     "aiohttp>=3.9.1",
     "websockets>=8.1",
     "async-timeout>=4.0.3",
+    "paho-mqtt>=2.0.0",
 ]
 
 [project.readme]
@@ -55,3 +56,4 @@ max-complexity = 25
 
 [tool.pyright]
 typeCheckingMode = "standard"
+pythonVersion = "3.14"

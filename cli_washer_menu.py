@@ -12,7 +12,6 @@ async def show_washer_menu(wr: Washer) -> None:
         print("u. Update status from server")
         print("p. Print status")
         print("v. Print raw status")
-        print("c. Custom command")
         print("q. Exit")
         print(67 * "-")
 
@@ -42,11 +41,7 @@ async def show_washer_menu(wr: Washer) -> None:
             await wr.fetch_data()
             print_status(wr)
         elif choice == "v":
-            print(json.dumps(wr._data_dict, indent=4))
-        elif choice == "c":
-            cmd = await aioconsole.ainput("Command: ")
-            val = await aioconsole.ainput("Value: ")
-            await wr.send_attributes({cmd: val})
+            print(json.dumps(wr.get_raw_data(), indent=4))
         elif choice == "q":
             print("Bye")
             loop = False

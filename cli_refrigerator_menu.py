@@ -21,7 +21,6 @@ async def show_refrigerator_menu(rf: Refrigerator) -> None:
         print("u. Update status from server")
         print("p. Print status")
         print("r. Print raw status")
-        print("c. Custom command")
         print("q. Exit")
         print(67 * "-")
 
@@ -59,11 +58,7 @@ async def show_refrigerator_menu(rf: Refrigerator) -> None:
             await rf.fetch_data()
             print_status(rf)
         elif choice == "r":
-            print(json.dumps(rf._data_dict, indent=4))
-        elif choice == "c":
-            cmd = await aioconsole.ainput("Command: ")
-            val = await aioconsole.ainput("Value: ")
-            await rf.send_attributes({cmd: val})
+            print(json.dumps(rf.get_raw_data(), indent=4))
         elif choice == "q":
             print("Bye")
             loop = False

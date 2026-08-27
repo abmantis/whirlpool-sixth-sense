@@ -71,7 +71,7 @@ async def test_setters(
 
     # add call, call method
     aiointercept_mock.post(url, payload=expected_payload)
-    await method(refrigerator, argument)
+    await getattr(refrigerator, method.__name__)(argument)
 
     # assert args and length
     aiointercept_mock.assert_called_with(**post_request_call_kwargs)
@@ -93,6 +93,6 @@ async def test_setters_invalid_arg(
 ):
     refrigerator = appliances_manager.refrigerators[0]
     with pytest.raises(ValueError) as exc_info:
-        await method(refrigerator, argument)
+        await getattr(refrigerator, method.__name__)(argument)
 
     assert message in str(exc_info.value)

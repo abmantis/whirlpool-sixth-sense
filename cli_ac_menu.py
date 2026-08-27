@@ -25,7 +25,6 @@ async def show_aircon_menu(ac: Aircon) -> None:
         print("u. Update status from server")
         print("p. Print status")
         print("v. Print raw status")
-        print("c. Custom command")
         print("q. Exit")
         print(67 * "-")
 
@@ -89,11 +88,7 @@ async def show_aircon_menu(ac: Aircon) -> None:
             await ac.fetch_data()
             print_status(ac)
         elif choice == "v":
-            print(json.dumps(ac._data_dict, indent=4))
-        elif choice == "c":
-            cmd = await aioconsole.ainput("Command: ")
-            val = await aioconsole.ainput("Value: ")
-            await ac.send_attributes({cmd: val})
+            print(json.dumps(ac.get_raw_data(), indent=4))
         elif choice == "q":
             print("Bye")
             loop = False

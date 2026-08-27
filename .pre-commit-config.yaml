@@ -15,6 +15,7 @@ repos:
           - aiohttp
           - aiointercept
           - async-timeout
+          - paho-mqtt
           - pytest
           - pytest-asyncio
           - pytest-mock
