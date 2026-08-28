@@ -95,9 +95,7 @@ prek --all-files
 ### Test Structure
 ```python
 async def test_feature_success(
-    auth: Auth,
-    backend_selector: BackendSelector,
-    aioresponses_mock: aioresponses
+    auth: Auth, backend_selector: BackendSelector, aioresponses_mock: aioresponses
 ):
     # Arrange
     aioresponses_mock.post(url, payload=mock_data)
