@@ -151,10 +151,8 @@ class AppliancesManager:
             )
             return
 
-        if appliance_data.category == "airconditioner":
-            appliance = Aircon(self._mqtt, appliance_data)
-            self._aircons[appliance_data.said] = appliance
-        elif appliance_data.category == "cooking":
+        appliance: Appliance | None = None
+        if appliance_data.category == "cooking":
             if has_microwave_cavity(raw_capabilities):
                 appliance = Microwave(
                     self._mqtt,
@@ -162,19 +160,7 @@ class AppliancesManager:
                     parse_microwave_capability_profile(raw_capabilities),
                 )
                 self._microwaves[appliance_data.said] = appliance
-            else:
-                appliance = Oven(self._mqtt, appliance_data)
-                self._ovens[appliance_data.said] = appliance
-        elif appliance_data.category == "fabriccare":
-            appliance = Dryer(self._mqtt, appliance_data)
-            self._dryers[appliance_data.said] = appliance
-        elif appliance_data.category == "laundry":
-            appliance = Washer(self._mqtt, appliance_data)
-            self._washers[appliance_data.said] = appliance
-        elif appliance_data.category == "refrigerator":
-            appliance = Refrigerator(self._mqtt, appliance_data)
-            self._refrigerators[appliance_data.said] = appliance
-        else:
+        if appliance is None:
             LOGGER.warning(
                 "Unsupported appliance category %s for %s",
                 appliance_data.category,

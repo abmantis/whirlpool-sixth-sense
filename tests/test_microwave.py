@@ -305,7 +305,7 @@ async def test_capability_profile_exposed_on_appliance(
     assert mwo.capability_profile.supports_quiet_mode
 
 
-async def test_cooking_without_microwave_feature_routes_to_oven(
+async def test_cooking_without_microwave_feature_skips_appliance(
     auth: Auth,
     backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
@@ -330,7 +330,7 @@ async def test_cooking_without_microwave_feature_routes_to_oven(
         {oven_part: oven_profile},
     )
     assert manager.microwaves == []
-    assert len(manager.ovens) == 1
+    assert manager.all_appliances == {}
 
 
 async def test_missing_capability_part_number_skips_appliance(
