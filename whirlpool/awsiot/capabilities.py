@@ -110,7 +110,7 @@ def _option_range(option: Any) -> OptionRange | None:
             step=int(rng.get("step", 1)),
             default=int(rng.get("default", rng["min"])),
         )
-    except KeyError, TypeError, ValueError:
+    except (KeyError, TypeError, ValueError):
         return None
 
 
