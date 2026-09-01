@@ -1,6 +1,6 @@
 -r requirements.txt
 aioconsole>=0.3.1
-aiointercept==0.1.9
+aiointercept==0.1.10
 pytest>=6.2.0
 pytest-asyncio>=0.15.0
 pytest-cov>=7.0.0
