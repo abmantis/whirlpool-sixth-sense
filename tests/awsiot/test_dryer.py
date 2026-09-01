@@ -40,6 +40,10 @@ def test_time_remaining() -> None:
     assert _make_dryer().get_time_remaining() == 2185
 
 
+def test_cycle_time_complete() -> None:
+    assert _make_dryer().get_cycle_time_complete() == 1783895096
+
+
 def test_drum_light_off() -> None:
     assert _make_dryer().get_drum_light_on() is False
 

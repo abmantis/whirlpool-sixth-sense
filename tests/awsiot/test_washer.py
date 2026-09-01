@@ -40,6 +40,10 @@ def test_time_remaining() -> None:
     assert _make_washer().get_time_remaining() == 5351
 
 
+def test_cycle_time_complete() -> None:
+    assert _make_washer().get_cycle_time_complete() == 1783898525
+
+
 def test_cycle_status_flags_false_in_standby() -> None:
     washer = _make_washer()
     assert washer.get_cycle_status_sensing() is False

@@ -110,3 +110,7 @@ class Washer(BaseWasher, Appliance):
     @override
     def get_time_remaining(self) -> int | None:
         return self._get_path_int("washer", "cycleTime", "time")
+
+    @override
+    def get_cycle_time_complete(self) -> int | None:
+        return self._get_path_int("washer", "cycleTime", "timeComplete")
