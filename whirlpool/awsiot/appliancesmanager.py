@@ -98,6 +98,9 @@ class AppliancesManager:
         except AuthException as e:
             LOGGER.error("Authentication failed: %s", e)
             return False
+        except (TimeoutError, aiohttp.ClientError) as e:
+            LOGGER.error("Failed to connect to AWS IoT: %s", e)
+            return False
 
         for thing in things_list:
             await self._add_appliance(thing)
