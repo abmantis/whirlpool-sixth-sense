@@ -1,0 +1,37 @@
+{
+  "dryer": {
+    "applianceState": "standby",
+    "cycleName": "normal",
+    "cycleType": "standard",
+    "specialName": "",
+    "currentPhase": "",
+    "dryLevel": "normalDry",
+    "dryTemperature": "medium",
+    "wrinkleShield": "off",
+    "steam": "off",
+    "staticGuardEnable": "on",
+    "dampDry": "off",
+    "extraPower": "off",
+    "pets": "off",
+    "cycleTime": {
+      "state": "idle",
+      "time": 2185,
+      "timeComplete": 1783895096,
+      "timePaused": 1782146384
+    },
+    "sessionId": "",
+    "lowAirFlow": false,
+    "lintTrap": false,
+    "drumLight": false,
+    "doorStatus": "closed"
+  },
+  "remoteStartEnable": false,
+  "hmiControlLockout": false,
+  "faultHistory": ["F2E1", "none", "none", "none", "none"],
+  "activeFault": "none",
+  "sound": {
+    "cycleSignal": "max"
+  },
+  "capabilityPartNumber": "W11729930",
+  "systemVersion": "3.0.0"
+}
