@@ -281,15 +281,20 @@ class CapabilityDownloader:
         url = mqtt_response.get("downloadUrl")
         if not isinstance(url, str) or not url.startswith("http"):
             return mqtt_response
-        async with self._session.get(url) as resp:
-            if resp.status != 200:
-                raise CapabilityDownloadError(
-                    f"Capability URL returned HTTP {resp.status}"
-                )
-            text = await resp.text()
-            try:
-                return json.loads(text)
-            except json.JSONDecodeError as e:
-                raise CapabilityDownloadError(
-                    f"Capability body is not valid JSON: {e}"
-                ) from e
+        try:
+            async with self._session.get(url) as resp:
+                if resp.status != 200:
+                    raise CapabilityDownloadError(
+                        f"Capability URL returned HTTP {resp.status}"
+                    )
+                text = await resp.text()
+        except aiohttp.ClientError as e:
+            raise CapabilityDownloadError(
+                f"HTTP error downloading capability file: {e}"
+            ) from e
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as e:
+            raise CapabilityDownloadError(
+                f"Capability body is not valid JSON: {e}"
+            ) from e
