@@ -91,6 +91,10 @@ class Dryer(BaseDryer, Appliance):
         return self._get_path_int("dryer", "cycleTime", "time")
 
     @override
+    def get_cycle_time_complete(self) -> int | None:
+        return self._get_path_int("dryer", "cycleTime", "timeComplete")
+
+    @override
     def get_drum_light_on(self) -> bool | None:
         return self._get_path_bool("dryer", "drumLight")
 

@@ -79,6 +79,14 @@ class Dryer(Appliance, ABC):
     def get_time_remaining(self) -> int | None:
         pass
 
+    def get_cycle_time_complete(self) -> int | None:
+        """Return the Unix timestamp (seconds) of the last completed cycle.
+
+        Only the AWS IoT backend reports this field; other backends return
+        ``None``.
+        """
+        return None
+
     @abstractmethod
     def get_drum_light_on(self) -> bool | None:
         pass
