@@ -15,10 +15,10 @@ from ..types import ApplianceInfo
 from .appliance import Appliance
 from .mqttclient import MqttClient
 
-# `dryer.applianceState` -> dryer MachineState. Only "standby" is confirmed
-# from a captured fixture (dryer at rest); the remaining values are inferred
-# from the HTTP API backend's state vocabulary and need confirmation against a
-# live running/complete capture.
+# `dryer.applianceState` -> dryer MachineState. "standby", "running" and
+# "end" are confirmed from live captures (Maytag MGD7020RF0); the remaining
+# values are inferred from the HTTP API backend's state vocabulary and still
+# need confirmation against a live capture.
 _MACHINE_STATE_MAP: dict[str, MachineState] = {
     "standby": MachineState.Standby,
     "idle": MachineState.Standby,
@@ -31,6 +31,7 @@ _MACHINE_STATE_MAP: dict[str, MachineState] = {
     "postCycle": MachineState.RunningPostCycle,
     "complete": MachineState.Complete,
     "completed": MachineState.Complete,
+    "end": MachineState.Complete,
     "exception": MachineState.Exceptions,
     "exceptions": MachineState.Exceptions,
     "powerFailure": MachineState.PowerFailure,
@@ -43,12 +44,13 @@ _WRINKLE_SHIELD_MAP: dict[str, WrinkleShield] = {
     "onWithSteam": WrinkleShield.OnWithSteam,
 }
 
-# `dryer.currentPhase` values used to derive the cycle status flags. Like the
-# washer phase vocabulary these are inferred pending a running-cycle capture.
+# `dryer.currentPhase` values used to derive the cycle status flags. "dry"
+# is confirmed from a live running-cycle capture (Maytag MGD7020RF0); the
+# remaining spellings are inferred and still need confirmation.
 _PHASE_AIRFLOW = "airflow"
 _PHASE_COOL_DOWN = "coolDown"
 _PHASE_DAMP = "damp"
-_PHASE_DRYING = "drying"
+_PHASE_DRYING = "dry"
 _PHASE_LIMITED_CYCLE = "limitedCycle"
 _PHASE_SENSING = "sensing"
 _PHASE_STATIC_REDUCE = "staticReduce"

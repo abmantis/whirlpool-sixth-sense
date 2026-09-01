@@ -57,9 +57,15 @@ def test_cycle_status_flags_false_in_standby() -> None:
 def test_running_cycle_reports_phase_and_state() -> None:
     washer = _make_washer()
     washer.update_state(
-        {"washer": {"applianceState": "running", "currentPhase": "washing"}}
+        {"washer": {"applianceState": "running", "currentPhase": "wash"}}
     )
     assert washer.get_machine_state() == MachineState.RunningMainCycle
     assert washer.get_cycle_status_washing() is True
     # The other phases must remain false.
     assert washer.get_cycle_status_rinsing() is False
+
+
+def test_end_state_maps_to_complete() -> None:
+    washer = _make_washer()
+    washer.update_state({"washer": {"applianceState": "end"}})
+    assert washer.get_machine_state() == MachineState.Complete

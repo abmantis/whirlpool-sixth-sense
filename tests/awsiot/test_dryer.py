@@ -72,7 +72,13 @@ def test_dryness_decodes_known_level() -> None:
 def test_running_cycle_reports_phase_and_state() -> None:
     dryer = _make_dryer()
     dryer.update_state(
-        {"dryer": {"applianceState": "running", "currentPhase": "drying"}}
+        {"dryer": {"applianceState": "running", "currentPhase": "dry"}}
     )
     assert dryer.get_machine_state() == MachineState.RunningMainCycle
     assert dryer.get_cycle_status_drying() is True
+
+
+def test_end_state_maps_to_complete() -> None:
+    dryer = _make_dryer()
+    dryer.update_state({"dryer": {"applianceState": "end"}})
+    assert dryer.get_machine_state() == MachineState.Complete

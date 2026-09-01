@@ -15,10 +15,10 @@ from ..washer import Washer as BaseWasher
 from .appliance import Appliance
 from .mqttclient import MqttClient
 
-# `washer.applianceState` -> washer MachineState. Only "standby" is confirmed
-# from a captured fixture (standby washer); the remaining values are inferred
-# from the HTTP API backend's state vocabulary and need confirmation against a
-# live running/complete capture before being relied upon.
+# `washer.applianceState` -> washer MachineState. "standby", "running" and
+# "end" are confirmed from live captures (Maytag MFW7020RF0); the remaining
+# values are inferred from the HTTP API backend's state vocabulary and still
+# need confirmation against a live capture.
 _MACHINE_STATE_MAP: dict[str, MachineState] = {
     "standby": MachineState.Standby,
     "idle": MachineState.Standby,
@@ -31,18 +31,19 @@ _MACHINE_STATE_MAP: dict[str, MachineState] = {
     "postCycle": MachineState.RunningPostCycle,
     "complete": MachineState.Complete,
     "completed": MachineState.Complete,
+    "end": MachineState.Complete,
     "exception": MachineState.Exceptions,
     "exceptions": MachineState.Exceptions,
     "powerFailure": MachineState.PowerFailure,
 }
 
-# `washer.currentPhase` values used to derive the cycle status flags. Like the
-# machine-state vocabulary these are inferred; a running-cycle capture would
-# confirm the exact spellings.
+# `washer.currentPhase` values used to derive the cycle status flags. "wash"
+# is confirmed from a live running-cycle capture (Maytag MFW7020RF0); the
+# remaining spellings are inferred and still need confirmation.
 _PHASE_SENSING = "sensing"
 _PHASE_FILLING = "filling"
 _PHASE_SOAKING = "soaking"
-_PHASE_WASHING = "washing"
+_PHASE_WASHING = "wash"
 _PHASE_RINSING = "rinsing"
 _PHASE_SPINNING = "spinning"
 
