@@ -30,6 +30,18 @@ from .washer import Washer
 LOGGER = logging.getLogger(__name__)
 
 
+def _is_dryer_model(model_number: str) -> bool:
+    """Whether a laundry model number denotes a dryer.
+
+    Whirlpool/Maytag/KitchenAid laundry model numbers encode the product type
+    in the third character: "D" for dryers (e.g. MGD/MED/WGD/WED) and "W" for
+    washers (e.g. MFW/MHW/WFW/WTW). Used to split the ambiguous "laundry"
+    category, since both dryers and washers report category "laundry" on the
+    AWS IoT backend (see the Maytag MFW7020RF0 + MGD7020RF0 fixtures).
+    """
+    return len(model_number) >= 3 and model_number[2:3].upper() == "D"
+
+
 class AppliancesManager:
     def __init__(
         self,
@@ -160,6 +172,20 @@ class AppliancesManager:
                     parse_microwave_capability_profile(raw_capabilities),
                 )
                 self._microwaves[appliance_data.said] = appliance
+        elif appliance_data.category == "fabriccare":
+            appliance = Dryer(self._mqtt, appliance_data)
+            self._dryers[appliance_data.said] = appliance
+        elif appliance_data.category == "laundry":
+            # Both dryers and washers report category "laundry" on the AWS
+            # IoT backend, so disambiguate by model number. The third
+            # character of Whirlpool/Maytag/KitchenAid laundry model numbers
+            # encodes the product type (D = dryer, W = washer).
+            if _is_dryer_model(appliance_data.model_number):
+                appliance = Dryer(self._mqtt, appliance_data)
+                self._dryers[appliance_data.said] = appliance
+            else:
+                appliance = Washer(self._mqtt, appliance_data)
+                self._washers[appliance_data.said] = appliance
         if appliance is None:
             LOGGER.warning(
                 "Unsupported appliance category %s for %s",
