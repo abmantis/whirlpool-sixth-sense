@@ -64,16 +64,16 @@ class Appliance(BaseAppliance):
             LOGGER.error("MQTT client ID not set")
             return
 
-        self._mqttclient.subscribe(
+        await self._mqttclient.subscribe(
             f"cmd/{self.appliance_info.model_number}/{self.appliance_info.said}/response/{self._mqttclient.client_id}",
         )
-        self._mqttclient.subscribe(
+        await self._mqttclient.subscribe(
             f"dt/{self.appliance_info.model_number}/{self.appliance_info.said}/state/update",
         )
-        self._mqttclient.subscribe(
+        await self._mqttclient.subscribe(
             f"$aws/events/presence/connected/{self.appliance_info.said}",
         )
-        self._mqttclient.subscribe(
+        await self._mqttclient.subscribe(
             f"$aws/events/presence/disconnected/{self.appliance_info.said}",
         )
 
@@ -100,7 +100,7 @@ class Appliance(BaseAppliance):
     @override
     async def fetch_data(self) -> bool:
         """Fetch appliance data."""
-        self._send_command("getState")
+        await self._send_command("getState")
         try:
             await asyncio.wait_for(self._initial_data_event.wait(), timeout=30)
         except TimeoutError:
@@ -152,7 +152,7 @@ class Appliance(BaseAppliance):
             return None
         return float(value) if isinstance(value, (int, float)) else None
 
-    def _send_command(self, command: str, payload_extra: dict | None = None):
+    async def _send_command(self, command: str, payload_extra: dict | None = None):
         """Send a command to the appliance."""
         request_id = str(uuid.uuid4())
         timestamp = int(time.time() * 1000)  # Epoch milliseconds
@@ -172,7 +172,7 @@ class Appliance(BaseAppliance):
             LOGGER.error("MQTT client ID not set")
             return
 
-        self._mqttclient.publish(
+        await self._mqttclient.publish(
             f"cmd/{self.appliance_info.model_number}/{self.appliance_info.said}/request/{self._mqttclient.client_id}",
             message,
         )
