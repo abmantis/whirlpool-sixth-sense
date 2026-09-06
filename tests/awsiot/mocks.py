@@ -80,13 +80,13 @@ class FakeMqttClient:
     def is_connected(self) -> bool:
         return self._connected
 
-    def subscribe(self, topic: str) -> None:
+    async def subscribe(self, topic: str) -> None:
         self.subscribed_topics.add(topic)
 
-    def unsubscribe(self, topic: str) -> None:
+    async def unsubscribe(self, topic: str) -> None:
         self.subscribed_topics.discard(topic)
 
-    def publish(self, topic: str, payload: dict[str, Any]) -> None:
+    async def publish(self, topic: str, payload: dict[str, Any]) -> None:
         self.published.append((topic, payload))
         cmd = payload.get("payload", {}).get("command")
         if cmd == "getState" and self._getstate_reply is not None:

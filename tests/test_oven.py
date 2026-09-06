@@ -66,7 +66,6 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert oven3.get_target_temp(Cavity.Upper) is None
     assert oven3.get_cavity_state(Cavity.Upper) == CavityState.Standby
     assert oven3.get_cook_mode(Cavity.Upper) == CookMode.Standby
-    await appliances_manager.disconnect()
 
 
 @pytest.mark.parametrize(
