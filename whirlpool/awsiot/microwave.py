@@ -92,7 +92,9 @@ class Microwave(MicrowaveABC, Appliance):
 
     @override
     async def set_cavity_light(self, on: bool) -> bool:
-        self._send_command("set", {"addressee": "primaryCavity", "cavityLight": on})
+        await self._send_command(
+            "set", {"addressee": "primaryCavity", "cavityLight": on}
+        )
         return True
 
     @override
@@ -203,37 +205,41 @@ class Microwave(MicrowaveABC, Appliance):
     @override
     @gated_set(supports_hood_fan, "hood fan")
     async def set_hood_fan_speed(self, speed: HoodFanSpeed) -> bool:
-        self._send_command("set", {"addressee": "hoodFan", "value": speed.value})
+        await self._send_command("set", {"addressee": "hoodFan", "value": speed.value})
         return True
 
     @override
     @gated_set(supports_hood_light_level, "hood light")
     async def set_hood_light_level(self, level: HoodLightLevel) -> bool:
-        self._send_command("set", {"addressee": "hoodLight", "value": level.value})
+        await self._send_command(
+            "set", {"addressee": "hoodLight", "value": level.value}
+        )
         return True
 
     @override
     @gated_set(supports_hood_light_color, "hood light color control")
     async def set_hood_light_color(self, color: HoodLightColor) -> bool:
-        self._send_command("set", {"addressee": "hoodLightColor", "value": color.value})
+        await self._send_command(
+            "set", {"addressee": "hoodLightColor", "value": color.value}
+        )
         return True
 
     @override
     @gated_set(supports_control_lock, "control lock")
     async def set_control_locked(self, on: bool) -> bool:
-        self._send_command("set", {"addressee": "hmiControlLockout", "value": on})
+        await self._send_command("set", {"addressee": "hmiControlLockout", "value": on})
         return True
 
     @override
     @gated_set(supports_quiet_mode, "quiet mode")
     async def set_quiet_mode(self, on: bool) -> bool:
-        self._send_command("set", {"addressee": "quietMode", "value": on})
+        await self._send_command("set", {"addressee": "quietMode", "value": on})
         return True
 
     @override
     @gated_set(supports_sabbath_mode, "sabbath mode")
     async def set_sabbath_mode(self, on: bool) -> bool:
-        self._send_command("set", {"addressee": "sabbathMode", "value": on})
+        await self._send_command("set", {"addressee": "sabbathMode", "value": on})
         return True
 
     def get_recipe_options(self, recipe: Recipe) -> MicrowaveRecipeOptions | None:
@@ -287,10 +293,10 @@ class Microwave(MicrowaveABC, Appliance):
                 self.said,
             )
             return False
-        self._send_command("run", payload)
+        await self._send_command("run", payload)
         return True
 
     @override
     async def stop_cook(self) -> bool:
-        self._send_command("cancel", {"addressee": "primaryCavity"})
+        await self._send_command("cancel", {"addressee": "primaryCavity"})
         return True

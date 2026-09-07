@@ -5,8 +5,10 @@ import json
 import logging
 import secrets
 import ssl
+import threading
 import urllib.parse
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 import paho.mqtt.client as mqtt
@@ -36,22 +38,19 @@ class MqttClient:
         self._aws_auth = aws_auth
         self._message_callback = message_callback
         self._client: mqtt.Client | None = None
-        self._connected = asyncio.Event()
+        self._connected = threading.Event()
+        self._disconnect_called = threading.Event()
         self._subscribed_topics: set[str] = set()
         self._client_id: str | None = None
-        # Keep response topics stable across reconnects.
         self._client_id_suffix: str = secrets.token_hex(8)
 
         self._loop = asyncio.get_running_loop()
-        self._reconnect_task: asyncio.Task[None] | None = None
-        self._shutting_down: bool = False
+        self._executor = ThreadPoolExecutor(
+            max_workers=1, thread_name_prefix="whirlpool-mqtt-client"
+        )
 
     def _teardown_client(self) -> None:
-        """Best-effort stop and disconnect of the current paho client, if any.
-
-        Drops the reference first so callbacks from the old client are treated
-        as stale by `_is_active_client`.
-        """
+        """Stop and disconnect of the current paho client, if any."""
         if self._client is None:
             return
         old = self._client
@@ -67,14 +66,16 @@ class MqttClient:
 
     async def connect(self) -> bool:
         """Connect to the MQTT broker."""
-        self._shutting_down = False
+        self._disconnect_called.clear()
+        return await self._run_on_worker(self._worker_connect)
+
+    def _worker_connect(self) -> bool:
+        """Connect to the MQTT broker. Must be called in the worker thread context."""
         self._connected.clear()
-        # Tear down any previous client so we don't leak its loop thread/socket
-        # if connect() is called again without a disconnect() in between.
         self._teardown_client()
 
-        signed_url = await self._aws_auth.create_signed_url(MQTT_ENDPOINT)
-        client_id = await self._generate_client_id()
+        signed_url = self._run_on_loop(self._aws_auth.create_signed_url, MQTT_ENDPOINT)
+        client_id = self._generate_client_id()
 
         LOGGER.debug("MQTT Client ID: %s", client_id)
         LOGGER.debug("Connecting to: wss://%s/mqtt", MQTT_ENDPOINT)
@@ -115,32 +116,38 @@ class MqttClient:
             return False
 
         self._client = client
+        # TODO: should we just call loop() ourselves, now that we have a worker thread?
         client.loop_start()
 
-        try:
-            await asyncio.wait_for(
-                self._connected.wait(), timeout=CONNECT_TIMEOUT_SECONDS
-            )
-        except TimeoutError:
-            LOGGER.debug("MQTT connection timeout")
+        if (
+            not self._connected.wait(
+                timeout=CONNECT_TIMEOUT_SECONDS
+            )  # TODO: will this block if disconnected is called during connect?
+            or self._disconnect_called.is_set()
+        ):
+            LOGGER.debug("MQTT connection timeout or disconnect called during connect")
             self._teardown_client()
             return False
+
+        LOGGER.debug(
+            "MQTT connected, subscribing %d to topics...", len(self._subscribed_topics)
+        )
+        for topic in self._subscribed_topics:
+            LOGGER.debug("  - %s", topic)
+            self._client.subscribe(topic, qos=1)
 
         self._client_id = client_id
         return True
 
     async def disconnect(self) -> None:
-        """Disconnect from the MQTT broker."""
-        self._shutting_down = True
+        """Disconnect from the MQTT broker and shutdown."""
+        self._disconnect_called.set()
+        await self._run_on_worker(self._worker_disconnect)
+        self._executor.shutdown(wait=False, cancel_futures=True)
 
-        if self._reconnect_task is not None:
-            self._reconnect_task.cancel()
-            try:
-                await self._reconnect_task
-            except asyncio.CancelledError:
-                pass
-            self._reconnect_task = None
-
+    def _worker_disconnect(self) -> None:
+        """Disconnect from the MQTT broker.
+        Must be called in the worker thread context."""
         self._teardown_client()
         self._connected.clear()
         self._client_id = None
@@ -149,8 +156,12 @@ class MqttClient:
         """Check if connected to the MQTT broker."""
         return self._connected.is_set()
 
-    def subscribe(self, topic: str) -> None:
+    async def subscribe(self, topic: str) -> None:
         """Subscribe to an MQTT topic."""
+        await self._run_on_worker(self._worker_subscribe, topic)
+
+    def _worker_subscribe(self, topic: str) -> None:
+        """Subscribe to an MQTT topic. Must be called in the worker thread context."""
         self._subscribed_topics.add(topic)
         if self._client and self._connected.is_set():
             self._client.subscribe(topic, qos=1)
@@ -160,14 +171,24 @@ class MqttClient:
         """The current MQTT client ID, or None if not connected."""
         return self._client_id
 
-    def unsubscribe(self, topic: str) -> None:
+    async def unsubscribe(self, topic: str) -> None:
         """Unsubscribe from an MQTT topic."""
+        await self._run_on_worker(self._worker_unsubscribe, topic)
+
+    def _worker_unsubscribe(self, topic: str) -> None:
+        """Unsubscribe from an MQTT topic.
+        Must be called in the worker thread context."""
         self._subscribed_topics.discard(topic)
         if self._client and self._connected.is_set():
             self._client.unsubscribe(topic)
 
-    def publish(self, topic: str, payload: dict[str, Any]) -> None:
+    async def publish(self, topic: str, payload: dict[str, Any]) -> None:
         """Publish a message to an MQTT topic."""
+        await self._run_on_worker(self._worker_publish, topic, payload)
+
+    def _worker_publish(self, topic: str, payload: dict[str, Any]) -> None:
+        """Publish a message to an MQTT topic.
+        Must be called in the worker thread context."""
         if not self._client or not self._connected.is_set():
             LOGGER.warning("Cannot publish, MQTT client not connected")
             return
@@ -175,8 +196,8 @@ class MqttClient:
         payload_json = json.dumps(payload)
         self._client.publish(topic, payload_json, qos=1)
 
-    async def _generate_client_id(self) -> str:
-        identity_id = await self._aws_auth.get_cognito_identity_id()
+    def _generate_client_id(self) -> str:
+        identity_id = self._run_on_loop(self._aws_auth.get_cognito_identity_id)
         if not identity_id:
             raise RuntimeError("Failed to get Cognito identity ID")
         return f"{identity_id}_{self._client_id_suffix}"
@@ -199,20 +220,6 @@ class MqttClient:
         if reason_code.is_failure:
             LOGGER.error("MQTT connection failed: %s", reason_code)
             return
-
-        self._loop.call_soon_threadsafe(self._resubscribe_and_set_connected)
-
-    def _resubscribe_and_set_connected(self) -> None:
-        """Resubscribe to all topics and mark as connected. Runs on the event loop."""
-        if not self._client:
-            return
-
-        LOGGER.debug(
-            "MQTT connected, subscribing %d to topics...", len(self._subscribed_topics)
-        )
-        for topic in self._subscribed_topics:
-            LOGGER.debug("  - %s", topic)
-            self._client.subscribe(topic, qos=1)
 
         self._connected.set()
 
@@ -253,45 +260,28 @@ class MqttClient:
         else:
             LOGGER.debug("MQTT disconnected cleanly")
 
-        self._loop.call_soon_threadsafe(self._connected.clear)
+        was_connected = self._connected.is_set()
+        self._connected.clear()
 
-        if reason_code.is_failure:
-            self._loop.call_soon_threadsafe(self._schedule_reconnect)
+        if reason_code.is_failure and was_connected:
+            self._executor.submit(self._worker_reconnect_loop)
 
-    def _schedule_reconnect(self) -> None:
-        """Start a reconnect task if one isn't already running."""
-        if self._shutting_down:
+    def _worker_reconnect_loop(self) -> None:
+        """Retry connecting using exponential backoff."""
+        if self._connected.is_set():
+            LOGGER.debug("MQTT already connected, skipping reconnect loop")
             return
-        if self._reconnect_task is not None and not self._reconnect_task.done():
-            return
-        self._reconnect_task = self._loop.create_task(self._reconnect_loop())
-
-    async def _reconnect_loop(self) -> None:
-        """Rebuild the MQTT client with fresh auth, using exponential backoff.
-
-        Each attempt drives the full connect() path, which fetches a new
-        SigV4-signed websocket URL and tears down the old paho client before
-        building the new one. `_resubscribe_and_set_connected` (called from
-        on_connect) reapplies `self._subscribed_topics` so existing
-        subscriptions survive the rebuild.
-        """
         delay = RECONNECT_BACKOFF_INITIAL_SECONDS
-        while not self._shutting_down:
+        while not self._disconnect_called.wait(delay):
+            if not self._loop.is_running():
+                LOGGER.debug("Event loop stopped, aborting MQTT reconnect loop")
+                return
             LOGGER.debug("MQTT reconnecting in %.1fs", delay)
-            try:
-                await asyncio.sleep(delay)
-            except asyncio.CancelledError:
-                return
-
-            if self._shutting_down:
-                return
 
             try:
-                if await self.connect():
+                if self._worker_connect():
                     LOGGER.info("MQTT reconnected successfully")
                     return
-            except asyncio.CancelledError:
-                return
             except Exception as e:
                 LOGGER.warning("MQTT reconnect attempt failed: %s", e)
                 LOGGER.debug("MQTT reconnect attempt traceback", exc_info=True)
@@ -311,3 +301,22 @@ class MqttClient:
             LOGGER.debug("Ignoring subscribe ack from stale MQTT client")
             return
         LOGGER.debug("MQTT subscription confirmed (mid: %d, QoS: %s)", mid, granted_qos)
+
+    async def _run_on_worker[*Ts, T](self, func: Callable[[*Ts], T], *args: *Ts) -> T:
+        """Run a synchronous function on the worker thread."""
+        return await self._loop.run_in_executor(self._executor, func, *args)
+
+    def _run_on_loop[T](
+        self,
+        coro_func: Callable[..., Coroutine[Any, Any, T]],
+        *args: Any,
+        timeout: float = 30.0,
+    ) -> T:
+        """Run a coroutine on the event loop from the worker thread context."""
+        if not self._loop.is_running():
+            raise RuntimeError(
+                f"Event loop is not running, cannot run {coro_func.__qualname__}"
+            )
+        return asyncio.run_coroutine_threadsafe(coro_func(*args), self._loop).result(
+            timeout=timeout
+        )

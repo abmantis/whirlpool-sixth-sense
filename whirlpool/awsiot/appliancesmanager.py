@@ -113,10 +113,6 @@ class AppliancesManager:
 
     async def disconnect(self):
         """Disconnect MQTT"""
-        if not self._mqtt.is_connected():
-            LOGGER.debug("MQTT client not connected")
-            return False
-
         await self._mqtt.disconnect()
 
     async def _add_appliance(self, thing: dict[str, Any]) -> None:

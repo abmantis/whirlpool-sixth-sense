@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import aiohttp
 import pytest
@@ -19,6 +19,7 @@ from whirlpool.awsiot.capabilities import (
     has_microwave_cavity,
     parse_microwave_capability_profile,
 )
+from whirlpool.awsiot.mqttclient import MqttClient
 
 DATA_DIR = Path(__file__).parent / "data" / "awsiot"
 
@@ -166,13 +167,13 @@ class FakeMqttClient:
         self.subscribed: list[str] = []
         self.unsubscribed: list[str] = []
 
-    def publish(self, topic: str, payload: dict[str, Any]) -> None:
+    async def publish(self, topic: str, payload: dict[str, Any]) -> None:
         self.published.append((topic, payload))
 
-    def subscribe(self, topic: str) -> None:
+    async def subscribe(self, topic: str) -> None:
         self.subscribed.append(topic)
 
-    def unsubscribe(self, topic: str) -> None:
+    async def unsubscribe(self, topic: str) -> None:
         self.unsubscribed.append(topic)
 
 
@@ -195,7 +196,9 @@ class TestHandleMessageDispatch:
     async def test_returns_false_for_unknown_topic(
         self, http_session: aiohttp.ClientSession
     ) -> None:
-        downloader = CapabilityDownloader(FakeMqttClient(), http_session)
+        downloader = CapabilityDownloader(
+            cast(MqttClient, FakeMqttClient()), http_session
+        )
         assert downloader.handle_message("random/topic", {"x": 1}) is False
 
     async def test_delivers_to_pending_future(
@@ -208,7 +211,7 @@ class TestHandleMessageDispatch:
             "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_TIMEOUT", 2.0
         )
         mqtt = FakeMqttClient()
-        downloader = CapabilityDownloader(mqtt, http_session)
+        downloader = CapabilityDownloader(cast(MqttClient, mqtt), http_session)
         aio_mock.get(CAP_URL, body=json.dumps(FIXTURE_JSON))
 
         async def respond() -> None:
@@ -245,7 +248,7 @@ class TestDownloaderCache:
             "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_TIMEOUT", 2.0
         )
         mqtt = FakeMqttClient()
-        downloader = CapabilityDownloader(mqtt, http_session)
+        downloader = CapabilityDownloader(cast(MqttClient, mqtt), http_session)
         aio_mock.get(CAP_URL, body=json.dumps(FIXTURE_JSON))
 
         async def respond_once() -> None:
@@ -278,7 +281,7 @@ class TestDownloaderRetry:
             "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_RETRIES", 3
         )
         mqtt = FakeMqttClient()
-        downloader = CapabilityDownloader(mqtt, http_session)
+        downloader = CapabilityDownloader(cast(MqttClient, mqtt), http_session)
         aio_mock.get(CAP_URL, body=json.dumps(FIXTURE_JSON))
 
         async def respond_on_third() -> None:
@@ -302,7 +305,7 @@ class TestDownloaderRetry:
             "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_RETRIES", 2
         )
         mqtt = FakeMqttClient()
-        downloader = CapabilityDownloader(mqtt, http_session)
+        downloader = CapabilityDownloader(cast(MqttClient, mqtt), http_session)
         with pytest.raises(CapabilityDownloadError):
             await downloader.get(SAID, MODEL, PART)
         assert len(mqtt.published) == 2
@@ -322,7 +325,7 @@ class TestDownloaderFetchBody:
             "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_RETRIES", 1
         )
         mqtt = FakeMqttClient()
-        downloader = CapabilityDownloader(mqtt, http_session)
+        downloader = CapabilityDownloader(cast(MqttClient, mqtt), http_session)
         aio_mock.get(CAP_URL, status=500)
 
         async def respond() -> None:
@@ -348,7 +351,7 @@ class TestDownloaderFetchBody:
             "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_RETRIES", 1
         )
         mqtt = FakeMqttClient()
-        downloader = CapabilityDownloader(mqtt, http_session)
+        downloader = CapabilityDownloader(cast(MqttClient, mqtt), http_session)
         aio_mock.get(CAP_URL, body=json.dumps(FIXTURE_JSON))
 
         async def respond() -> None:
@@ -374,7 +377,7 @@ class TestDownloaderFetchBody:
             "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_RETRIES", 1
         )
         mqtt = FakeMqttClient()
-        downloader = CapabilityDownloader(mqtt, http_session)
+        downloader = CapabilityDownloader(cast(MqttClient, mqtt), http_session)
 
         async def respond() -> None:
             for _ in range(50):
@@ -412,7 +415,7 @@ class TestDownloaderFetchBody:
             "whirlpool.awsiot.capabilities.CAPABILITY_DOWNLOAD_RETRIES", 1
         )
         mqtt = FakeMqttClient()
-        downloader = CapabilityDownloader(mqtt, http_session)
+        downloader = CapabilityDownloader(cast(MqttClient, mqtt), http_session)
 
         async def respond() -> None:
             for _ in range(50):
