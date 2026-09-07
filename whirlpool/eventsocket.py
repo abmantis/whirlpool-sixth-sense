@@ -3,6 +3,7 @@ import logging
 import re
 import uuid
 from collections.abc import Callable
+from contextlib import suppress
 from socket import gaierror
 
 import aiohttp
@@ -188,11 +189,11 @@ class EventSocket:
     async def stop(self):
         """Stop the event socket listener"""
         self._running = False
-        if not self._websocket:
-            return
-        await self._websocket.close()
-        self._websocket = None
-        if not self._run_future:
-            return
-        if not self._run_future.done():
-            await self._run_future
+        if self._websocket:
+            await self._websocket.close()
+            self._websocket = None
+        if self._run_future and not self._run_future.done():
+            self._run_future.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._run_future
+        self._run_future = None
