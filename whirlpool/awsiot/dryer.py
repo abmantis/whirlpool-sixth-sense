@@ -13,6 +13,7 @@ from ..dryer import Cycle, Dryness, MachineState, Temperature, WrinkleShield
 from ..dryer import Dryer as BaseDryer
 from ..types import ApplianceInfo
 from .appliance import Appliance
+from .capabilities import LaundryCapabilityProfile
 from .mqttclient import MqttClient
 
 # `dryer.applianceState` -> dryer MachineState. "standby", "running" and
@@ -51,11 +52,16 @@ _PHASE_AIRFLOW = "airflow"
 _PHASE_COOL_DOWN = "coolDown"
 _PHASE_DAMP = "damp"
 _PHASE_DRYING = "dry"
+# The capability file lists petsCare alongside dry as a running phase.
+_PHASE_PETS_CARE = "petsCare"
 _PHASE_LIMITED_CYCLE = "limitedCycle"
 _PHASE_SENSING = "sensing"
 _PHASE_STATIC_REDUCE = "staticReduce"
 _PHASE_STEAMING = "steaming"
 _PHASE_WET = "wet"
+
+# appliance.features.cycleSignal enumeration, quietest to loudest.
+_TONE_VOLUME_MAP: dict[str, int] = {"off": 0, "min": 1, "med": 2, "max": 3}
 
 
 class Dryer(BaseDryer, Appliance):
@@ -63,16 +69,36 @@ class Dryer(BaseDryer, Appliance):
         self,
         mqttclient: MqttClient,
         appliance_info: ApplianceInfo,
+        capability_profile: LaundryCapabilityProfile | None = None,
     ):
         super().__init__(mqttclient, appliance_info)
+        self._capability_profile = capability_profile
+
+    @property
+    def capability_profile(self) -> LaundryCapabilityProfile | None:
+        return self._capability_profile
+
+    def _option_changeable(self, option: str) -> bool | None:
+        """Whether `option` can be changed right now.
+
+        None when no capability profile is available, preserving the previous
+        "unknown" behaviour for appliances routed without one.
+        """
+        if self._capability_profile is None:
+            return None
+        return self._capability_profile.option_changeable(
+            self._get_path_str("dryer", "cycleName"),
+            option,
+            self._get_current_phase() or None,
+        )
 
     def _get_current_phase(self) -> str | None:
         """Return the dryer's current phase string, or None when absent."""
         return self._get_path_str("dryer", "currentPhase")
 
-    def _phase_is(self, phase: str) -> bool | None:
+    def _phase_is(self, *phases: str) -> bool | None:
         current = self._get_current_phase()
-        return None if current is None else current == phase
+        return None if current is None else current in phases
 
     @override
     def get_machine_state(self) -> MachineState | None:
@@ -112,35 +138,39 @@ class Dryer(BaseDryer, Appliance):
 
     @override
     def get_extra_power_changeable(self) -> bool | None:
-        return None
+        return self._option_changeable("extraPower")
 
     @override
     def get_steam_changeable(self) -> bool | None:
-        return None
+        return self._option_changeable("steam")
 
     @override
     def get_cycle_changeable(self) -> int | None:
-        return None
+        # A different cycle can only be selected while none is under way.
+        state = self.get_machine_state()
+        if state is None:
+            return None
+        return state in (MachineState.Standby, MachineState.Setting)
 
     @override
     def get_dryness_changeable(self) -> bool | None:
-        return None
+        return self._option_changeable("dryLevel")
 
     @override
     def get_manual_dry_time_changeable(self) -> int | None:
-        return None
+        return self._option_changeable("timedDry")
 
     @override
     def get_static_guard_changeable(self) -> bool | None:
-        return None
+        return self._option_changeable("staticGuardEnable")
 
     @override
     def get_temperature_changeable(self) -> bool | None:
-        return None
+        return self._option_changeable("dryTemperature")
 
     @override
     def get_wrinkle_shield_changeable(self) -> bool | None:
-        return None
+        return self._option_changeable("wrinkleShield")
 
     # ------------------------------------------------------------------
     # Current set values.
@@ -160,11 +190,20 @@ class Dryer(BaseDryer, Appliance):
             "normalDry": Dryness.Normal,
             "lessDry": Dryness.Less,
             "dampDry": Dryness.Low,
+            # MGD7020RF0 declares lessDry/normalDry/extraDry.
+            "extraDry": Dryness.More,
         }.get(raw)
 
     @override
     def get_manual_dry_time(self) -> int | None:
-        return None
+        """Selected timed-dry length in minutes (sent as a string)."""
+        raw = self._get_path_str("dryer", "timedDry")
+        if raw is None:
+            return None
+        try:
+            return int(raw)
+        except ValueError:
+            return None
 
     @override
     def get_cycle(self) -> Cycle | None:
@@ -183,6 +222,14 @@ class Dryer(BaseDryer, Appliance):
             "towels": Cycle.Towels,
             "whites": Cycle.Whites,
             "normal": Cycle.Normal,
+            # Wire names from the MGD7020RF0 capability file. bedLinen,
+            # ecoEnergy and myProgram have no Cycle equivalent.
+            "bulky": Cycle.BulkyItems,
+            "heavyLarge1": Cycle.HeavyDuty,
+            "quickDryCottons": Cycle.QuickDry,
+            "sanitize1": Cycle.Sanitize,
+            "steamRefresh": Cycle.SteamRefresh,
+            "timed40": Cycle.TimedDry,
         }.get(raw)
 
     @override
@@ -199,7 +246,7 @@ class Dryer(BaseDryer, Appliance):
 
     @override
     def get_cycle_status_drying(self) -> bool | None:
-        return self._phase_is(_PHASE_DRYING)
+        return self._phase_is(_PHASE_DRYING, _PHASE_PETS_CARE)
 
     @override
     def get_cycle_status_limited_cycle(self) -> bool | None:
@@ -231,7 +278,8 @@ class Dryer(BaseDryer, Appliance):
 
     @override
     def get_alert_tone_volume(self) -> int | None:
-        return None
+        raw = self._get_path_str("sound", "cycleSignal")
+        return _TONE_VOLUME_MAP.get(raw) if raw is not None else None
 
     @override
     def get_temperature(self) -> Temperature | None:
@@ -244,6 +292,11 @@ class Dryer(BaseDryer, Appliance):
             "warm": Temperature.Warm,
             "warmHigh": Temperature.WarmHigh,
             "hot": Temperature.Hot,
+            # MGD7020RF0 declares airOnly/low/medium/high.
+            "airOnly": Temperature.Air,
+            "low": Temperature.Cool,
+            "medium": Temperature.Warm,
+            "high": Temperature.Hot,
         }.get(raw)
 
     @override
