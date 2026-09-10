@@ -16,7 +16,10 @@ from .auth import Auth, AuthException
 from .capabilities import (
     CapabilityDownloader,
     CapabilityDownloadError,
+    has_dryer_cavity,
     has_microwave_cavity,
+    has_washer_cavity,
+    parse_laundry_capability_profile,
     parse_microwave_capability_profile,
 )
 from .dryer import Dryer
@@ -40,6 +43,29 @@ def _is_dryer_model(model_number: str) -> bool:
     AWS IoT backend (see the Maytag MFW7020RF0 + MGD7020RF0 fixtures).
     """
     return len(model_number) >= 3 and model_number[2:3].upper() == "D"
+
+
+def _laundry_is_dryer(
+    raw_capabilities: dict[str, Any], appliance_data: ApplianceInfo
+) -> bool:
+    """Whether a laundry appliance is a dryer rather than a washer.
+
+    The capability file declares the cavity it describes ("dryer" or "washer"),
+    which is authoritative. Only when neither is declared does this fall back
+    to `_is_dryer_model`, whose three-letter assumption silently treats any
+    unrecognised model number as a washer.
+    """
+    if has_dryer_cavity(raw_capabilities):
+        return True
+    if has_washer_cavity(raw_capabilities):
+        return False
+
+    LOGGER.debug(
+        "Capability file for %s declares no laundry cavity; "
+        "falling back to the model-number heuristic",
+        appliance_data.said,
+    )
+    return _is_dryer_model(appliance_data.model_number)
 
 
 class AppliancesManager:
@@ -171,19 +197,24 @@ class AppliancesManager:
                     parse_microwave_capability_profile(raw_capabilities),
                 )
                 self._microwaves[appliance_data.said] = appliance
-        elif appliance_data.category == "fabriccare":
-            appliance = Dryer(self._mqtt, appliance_data)
-            self._dryers[appliance_data.said] = appliance
-        elif appliance_data.category == "laundry":
-            # Both dryers and washers report category "laundry" on the AWS
-            # IoT backend, so disambiguate by model number. The third
-            # character of Whirlpool/Maytag/KitchenAid laundry model numbers
-            # encodes the product type (D = dryer, W = washer).
-            if _is_dryer_model(appliance_data.model_number):
-                appliance = Dryer(self._mqtt, appliance_data)
+        elif appliance_data.category in ("laundry", "fabriccare"):
+            # Both dryers and washers report category "laundry" on the AWS IoT
+            # backend. The capability file's cavity says which one it is; the
+            # model-number heuristic is only a fallback for capability files
+            # that declare neither cavity.
+            is_dryer = _laundry_is_dryer(raw_capabilities, appliance_data)
+            cavity = "dryer" if is_dryer else "washer"
+            try:
+                profile = parse_laundry_capability_profile(raw_capabilities, cavity)
+            except CapabilityDownloadError:
+                # Routed by model number: the cavity the profile needs is absent.
+                profile = None
+
+            if is_dryer:
+                appliance = Dryer(self._mqtt, appliance_data, profile)
                 self._dryers[appliance_data.said] = appliance
             else:
-                appliance = Washer(self._mqtt, appliance_data)
+                appliance = Washer(self._mqtt, appliance_data, profile)
                 self._washers[appliance_data.said] = appliance
         if appliance is None:
             LOGGER.warning(
