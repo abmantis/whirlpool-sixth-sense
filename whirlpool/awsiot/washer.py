@@ -24,6 +24,9 @@ _MACHINE_STATE_MAP: dict[str, MachineState] = {
     "standby": MachineState.Standby,
     "idle": MachineState.Standby,
     "setting": MachineState.Setting,
+    # Reported while a cycle is being selected at the console;
+    # confirmed from a live capture (Maytag MFW7020RF0).
+    "programming": MachineState.Setting,
     "delayCountdown": MachineState.DelayCountdownMode,
     "delayPaused": MachineState.DelayPause,
     "pause": MachineState.Pause,
