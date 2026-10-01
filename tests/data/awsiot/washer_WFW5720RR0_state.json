@@ -1,0 +1,47 @@
+{
+  "washer": {
+    "applianceState": "standby",
+    "cycleName": "bulky",
+    "cycleType": "standard",
+    "specialName": "",
+    "currentPhase": "",
+    "soilLevel": "heavy",
+    "washTemperature": "warm",
+    "spinSpeed": "medium",
+    "extraRinse": "off",
+    "preSoak": "0",
+    "postCare": "off",
+    "steam": "off",
+    "cycleTime": {
+      "state": "idle",
+      "time": 69622,
+      "timeComplete": 1789412830,
+      "timePaused": 1785525556
+    },
+    "delayTime": {
+      "state": "idle",
+      "time": 0,
+      "timeComplete": 0,
+      "timePaused": 0
+    },
+    "sessionId": "",
+    "cleanWasher": false,
+    "doorStatus": "closed",
+    "doorLockStatus": false
+  },
+  "remoteStartEnable": false,
+  "hmiControlLockout": false,
+  "faultHistory": [
+    "F0E2",
+    "none",
+    "none",
+    "none",
+    "none"
+  ],
+  "activeFault": "none",
+  "sound": {
+    "cycleSignal": "med"
+  },
+  "capabilityPartNumber": "P0139460020",
+  "systemVersion": "2.0.0"
+}
