@@ -60,23 +60,21 @@ class Washer(BaseWasher, Appliance):
         self,
         mqttclient: MqttClient,
         appliance_info: ApplianceInfo,
-        capability_profile: LaundryCapabilityProfile | None = None,
+        capability_profile: LaundryCapabilityProfile,
     ):
         super().__init__(mqttclient, appliance_info)
         self._capability_profile = capability_profile
 
     @property
-    def capability_profile(self) -> LaundryCapabilityProfile | None:
+    def capability_profile(self) -> LaundryCapabilityProfile:
         return self._capability_profile
 
-    def option_changeable(self, option: str) -> bool | None:
+    def option_changeable(self, option: str) -> bool:
         """Whether `option` can be changed right now.
 
         Not part of the Washer ABC; exposed for parity with the Dryer and for
-        callers gating their own setters. None when no profile is available.
+        callers gating their own setters.
         """
-        if self._capability_profile is None:
-            return None
         return self._capability_profile.option_changeable(
             self._get_path_str("washer", "cycleName"),
             option,

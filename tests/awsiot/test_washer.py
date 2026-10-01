@@ -4,13 +4,16 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock
 
+from whirlpool.awsiot.capabilities import parse_laundry_capability_profile
 from whirlpool.awsiot.washer import Washer
 from whirlpool.types import ApplianceInfo
 from whirlpool.washer import MachineState
 
-_STATE = json.loads(
-    (Path(__file__).parent.parent / "data" / "awsiot" / "washer_state.json").read_text()
-)
+_DATA_DIR = Path(__file__).parent.parent / "data" / "awsiot"
+_STATE = json.loads((_DATA_DIR / "washer_state.json").read_text())
+# A trimmed MFW7020RF0 capability file (W11812024): the file for this capture's
+# own part (W11723751) is unpublished.
+_CAPABILITY = json.loads((_DATA_DIR / "washer_capability.json").read_text())
 
 
 def _make_washer() -> Washer:
@@ -23,7 +26,8 @@ def _make_washer() -> Washer:
         model_number="MFW7020RF0",
         serial_number="S",
     )
-    washer = Washer(mqtt, info)
+    profile = parse_laundry_capability_profile(_CAPABILITY, "washer")
+    washer = Washer(mqtt, info, profile)
     washer.update_state(_STATE)
     return washer
 

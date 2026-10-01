@@ -72,23 +72,17 @@ class Dryer(BaseDryer, Appliance):
         self,
         mqttclient: MqttClient,
         appliance_info: ApplianceInfo,
-        capability_profile: LaundryCapabilityProfile | None = None,
+        capability_profile: LaundryCapabilityProfile,
     ):
         super().__init__(mqttclient, appliance_info)
         self._capability_profile = capability_profile
 
     @property
-    def capability_profile(self) -> LaundryCapabilityProfile | None:
+    def capability_profile(self) -> LaundryCapabilityProfile:
         return self._capability_profile
 
-    def _option_changeable(self, option: str) -> bool | None:
-        """Whether `option` can be changed right now.
-
-        None when no capability profile is available, preserving the previous
-        "unknown" behaviour for appliances routed without one.
-        """
-        if self._capability_profile is None:
-            return None
+    def _option_changeable(self, option: str) -> bool:
+        """Whether `option` can be changed right now."""
         return self._capability_profile.option_changeable(
             self._get_path_str("dryer", "cycleName"),
             option,

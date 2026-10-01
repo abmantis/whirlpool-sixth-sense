@@ -4,13 +4,16 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock
 
+from whirlpool.awsiot.capabilities import parse_laundry_capability_profile
 from whirlpool.awsiot.dryer import Dryer
 from whirlpool.dryer import Dryness, MachineState, WrinkleShield
 from whirlpool.types import ApplianceInfo
 
-_STATE = json.loads(
-    (Path(__file__).parent.parent / "data" / "awsiot" / "dryer_state.json").read_text()
-)
+_DATA_DIR = Path(__file__).parent.parent / "data" / "awsiot"
+_STATE = json.loads((_DATA_DIR / "dryer_state.json").read_text())
+# A trimmed MGD7020RF0 capability file (W11804872): the file for this capture's
+# own part (W11729930) is unpublished.
+_CAPABILITY = json.loads((_DATA_DIR / "dryer_capability.json").read_text())
 
 
 def _make_dryer() -> Dryer:
@@ -23,7 +26,8 @@ def _make_dryer() -> Dryer:
         model_number="MGD7020RF0",
         serial_number="S",
     )
-    dryer = Dryer(mqtt, info)
+    profile = parse_laundry_capability_profile(_CAPABILITY, "dryer")
+    dryer = Dryer(mqtt, info, profile)
     dryer.update_state(_STATE)
     return dryer
 

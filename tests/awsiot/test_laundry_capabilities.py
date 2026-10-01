@@ -1,4 +1,4 @@
-"""Tests for laundry capability profiles and capability-based routing.
+"""Tests for laundry capability profiles.
 
 The capability fixtures are trimmed captures from a Maytag MGD7020RF0 dryer
 (part W11804872) and MFW7020RF0 washer (part W11812024): the real `appliance`
@@ -11,7 +11,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from whirlpool.awsiot.appliancesmanager import _laundry_is_dryer
 from whirlpool.awsiot.capabilities import (
     CapabilityDownloadError,
     has_dryer_cavity,
@@ -30,7 +29,7 @@ WASHER_CAPABILITY = json.loads((_DATA_DIR / "washer_capability.json").read_text(
 DRYER_STATE = json.loads((_DATA_DIR / "dryer_state.json").read_text())
 
 
-def _make_dryer(capability: dict | None = DRYER_CAPABILITY) -> Dryer:
+def _make_dryer() -> Dryer:
     mqtt = MagicMock()
     mqtt.client_id = "client"
     info = ApplianceInfo(
@@ -40,11 +39,7 @@ def _make_dryer(capability: dict | None = DRYER_CAPABILITY) -> Dryer:
         model_number="MGD7020RF0",
         serial_number="S",
     )
-    profile = (
-        parse_laundry_capability_profile(capability, "dryer")
-        if capability is not None
-        else None
-    )
+    profile = parse_laundry_capability_profile(DRYER_CAPABILITY, "dryer")
     dryer = Dryer(mqtt, info, profile)
     dryer.update_state(DRYER_STATE)
     return dryer
@@ -162,13 +157,6 @@ def test_changeable_flags_follow_the_selected_cycle() -> None:
     assert dryer.get_manual_dry_time_changeable() is True
 
 
-def test_changeable_flags_stay_unknown_without_a_profile() -> None:
-    dryer = _make_dryer(capability=None)
-    assert dryer.get_dryness_changeable() is None
-    assert dryer.get_temperature_changeable() is None
-    assert dryer.get_extra_power_changeable() is None
-
-
 def test_cycle_changeable_tracks_machine_state() -> None:
     assert _make_dryer().get_cycle_changeable() is True
 
@@ -183,34 +171,3 @@ def test_capability_file_vocabularies_decode() -> None:
     assert dryer.get_dryness() is Dryness.Normal
     # MGD7020RF0 declares airOnly/low/medium/high, not the HTTP backend's names.
     assert dryer.get_temperature() is Temperature.Warm
-
-
-# --------------------------------------------------------------------------
-# Routing
-# --------------------------------------------------------------------------
-
-
-def _info(model: str) -> ApplianceInfo:
-    return ApplianceInfo(
-        said="SAID",
-        name="n",
-        category="laundry",
-        model_number=model,
-        serial_number="S",
-    )
-
-
-def test_routing_prefers_the_declared_cavity() -> None:
-    assert _laundry_is_dryer(DRYER_CAPABILITY, _info("MGD7020RF0")) is True
-    assert _laundry_is_dryer(WASHER_CAPABILITY, _info("MFW7020RF0")) is False
-
-
-def test_declared_cavity_overrides_a_misleading_model_number() -> None:
-    # The model-number heuristic would call this a washer; the capability file
-    # says otherwise and wins.
-    assert _laundry_is_dryer(DRYER_CAPABILITY, _info("XX0000")) is True
-
-
-def test_falls_back_to_model_number_without_a_cavity() -> None:
-    assert _laundry_is_dryer({"partNumber": "X"}, _info("MGD7020RF0")) is True
-    assert _laundry_is_dryer({"partNumber": "X"}, _info("MFW7020RF0")) is False
