@@ -19,7 +19,6 @@ from whirlpool.awsiot.capabilities import (
     parse_laundry_capability_profile,
 )
 from whirlpool.awsiot.dryer import Dryer
-from whirlpool.dryer import Cycle, Dryness, Temperature
 from whirlpool.types import ApplianceInfo
 
 _DATA_DIR = Path(__file__).parent.parent / "data" / "awsiot"
@@ -155,19 +154,3 @@ def test_changeable_flags_follow_the_selected_cycle() -> None:
     assert dryer.get_steam_changeable() is False
     # ...but the timed-dry length itself becomes adjustable.
     assert dryer.get_manual_dry_time_changeable() is True
-
-
-def test_cycle_changeable_tracks_machine_state() -> None:
-    assert _make_dryer().get_cycle_changeable() is True
-
-
-def test_alert_tone_volume_decodes_cycle_signal() -> None:
-    assert _make_dryer().get_alert_tone_volume() == 3
-
-
-def test_capability_file_vocabularies_decode() -> None:
-    dryer = _make_dryer()
-    assert dryer.get_cycle() is Cycle.Normal
-    assert dryer.get_dryness() is Dryness.Normal
-    # MGD7020RF0 declares airOnly/low/medium/high, not the HTTP backend's names.
-    assert dryer.get_temperature() is Temperature.Warm

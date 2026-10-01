@@ -1,10 +1,15 @@
-"""Concrete awsiot Dryer — translates the MQTT state to the Dryer ABC.
+"""Concrete awsiot Dryer: translates the MQTT state to the Dryer ABC.
 
-The AWS IoT state payload nests the laundry cavity under a `dryer` key and
-uses camelCase/attribute-style values (see `tests/data/awsiot/dryer_state.json`
-captured from a Maytag MGD7020RF0). Read-only accessors are grounded in that
-fixture; setters and capability-gated "changeable" flags are deferred until
-laundry capability profiles are available.
+The AWS IoT state nests the dryer under a `dryer` key, with camelCase string
+values. Every Dryer carries the capability profile of its own part, which is
+what routed it here, and the "changeable" flags it answers are read from that
+profile's per-cycle option lists. The accessors only read the state; there are
+no setters yet.
+
+A wire value is decoded only when an AWS dryer has reported it, or when it
+spells the enum member's own word and a real capability file enumerates it.
+Anything else reads as unknown (None) or, for a phase flag, False. A getter
+with no such value behind it raises NotImplementedError.
 """
 
 from typing import override
@@ -38,23 +43,57 @@ _WRINKLE_SHIELD_MAP: dict[str, WrinkleShield] = {
     "onWithSteam": WrinkleShield.OnWithSteam,
 }
 
-# `dryer.currentPhase` values used to derive the cycle status flags. "dry"
-# is confirmed from a live running-cycle capture (Maytag MGD7020RF0); the
-# remaining spellings are inferred and still need confirmation.
-_PHASE_AIRFLOW = "airflow"
-_PHASE_COOL_DOWN = "coolDown"
-_PHASE_DAMP = "damp"
-_PHASE_DRYING = "dry"
-# The capability file lists petsCare alongside dry as a running phase.
-_PHASE_PETS_CARE = "petsCare"
-_PHASE_LIMITED_CYCLE = "limitedCycle"
-_PHASE_SENSING = "sensing"
-_PHASE_STATIC_REDUCE = "staticReduce"
-_PHASE_STEAMING = "steaming"
-_PHASE_WET = "wet"
+# `dryer.cycleName` -> Cycle. The other wire names read as None: mixed,
+# bedLinen and the like have no Cycle member, and heavyLarge1, whitesNormal and
+# jeansDenim have not been reported and are not their member's word.
+_CYCLE_MAP: dict[str, Cycle] = {
+    # MGD7020RF0: https://github.com/abmantis/whirlpool-sixth-sense/issues/138
+    "normal": Cycle.Normal,
+    # YMED7205RF0, live capture 2026-10-02, dial on Normal. Its W11771436 file
+    # lists no "normal" cycle. Other parts list ecoEnergy beside normal, as two
+    # cycles, and there get_cycle reads it as None:
+    # W11808996: https://github.com/abmantis/whirlpool-sixth-sense/issues/179
+    # W11804872: https://github.com/abmantis/whirlpool-sixth-sense/pull/167#issuecomment-5616074371
+    "ecoEnergy": Cycle.Normal,
+    # W11771436 file: https://github.com/abmantis/whirlpool-sixth-sense/issues/117#issuecomment-4246673850
+    "delicates": Cycle.Delicates,
+    "towels": Cycle.Towels,
+    "sanitize1": Cycle.Sanitize,
+    # MED7205RW0: https://github.com/home-assistant/core/issues/151547#issuecomment-5658124608
+    "bulky": Cycle.BulkyItems,
+    # MGD7205RR0: https://github.com/pickerin/maytag_laundry_homeassistant/blob/5ea31accfd67ff21aaf8b132b6efd4bd2f913c30/TS_APPLIANCE_API.md#L252
+    "steamRefresh": Cycle.SteamRefresh,
+    # MGD7020RF0: https://github.com/abmantis/whirlpool-sixth-sense/pull/167#pullrequestreview-5179281894
+    "quickDryCottons": Cycle.QuickDry,
+    # MGD7020RF0 (same review) and MED7205RW0 (#151547 above)
+    "timed40": Cycle.TimedDry,
+}
 
-# appliance.features.cycleSignal enumeration, quietest to loudest.
-_TONE_VOLUME_MAP: dict[str, int] = {"off": 0, "min": 1, "med": 2, "max": 3}
+# `dryer.dryTemperature` -> Temperature. low and extraLow, which W11771436 also
+# enumerates, have not been reported and are not their member's word.
+_TEMPERATURE_MAP: dict[str, Temperature] = {
+    # MGD7020RF0: https://github.com/abmantis/whirlpool-sixth-sense/pull/167#discussion_r3989687537
+    "high": Temperature.Hot,
+    "medium": Temperature.Warm,
+    # W11771436 file: https://github.com/abmantis/whirlpool-sixth-sense/issues/117#issuecomment-4246673850
+    "airOnly": Temperature.Air,
+}
+
+# `dryer.currentPhase` -> cycle status flag. Sources:
+# - live MED7205RW0 timed40 cycle (dry, then coolDown through end):
+#   https://github.com/home-assistant/core/issues/151547#issuecomment-5658124608
+# - live MGD7020RF0 cycle (dry, coolDown):
+#   https://github.com/abmantis/whirlpool-sixth-sense/pull/167#discussion_r3989687514
+# - live ecoEnergy cycle (sensing for 3 s, then dry): YMED7205RF0 capture,
+#   2026-10-02
+# - W11771436 (MGD7205RR0, MED7205RW0) file: https://github.com/abmantis/whirlpool-sixth-sense/issues/117#issuecomment-4246673850
+# Left unmapped, so every flag reads False: petsCare, which that file lists
+# beside sensing but no dryer has reported.
+_PHASES_COOL_DOWN = ("coolDown",)  # live
+_PHASES_DRYING = ("dry",)  # live
+_PHASES_SENSING = ("sensing",)  # live; in W11771436
+_PHASES_STATIC_REDUCE = ("staticReduce",)  # in W11771436
+_PHASES_STEAMING = ("steaming",)  # in W11771436
 
 
 class Dryer(BaseDryer, Appliance):
@@ -113,16 +152,6 @@ class Dryer(BaseDryer, Appliance):
     def get_drum_light_on(self) -> bool | None:
         return self._get_path_bool("dryer", "drumLight")
 
-    # ------------------------------------------------------------------
-    # Capability-gated "changeable" flags.
-    #
-    # The HTTP API backend sourced these from `*_ChangeStatus*` state
-    # attributes. Under AWS IoT the equivalent signal is the appliance's
-    # capability profile (the microwave backend's "supports_X" pattern), which
-    # isn't captured yet for laundry models. Return None (unknown) until the
-    # profiles are available.
-    # ------------------------------------------------------------------
-
     @override
     def get_extra_power_changeable(self) -> bool | None:
         return self._option_changeable("extraPower")
@@ -133,11 +162,7 @@ class Dryer(BaseDryer, Appliance):
 
     @override
     def get_cycle_changeable(self) -> int | None:
-        # A different cycle can only be selected while none is under way.
-        state = self.get_machine_state()
-        if state is None:
-            return None
-        return state in (MachineState.Standby, MachineState.Setting)
+        raise NotImplementedError()
 
     @override
     def get_dryness_changeable(self) -> bool | None:
@@ -149,7 +174,7 @@ class Dryer(BaseDryer, Appliance):
 
     @override
     def get_static_guard_changeable(self) -> bool | None:
-        return self._option_changeable("staticGuardEnable")
+        raise NotImplementedError()
 
     @override
     def get_temperature_changeable(self) -> bool | None:
@@ -159,27 +184,9 @@ class Dryer(BaseDryer, Appliance):
     def get_wrinkle_shield_changeable(self) -> bool | None:
         return self._option_changeable("wrinkleShield")
 
-    # ------------------------------------------------------------------
-    # Current set values.
-    #
-    # `dryLevel`, `dryTemperature` and the named cycle use model-specific
-    # vocabularies that aren't confirmed yet; they're best-effort decoded and
-    # fall back to None for unrecognised values.
-    # ------------------------------------------------------------------
-
     @override
     def get_dryness(self) -> Dryness | None:
-        raw = self._get_path_str("dryer", "dryLevel")
-        if raw is None:
-            return None
-        return {
-            "moreDry": Dryness.More,
-            "normalDry": Dryness.Normal,
-            "lessDry": Dryness.Less,
-            "dampDry": Dryness.Low,
-            # MGD7020RF0 declares lessDry/normalDry/extraDry.
-            "extraDry": Dryness.More,
-        }.get(raw)
+        raise NotImplementedError()
 
     @override
     def get_manual_dry_time(self) -> int | None:
@@ -195,96 +202,63 @@ class Dryer(BaseDryer, Appliance):
     @override
     def get_cycle(self) -> Cycle | None:
         raw = self._get_path_str("dryer", "cycleName")
-        if raw is None:
+        if raw == "ecoEnergy" and "normal" in self._capability_profile.cycles:
+            # A cycle of its own on this part, not the Normal position.
             return None
-        return {
-            "regular": Cycle.Regular,
-            "heavyDuty": Cycle.HeavyDuty,
-            "delicates": Cycle.Delicates,
-            "wrinkleControl": Cycle.WrinkleControl,
-            "bulkyItems": Cycle.BulkyItems,
-            "quickDry": Cycle.QuickDry,
-            "sanitize": Cycle.Sanitize,
-            "timedDry": Cycle.TimedDry,
-            "towels": Cycle.Towels,
-            "whites": Cycle.Whites,
-            "normal": Cycle.Normal,
-            # Wire names from the MGD7020RF0 capability file. bedLinen,
-            # ecoEnergy and myProgram have no Cycle equivalent.
-            "bulky": Cycle.BulkyItems,
-            "heavyLarge1": Cycle.HeavyDuty,
-            "quickDryCottons": Cycle.QuickDry,
-            "sanitize1": Cycle.Sanitize,
-            "steamRefresh": Cycle.SteamRefresh,
-            "timed40": Cycle.TimedDry,
-        }.get(raw)
+        return _CYCLE_MAP.get(raw) if raw is not None else None
 
     @override
     def get_cycle_status_airflow_status(self) -> bool | None:
-        return self._phase_is(_PHASE_AIRFLOW)
+        raise NotImplementedError()
 
     @override
     def get_cycle_status_cool_down(self) -> bool | None:
-        return self._phase_is(_PHASE_COOL_DOWN)
+        return self._phase_is(*_PHASES_COOL_DOWN)
 
     @override
     def get_cycle_status_damp(self) -> bool | None:
-        return self._phase_is(_PHASE_DAMP)
+        raise NotImplementedError()
 
     @override
     def get_cycle_status_drying(self) -> bool | None:
-        return self._phase_is(_PHASE_DRYING, _PHASE_PETS_CARE)
+        return self._phase_is(*_PHASES_DRYING)
 
     @override
     def get_cycle_status_limited_cycle(self) -> bool | None:
-        return self._phase_is(_PHASE_LIMITED_CYCLE)
+        raise NotImplementedError()
 
     @override
     def get_cycle_status_sensing(self) -> bool | None:
-        return self._phase_is(_PHASE_SENSING)
+        return self._phase_is(*_PHASES_SENSING)
 
     @override
     def get_cycle_status_static_reduce(self) -> bool | None:
-        return self._phase_is(_PHASE_STATIC_REDUCE)
+        return self._phase_is(*_PHASES_STATIC_REDUCE)
 
     @override
     def get_cycle_status_steaming(self) -> bool | None:
-        return self._phase_is(_PHASE_STEAMING)
+        return self._phase_is(*_PHASES_STEAMING)
 
     @override
     def get_cycle_status_wet(self) -> bool | None:
-        return self._phase_is(_PHASE_WET)
+        raise NotImplementedError()
 
     @override
     def get_cycle_count(self) -> int | None:
-        return None
+        raise NotImplementedError()
 
     @override
     def get_damp_notification_tone_volume(self) -> int | None:
-        return None
+        raise NotImplementedError()
 
     @override
     def get_alert_tone_volume(self) -> int | None:
-        raw = self._get_path_str("sound", "cycleSignal")
-        return _TONE_VOLUME_MAP.get(raw) if raw is not None else None
+        raise NotImplementedError()
 
     @override
     def get_temperature(self) -> Temperature | None:
         raw = self._get_path_str("dryer", "dryTemperature")
-        if raw is None:
-            return None
-        return {
-            "air": Temperature.Air,
-            "cool": Temperature.Cool,
-            "warm": Temperature.Warm,
-            "warmHigh": Temperature.WarmHigh,
-            "hot": Temperature.Hot,
-            # MGD7020RF0 declares airOnly/low/medium/high.
-            "airOnly": Temperature.Air,
-            "low": Temperature.Cool,
-            "medium": Temperature.Warm,
-            "high": Temperature.Hot,
-        }.get(raw)
+        return _TEMPERATURE_MAP.get(raw) if raw is not None else None
 
     @override
     def get_wrinkle_shield(self) -> WrinkleShield | None:
