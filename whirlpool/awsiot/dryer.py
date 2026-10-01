@@ -16,30 +16,20 @@ from .appliance import Appliance
 from .capabilities import LaundryCapabilityProfile
 from .mqttclient import MqttClient
 
-# `dryer.applianceState` -> dryer MachineState. "standby", "running" and
-# "end" are confirmed from live captures (Maytag MGD7020RF0); the remaining
-# values are inferred from the HTTP API backend's state vocabulary and still
-# need confirmation against a live capture.
+# `dryer.applianceState` -> dryer MachineState. Only values an AWS dryer has
+# reported are mapped; anything else reads as None (unknown). "idle" and
+# "completed" are cycleTime.state values, not appliance states.
 _MACHINE_STATE_MAP: dict[str, MachineState] = {
+    # MGD7205RR0: https://github.com/abmantis/whirlpool-sixth-sense/issues/117#issuecomment-4246673850
     "standby": MachineState.Standby,
-    "idle": MachineState.Standby,
-    "setting": MachineState.Setting,
-    # Reported while a cycle is being selected at the console;
-    # confirmed from a live capture (Maytag MGD7020RF0).
+    # MED7205RW0: https://github.com/home-assistant/core/issues/151547#issuecomment-5658124608
     "programming": MachineState.Setting,
-    "delayCountdown": MachineState.DelayCountdownMode,
-    "delayPaused": MachineState.DelayPause,
-    "pause": MachineState.Pause,
-    "paused": MachineState.Pause,
+    # MED7205RW0: https://github.com/home-assistant/core/issues/151547#issuecomment-5658124608
     "running": MachineState.RunningMainCycle,
-    "postCycle": MachineState.RunningPostCycle,
-    "complete": MachineState.Complete,
-    "completed": MachineState.Complete,
+    # MED7205RW0: https://github.com/home-assistant/core/issues/151547#issuecomment-5658124608
+    "paused": MachineState.Pause,
+    # MED7205RW0: https://github.com/home-assistant/core/issues/151547#issuecomment-5658124608
     "end": MachineState.Complete,
-    "exception": MachineState.Exceptions,
-    "exceptions": MachineState.Exceptions,
-    "powerFailure": MachineState.PowerFailure,
-    "cancelled": MachineState.Cancelled,
 }
 
 _WRINKLE_SHIELD_MAP: dict[str, WrinkleShield] = {

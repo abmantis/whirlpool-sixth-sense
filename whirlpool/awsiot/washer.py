@@ -16,29 +16,21 @@ from .appliance import Appliance
 from .capabilities import LaundryCapabilityProfile
 from .mqttclient import MqttClient
 
-# `washer.applianceState` -> washer MachineState. "standby", "running" and
-# "end" are confirmed from live captures (Maytag MFW7020RF0); the remaining
-# values are inferred from the HTTP API backend's state vocabulary and still
-# need confirmation against a live capture.
+# `washer.applianceState` -> washer MachineState. Only values AWS laundry has
+# reported are mapped; anything else reads as None (unknown). "idle" and
+# "completed" are cycleTime.state values, not appliance states.
 _MACHINE_STATE_MAP: dict[str, MachineState] = {
+    # MTW7205RR0: https://github.com/abmantis/whirlpool-sixth-sense/issues/117#issuecomment-4246673850
     "standby": MachineState.Standby,
-    "idle": MachineState.Standby,
-    "setting": MachineState.Setting,
-    # Reported while a cycle is being selected at the console;
-    # confirmed from a live capture (Maytag MFW7020RF0).
+    # MFW7020RF0: https://github.com/abmantis/whirlpool-sixth-sense/pull/167#discussion_r3989687548
     "programming": MachineState.Setting,
-    "delayCountdown": MachineState.DelayCountdownMode,
-    "delayPaused": MachineState.DelayPause,
-    "pause": MachineState.Pause,
-    "paused": MachineState.Pause,
+    # MTW7205RR0: https://github.com/pickerin/maytag_laundry_homeassistant/blob/5ea31accfd67ff21aaf8b132b6efd4bd2f913c30/TS_APPLIANCE_API.md#L208
     "running": MachineState.RunningMainCycle,
-    "postCycle": MachineState.RunningPostCycle,
-    "complete": MachineState.Complete,
-    "completed": MachineState.Complete,
+    # MTW7205RF1, live capture 2026-10-02, paused mid-cycle. A MED7205RW0 dryer,
+    # same schema: https://github.com/home-assistant/core/issues/151547#issuecomment-5658124608
+    "paused": MachineState.Pause,
+    # MFW7020RF0: https://github.com/abmantis/whirlpool-sixth-sense/pull/167#discussion_r3989687563
     "end": MachineState.Complete,
-    "exception": MachineState.Exceptions,
-    "exceptions": MachineState.Exceptions,
-    "powerFailure": MachineState.PowerFailure,
 }
 
 # `washer.currentPhase` values used to derive the cycle status flags. "wash"
