@@ -59,6 +59,14 @@ class Washer(Appliance, ABC):
     def get_dispense_1_level(self) -> int | None:
         pass
 
+    def supports_dispense_level(self) -> bool:
+        """Return whether ``get_dispense_1_level()`` is implemented.
+
+        When this is ``False``, ``get_dispense_1_level()`` raises
+        ``NotImplementedError``, so callers can skip the dispense level.
+        """
+        return True
+
     @abstractmethod
     def get_door_open(self) -> bool | None:
         pass

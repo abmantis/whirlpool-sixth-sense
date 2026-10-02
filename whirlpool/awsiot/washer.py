@@ -8,7 +8,9 @@ setters yet.
 A wire value is decoded only when an AWS laundry appliance has reported it, or,
 for a phase, when it spells the flag's own word ("fill", "filling") and a real
 capability file enumerates it. Anything else reads as unknown (None) or, for a
-phase flag, False.
+phase flag, False. The dispense level has no such value behind it, so
+supports_dispense_level() is False and get_dispense_1_level() raises
+NotImplementedError.
 """
 
 from typing import override
@@ -132,10 +134,18 @@ class Washer(BaseWasher, Appliance):
         return self._phase_is(*_PHASES_SPINNING)
 
     @override
+    def supports_dispense_level(self) -> bool:
+        """Always False: no AWS washer is known to report a dispense level.
+
+        Not read from the capability profile. Its features.dispenser.type
+        ("singleDose") and the per-cycle dispenser option ("off",
+        "softenerOnly") are not levels.
+        """
+        return False
+
+    @override
     def get_dispense_1_level(self) -> int | None:
-        # No captured washer fixture exposes a bulk-dispense level yet;
-        # return None (unsupported/unknown) until a dispenser model is captured.
-        return None
+        raise NotImplementedError()
 
     @override
     def get_door_open(self) -> bool | None:

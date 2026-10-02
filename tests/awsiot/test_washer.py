@@ -274,3 +274,28 @@ def test_top_load_reports_rinsing() -> None:
     washer.update_state(_MTW7205RR0_RUNNING_RINSE)
     assert washer.get_machine_state() == MachineState.RunningMainCycle
     assert _phase_flags(washer) == {name: name == "rinsing" for name in _FLAGS}
+
+
+# The washer captures that come with their own capability file. W11738987
+# declares features.dispenser.type "singleDose", and the W11771387 top-load
+# offers a per-cycle dispenser option (off, softenerOnly). Neither is a level,
+# and no AWS washer has reported one.
+_DISPENSER_CASES = [
+    pytest.param(_WFW5720RR0_STATE, _W11738987, "WFW5720RR0", id="WFW5720RR0"),
+    pytest.param(_MTW7205RR0_STATE, _W11771387, "MTW7205RR0", id="MTW7205RR0"),
+]
+
+
+@pytest.mark.parametrize(("state", "capability", "model"), _DISPENSER_CASES)
+def test_dispense_level_is_not_supported(
+    state: dict[str, Any], capability: dict[str, Any], model: str
+) -> None:
+    assert _make_washer(state, capability, model).supports_dispense_level() is False
+
+
+@pytest.mark.parametrize(("state", "capability", "model"), _DISPENSER_CASES)
+def test_dispense_level_raises(
+    state: dict[str, Any], capability: dict[str, Any], model: str
+) -> None:
+    with pytest.raises(NotImplementedError):
+        _make_washer(state, capability, model).get_dispense_1_level()
