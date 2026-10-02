@@ -443,3 +443,15 @@ def test_manual_dry_time_is_unknown_without_the_key() -> None:
     # The programming snapshot, a bulky cycle, carries no timedDry key.
     dryer = _med7205rw0("dryer_MED7205RW0_programming.json")
     assert dryer.get_manual_dry_time() is None
+
+
+def test_live_eco_energy_cycle_reads_normal() -> None:
+    # A live capture of a YMED7205RF0 running an ecoEnergy cycle on 2026-10-02,
+    # with the dial on Normal. The state is what update_state held after a getState
+    # reply: the capture's replies and dt pushes, merged in order. The
+    # top-level payload.currentTime came from one of those pushes and is kept.
+    dryer = _make_dryer(
+        _load("dryer_YMED7205RF0_running.json"), _W11771436, "YMED7205RF0"
+    )
+    assert dryer.get_machine_state() == MachineState.RunningMainCycle
+    assert dryer.get_cycle() is Cycle.Normal

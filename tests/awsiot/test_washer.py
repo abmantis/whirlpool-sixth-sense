@@ -92,12 +92,12 @@ def test_end_state_maps_to_complete() -> None:
 
 
 # Every applianceState the washer map keeps. Standby is the #117 capture as-is;
-# no washer capture holds the other four, so they are applied over it. Live
-# reports: programming and end from an MFW7020RF0
+# the other four are applied over it. Live reports: programming and end from an
+# MFW7020RF0
 # (https://github.com/abmantis/whirlpool-sixth-sense/pull/167#discussion_r3989687548,
 # https://github.com/abmantis/whirlpool-sixth-sense/pull/167#discussion_r3989687563),
-# running from an MTW7205RR0 getState reply (pickerin's TS_APPLIANCE_API.md).
-# paused has only been captured on dryers, which share the message schema.
+# running from an MTW7205RR0 getState reply (pickerin's TS_APPLIANCE_API.md),
+# and all four from a live MTW7205RF1 capture, whose states are tested below.
 @pytest.mark.parametrize(
     ("value", "expected"),
     [
@@ -192,8 +192,8 @@ def test_mapped_phase_sets_only_its_flag(phase: str, flag: str) -> None:
 
 
 # Phases a capability file enumerates but nothing maps: addGarment and default
-# have no flag; preSense, intermediateSpin and preWash were never reported live,
-# and preWash could mean soaking or washing.
+# have no flag; preSense and intermediateSpin were never reported live; preWash
+# was, on a top-load (tested below), but could mean soaking or washing.
 @pytest.mark.parametrize(
     "phase", ["addGarment", "preWash", "preSense", "intermediateSpin", "default"]
 )
@@ -306,9 +306,8 @@ def test_time_remaining_stops_at_zero_past_the_predicted_end(
 
 
 def test_time_is_unknown_while_paused(monkeypatch: pytest.MonkeyPatch) -> None:
-    # No washer has been captured paused. A paused MED7205RW0 dryer, which
-    # shares the schema, kept its timeComplete while cycleTime.state read
-    # "paused", and nothing counts down during a pause.
+    # Nothing counts down during a pause. The live MTW7205RF1 pause is tested
+    # below; this one is built over pickerin's running reply.
     _freeze_clock(monkeypatch, _MTW7205RR0_PREDICTED_END - 600)
     washer = _running_top_load()
     washer.update_state(
@@ -322,8 +321,9 @@ def test_time_is_unknown_while_the_cycle_time_is_not_running(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # The gate reads cycleTime.state, not applianceState. No capture shows a
-    # running washer with an idle cycleTime: every sample pairs the two. If one
-    # arrives, both getters return None, so callers must handle None.
+    # running washer with an idle cycleTime, so this one is built; a paused
+    # cycleTime under a running washer was captured, and is tested below. Both
+    # getters return None, so callers must handle None.
     _freeze_clock(
         monkeypatch, _MTW7205RR0_STATE["washer"]["cycleTime"]["timeComplete"] - 600
     )
@@ -380,3 +380,83 @@ def test_dispense_level_raises(
 ) -> None:
     with pytest.raises(NotImplementedError):
         _make_washer(state, capability, model).get_dispense_1_level()
+
+
+# A live capture of an MTW7205RF1 top-load through one regularNormal cycle on
+# 2026-10-02, with Extra Power on and Extra Rinse +1. Each file is the state
+# that update_state held at that moment: the capture's getState replies and dt
+# pushes, merged in order. The machine's capability file is W11771387, the same
+# file as the #117 MTW7205RR0's.
+def _mtw7205rf1_state(moment: str) -> dict[str, Any]:
+    return _load(f"washer_MTW7205RF1_{moment}.json")
+
+
+def _mtw7205rf1(moment: str) -> Washer:
+    return _make_washer(_mtw7205rf1_state(moment), _W11771387, "MTW7205RF1")
+
+
+@pytest.mark.parametrize(
+    ("moment", "expected"),
+    [
+        ("programming", MachineState.Setting),
+        ("sensing", MachineState.RunningMainCycle),
+        ("paused", MachineState.Pause),
+        ("end", MachineState.Complete),
+    ],
+)
+def test_live_cycle_state_maps(moment: str, expected: MachineState) -> None:
+    assert _mtw7205rf1(moment).get_machine_state() == expected
+
+
+# The cycle went sensing, filling, preWash, filling, preWash, filling, washing,
+# then spin and rinse: the top-load reports the gerunds its file enumerates.
+@pytest.mark.parametrize("phase", ["sensing", "filling", "washing"])
+def test_live_top_load_phase_sets_only_its_flag(phase: str) -> None:
+    assert _mtw7205rf1_state(phase)["washer"]["currentPhase"] == phase
+    assert _phase_flags(_mtw7205rf1(phase)) == {name: name == phase for name in _FLAGS}
+
+
+# preWash came between fills, before washing, and could be a soak or a wash.
+# done came with the end state. Neither names a flag.
+@pytest.mark.parametrize(("moment", "phase"), [("prewash", "preWash"), ("end", "done")])
+def test_live_phase_without_a_flag_sets_none(moment: str, phase: str) -> None:
+    assert _mtw7205rf1_state(moment)["washer"]["currentPhase"] == phase
+    assert _phase_flags(_mtw7205rf1(moment)) == dict.fromkeys(_FLAGS, False)
+
+
+def test_live_time_remaining_counts_down_while_the_cycle_time_runs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # cycleTime.time held 6334 from the first fill to the end.
+    state = _mtw7205rf1_state("filling")
+    predicted_end = state["washer"]["cycleTime"]["timeComplete"]
+    _freeze_clock(monkeypatch, predicted_end - 600)
+    washer = _mtw7205rf1("filling")
+    assert washer.get_time_remaining() == 600
+    assert washer.get_cycle_time_complete() == predicted_end
+
+
+def test_live_time_is_unknown_while_the_cycle_time_holds(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The machine held cycleTime.state "paused" under a running applianceState
+    # five times in the cycle, for 30 s to 6.5 min each. This one is during a
+    # fill.
+    state = _mtw7205rf1_state("cycle_time_paused")
+    assert state["washer"]["cycleTime"]["state"] == "paused"
+    _freeze_clock(monkeypatch, state["washer"]["cycleTime"]["timeComplete"] - 600)
+    washer = _mtw7205rf1("cycle_time_paused")
+    assert washer.get_machine_state() == MachineState.RunningMainCycle
+    assert washer.get_time_remaining() is None
+    assert washer.get_cycle_time_complete() is None
+
+
+# doorStatus is the lid; doorLockStatus is a separate lock. During the pause the
+# lid was open and unlocked, while programming it was closed and unlocked, and
+# while filling it was closed and locked.
+@pytest.mark.parametrize(
+    ("moment", "door_open"),
+    [("paused", True), ("programming", False), ("filling", False)],
+)
+def test_live_door_follows_the_lid(moment: str, door_open: bool) -> None:
+    assert _mtw7205rf1(moment).get_door_open() is door_open
