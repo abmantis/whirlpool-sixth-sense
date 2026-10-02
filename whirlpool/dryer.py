@@ -129,6 +129,7 @@ class Dryer(Appliance, ABC):
 
     @abstractmethod
     def get_manual_dry_time(self) -> int | None:
+        """Return the selected manual dry time in seconds."""
         pass
 
     @abstractmethod

@@ -417,3 +417,29 @@ def test_time_is_unknown_outside_a_running_cycle(
     dryer = _make_dryer(state, _W11771436, model_number)
     assert dryer.get_time_remaining() is None
     assert dryer.get_cycle_time_complete() is None
+
+
+# timedDry is the selected length in minutes, sent as a string, and the ABC
+# reports seconds. The MED7205RW0 timed40 cycle reported "40".
+def test_manual_dry_time_is_in_seconds() -> None:
+    assert _med7205rw0().get_manual_dry_time() == 2400
+
+
+def test_manual_dry_time_does_not_read_the_cycle_length() -> None:
+    # JReich's quickDryCottons cycle reported "15"; the snapshot's
+    # cycleTime.time stays at 2400.
+    dryer = _med7205rw0()
+    dryer.update_state({"dryer": {"timedDry": "15"}})
+    assert dryer.get_manual_dry_time() == 900
+
+
+def test_unparseable_manual_dry_time_is_unknown() -> None:
+    dryer = _med7205rw0()
+    dryer.update_state({"dryer": {"timedDry": "abc"}})
+    assert dryer.get_manual_dry_time() is None
+
+
+def test_manual_dry_time_is_unknown_without_the_key() -> None:
+    # The programming snapshot, a bulky cycle, carries no timedDry key.
+    dryer = _med7205rw0("dryer_MED7205RW0_programming.json")
+    assert dryer.get_manual_dry_time() is None

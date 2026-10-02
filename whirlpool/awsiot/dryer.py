@@ -208,12 +208,19 @@ class Dryer(BaseDryer, Appliance):
 
     @override
     def get_manual_dry_time(self) -> int | None:
-        """Selected timed-dry length in minutes (sent as a string)."""
+        """Selected timed-dry length in seconds.
+
+        timedDry is sent in minutes, as a string: a MED7205RW0 timed40 cycle
+        reported "40" next to a cycleTime.time of 2400, and a quickDryCottons
+        cycle "15" next to 900:
+        https://github.com/home-assistant/core/issues/151547#issuecomment-5658124608
+        https://github.com/abmantis/whirlpool-sixth-sense/pull/167#pullrequestreview-5179281894
+        """
         raw = self._get_path_str("dryer", "timedDry")
         if raw is None:
             return None
         try:
-            return int(raw)
+            return int(raw) * 60
         except ValueError:
             return None
 
