@@ -2,6 +2,7 @@
 
 import copy
 import json
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -56,14 +57,6 @@ def test_machine_state_standby() -> None:
 
 def test_door_closed() -> None:
     assert _make_dryer().get_door_open() is False
-
-
-def test_time_remaining() -> None:
-    assert _make_dryer().get_time_remaining() == 2185
-
-
-def test_cycle_time_complete() -> None:
-    assert _make_dryer().get_cycle_time_complete() == 1783895096
 
 
 def test_drum_light_off() -> None:
@@ -353,3 +346,74 @@ def test_wrinkle_shield_maps(value: str, expected: WrinkleShield | None) -> None
     dryer = _med7205rw0()
     dryer.update_state({"dryer": {"wrinkleShield": value}})
     assert dryer.get_wrinkle_shield() is expected
+
+
+def _freeze_clock(monkeypatch: pytest.MonkeyPatch, now: int) -> None:
+    monkeypatch.setattr(time, "time", lambda: float(now))
+
+
+# The running MED7205RW0 snapshot predicts the timed40 cycle's end at
+# 1789349404. cycleTime.time stayed at 2400 from start to end, so it is the
+# cycle's length, not a countdown. The end snapshot's timePaused, 1789349443,
+# puts the finish 39 s past the prediction.
+_MED7205RW0_PREDICTED_END = 1789349404
+
+
+def test_time_remaining_counts_down_to_the_predicted_end(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _freeze_clock(monkeypatch, _MED7205RW0_PREDICTED_END - 1200)
+    dryer = _med7205rw0()
+    assert dryer.get_time_remaining() == 1200
+    assert dryer.get_cycle_time_complete() == _MED7205RW0_PREDICTED_END
+
+
+def test_time_remaining_stops_at_zero_past_the_predicted_end(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _freeze_clock(monkeypatch, 1789349443)
+    dryer = _med7205rw0()
+    assert dryer.get_time_remaining() == 0
+    assert dryer.get_cycle_time_complete() == _MED7205RW0_PREDICTED_END
+
+
+def test_time_is_unknown_while_the_cycle_time_is_not_running(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The gate reads cycleTime.state, not applianceState. Every MED7205RW0
+    # sample pairs the two, so this split is built, not captured: the
+    # programming snapshot with only applianceState moved on. Both getters
+    # return None, so callers must handle None.
+    state = _load("dryer_MED7205RW0_programming.json")
+    _freeze_clock(monkeypatch, state["dryer"]["cycleTime"]["timeComplete"] - 600)
+    dryer = _make_dryer(state, _W11771436, "MED7205RW0")
+    dryer.update_state({"dryer": {"applianceState": "running"}})
+    assert dryer.get_machine_state() == MachineState.RunningMainCycle
+    assert dryer.get_time_remaining() is None
+    assert dryer.get_cycle_time_complete() is None
+
+
+# Outside a running cycle nothing counts down: the idle captures carry a
+# leftover timeComplete (2022 on the MED7205RW0), and the paused and end
+# snapshots keep the stopped cycle's prediction. The clock sits ten minutes
+# before each snapshot's own timeComplete, so reading it would show a 600 s
+# countdown.
+@pytest.mark.parametrize(
+    ("state_file", "model_number"),
+    [
+        pytest.param("dryer_MGD7205RR0_state.json", "MGD7205RR0", id="standby"),
+        pytest.param(
+            "dryer_MED7205RW0_programming.json", "MED7205RW0", id="programming"
+        ),
+        pytest.param("dryer_MED7205RW0_paused.json", "MED7205RW0", id="paused"),
+        pytest.param("dryer_MED7205RW0_end.json", "MED7205RW0", id="end"),
+    ],
+)
+def test_time_is_unknown_outside_a_running_cycle(
+    monkeypatch: pytest.MonkeyPatch, state_file: str, model_number: str
+) -> None:
+    state = _load(state_file)
+    _freeze_clock(monkeypatch, state["dryer"]["cycleTime"]["timeComplete"] - 600)
+    dryer = _make_dryer(state, _W11771436, model_number)
+    assert dryer.get_time_remaining() is None
+    assert dryer.get_cycle_time_complete() is None

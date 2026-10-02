@@ -80,10 +80,10 @@ class Dryer(Appliance, ABC):
         pass
 
     def get_cycle_time_complete(self) -> int | None:
-        """Return the Unix timestamp (seconds) of the last completed cycle.
+        """Return the Unix time (s) at which the running cycle is predicted to end.
 
-        Only the AWS IoT backend reports this field; other backends return
-        ``None``.
+        ``None`` when no cycle is running or the backend does not report it.
+        Only the AWS IoT backend reports it; other backends return ``None``.
         """
         return None
 

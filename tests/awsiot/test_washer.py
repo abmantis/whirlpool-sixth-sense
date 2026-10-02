@@ -1,6 +1,7 @@
 """Tests for the AWS IoT Washer class."""
 
 import json
+import time
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock
@@ -61,14 +62,6 @@ def test_machine_state_standby() -> None:
 
 def test_door_closed() -> None:
     assert _make_washer().get_door_open() is False
-
-
-def test_time_remaining() -> None:
-    assert _make_washer().get_time_remaining() == 5351
-
-
-def test_cycle_time_complete() -> None:
-    assert _make_washer().get_cycle_time_complete() == 1783898525
 
 
 def test_cycle_status_flags_false_in_standby() -> None:
@@ -274,6 +267,94 @@ def test_top_load_reports_rinsing() -> None:
     washer.update_state(_MTW7205RR0_RUNNING_RINSE)
     assert washer.get_machine_state() == MachineState.RunningMainCycle
     assert _phase_flags(washer) == {name: name == "rinsing" for name in _FLAGS}
+
+
+def _freeze_clock(monkeypatch: pytest.MonkeyPatch, now: int) -> None:
+    monkeypatch.setattr(time, "time", lambda: float(now))
+
+
+# The running MTW7205RR0 reply above carries cycleTime.time 3665 and
+# timeComplete 1775397826. The countdown comes from timeComplete: on a dryer,
+# which shares the schema, time held the cycle's length from start to end.
+_MTW7205RR0_PREDICTED_END = 1775397826
+
+
+def _running_top_load() -> Washer:
+    washer = _make_washer(_MTW7205RR0_STATE, _W11771387, "MTW7205RR0")
+    washer.update_state(_MTW7205RR0_RUNNING_RINSE)
+    return washer
+
+
+def test_time_remaining_counts_down_to_the_predicted_end(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _freeze_clock(monkeypatch, _MTW7205RR0_PREDICTED_END - 600)
+    washer = _running_top_load()
+    assert washer.get_time_remaining() == 600
+    assert washer.get_cycle_time_complete() == _MTW7205RR0_PREDICTED_END
+
+
+def test_time_remaining_stops_at_zero_past_the_predicted_end(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A cycle can run past its prediction: a MED7205RW0 dryer's end snapshot
+    # puts its finish 39 s late.
+    _freeze_clock(monkeypatch, _MTW7205RR0_PREDICTED_END + 60)
+    washer = _running_top_load()
+    assert washer.get_time_remaining() == 0
+    assert washer.get_cycle_time_complete() == _MTW7205RR0_PREDICTED_END
+
+
+def test_time_is_unknown_while_paused(monkeypatch: pytest.MonkeyPatch) -> None:
+    # No washer has been captured paused. A paused MED7205RW0 dryer, which
+    # shares the schema, kept its timeComplete while cycleTime.state read
+    # "paused", and nothing counts down during a pause.
+    _freeze_clock(monkeypatch, _MTW7205RR0_PREDICTED_END - 600)
+    washer = _running_top_load()
+    washer.update_state(
+        {"washer": {"applianceState": "paused", "cycleTime": {"state": "paused"}}}
+    )
+    assert washer.get_time_remaining() is None
+    assert washer.get_cycle_time_complete() is None
+
+
+def test_time_is_unknown_while_the_cycle_time_is_not_running(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The gate reads cycleTime.state, not applianceState. No capture shows a
+    # running washer with an idle cycleTime: every sample pairs the two. If one
+    # arrives, both getters return None, so callers must handle None.
+    _freeze_clock(
+        monkeypatch, _MTW7205RR0_STATE["washer"]["cycleTime"]["timeComplete"] - 600
+    )
+    washer = _make_washer(_MTW7205RR0_STATE, _W11771387, "MTW7205RR0")
+    washer.update_state({"washer": {"applianceState": "running"}})
+    assert washer.get_machine_state() == MachineState.RunningMainCycle
+    assert washer.get_time_remaining() is None
+    assert washer.get_cycle_time_complete() is None
+
+
+# Outside a running cycle timeComplete is no prediction: the idle WFW5720RR0
+# capture carries one about 16 h after it was posted. The clock sits ten
+# minutes before each capture's own timeComplete, so reading it would show a
+# 600 s countdown on an idle washer.
+@pytest.mark.parametrize(
+    ("state", "capability", "model"),
+    [
+        pytest.param(_MTW7205RR0_STATE, _W11771387, "MTW7205RR0", id="MTW7205RR0"),
+        pytest.param(_WFW5720RR0_STATE, _W11738987, "WFW5720RR0", id="WFW5720RR0"),
+    ],
+)
+def test_time_is_unknown_outside_a_running_cycle(
+    monkeypatch: pytest.MonkeyPatch,
+    state: dict[str, Any],
+    capability: dict[str, Any],
+    model: str,
+) -> None:
+    _freeze_clock(monkeypatch, state["washer"]["cycleTime"]["timeComplete"] - 600)
+    washer = _make_washer(state, capability, model)
+    assert washer.get_time_remaining() is None
+    assert washer.get_cycle_time_complete() is None
 
 
 # The washer captures that come with their own capability file. W11738987

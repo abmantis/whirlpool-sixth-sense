@@ -12,6 +12,7 @@ Anything else reads as unknown (None) or, for a phase flag, False. A getter
 with no such value behind it raises NotImplementedError.
 """
 
+import time
 from typing import override
 
 from ..dryer import Cycle, Dryness, MachineState, Temperature, WrinkleShield
@@ -142,10 +143,27 @@ class Dryer(BaseDryer, Appliance):
 
     @override
     def get_time_remaining(self) -> int | None:
-        return self._get_path_int("dryer", "cycleTime", "time")
+        """Seconds until the running cycle's predicted end, never below 0.
+
+        cycleTime.time is not a countdown: a MED7205RW0 timed40 cycle held it
+        at 2400, the cycle's length, from start to end. Its end snapshot puts
+        the finish 39 s past the predicted end:
+        https://github.com/home-assistant/core/issues/151547#issuecomment-5658124608
+        """
+        time_complete = self.get_cycle_time_complete()
+        if time_complete is None:
+            return None
+        return max(0, time_complete - int(time.time()))
 
     @override
     def get_cycle_time_complete(self) -> int | None:
+        """cycleTime.timeComplete while a cycle runs; None otherwise.
+
+        Outside a running cycle the field is no prediction: an idle MED7205RW0
+        reported one from 2022.
+        """
+        if self._get_path_str("dryer", "cycleTime", "state") != "running":
+            return None
         return self._get_path_int("dryer", "cycleTime", "timeComplete")
 
     @override
