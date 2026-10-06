@@ -1,4 +1,10 @@
+from aiohttp.client_reqrep import URL
+from aiointercept import aiointercept
+import pytest
+
 from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.auth import Auth
+from whirlpool.backendselector import BackendSelector
 from whirlpool.dryer import (
     Cycle,
     Dryness,
@@ -6,6 +12,7 @@ from whirlpool.dryer import (
     Temperature,
     WrinkleShield,
 )
+
 
 
 async def test_attributes(appliances_manager: AppliancesManager):
@@ -37,3 +44,40 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert dryer.get_alert_tone_volume() == 0
     assert dryer.get_temperature() == Temperature.Cool
     assert dryer.get_wrinkle_shield() == WrinkleShield.Off
+
+
+@pytest.mark.parametrize(
+    ("method_name", "operation"),
+    (("start", "2"), ("pause", "5"), ("resume", "6"), ("cancel", "1")),
+)
+async def test_command_setters(
+    appliances_manager: AppliancesManager,
+    auth: Auth,
+    backend_selector: BackendSelector,
+    aiointercept_mock: aiointercept,
+    method_name: str,
+    operation: str,
+):
+    dryer = appliances_manager.dryers[0]
+    url = backend_selector.appliance_command_url
+    expected_json = {
+        "body": {"Cavity_OpSetOperations": operation},
+        "header": {"said": dryer.said, "command": "setAttributes"},
+    }
+    aiointercept_mock.post(url, payload=expected_json)
+
+    assert await getattr(dryer, method_name)()
+
+    aiointercept_mock.assert_called_with(
+        url=url,
+        method="POST",
+        data=None,
+        json=expected_json,
+        headers=auth.create_headers(),
+    )
+    assert len(aiointercept_mock.requests[("POST", URL(url))]) == 1
+
+
+async def test_remote_control_enabled(appliances_manager: AppliancesManager):
+    dryer = appliances_manager.dryers[0]
+    assert dryer.get_remote_control_enabled() is True
