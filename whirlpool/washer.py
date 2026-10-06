@@ -231,6 +231,15 @@ class Washer(Appliance, ABC):
     async def set_steam(self, option: str) -> bool:
         return False
 
+    def get_supported_specialty_cycles(self) -> list[str]:
+        return []
+
+    def get_specialty_cycle(self) -> str | None:
+        return None
+
+    async def set_specialty_cycle(self, option: str) -> bool:
+        return False
+
     async def set_wash_cycle_pair(self, what: str, how: str) -> bool:
         return False
 
