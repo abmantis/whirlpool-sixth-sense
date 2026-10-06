@@ -66,3 +66,23 @@ class Washer(Appliance, ABC):
     @abstractmethod
     def get_time_remaining(self) -> int | None:
         pass
+
+    def get_remote_control_enabled(self) -> bool | None:
+        """Return remote-control status when supported by this transport."""
+        return None
+
+    async def start(self) -> bool:
+        """Start the current cycle when supported by this transport."""
+        return False
+
+    async def pause(self) -> bool:
+        """Pause the current cycle when supported by this transport."""
+        return False
+
+    async def resume(self) -> bool:
+        """Resume the current cycle when supported by this transport."""
+        return False
+
+    async def cancel(self) -> bool:
+        """Cancel the current cycle when supported by this transport."""
+        return False
