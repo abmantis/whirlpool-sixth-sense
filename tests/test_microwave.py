@@ -3,7 +3,7 @@
 import json
 from collections.abc import AsyncGenerator
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import aiohttp
 import pytest
@@ -234,12 +234,131 @@ async def test_cook_timer_time_complete_returns_timestamp(
     assert mwo.get_cook_timer_time_complete() == 1_776_101_159
 
 
-async def test_get_online_is_none_before_any_presence_event(
+# A partial state, the way a push carries it.
+_DOOR_OPEN = {"primaryCavity": {"doorStatus": "open"}}
+
+
+def _inject_presence(
+    fake_mqtt: FakeMqttClient, event: str, said: str = MWO_SAID
+) -> None:
+    fake_mqtt.inject(
+        f"$aws/events/presence/{event}/{said}",
+        {"eventType": event, "clientId": "device", "timestamp": 1},
+    )
+
+
+def _inject_state(fake_mqtt: FakeMqttClient, kind: str, said: str = MWO_SAID) -> None:
+    """Inject a getState reply (`kind` "reply") or a state push ("push")."""
+    if kind == "reply":
+        fake_mqtt.inject(
+            f"cmd/{MWO_MODEL}/{said}/response/{fake_mqtt.client_id}",
+            {"requestId": "1", "response": "accepted", "payload": _DOOR_OPEN},
+        )
+    else:
+        fake_mqtt.inject(f"dt/{MWO_MODEL}/{said}/state/update", _DOOR_OPEN)
+
+
+async def test_get_online_is_true_once_getstate_is_answered(
     aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
 ) -> None:
+    # connect() sent getState and the fake answered it. No presence event came
+    # in, as for an appliance that was already connected.
     manager, _ = aws_manager
     mwo = manager.microwaves[0]
-    assert mwo.get_online() is None
+    assert mwo.get_online() is True
+
+
+@pytest.mark.parametrize("kind", ["reply", "push"])
+async def test_state_message_marks_online_after_a_disconnect(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient], kind: str
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    _inject_presence(fake_mqtt, "disconnected")
+    assert mwo.get_online() is False
+    calls: list[bool | None] = []
+    mwo.register_attr_callback(lambda: calls.append(mwo.get_online()))
+
+    _inject_state(fake_mqtt, kind)
+
+    assert mwo.get_online() is True
+    assert mwo.get_door_status() == MicrowaveDoorStatus.Open
+    # The state callback runs first and still reads offline. The online change
+    # runs second, so the callback that makes the appliance available already
+    # sees the new state.
+    assert calls == [False, True]
+
+
+async def test_online_follows_disconnects_and_pushes(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    calls: list[bool | None] = []
+    mwo.register_attr_callback(lambda: calls.append(mwo.get_online()))
+
+    _inject_presence(fake_mqtt, "disconnected")
+    assert mwo.get_online() is False
+    _inject_state(fake_mqtt, "push")
+    assert mwo.get_online() is True
+    _inject_state(fake_mqtt, "push")
+    _inject_presence(fake_mqtt, "disconnected")
+    assert mwo.get_online() is False
+    _inject_state(fake_mqtt, "push")
+    assert mwo.get_online() is True
+
+    # Each push calls back once for its state and once more only if it brings
+    # the appliance back online: the second push, already online, adds none.
+    assert calls == [False, False, True, True, False, False, True]
+
+
+@pytest.mark.parametrize(
+    "reply",
+    (
+        pytest.param({"requestId": "1", "response": "accepted"}, id="ack"),
+        pytest.param(
+            {
+                "requestId": "2",
+                "response": "rejected",
+                "payload": {"errorCode": "C000"},
+            },
+            id="rejected",
+        ),
+    ),
+)
+async def test_reply_without_state_does_not_mark_online(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient], reply: dict[str, Any]
+) -> None:
+    # Which side sends a command ack or a rejection, the appliance or the
+    # cloud, has not been observed. Only a reply that carries state counts.
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    _inject_presence(fake_mqtt, "disconnected")
+
+    fake_mqtt.inject(
+        f"cmd/{MWO_MODEL}/{MWO_SAID}/response/{fake_mqtt.client_id}", reply
+    )
+
+    assert mwo.get_online() is False
+
+
+@pytest.mark.parametrize("kind", ["reply", "push"])
+async def test_state_message_for_unknown_said_leaves_online_alone(
+    aws_manager: tuple[AwsAppliancesManager, FakeMqttClient],
+    kind: str,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    manager, fake_mqtt = aws_manager
+    mwo = manager.microwaves[0]
+    _inject_presence(fake_mqtt, "disconnected")
+    calls: list[bool | None] = []
+    mwo.register_attr_callback(lambda: calls.append(mwo.get_online()))
+
+    _inject_state(fake_mqtt, kind, said="UNKNOWN_SAID")
+
+    assert mwo.get_online() is False
+    assert calls == []
+    assert "unknown appliance UNKNOWN_SAID" in caplog.text
 
 
 @pytest.mark.parametrize(
@@ -268,6 +387,8 @@ async def test_presence_events_update_online_and_fire_callback_on_changes(
 ) -> None:
     manager, fake_mqtt = aws_manager
     mwo = manager.microwaves[0]
+    # The answered getState left it online; start each case from offline.
+    _inject_presence(fake_mqtt, "disconnected")
     calls: list[bool | None] = []
     mwo.register_attr_callback(lambda: calls.append(mwo.get_online()))
 
@@ -287,11 +408,8 @@ async def test_presence_for_unknown_said_is_ignored(
     manager, fake_mqtt = aws_manager
     mwo = manager.microwaves[0]
 
-    fake_mqtt.inject(
-        "$aws/events/presence/connected/UNKNOWN_SAID",
-        {"eventType": "connected", "clientId": "device", "timestamp": 1},
-    )
-    assert mwo.get_online() is None
+    _inject_presence(fake_mqtt, "disconnected", said="UNKNOWN_SAID")
+    assert mwo.get_online() is True
 
 
 async def test_capability_profile_exposed_on_appliance(

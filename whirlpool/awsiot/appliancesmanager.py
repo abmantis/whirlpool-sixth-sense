@@ -214,3 +214,6 @@ class AppliancesManager:
             LOGGER.warning("Received message for unknown appliance %s", said)
             return
         appliance.update_state(state)
+        # No presence event comes at connect for an appliance that is already
+        # online, so its state reply or push counts as online instead.
+        appliance.update_online(True)
