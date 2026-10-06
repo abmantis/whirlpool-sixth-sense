@@ -5,9 +5,10 @@ from .appliance import Appliance
 
 
 class Cycle(Enum):
+    # Legacy flat cycles — preserved for model compatibility.
     Regular = 1
     HeavyDuty = 2
-    Denim = 3
+    Denim = 3  # Other models; not in WED9620HBK2 DDM
     Delicates = 4
     WrinkleControl = 5
     BulkyItems = 6
@@ -18,15 +19,41 @@ class Cycle(Enum):
     ColorsBrights = 13
     Towels = 15
     Whites = 16
-    Normal = 41
+    # Matrix (What+How) cycles — DDM-proven on WED9620HBK2 (values 17–40)
+    ColorsHeavyDuty = 17
+    ColorsQuick = 18
+    ColorsSanitize = 19
+    ColorsTimedDry = 20
+    ColorsWrinkleControl = 21
+    BulkyHeavyDuty = 22
+    BulkyQuick = 23
+    BulkySanitize = 24
+    BulkyTimedDry = 25
+    BulkyWrinkleControl = 26
+    DelicatesHeavyDuty = 27
+    DelicatesQuick = 28
+    # DelicatesSanitize intentionally omitted — DDM-forbidden
+    DelicatesTimedDry = 29
+    DelicatesWrinkleControl = 30
+    TowelsHeavyDuty = 31
+    TowelsQuick = 32
+    TowelsSanitize = 33
+    TowelsTimedDry = 34
+    TowelsWrinkleControl = 35
+    WhitesHeavyDuty = 36
+    WhitesQuick = 37
+    WhitesSanitize = 38
+    WhitesTimedDry = 39
+    WhitesWrinkleControl = 40
+    Normal = 41  # Other models; not in WED9620HBK2 DDM
 
 
 class Dryness(Enum):
-    Low = 0
+    Low = 0  # Other models; not in WED9620HBK2 DDM
     Less = 1
     Normal = 4
     More = 7
-    High = 10
+    High = 10  # DDM label "None" on WED9620HBK2; kept as High for compat
 
 
 class MachineState(Enum):
@@ -54,10 +81,11 @@ class MachineState(Enum):
 
 class Temperature(Enum):
     Air = 0
-    Cool = 2
-    Warm = 5
-    WarmHigh = 6
-    Hot = 8
+    CoolLow = 1  # DDM-proven on WED9620HBK2 (new)
+    Cool = 2  # DDM-proven on WED9620HBK2 (CoolMid)
+    Warm = 5  # DDM-proven on WED9620HBK2 (WarmMid)
+    WarmHigh = 6  # Other models; not in WED9620HBK2 DDM
+    Hot = 8  # DDM-proven on WED9620HBK2 (HotMid)
 
 
 class WrinkleShield(Enum):
