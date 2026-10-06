@@ -244,7 +244,7 @@ class Washer(Appliance, ABC):
         spin_speed: str | None = None,
         soil_level: str | None = None,
         extra_rinse: str | None = None,
-        presoak: str | int | None = None,
+        presoak: str | None = None,
         fan_fresh: str | None = None,
         steam: str | None = None,
     ) -> bool:
