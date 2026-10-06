@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
 import logging
+from dataclasses import dataclass, field
 
 from ..washer import MachineState
 from ..washer import Washer as BaseWasher
