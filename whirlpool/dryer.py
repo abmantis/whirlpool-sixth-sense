@@ -258,6 +258,9 @@ class Dryer(Appliance, ABC):
     def get_manual_dry_time_options_minutes(self) -> list[str] | None:
         return None
 
+    async def set_damp_notification_tone_volume(self, volume: int) -> bool:
+        return False
+
     async def set_wrinkle_shield(self, option: str) -> bool:
         return False
 
