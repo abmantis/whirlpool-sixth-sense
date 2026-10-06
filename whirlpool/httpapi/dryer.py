@@ -156,8 +156,6 @@ ATTR_ALERT_TONE_VOLUME = "Sys_OpSetAlertToneVolume"
 ATTR_CYCLE_COUNT = "XCat_OdometerStatusCycleCount"
 
 
-
-
 CYCLE_MAP = {
     ATTRVAL_CYCLE_REGULAR: Cycle.Regular,
     ATTRVAL_CYCLE_HEAVY_DUTY: Cycle.HeavyDuty,
@@ -293,8 +291,6 @@ QUICK_MDT_ALLOWED_SECONDS: frozenset[str] = frozenset({"900", "1800", "2700"})
 TIMED_DRY_MDT_ALLOWED_SECONDS: frozenset[str] = frozenset({"1800", "3600", "5400"})
 
 
-
-
 DRYNESS_MAP = {
     ATTRVAL_DRYNESS_LOW: Dryness.Low,
     ATTRVAL_DRYNESS_LESS: Dryness.Less,
@@ -320,8 +316,6 @@ DRYNESS_DISPLAY: dict[str, str] = {
 }
 
 
-
-
 MACHINE_STATE_MAP = {
     ATTRVAL_MACHINE_STATE_STANDBY: MachineState.Standby,
     ATTRVAL_MACHINE_STATE_SETTING: MachineState.Setting,
@@ -343,8 +337,6 @@ MACHINE_STATE_MAP = {
     ATTRVAL_MACHINE_STATE_HARD_STOP_OR_ERROR: MachineState.HardStopOrError,
     ATTRVAL_MACHINE_STATE_SYSTEM_INIT: MachineState.SystemInit,
 }
-
-
 
 
 TEMPERATURE_MAP = {
@@ -374,8 +366,6 @@ TEMPERATURE_DISPLAY: dict[str, str] = {
     ATTRVAL_TEMPERATURE_HOT: "hot_mid",
     # ATTRVAL_TEMPERATURE_WARM_HIGH ("6") intentionally absent — not DDM-proven
 }
-
-
 
 
 WRINKLE_SHIELD_MAP = {
