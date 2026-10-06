@@ -230,3 +230,55 @@ class Dryer(Appliance, ABC):
     async def cancel(self) -> bool:
         """Cancel the current cycle when supported by this transport."""
         return False
+
+
+    def get_dry_cycle_pair(self) -> tuple[str, str] | None:
+        return None
+
+    def get_utility_cycle(self) -> str | None:
+        return None
+
+    def get_dryness_str(self) -> str | None:
+        return None
+
+    def get_temperature_str(self) -> str | None:
+        return None
+
+    def get_wrinkle_shield_str(self) -> str | None:
+        return None
+
+    def get_static_guard_str(self) -> str | None:
+        return None
+
+    def get_eco_boost_str(self) -> str | None:
+        return None
+
+    def get_eco_boost_changeable(self) -> bool | None:
+        return None
+
+    def get_manual_dry_time_options_minutes(self) -> list[int]:
+        return []
+
+    async def set_wrinkle_shield(self, option: str) -> bool:
+        return False
+
+    async def set_dryness(self, option: str) -> bool:
+        return False
+
+    async def set_temperature(self, option: str) -> bool:
+        return False
+
+    async def set_dry_cycle_pair(self, what: str, how: str) -> bool:
+        return False
+
+    async def set_utility_cycle(self, utility: str) -> bool:
+        return False
+
+    async def set_static_guard(self, option: str) -> bool:
+        return False
+
+    async def set_eco_boost(self, option: str) -> bool:
+        return False
+
+    async def set_manual_dry_time(self, minutes: int) -> bool:
+        return False
