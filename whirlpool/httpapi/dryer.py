@@ -551,6 +551,16 @@ class Dryer(BaseDryer, Appliance):
     def get_damp_notification_tone_volume(self) -> int | None:
         return self._get_int_attribute(ATTR_DAMP_NOTIFICATION_TONE_VOLUME)
 
+    async def set_damp_notification_tone_volume(self, volume: int) -> bool:
+        """Set the Damp Dry signal volume using DDM-proven values."""
+        if volume not in (0, 2, 4):
+            raise ValueError(f"Unknown damp notification tone volume: {volume!r}")
+        if not self.has_attribute(ATTR_DAMP_NOTIFICATION_TONE_VOLUME):
+            return False
+        return await self.send_attributes(
+            {ATTR_DAMP_NOTIFICATION_TONE_VOLUME: str(volume)}
+        )
+
     def get_alert_tone_volume(self) -> int | None:
         return self._get_int_attribute(ATTR_ALERT_TONE_VOLUME)
 
