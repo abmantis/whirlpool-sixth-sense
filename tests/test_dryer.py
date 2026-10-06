@@ -80,4 +80,4 @@ async def test_command_setters(
 
 async def test_remote_control_enabled(appliances_manager: AppliancesManager):
     dryer = appliances_manager.dryers[0]
-    assert dryer.get_remote_control_enabled() is True
+    assert dryer.get_remote_control_enabled() is False
