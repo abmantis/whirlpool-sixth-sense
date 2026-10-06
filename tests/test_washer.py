@@ -1,5 +1,3 @@
-from collections.abc import Callable
-
 from aiohttp.client_reqrep import URL
 from aiointercept import aiointercept
 import pytest
