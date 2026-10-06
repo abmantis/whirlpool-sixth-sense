@@ -256,8 +256,8 @@ class Dryer(Appliance, ABC):
     def get_eco_boost_changeable(self) -> bool | None:
         return None
 
-    def get_manual_dry_time_options_minutes(self) -> list[int]:
-        return []
+    def get_manual_dry_time_options_minutes(self) -> list[str] | None:
+        return None
 
     async def set_wrinkle_shield(self, option: str) -> bool:
         return False
@@ -280,5 +280,5 @@ class Dryer(Appliance, ABC):
     async def set_eco_boost(self, option: str) -> bool:
         return False
 
-    async def set_manual_dry_time(self, minutes: int) -> bool:
+    async def set_manual_dry_time(self, seconds: int) -> bool:
         return False
