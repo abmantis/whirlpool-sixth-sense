@@ -305,7 +305,7 @@ async def test_capability_profile_exposed_on_appliance(
     assert mwo.capability_profile.supports_quiet_mode
 
 
-async def test_cooking_without_microwave_feature_skips_appliance(
+async def test_cooking_without_microwave_feature_registers_oven(
     auth: Auth,
     backend_selector: BackendSelector,
     client_session_fixture: aiohttp.ClientSession,
@@ -330,6 +330,37 @@ async def test_cooking_without_microwave_feature_skips_appliance(
         {oven_part: oven_profile},
     )
     assert manager.microwaves == []
+    assert len(manager.ovens) == 1
+    assert manager.ovens[0].said == MWO_SAID
+    assert set(manager.all_appliances) == {MWO_SAID}
+
+
+async def test_cooking_without_oven_or_microwave_cavity_is_skipped(
+    auth: Auth,
+    backend_selector: BackendSelector,
+    client_session_fixture: aiohttp.ClientSession,
+    aiointercept_mock: aiointercept,
+) -> None:
+    other_part = "W88888888"
+    other_profile = {
+        "partNumber": other_part,
+        "cavities": {"primaryCavity": {"cavityType": "cooktop"}},
+    }
+    other_thing = {
+        **THING,
+        "attributes": {**THING["attributes"], "CapabilityPartNumber": other_part},
+    }
+
+    manager = await build_manager_with_things(
+        auth,
+        client_session_fixture,
+        aiointercept_mock,
+        backend_selector,
+        [other_thing],
+        {other_part: other_profile},
+    )
+    assert manager.microwaves == []
+    assert manager.ovens == []
     assert manager.all_appliances == {}
 
 
