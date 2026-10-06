@@ -1,6 +1,6 @@
-from yarl import URL
-from aiointercept import aiointercept
 import pytest
+from aiointercept import aiointercept
+from yarl import URL
 
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
@@ -12,7 +12,6 @@ from whirlpool.dryer import (
     Temperature,
     WrinkleShield,
 )
-
 
 
 async def test_attributes(appliances_manager: AppliancesManager):
