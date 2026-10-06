@@ -231,7 +231,6 @@ class Dryer(Appliance, ABC):
         """Cancel the current cycle when supported by this transport."""
         return False
 
-
     def get_dry_cycle_pair(self) -> tuple[str, str] | None:
         return None
 
