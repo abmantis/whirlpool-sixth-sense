@@ -87,7 +87,6 @@ class Washer(Appliance, ABC):
         """Cancel the current cycle when supported by this transport."""
         return False
 
-
     def get_dispense_2_level(self) -> int | None:
         return None
 
