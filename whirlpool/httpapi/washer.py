@@ -69,6 +69,41 @@ STEAM_SUPPORTED_MODEL = "WFW9620HBK3"
 STEAM_ENABLE_VALUES = {"off": 0, "on": 1}
 STEAM_ENABLE_REVERSE = {value: key for key, value in STEAM_ENABLE_VALUES.items()}
 
+# Download & Go Specialty cycles are DDM-proven for WFW9620HBK3.
+SPECIALTY_SUPPORTED_MODEL = "WFW9620HBK3"
+ATTR_DOWNLOAD_AND_GO = "Cavity_CycleSetDownloadAndGo"
+ATTR_SPECIALTY_CYCLE_ID = "Cavity_CycleSetSpecialtyCycleId"
+ATTR_CYCLE_NAME = "Cavity_CycleSetCycleName"
+
+
+@dataclass(frozen=True)
+class SpecialtyPreset:
+    """Fixed wire values for one Download & Go preset."""
+
+    cycle_name: str
+    cycle_select: int
+    temperature: int
+    spin_speed: int
+    soil_level: int
+
+
+SPECIALTY_PRESETS: dict[str, SpecialtyPreset] = {
+    "coats_jackets": SpecialtyPreset("Jackets", 70, 0, 4, 2),
+    "diapers": SpecialtyPreset("Diapers", 92, 4, 5, 2),
+    "sleeping_bags": SpecialtyPreset("SleepingBags", 22, 2, 3, 2),
+    "comforters": SpecialtyPreset("Comforters", 90, 2, 3, 0),
+    "machine_wash_curtains": SpecialtyPreset("Curtains", 44, 0, 3, 0),
+    "swimwear": SpecialtyPreset("Swimwear", 65, 0, 3, 0),
+    "activewear": SpecialtyPreset("Activewear", 1, 2, 5, 2),
+    "jeans": SpecialtyPreset("Jeans", 11, 2, 5, 1),
+    "blankets": SpecialtyPreset("Blankets", 50, 3, 5, 1),
+    "lingerie": SpecialtyPreset("Lingerie", 70, 1, 2, 0),
+    "business_casual": SpecialtyPreset("BusinessCasual", 16, 1, 4, 1),
+}
+SPECIALTY_OPTION_BY_CYCLE_NAME = {
+    preset.cycle_name: option for option, preset in SPECIALTY_PRESETS.items()
+}
+
 # DDM-proven combined What-to-Wash / How-to-Wash values for WFW9620HBK3.
 WASH_CYCLE_MATRIX = {
     ("regular", "normal"): 1,
@@ -1206,6 +1241,51 @@ class Washer(BaseWasher, Appliance):
         return await self._set_enum_attribute(
             ATTR_STEAM_ENABLE, STEAM_ENABLE_VALUES, option
         )
+
+    def get_supported_specialty_cycles(self) -> list[str]:
+        """Return supported Download & Go option keys for this washer."""
+        if self.appliance_info.model_number != SPECIALTY_SUPPORTED_MODEL:
+            return []
+        required = (
+            ATTR_DOWNLOAD_AND_GO,
+            ATTR_SPECIALTY_CYCLE_ID,
+            ATTR_CYCLE_SELECT,
+            ATTR_CYCLE_NAME,
+        )
+        if not all(self.has_attribute(attribute) for attribute in required):
+            return []
+        return list(SPECIALTY_PRESETS)
+
+    def get_specialty_cycle(self) -> str | None:
+        """Return the active Download & Go option, if one is selected."""
+        if not self.get_supported_specialty_cycles():
+            return None
+        if self._get_attribute(ATTR_DOWNLOAD_AND_GO) != "1":
+            return None
+        cycle_name = self._get_attribute(ATTR_CYCLE_NAME)
+        if cycle_name is None:
+            return None
+        return SPECIALTY_OPTION_BY_CYCLE_NAME.get(cycle_name)
+
+    async def set_specialty_cycle(self, option: str) -> bool:
+        """Select a Download & Go preset without starting the washer."""
+        preset = SPECIALTY_PRESETS.get(option)
+        if preset is None:
+            raise ValueError(f"Unknown specialty cycle: {option!r}")
+        if not self.get_supported_specialty_cycles():
+            return False
+        if self.cycle_select_changeable() is not True:
+            return False
+        payload = {
+            ATTR_DOWNLOAD_AND_GO: "1",
+            ATTR_SPECIALTY_CYCLE_ID: "1",
+            ATTR_CYCLE_SELECT: str(preset.cycle_select),
+            ATTR_SOIL_LEVEL: str(preset.soil_level),
+            ATTR_SPIN_SPEED: str(preset.spin_speed),
+            ATTR_TEMPERATURE: str(preset.temperature),
+            ATTR_CYCLE_NAME: preset.cycle_name,
+        }
+        return await self.send_attributes(payload)
 
     async def set_wash_cycle_pair(self, what: str, how: str) -> bool:
         """Set the cycle by What+How pair.
