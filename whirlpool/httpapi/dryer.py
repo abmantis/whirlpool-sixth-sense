@@ -42,6 +42,13 @@ ATTRVAL_MACHINE_STATE_CANCELLED = "19"
 ATTR_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
 ATTR_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
 ATTR_DRUM_LIGHT_ON = "Cavity_DisplaySetDrumLightOn"
+ATTR_REMOTE_CONTROL_ENABLE = "XCat_RemoteSetRemoteControlEnable"
+ATTR_OPERATIONS = "Cavity_OpSetOperations"
+
+OPERATION_CANCEL = "1"
+OPERATION_START = "2"
+OPERATION_PAUSE = "5"
+OPERATION_RESUME = "6"
 
 ATTR_EXTRA_POWER_CHANGEABLE = "Cavity_ChangeStatusExtraPowerChangeable"
 ATTR_STEAM_CHANGEABLE = "Cavity_ChangeStatusSteamChangeable"
@@ -312,3 +319,30 @@ class Dryer(BaseDryer, Appliance):
         if shield_raw is None:
             return None
         return WRINKLE_SHIELD_MAP.get(shield_raw, None)
+
+    @override
+    def get_remote_control_enabled(self) -> bool | None:
+        """Return whether Remote Control is enabled on the appliance."""
+        return self.attr_value_to_bool(self._get_attribute(ATTR_REMOTE_CONTROL_ENABLE))
+
+    async def _send_operation(self, operation: str) -> bool:
+        """Send a proven API144 laundry operation."""
+        if not self.has_attribute(ATTR_REMOTE_CONTROL_ENABLE):
+            return False
+        return await self.send_attributes({ATTR_OPERATIONS: operation})
+
+    @override
+    async def start(self) -> bool:
+        return await self._send_operation(OPERATION_START)
+
+    @override
+    async def pause(self) -> bool:
+        return await self._send_operation(OPERATION_PAUSE)
+
+    @override
+    async def resume(self) -> bool:
+        return await self._send_operation(OPERATION_RESUME)
+
+    @override
+    async def cancel(self) -> bool:
+        return await self._send_operation(OPERATION_CANCEL)
