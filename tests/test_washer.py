@@ -58,3 +58,20 @@ async def test_command_setters(
 async def test_remote_control_enabled(appliances_manager: AppliancesManager):
     washer = appliances_manager.washers[0]
     assert washer.get_remote_control_enabled() is False
+
+
+async def test_specialty_cycles_unsupported_model(
+    appliances_manager: AppliancesManager,
+):
+    washer = appliances_manager.washers[0]
+
+    assert washer.get_supported_specialty_cycles() == []
+    assert washer.get_specialty_cycle() is None
+    assert await washer.set_specialty_cycle("diapers") is False
+
+
+async def test_specialty_cycle_unknown_option(appliances_manager: AppliancesManager):
+    washer = appliances_manager.washers[0]
+
+    with pytest.raises(ValueError):
+        await washer.set_specialty_cycle("not_a_cycle")
