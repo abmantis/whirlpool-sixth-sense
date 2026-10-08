@@ -59,6 +59,14 @@ class Washer(Appliance, ABC):
     def get_dispense_1_level(self) -> int | None:
         pass
 
+    def supports_dispense_level(self) -> bool:
+        """Return whether ``get_dispense_1_level()`` is implemented.
+
+        When this is ``False``, ``get_dispense_1_level()`` raises
+        ``NotImplementedError``, so callers can skip the dispense level.
+        """
+        return True
+
     @abstractmethod
     def get_door_open(self) -> bool | None:
         pass
@@ -66,3 +74,11 @@ class Washer(Appliance, ABC):
     @abstractmethod
     def get_time_remaining(self) -> int | None:
         pass
+
+    def get_cycle_time_complete(self) -> int | None:
+        """Return the Unix time (s) at which the running cycle is predicted to end.
+
+        ``None`` when no cycle is running or the backend does not report it.
+        Only the AWS IoT backend reports it; other backends return ``None``.
+        """
+        return None

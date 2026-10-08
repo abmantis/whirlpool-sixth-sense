@@ -1,0 +1,339 @@
+{
+  "appliance": {
+    "features": {
+      "cycleSignal": {
+        "default": "med",
+        "enumeration": [
+          "off",
+          "min",
+          "med",
+          "max"
+        ]
+      },
+      "hmiControlLockout": true,
+      "remoteStart": true
+    }
+  },
+  "brand": "maytag",
+  "capabilityFileSchemaVersion": "0.4.0",
+  "cavities": {
+    "dryer": {
+      "cycles": {
+        "normal": {
+          "etr": 3420,
+          "whrOptions": {
+            "nonEditableOptions": {},
+            "optionalOptions": {},
+            "requiredOptions": {
+              "dryLevel": {
+                "changeable": [
+                  "sensing",
+                  "petsCare"
+                ],
+                "default": "normalDry",
+                "enumeration": [
+                  "lessDry",
+                  "normalDry",
+                  "extraDry"
+                ],
+                "etr": {
+                  "extraDry": 624,
+                  "lessDry": -468,
+                  "normalDry": 0
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "dryTemperature": {
+                "changeable": [
+                  "petsCare",
+                  "sensing",
+                  "dry"
+                ],
+                "default": "medium",
+                "enumeration": [
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "high": 0,
+                  "low": 0,
+                  "medium": 0
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "extraPower": {
+                "changeable": [
+                  "sensing",
+                  "petsCare",
+                  "dry"
+                ],
+                "default": "off",
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "pets": {
+                "changeable": [
+                  "sensing"
+                ],
+                "default": "off",
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 1800
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "staticGuardEnable": {
+                "changeable": [
+                  "sensing",
+                  "petsCare",
+                  "dry"
+                ],
+                "default": "off",
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 180
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "steam": {
+                "changeable": [
+                  "petsCare",
+                  "sensing",
+                  "dry"
+                ],
+                "default": "off",
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 900
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "wrinkleShield": {
+                "changeable": [
+                  "sensing",
+                  "petsCare",
+                  "dry",
+                  "steaming",
+                  "coolDown",
+                  "staticReduce"
+                ],
+                "default": "off",
+                "enumeration": [
+                  "off",
+                  "on",
+                  "onWithSteam"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0,
+                  "onWithSteam": 0
+                },
+                "isVisibleEndState": true,
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              }
+            }
+          }
+        },
+        "timed40": {
+          "etr": 0,
+          "whrOptions": {
+            "nonEditableOptions": {},
+            "optionalOptions": {},
+            "requiredOptions": {
+              "dryTemperature": {
+                "changeable": [
+                  "dry"
+                ],
+                "default": "high",
+                "enumeration": [
+                  "airOnly",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "airOnly": 0,
+                  "high": 0,
+                  "low": 0,
+                  "medium": 0
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "extraPower": {
+                "changeable": [
+                  "dry"
+                ],
+                "default": "off",
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "pets": {
+                "changeable": [],
+                "default": "off",
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "staticGuardEnable": {
+                "changeable": [],
+                "default": "off",
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "steam": {
+                "changeable": [],
+                "default": "off",
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "timedDry": {
+                "changeable": [
+                  "dry"
+                ],
+                "default": "40",
+                "enumeration": [
+                  "5",
+                  "10",
+                  "15",
+                  "20",
+                  "25",
+                  "30",
+                  "35",
+                  "40",
+                  "45",
+                  "50",
+                  "55",
+                  "60",
+                  "65",
+                  "70",
+                  "75",
+                  "80",
+                  "85",
+                  "90",
+                  "95",
+                  "100",
+                  "105",
+                  "110",
+                  "115",
+                  "120",
+                  "125",
+                  "130",
+                  "135",
+                  "140",
+                  "145",
+                  "150"
+                ],
+                "etr": {
+                  "10": 600,
+                  "100": 6000,
+                  "105": 6300,
+                  "110": 6600,
+                  "115": 6900,
+                  "120": 7200,
+                  "125": 7500,
+                  "130": 7800,
+                  "135": 8100,
+                  "140": 8400,
+                  "145": 8700,
+                  "15": 900,
+                  "150": 9000,
+                  "20": 1200,
+                  "25": 1500,
+                  "30": 1800,
+                  "35": 2100,
+                  "40": 2400,
+                  "45": 2700,
+                  "5": 300,
+                  "50": 3000,
+                  "55": 3300,
+                  "60": 3600,
+                  "65": 3900,
+                  "70": 4200,
+                  "75": 4500,
+                  "80": 4800,
+                  "85": 5100,
+                  "90": 5400,
+                  "95": 5700
+                },
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              },
+              "wrinkleShield": {
+                "changeable": [
+                  "dry",
+                  "coolDown"
+                ],
+                "default": "off",
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "isVisibleEndState": true,
+                "optionModifiers": {},
+                "retention": "retainedPowerLoss"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "partNumber": "W11804872"
+}
