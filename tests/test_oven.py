@@ -188,3 +188,21 @@ async def test_setters(
     # assert args and length
     aiointercept_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aiointercept_mock.requests[("POST", URL(url))]) == 1
+
+
+async def test_cavity_state_missing_attribute_no_error(
+    appliances_manager: AppliancesManager, caplog: pytest.LogCaptureFixture
+):
+    """A missing cavity-state attribute (oven off / not reporting) must not
+    log an error — it's a normal "no state" case, not an unknown value."""
+    import logging
+
+    oven = appliances_manager.ovens[0]
+    state_attr = next(
+        a for a in list(oven._data_dict["attributes"]) if a.endswith("OpStatusState")
+    )
+    del oven._data_dict["attributes"][state_attr]
+
+    caplog.set_level(logging.ERROR, logger="whirlpool.httpapi.oven")
+    assert oven.get_cavity_state(Cavity.Upper) is None
+    assert not [r for r in caplog.records if "Unknown cavity state" in r.message]
