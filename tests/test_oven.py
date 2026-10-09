@@ -196,13 +196,11 @@ async def test_cavity_state_missing_attribute_no_error(
     """A missing cavity-state attribute (oven off / not reporting) must not
     log an error — it's a normal "no state" case, not an unknown value."""
     import logging
+    from unittest.mock import patch
 
     oven = appliances_manager.ovens[0]
-    state_attr = next(
-        a for a in list(oven._data_dict["attributes"]) if a.endswith("OpStatusState")
-    )
-    del oven._data_dict["attributes"][state_attr]
 
     caplog.set_level(logging.ERROR, logger="whirlpool.httpapi.oven")
-    assert oven.get_cavity_state(Cavity.Upper) is None
+    with patch.object(oven, "_get_attribute", return_value=None):
+        assert oven.get_cavity_state(Cavity.Upper) is None
     assert not [r for r in caplog.records if "Unknown cavity state" in r.message]
