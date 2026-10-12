@@ -1,3 +1,5 @@
+import json
+import logging
 from collections.abc import Callable
 
 import pytest
@@ -8,6 +10,8 @@ from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
 from whirlpool.oven import Cavity, CavityState, CookMode, KitchenTimerState, Oven
+
+from . import DATA_DIR
 
 
 async def test_attributes(appliances_manager: AppliancesManager):
@@ -188,3 +192,27 @@ async def test_setters(
     # assert args and length
     aiointercept_mock.assert_called_with(**post_request_call_kwargs)
     assert len(aiointercept_mock.requests[("POST", URL(url))]) == 1
+
+
+async def test_cavity_state_missing_attribute_no_error(
+    appliances_manager: AppliancesManager,
+    backend_selector: BackendSelector,
+    aiointercept_mock: aiointercept,
+    caplog: pytest.LogCaptureFixture,
+):
+    """A missing cavity-state attribute (oven off / not reporting) must not
+    log an error — it's a normal "no state" case, not an unknown value."""
+    oven = appliances_manager.ovens[0]
+    with open(DATA_DIR / "mock_data.json") as f:
+        payload = json.load(f)[oven.said]
+    del payload["attributes"]["OvenUpperCavity_OpStatusState"]
+
+    aiointercept_mock.get(
+        backend_selector.get_appliance_data_url(oven.said), payload=payload
+    )
+    assert await oven.fetch_data()
+
+    caplog.set_level(logging.ERROR)
+    caplog.clear()
+    assert oven.get_cavity_state(Cavity.Upper) is None
+    assert not caplog.records

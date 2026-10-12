@@ -248,6 +248,10 @@ class Oven(BaseOven, Appliance):
         state_raw = self._get_attribute(
             CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_STATUS_STATE
         )
+        if state_raw is None:
+            # The attribute can be asbsent when the oven is offline
+            LOGGER.debug("Cavity state attribute missing for cavity %s", cavity)
+            return None
         for k, v in CAVITY_STATE_MAP.items():
             if v == state_raw:
                 return k
