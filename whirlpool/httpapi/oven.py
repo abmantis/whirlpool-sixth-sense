@@ -248,16 +248,14 @@ class Oven(BaseOven, Appliance):
         state_raw = self._get_attribute(
             CAVITY_PREFIX_MAP[cavity] + "_" + ATTR_POSTFIX_STATUS_STATE
         )
+        if state_raw is None:
+            # The attribute can be asbsent when the oven is offline
+            LOGGER.debug("Cavity state attribute missing for cavity %s", cavity)
+            return None
         for k, v in CAVITY_STATE_MAP.items():
             if v == state_raw:
                 return k
-        if state_raw is None:
-            # The attribute is absent from the cloud payload (observed while
-            # the oven is off / not reporting cavity data). Not an error:
-            # callers treat None as "no state" (get_oven_cavity_exists).
-            LOGGER.debug("Cavity state attribute missing for cavity %s", cavity)
-        else:
-            LOGGER.error("Unknown cavity state: " + str(state_raw))
+        LOGGER.error("Unknown cavity state: " + str(state_raw))
         return None
 
     @override
