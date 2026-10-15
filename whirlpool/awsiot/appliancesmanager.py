@@ -2,7 +2,7 @@ import asyncio
 import logging
 from collections.abc import Callable
 from functools import cached_property
-from typing import Any
+from typing import Any, Literal
 
 import aiohttp
 
@@ -16,7 +16,10 @@ from .auth import Auth, AuthException
 from .capabilities import (
     CapabilityDownloader,
     CapabilityDownloadError,
+    has_dryer_cavity,
     has_microwave_cavity,
+    has_washer_cavity,
+    parse_laundry_capability_profile,
     parse_microwave_capability_profile,
 )
 from .dryer import Dryer
@@ -28,6 +31,23 @@ from .things import Things
 from .washer import Washer
 
 LOGGER = logging.getLogger(__name__)
+
+
+def _laundry_cavity(
+    raw_capabilities: dict[str, Any],
+) -> Literal["dryer", "washer"] | None:
+    """The laundry cavity a capability file declares, if it declares one.
+
+    Washers and dryers both report category "laundry" on the AWS IoT backend,
+    so the capability file's cavity is what tells them apart. A file that
+    declares neither cavity, or both, gives None: the appliance is not routed
+    rather than guessed from its model number.
+    """
+    is_dryer = has_dryer_cavity(raw_capabilities)
+    is_washer = has_washer_cavity(raw_capabilities)
+    if is_dryer == is_washer:
+        return None
+    return "dryer" if is_dryer else "washer"
 
 
 class AppliancesManager:
@@ -159,6 +179,32 @@ class AppliancesManager:
                     parse_microwave_capability_profile(raw_capabilities),
                 )
                 self._microwaves[appliance_data.said] = appliance
+        elif appliance_data.category == "laundry":
+            cavity = _laundry_cavity(raw_capabilities)
+            if cavity == "dryer":
+                appliance = Dryer(
+                    self._mqtt,
+                    appliance_data,
+                    parse_laundry_capability_profile(raw_capabilities, "dryer"),
+                )
+                self._dryers[appliance_data.said] = appliance
+            elif cavity == "washer":
+                appliance = Washer(
+                    self._mqtt,
+                    appliance_data,
+                    parse_laundry_capability_profile(raw_capabilities, "washer"),
+                )
+                self._washers[appliance_data.said] = appliance
+            else:
+                cavities = raw_capabilities.get("cavities")
+                LOGGER.warning(
+                    "Laundry appliance %s skipped: capability file %s declares "
+                    "cavities %s, not exactly one of washer or dryer",
+                    appliance_data.said,
+                    cap_part,
+                    sorted(cavities) if isinstance(cavities, dict) else [],
+                )
+                return
         if appliance is None:
             LOGGER.warning(
                 "Unsupported appliance category %s for %s",
