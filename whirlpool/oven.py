@@ -19,6 +19,13 @@ class CookMode(Enum):
     ConvectRoast = 16
     KeepWarm = 24
     AirFry = 41
+    SteamBake = 101
+    FreshPizza = 102
+    Proof = 103
+    SlowCook = 104
+    ConvectSlowRoast4Hour = 105
+    ConvectSlowRoast8Hour = 106
+    ConvectSlowRoast12Hour = 107
 
 
 # todo: figure out/plug in the other enums

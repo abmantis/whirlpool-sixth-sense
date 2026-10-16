@@ -17,6 +17,7 @@ from .capabilities import (
     CapabilityDownloader,
     CapabilityDownloadError,
     has_microwave_cavity,
+    has_oven_cavity,
     parse_microwave_capability_profile,
 )
 from .dryer import Dryer
@@ -159,6 +160,9 @@ class AppliancesManager:
                     parse_microwave_capability_profile(raw_capabilities),
                 )
                 self._microwaves[appliance_data.said] = appliance
+            elif has_oven_cavity(raw_capabilities):
+                appliance = Oven(self._mqtt, appliance_data, raw_capabilities)
+                self._ovens[appliance_data.said] = appliance
         if appliance is None:
             LOGGER.warning(
                 "Unsupported appliance category %s for %s",
