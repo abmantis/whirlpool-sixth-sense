@@ -1,9 +1,9 @@
+import asyncio
 import json
 import logging
 from typing import Any, override
 
 import aiohttp
-import async_timeout
 
 from ..appliance import Appliance as BaseAppliance
 from ..auth import Auth
@@ -48,7 +48,7 @@ class Appliance(BaseAppliance):
             return False
         uri = self._backend_selector.get_appliance_data_url(self.said)
         for _ in range(REQUEST_RETRY_COUNT):
-            async with async_timeout.timeout(30):
+            async with asyncio.timeout(30):
                 async with self._session.get(
                     uri, headers=self._auth.create_headers()
                 ) as r:
@@ -79,7 +79,7 @@ class Appliance(BaseAppliance):
             "header": {"said": self.said, "command": "setAttributes"},
         }
         for _ in range(REQUEST_RETRY_COUNT):
-            async with async_timeout.timeout(30):
+            async with asyncio.timeout(30):
                 async with self._session.post(
                     self._backend_selector.appliance_command_url,
                     json=cmd_data,

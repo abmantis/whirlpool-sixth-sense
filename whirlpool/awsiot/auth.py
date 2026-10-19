@@ -1,11 +1,11 @@
 """AWS Cognito authentication for Whirlpool appliances."""
 
+import asyncio
 import logging
 import time
 from typing import Any
 
 import aiohttp
-import async_timeout
 
 from ..auth import Auth as WhirlpoolAuth
 from .signing import create_signed_headers, create_signed_url
@@ -62,7 +62,7 @@ class Auth:
             "Authorization": f"Bearer {access_token}",
         }
 
-        async with async_timeout.timeout(30):
+        async with asyncio.timeout(30):
             async with self._session.get(WHIRLPOOL_COGNITO_URL, headers=headers) as r:
                 if r.status != 200:
                     LOGGER.error("Failed to get Cognito identity ID: %s", r.status)
@@ -110,7 +110,7 @@ class Auth:
             },
         }
 
-        async with async_timeout.timeout(30):
+        async with asyncio.timeout(30):
             async with self._session.post(COGNITO_URL, headers=headers, json=body) as r:
                 if r.status != 200:
                     raise AuthException(f"Failed to get AWS credentials: {r.status}")

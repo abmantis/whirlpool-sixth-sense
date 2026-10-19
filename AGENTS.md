@@ -67,7 +67,7 @@ prek --all-files
 ### Async Patterns
 - Use `async`/`await` for all I/O operations
 - Use `aiohttp.ClientSession` for HTTP requests
-- Use `async_timeout` for request timeouts
+- Use `asyncio.timeout` for request timeouts
 - Pass session objects rather than creating new ones
 
 ### Error Handling

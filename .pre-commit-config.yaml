@@ -14,7 +14,6 @@ repos:
           - aioconsole
           - aiohttp
           - aiointercept
-          - async-timeout
           - paho-mqtt
           - pytest
           - pytest-asyncio

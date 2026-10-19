@@ -4,12 +4,12 @@ AWS IoT Things API Client
 Provides functionality to list and retrieve thing information from AWS IoT.
 """
 
+import asyncio
 import logging
 import urllib.parse
 from typing import Any
 
 import aiohttp
-import async_timeout
 
 from .auth import Auth
 
@@ -56,7 +56,7 @@ class Things:
                     )
                 else:
                     request_url = url
-                async with async_timeout.timeout(30):
+                async with asyncio.timeout(30):
                     async with self._session.get(
                         request_url, headers=headers
                     ) as response:
@@ -112,7 +112,7 @@ class Things:
         url = f"https://{AWS_IOT_ENDPOINT}{uri}"
 
         try:
-            async with async_timeout.timeout(30):
+            async with asyncio.timeout(30):
                 async with self._session.get(url, headers=headers) as response:
                     if response.status != 200:
                         error_text = await response.text()

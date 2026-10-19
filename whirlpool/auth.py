@@ -1,10 +1,10 @@
+import asyncio
 import json
 import logging
 from datetime import datetime
 from typing import Any
 
 import aiohttp
-import async_timeout
 
 from .backendselector import BackendConfig, BackendSelector
 
@@ -68,7 +68,7 @@ class Auth:
 
         for client_creds in self._backend_selector.client_credentials:
             auth_data: dict[str, str] = self._get_auth_body(refresh_token, client_creds)
-            async with async_timeout.timeout(30):
+            async with asyncio.timeout(30):
                 async with self._session.post(
                     auth_url, data=auth_data, headers=auth_header
                 ) as r:
