@@ -16,6 +16,7 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert washer.get_door_open() is True
     assert washer.get_time_remaining() == 4080
 
+
 async def test_remote_control_enabled(appliances_manager: AppliancesManager):
     washer = appliances_manager.washers[0]
     assert washer.get_remote_control_enabled() is False
@@ -33,4 +34,3 @@ async def test_model_specific_capabilities_are_hidden_on_other_models(
     assert washer.get_specialty_cycle() is None
     assert washer.supports_fan_fresh() is False
     assert washer.supports_steam() is False
-
