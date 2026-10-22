@@ -1,5 +1,4 @@
 import asyncio
-import time
 from typing import Any, ClassVar, override
 
 from ..oven import (
@@ -90,22 +89,11 @@ class Oven(BaseOven, Appliance):
     ):
         super().__init__(mqttclient, appliance_info)
         self.raw_capabilities = raw_capabilities or {}
-        self.supports_cook_control = (
+        self._supports_cook_control = (
             self.raw_capabilities.get("partNumber") in self._VALIDATED_COOK_CAPABILITIES
         )
         cavities = self.raw_capabilities.get("cavities", {})
         self._cavity_names = list(cavities) if isinstance(cavities, dict) else []
-        self._staged_modes = {
-            Cavity.Upper: CookMode.Bake,
-            Cavity.Lower: CookMode.Bake,
-        }
-        self._staged_temperatures = {
-            Cavity.Upper: 176.66667,
-            Cavity.Lower: 176.66667,
-        }
-        self._staged_delay_seconds = {Cavity.Upper: 0, Cavity.Lower: 0}
-        self._pending_power: dict[Cavity, tuple[bool, float]] = {}
-
     async def _refresh_after_command(self) -> None:
         for delay in (1, 3, 6):
             await asyncio.sleep(delay)
@@ -114,13 +102,10 @@ class Oven(BaseOven, Appliance):
     def _schedule_state_refresh(self) -> None:
         asyncio.create_task(self._refresh_after_command())
 
-    async def request_state(self) -> None:
-        await self._send_command("getState")
-
     def update_online(self, online: bool) -> None:
         # The validated W11779688 profile can emit a disconnected presence
         # event while continuing to publish state and accept commands.
-        if online or not self.supports_cook_control:
+        if online or not self._supports_cook_control:
             super().update_online(online)
 
     def _cavity_name(self, cavity: Cavity) -> str:
@@ -284,82 +269,6 @@ class Oven(BaseOven, Appliance):
         except TypeError, ValueError:
             return None
 
-    def get_configured_cook_mode(self, cavity: Cavity) -> CookMode:
-        active = self.get_cook_mode(cavity)
-        if active is not None and active is not CookMode.Standby:
-            return active
-        return self._staged_modes[cavity]
-
-    def get_configured_target_temp(self, cavity: Cavity) -> float:
-        active = self.get_target_temp(cavity)
-        if active is not None and active != 0:
-            return active
-        return self._staged_temperatures[cavity]
-
-    def stage_cook_mode(self, mode: CookMode, cavity: Cavity) -> None:
-        if mode is CookMode.Standby:
-            raise ValueError("Standby is not a startable cook mode")
-        if mode not in self._RECIPE_BY_MODE:
-            raise ValueError(f"Unsupported cook mode: {mode}")
-        self._staged_modes[cavity] = mode
-        minimum, maximum, default = self._TARGET_RANGES[mode]
-        if not minimum <= self._staged_temperatures[cavity] <= maximum:
-            self._staged_temperatures[cavity] = default
-        for callback in self._attr_changed:
-            callback()
-
-    def get_target_range(self, cavity: Cavity) -> tuple[float, float]:
-        mode = self.get_configured_cook_mode(cavity)
-        minimum, maximum, _default = self._TARGET_RANGES[mode]
-        return minimum, maximum
-
-    def _level_value(self, mode: CookMode, target_temp: float) -> float:
-        values = self._LEVEL_VALUES.get(mode)
-        if values is None:
-            return target_temp
-        return min(values, key=lambda value: abs(value - target_temp))
-
-    def stage_target_temp(self, target_temp: float, cavity: Cavity) -> None:
-        target_temp = self._level_value(
-            self.get_configured_cook_mode(cavity), target_temp
-        )
-        minimum, maximum = self.get_target_range(cavity)
-        if not minimum <= target_temp <= maximum:
-            raise ValueError(
-                f"Target temperature must be between {minimum} and {maximum} C"
-            )
-        self._staged_temperatures[cavity] = target_temp
-
-    def get_delay_start_minutes(self, cavity: Cavity) -> int:
-        return self._staged_delay_seconds[cavity] // 60
-
-    def stage_delay_start_minutes(self, minutes: int, cavity: Cavity) -> None:
-        if minutes != 0 and (not 15 <= minutes <= 720 or minutes % 15):
-            raise ValueError("Delay must be 0 or 15-720 minutes in 15-minute steps")
-        self._staged_delay_seconds[cavity] = minutes * 60
-
-    async def set_target_temp(self, target_temp: float, cavity: Cavity) -> bool:
-        self.stage_target_temp(target_temp, cavity)
-        state = self.get_cavity_state(cavity)
-        if state in {None, CavityState.Standby, CavityState.NotPresent}:
-            return True
-
-        payload: dict[str, Any] = {
-            "addressee": self._cavity_name(cavity),
-            "targetTemperature": self._staged_temperatures[cavity],
-        }
-        session_id = self._cavity_value(cavity, "sessionId")
-        if isinstance(session_id, str) and session_id:
-            payload["sessionId"] = session_id
-        await self._send_command("set", payload)
-        self._schedule_state_refresh()
-        return True
-
-    async def start_staged_cook(self, cavity: Cavity) -> bool:
-        return await self.set_cook(
-            self._staged_temperatures[cavity], self._staged_modes[cavity], cavity
-        )
-
     @override
     async def set_cook(
         self,
@@ -371,7 +280,7 @@ class Oven(BaseOven, Appliance):
         delay_cook: int | None = None,
         operation_type: CookOperation = CookOperation.Start,
     ) -> bool:
-        if not self.supports_cook_control:
+        if not self._supports_cook_control:
             return False
 
         recipe = self._RECIPE_BY_MODE.get(mode)
@@ -384,20 +293,14 @@ class Oven(BaseOven, Appliance):
                 f"Target temperature must be between {minimum} and {maximum} C"
             )
 
-        delay_seconds = self._staged_delay_seconds[cavity]
         if _first(self._data_dict, ("remoteStartEnable",)) is not True:
             return False
 
-        self._staged_modes[cavity] = mode
-        self._staged_temperatures[cavity] = target_temp
         payload: dict[str, Any] = {
             "addressee": self._cavity_name(cavity),
             "recipeID": recipe,
             "targetTemperature": target_temp,
         }
-        if delay_seconds:
-            payload["delayTimer"] = {"command": "run", "time": delay_seconds}
-        self._pending_power[cavity] = (True, time.monotonic() + 12)
         await self._send_command("run", payload)
         self._schedule_state_refresh()
         return True
@@ -409,25 +312,8 @@ class Oven(BaseOven, Appliance):
         if isinstance(session_id, str) and session_id:
             payload["sessionId"] = session_id
         await self._send_command("cancel", payload)
-        self._pending_power[cavity] = (False, time.monotonic() + 12)
         self._schedule_state_refresh()
         return True
-
-    def get_power_state(self, cavity: Cavity) -> bool | None:
-        state = self.get_cavity_state(cavity)
-        actual = (
-            None
-            if state is None
-            else state not in {CavityState.Standby, CavityState.NotPresent}
-        )
-        pending = self._pending_power.get(cavity)
-        if pending is None:
-            return actual
-        desired, expires = pending
-        if actual == desired or time.monotonic() >= expires:
-            self._pending_power.pop(cavity, None)
-            return actual
-        return desired
 
     @override
     def get_sabbath_mode(self) -> bool | None:
