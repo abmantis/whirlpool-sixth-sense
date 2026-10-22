@@ -68,13 +68,6 @@ class Oven(BaseOven, Appliance):
         CookMode.ConvectRoast: "convectRoast",
         CookMode.KeepWarm: "keepWarm",
         CookMode.AirFry: "airFry",
-        CookMode.SteamBake: "steamBake",
-        CookMode.FreshPizza: "freshPizza",
-        CookMode.Proof: "proof",
-        CookMode.SlowCook: "slowCook",
-        CookMode.ConvectSlowRoast4Hour: "convectSlowRoastLow",
-        CookMode.ConvectSlowRoast8Hour: "convectSlowRoastMedium",
-        CookMode.ConvectSlowRoast12Hour: "convectSlowRoastHigh",
     }
     _TARGET_RANGES: ClassVar[dict[CookMode, tuple[float, float, float]]] = {
         CookMode.Bake: (76.7, 288, 176.7),
@@ -84,22 +77,11 @@ class Oven(BaseOven, Appliance):
         CookMode.ConvectRoast: (76.7, 288, 176.7),
         CookMode.KeepWarm: (65.6, 93.5, 76.7),
         CookMode.AirFry: (76.7, 288, 204.4),
-        CookMode.SteamBake: (76.7, 288, 162.8),
-        CookMode.FreshPizza: (232, 288, 288),
-        CookMode.Proof: (32.2, 37.7, 32.2),
-        CookMode.SlowCook: (82, 148.9, 121.1),
-        CookMode.ConvectSlowRoast4Hour: (126.7, 140.6, 135),
-        CookMode.ConvectSlowRoast8Hour: (98.9, 112.8, 107.2),
-        CookMode.ConvectSlowRoast12Hour: (87.8, 98.9, 93.3),
     }
     _LEVEL_VALUES: ClassVar[dict[CookMode, tuple[float, ...]]] = {
         CookMode.Broil: (232.2, 260, 288),
         CookMode.ConvectBroil: (232, 260, 288),
-        CookMode.FreshPizza: (232, 260, 288),
-        CookMode.Proof: (32.2, 37.7),
     }
-    _NO_DELAY_MODES: ClassVar[set[CookMode]] = {CookMode.FreshPizza}
-
     def __init__(
         self,
         mqttclient: MqttClient,
@@ -294,13 +276,6 @@ class Oven(BaseOven, Appliance):
             "convectroast": CookMode.ConvectRoast,
             "keepwarm": CookMode.KeepWarm,
             "airfry": CookMode.AirFry,
-            "steambake": CookMode.SteamBake,
-            "freshpizza": CookMode.FreshPizza,
-            "proof": CookMode.Proof,
-            "slowcook": CookMode.SlowCook,
-            "convectslowroastlow": CookMode.ConvectSlowRoast4Hour,
-            "convectslowroastmedium": CookMode.ConvectSlowRoast8Hour,
-            "convectslowroasthigh": CookMode.ConvectSlowRoast12Hour,
         }
         if isinstance(value, str):
             return mapping.get(value.replace("_", "").replace("-", "").lower())
@@ -410,8 +385,6 @@ class Oven(BaseOven, Appliance):
             )
 
         delay_seconds = self._staged_delay_seconds[cavity]
-        if delay_seconds and mode in self._NO_DELAY_MODES:
-            raise ValueError(f"{recipe} does not support a delayed start")
         if _first(self._data_dict, ("remoteStartEnable",)) is not True:
             return False
 
