@@ -38,7 +38,7 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert dryer.get_temperature() == Temperature.Cool
     assert dryer.get_wrinkle_shield() == WrinkleShield.Off
 
+
 async def test_remote_control_enabled(appliances_manager: AppliancesManager):
     dryer = appliances_manager.dryers[0]
     assert dryer.get_remote_control_enabled() is False
-
