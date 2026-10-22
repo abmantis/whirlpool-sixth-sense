@@ -81,6 +81,7 @@ class Oven(BaseOven, Appliance):
         CookMode.Broil: (232.2, 260, 288),
         CookMode.ConvectBroil: (232, 260, 288),
     }
+
     def __init__(
         self,
         mqttclient: MqttClient,
@@ -94,6 +95,7 @@ class Oven(BaseOven, Appliance):
         )
         cavities = self.raw_capabilities.get("cavities", {})
         self._cavity_names = list(cavities) if isinstance(cavities, dict) else []
+
     async def _refresh_after_command(self) -> None:
         for delay in (1, 3, 6):
             await asyncio.sleep(delay)
@@ -286,7 +288,9 @@ class Oven(BaseOven, Appliance):
         recipe = self._RECIPE_BY_MODE.get(mode)
         if recipe is None:
             raise ValueError(f"Unsupported cook mode: {mode}")
-        target_temp = self._level_value(mode, target_temp)
+        level_values = self._LEVEL_VALUES.get(mode)
+        if level_values is not None:
+            target_temp = min(level_values, key=lambda value: abs(value - target_temp))
         minimum, maximum = self._TARGET_RANGES[mode][:2]
         if not minimum <= target_temp <= maximum:
             raise ValueError(
