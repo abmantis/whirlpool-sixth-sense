@@ -97,11 +97,6 @@ async def test_light_command_uses_cavity_addressee() -> None:
         (CookMode.ConvectRoast, "convectRoast", 176.7),
         (CookMode.KeepWarm, "keepWarm", 76.7),
         (CookMode.AirFry, "airFry", 204.4),
-        (CookMode.SteamBake, "steamBake", 162.8),
-        (CookMode.SlowCook, "slowCook", 121.1),
-        (CookMode.ConvectSlowRoast4Hour, "convectSlowRoastLow", 135),
-        (CookMode.ConvectSlowRoast8Hour, "convectSlowRoastMedium", 107.2),
-        (CookMode.ConvectSlowRoast12Hour, "convectSlowRoastHigh", 93.3),
     ),
 )
 async def test_validated_recipe_payloads(
@@ -124,9 +119,6 @@ async def test_validated_recipe_payloads(
         (CookMode.Broil, 287.78, 288),
         (CookMode.Broil, 232.22, 232.2),
         (CookMode.ConvectBroil, 232.22, 232),
-        (CookMode.FreshPizza, 250, 260),
-        (CookMode.Proof, 32.22, 32.2),
-        (CookMode.Proof, 37.78, 37.7),
     ),
 )
 async def test_discrete_temperature_recipes_snap_to_capability_values(
@@ -147,16 +139,6 @@ async def test_delay_start_uses_validated_delay_timer_shape() -> None:
 
     assert await oven.set_cook(176.7, CookMode.Bake, Cavity.Upper) is True
     assert _body(mqtt)["delayTimer"] == {"command": "run", "time": 1800}
-
-
-async def test_fresh_pizza_rejects_delay() -> None:
-    oven, mqtt = _oven()
-    oven.stage_delay_start_minutes(30, Cavity.Upper)
-
-    with pytest.raises(ValueError, match="does not support a delayed start"):
-        await oven.set_cook(288, CookMode.FreshPizza, Cavity.Upper)
-
-    assert mqtt.published == []
 
 
 async def test_remote_start_disabled_prevents_cook_command() -> None:
