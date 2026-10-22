@@ -719,6 +719,9 @@ class Washer(BaseWasher, Appliance):
         return self._get_int_attribute(ATTR_CYCLE_STATUS_TIME_REMAINING)
 
     def get_wash_cycle_pair(self) -> tuple[str, str] | None:
+        """Return the validated What+How cycle pair for supported models."""
+        if not self.is_cycle_options_model_supported():
+            return None
         raw = self._get_int_attribute(ATTR_CYCLE_SELECT)
         return None if raw is None else WASH_CYCLE_REVERSE.get(raw)
 
@@ -749,11 +752,9 @@ class Washer(BaseWasher, Appliance):
         return None if raw is None else CYCLE_CAPABILITIES.get(raw)
 
     def get_utility_cycle(self) -> str | None:
-        """Return the active utility cycle key, or None.
-
-        None means either that no data has been fetched or that the selected
-        cycle is a normal What+How cycle rather than a utility cycle.
-        """
+        """Return the validated utility cycle key for supported models."""
+        if not self.is_cycle_options_model_supported():
+            return None
         raw = self.get_cycle_select()
         return None if raw is None else UTILITY_CYCLE_REVERSE.get(raw)
 
