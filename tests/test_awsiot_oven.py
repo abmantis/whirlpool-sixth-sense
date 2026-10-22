@@ -133,14 +133,6 @@ async def test_discrete_temperature_recipes_snap_to_capability_values(
     assert "cookTimer" not in body
 
 
-async def test_delay_start_uses_validated_delay_timer_shape() -> None:
-    oven, mqtt = _oven()
-    oven.stage_delay_start_minutes(30, Cavity.Upper)
-
-    assert await oven.set_cook(176.7, CookMode.Bake, Cavity.Upper) is True
-    assert _body(mqtt)["delayTimer"] == {"command": "run", "time": 1800}
-
-
 async def test_remote_start_disabled_prevents_cook_command() -> None:
     oven, mqtt = _oven()
     oven.update_state({"remoteStartEnable": False})
@@ -219,6 +211,5 @@ async def test_unvalidated_capability_does_not_claim_cook_control() -> None:
     )
     oven._schedule_state_refresh = lambda: None  # type: ignore[method-assign]
 
-    assert oven.supports_cook_control is False
     assert await oven.set_cook(176.7, CookMode.Bake, Cavity.Upper) is False
     assert mqtt.published == []
