@@ -5,10 +5,9 @@ from .appliance import Appliance
 
 
 class Cycle(Enum):
-    # Legacy flat cycles — preserved for model compatibility.
     Regular = 1
     HeavyDuty = 2
-    Denim = 3  # Other models; not in WED9620HBK2 DDM
+    Denim = 3
     Delicates = 4
     WrinkleControl = 5
     BulkyItems = 6
@@ -19,41 +18,15 @@ class Cycle(Enum):
     ColorsBrights = 13
     Towels = 15
     Whites = 16
-    # Matrix (What+How) cycles — DDM-proven on WED9620HBK2 (values 17–40)
-    ColorsHeavyDuty = 17
-    ColorsQuick = 18
-    ColorsSanitize = 19
-    ColorsTimedDry = 20
-    ColorsWrinkleControl = 21
-    BulkyHeavyDuty = 22
-    BulkyQuick = 23
-    BulkySanitize = 24
-    BulkyTimedDry = 25
-    BulkyWrinkleControl = 26
-    DelicatesHeavyDuty = 27
-    DelicatesQuick = 28
-    # DelicatesSanitize intentionally omitted — DDM-forbidden
-    DelicatesTimedDry = 29
-    DelicatesWrinkleControl = 30
-    TowelsHeavyDuty = 31
-    TowelsQuick = 32
-    TowelsSanitize = 33
-    TowelsTimedDry = 34
-    TowelsWrinkleControl = 35
-    WhitesHeavyDuty = 36
-    WhitesQuick = 37
-    WhitesSanitize = 38
-    WhitesTimedDry = 39
-    WhitesWrinkleControl = 40
-    Normal = 41  # Other models; not in WED9620HBK2 DDM
+    Normal = 41
 
 
 class Dryness(Enum):
-    Low = 0  # Other models; not in WED9620HBK2 DDM
+    Low = 0
     Less = 1
     Normal = 4
     More = 7
-    High = 10  # DDM label "None" on WED9620HBK2; kept as High for compat
+    High = 10
 
 
 class MachineState(Enum):
@@ -81,11 +54,10 @@ class MachineState(Enum):
 
 class Temperature(Enum):
     Air = 0
-    CoolLow = 1  # DDM-proven on WED9620HBK2 (new)
-    Cool = 2  # DDM-proven on WED9620HBK2 (CoolMid)
-    Warm = 5  # DDM-proven on WED9620HBK2 (WarmMid)
-    WarmHigh = 6  # Other models; not in WED9620HBK2 DDM
-    Hot = 8  # DDM-proven on WED9620HBK2 (HotMid)
+    Cool = 2
+    Warm = 5
+    WarmHigh = 6
+    Hot = 8
 
 
 class WrinkleShield(Enum):
@@ -212,32 +184,10 @@ class Dryer(Appliance, ABC):
         pass
 
     def get_remote_control_enabled(self) -> bool | None:
-        """Return remote-control status when supported by this transport."""
         return None
 
     def get_dry_cycle_pair(self) -> tuple[str, str] | None:
         return None
 
     def get_utility_cycle(self) -> str | None:
-        return None
-
-    def get_dryness_str(self) -> str | None:
-        return None
-
-    def get_temperature_str(self) -> str | None:
-        return None
-
-    def get_wrinkle_shield_str(self) -> str | None:
-        return None
-
-    def get_static_guard_str(self) -> str | None:
-        return None
-
-    def get_eco_boost_str(self) -> str | None:
-        return None
-
-    def get_eco_boost_changeable(self) -> bool | None:
-        return None
-
-    def get_manual_dry_time_options_minutes(self) -> list[str] | None:
         return None

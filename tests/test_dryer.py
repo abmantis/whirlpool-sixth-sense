@@ -1,3 +1,5 @@
+from typing import cast
+
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.dryer import (
     Cycle,
@@ -6,6 +8,7 @@ from whirlpool.dryer import (
     Temperature,
     WrinkleShield,
 )
+from whirlpool.httpapi.dryer import Dryer
 
 
 async def test_attributes(appliances_manager: AppliancesManager):
@@ -42,3 +45,18 @@ async def test_attributes(appliances_manager: AppliancesManager):
 async def test_remote_control_enabled(appliances_manager: AppliancesManager):
     dryer = appliances_manager.dryers[0]
     assert dryer.get_remote_control_enabled() is False
+
+
+async def test_model_specific_cycle_identity(appliances_manager: AppliancesManager):
+    dryer = cast(Dryer, appliances_manager.dryers[0])
+
+    assert dryer.get_dry_cycle_pair() is None
+    assert dryer.get_utility_cycle() is None
+
+    dryer.appliance_info.model_number = "WED9620HBK2"
+    assert dryer.get_dry_cycle_pair() == ("regular", "timed_dry")
+    assert dryer.get_utility_cycle() is None
+
+    dryer.update_attributes({"DryCavity_CycleSetCycleSelect": 10}, 0)
+    assert dryer.get_dry_cycle_pair() is None
+    assert dryer.get_utility_cycle() == "steam_refresh"
