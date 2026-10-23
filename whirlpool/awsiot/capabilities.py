@@ -176,6 +176,117 @@ def parse_microwave_capability_profile(
     )
 
 
+@dataclass(frozen=True)
+class LaundryCapabilityProfile:
+    """The capability switches the Washer and Dryer classes use.
+
+    `cycles` maps a wire cycle name (e.g. "normal", "timed40") to the options
+    that cycle declares, each pointing at the tuple of phases during which the
+    option may be changed. An option present with an empty tuple is offered by
+    the cycle but is never adjustable.
+    """
+
+    part_number: str
+    cavity: str
+    supports_control_lock: bool
+    supports_remote_start: bool
+    cycles: dict[str, dict[str, tuple[str, ...]]] = field(default_factory=dict)
+
+    def option_phases(self, cycle: str, option: str) -> tuple[str, ...] | None:
+        """Phases in which `option` is changeable, or None if not offered."""
+        return self.cycles.get(cycle, {}).get(option)
+
+    def option_changeable(
+        self, cycle: str | None, option: str, phase: str | None
+    ) -> bool:
+        """Whether `option` can be changed in `cycle` during `phase`.
+
+        A cycle that does not declare the option, or declares it with no
+        changeable phases, can never change it. While a cycle is under way the
+        current phase must be one the capability file lists for that option;
+        with no phase reported the appliance is idle and the option is settable.
+        """
+        if cycle is None:
+            return False
+        phases = self.option_phases(cycle, option)
+        if not phases:
+            return False
+        return True if phase is None else phase in phases
+
+
+def _has_cavity(raw: dict[str, Any], name: str) -> bool:
+    cavities = raw.get("cavities")
+    return isinstance(cavities, dict) and isinstance(cavities.get(name), dict)
+
+
+def has_dryer_cavity(raw: dict[str, Any]) -> bool:
+    """Whether the capability file declares a dryer cavity."""
+    return _has_cavity(raw, "dryer")
+
+
+def has_washer_cavity(raw: dict[str, Any]) -> bool:
+    """Whether the capability file declares a washer cavity."""
+    return _has_cavity(raw, "washer")
+
+
+_OPTION_BUCKETS = ("requiredOptions", "optionalOptions", "nonEditableOptions")
+
+
+def _parse_cycle_options(
+    cavity: dict[str, Any],
+) -> dict[str, dict[str, tuple[str, ...]]]:
+    cycles = cavity.get("cycles")
+    if not isinstance(cycles, dict):
+        return {}
+
+    parsed: dict[str, dict[str, tuple[str, ...]]] = {}
+    for cycle_name, cycle in cycles.items():
+        if not isinstance(cycle, dict):
+            continue
+        options: dict[str, tuple[str, ...]] = {}
+        whr_options = cycle.get("whrOptions")
+        if isinstance(whr_options, dict):
+            for bucket in _OPTION_BUCKETS:
+                section = whr_options.get(bucket)
+                if not isinstance(section, dict):
+                    continue
+                for option_name, option in section.items():
+                    if not isinstance(option, dict):
+                        continue
+                    changeable = option.get("changeable")
+                    options[option_name] = (
+                        tuple(p for p in changeable if isinstance(p, str))
+                        if isinstance(changeable, list)
+                        else ()
+                    )
+        parsed[cycle_name] = options
+    return parsed
+
+
+def parse_laundry_capability_profile(
+    raw: dict[str, Any], cavity_name: str
+) -> LaundryCapabilityProfile:
+    """Extract the laundry-relevant switches from a raw capability file."""
+    cavities = raw.get("cavities")
+    cavity = cavities.get(cavity_name) if isinstance(cavities, dict) else None
+    if not isinstance(cavity, dict):
+        raise CapabilityDownloadError(
+            f"Capability file declares no '{cavity_name}' cavity"
+        )
+
+    appliance = raw.get("appliance")
+    features = appliance.get("features") if isinstance(appliance, dict) else None
+    features = features if isinstance(features, dict) else {}
+
+    return LaundryCapabilityProfile(
+        part_number=_read_part_number(raw),
+        cavity=cavity_name,
+        supports_control_lock=features.get("hmiControlLockout") is True,
+        supports_remote_start=features.get("remoteStart") is True,
+        cycles=_parse_cycle_options(cavity),
+    )
+
+
 class CapabilityDownloader:
     """Fetches and caches raw capability files per model (part number).
 

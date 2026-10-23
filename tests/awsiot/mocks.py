@@ -57,10 +57,16 @@ class FakeMqttClient:
         self.published: list[tuple[str, dict[str, Any]]] = []
         self._connected = True
         self._getstate_reply: dict[str, Any] | None = None
+        self._getstate_replies_by_said: dict[str, dict[str, Any]] = {}
         self._capability_replies: dict[str, dict[str, Any] | None] = {}
 
-    def set_getstate_reply(self, payload: dict[str, Any]) -> None:
+    def set_getstate_reply(self, payload: dict[str, Any] | None) -> None:
+        """Configure the default `getState` reply; `None` leaves it unanswered."""
         self._getstate_reply = payload
+
+    def set_getstate_reply_for(self, said: str, payload: dict[str, Any]) -> None:
+        """Configure the `getState` reply for one SAID, over the default."""
+        self._getstate_replies_by_said[said] = payload
 
     def set_capability_reply(
         self, part_number: str, payload: dict[str, Any] | None
@@ -89,18 +95,24 @@ class FakeMqttClient:
     async def publish(self, topic: str, payload: dict[str, Any]) -> None:
         self.published.append((topic, payload))
         cmd = payload.get("payload", {}).get("command")
-        if cmd == "getState" and self._getstate_reply is not None:
-            parts = topic.split("/")
-            # cmd/{model}/{said}/request/{client_id}
-            if len(parts) >= 5 and parts[0] == "cmd" and parts[3] == "request":
-                model, said, cid = parts[1], parts[2], parts[4]
+        parts = topic.split("/")
+        # cmd/{model}/{said}/request/{client_id}
+        if (
+            cmd == "getState"
+            and len(parts) >= 5
+            and parts[0] == "cmd"
+            and parts[3] == "request"
+        ):
+            model, said, cid = parts[1], parts[2], parts[4]
+            reply = self._getstate_replies_by_said.get(said, self._getstate_reply)
+            if reply is not None:
                 response_topic = f"cmd/{model}/{said}/response/{cid}"
                 self.inject(
                     response_topic,
                     {
                         "requestId": payload.get("requestId"),
                         "response": "accepted",
-                        "payload": self._getstate_reply,
+                        "payload": reply,
                     },
                 )
         # Capability download: api/capability/download/{model}/{said}
@@ -171,14 +183,16 @@ def mock_aws_http_api(
 
 
 def make_mqtt_factory(
-    getstate_reply: dict[str, Any],
+    getstate_reply: dict[str, Any] | None,
     capability_replies: dict[str, dict[str, Any] | None],
     holder: dict[str, FakeMqttClient] | None = None,
+    getstate_replies_by_said: dict[str, dict[str, Any]] | None = None,
 ) -> Callable[..., FakeMqttClient]:
     """Build a `MqttClient` factory preloaded with canned replies.
 
-    Every created `FakeMqttClient` replies to `getState` with
-    `getstate_reply` and to capability downloads with `capability_replies`.
+    Every created `FakeMqttClient` replies to `getState` with the entry of
+    `getstate_replies_by_said` for the requested SAID, falling back to
+    `getstate_reply`, and to capability downloads with `capability_replies`.
     When `holder` is given, the created client is stored under
     `holder["client"]` so tests can reach it after the manager connects.
     """
@@ -189,6 +203,8 @@ def make_mqtt_factory(
     ) -> FakeMqttClient:
         fake = FakeMqttClient(aws_auth, message_callback)
         fake.set_getstate_reply(getstate_reply)
+        for said, state in (getstate_replies_by_said or {}).items():
+            fake.set_getstate_reply_for(said, state)
         for part, reply in capability_replies.items():
             fake.set_capability_reply(part, reply)
         if holder is not None:

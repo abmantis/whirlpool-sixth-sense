@@ -79,6 +79,14 @@ class Dryer(Appliance, ABC):
     def get_time_remaining(self) -> int | None:
         pass
 
+    def get_cycle_time_complete(self) -> int | None:
+        """Return the Unix time (s) at which the running cycle is predicted to end.
+
+        ``None`` when no cycle is running or the backend does not report it.
+        Only the AWS IoT backend reports it; other backends return ``None``.
+        """
+        return None
+
     @abstractmethod
     def get_drum_light_on(self) -> bool | None:
         pass
@@ -121,6 +129,7 @@ class Dryer(Appliance, ABC):
 
     @abstractmethod
     def get_manual_dry_time(self) -> int | None:
+        """Return the selected manual dry time in seconds."""
         pass
 
     @abstractmethod
