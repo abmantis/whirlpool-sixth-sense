@@ -17,7 +17,50 @@ ATTR_CYCLE_STATUS_MACHINE_STATE = "Cavity_CycleStatusMachineState"
 ATTR_CYCLE_STATUS_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
 
 ATTR_DISPENSE_1_LEVEL = "WashCavity_OpStatusBulkDispense1Level"
+ATTR_DISPENSE_2_LEVEL = "WashCavity_OpStatusBulkDispense2Level"
+ATTR_CYCLE_SELECT = "WashCavity_CycleSetCycleSelect"
 ATTR_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
+ATTR_REMOTE_CONTROL_ENABLE = "XCat_RemoteSetRemoteControlEnable"
+
+WASH_CYCLE_PAIR_SUPPORTED_MODEL = "WFW9620HBK3"
+WASH_CYCLE_PAIRS: dict[int, tuple[str, str]] = {
+    1: ("regular", "normal"),
+    2: ("regular", "heavy_duty"),
+    3: ("regular", "sanitize"),
+    4: ("regular", "quick"),
+    5: ("delicates", "normal"),
+    10: ("whites", "normal"),
+    11: ("towels", "normal"),
+    16: ("regular", "wrinkle_control"),
+    18: ("regular", "cold_wash"),
+    22: ("bulky", "normal"),
+    24: ("colors", "normal"),
+    44: ("colors", "cold_wash"),
+    46: ("colors", "heavy_duty"),
+    47: ("colors", "quick"),
+    48: ("colors", "sanitize"),
+    49: ("colors", "wrinkle_control"),
+    50: ("bulky", "cold_wash"),
+    52: ("bulky", "heavy_duty"),
+    53: ("bulky", "quick"),
+    54: ("bulky", "wrinkle_control"),
+    65: ("delicates", "cold_wash"),
+    67: ("delicates", "heavy_duty"),
+    68: ("delicates", "quick"),
+    69: ("delicates", "sanitize"),
+    70: ("delicates", "wrinkle_control"),
+    82: ("towels", "cold_wash"),
+    84: ("towels", "heavy_duty"),
+    85: ("towels", "quick"),
+    86: ("towels", "sanitize"),
+    87: ("towels", "wrinkle_control"),
+    88: ("whites", "cold_wash"),
+    90: ("whites", "heavy_duty"),
+    91: ("whites", "quick"),
+    92: ("whites", "sanitize"),
+    93: ("whites", "wrinkle_control"),
+}
+UTILITY_CYCLES = {8: "drain_spin", 20: "clean_washer"}
 
 ATTRVAL_MACHINE_STATE_STANDBY = "0"
 ATTRVAL_MACHINE_STATE_SETTING = "1"
@@ -105,3 +148,25 @@ class Washer(BaseWasher, Appliance):
     @override
     def get_time_remaining(self) -> int | None:
         return self._get_int_attribute(ATTR_CYCLE_STATUS_TIME_REMAINING)
+
+    @override
+    def get_remote_control_enabled(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_REMOTE_CONTROL_ENABLE))
+
+    @override
+    def get_dispense_2_level(self) -> int | None:
+        return self._get_int_attribute(ATTR_DISPENSE_2_LEVEL)
+
+    @override
+    def get_wash_cycle_pair(self) -> tuple[str, str] | None:
+        if self.appliance_info.model_number != WASH_CYCLE_PAIR_SUPPORTED_MODEL:
+            return None
+        cycle = self._get_int_attribute(ATTR_CYCLE_SELECT)
+        return None if cycle is None else WASH_CYCLE_PAIRS.get(cycle)
+
+    @override
+    def get_utility_cycle(self) -> str | None:
+        if self.appliance_info.model_number != WASH_CYCLE_PAIR_SUPPORTED_MODEL:
+            return None
+        cycle = self._get_int_attribute(ATTR_CYCLE_SELECT)
+        return None if cycle is None else UTILITY_CYCLES.get(cycle)

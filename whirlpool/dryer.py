@@ -182,3 +182,12 @@ class Dryer(Appliance, ABC):
     @abstractmethod
     def get_wrinkle_shield(self) -> WrinkleShield | None:
         pass
+
+    def get_remote_control_enabled(self) -> bool | None:
+        return None
+
+    def get_dry_cycle_pair(self) -> tuple[str, str] | None:
+        return None
+
+    def get_utility_cycle(self) -> str | None:
+        return None
