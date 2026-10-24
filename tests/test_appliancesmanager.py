@@ -1,9 +1,12 @@
 import asyncio
+from collections.abc import Sequence
 
 import pytest
 from aiointercept import aiointercept
 
 from tests import ACCOUNT_ID
+from tests.awsiot.mocks import MWO_SAID
+from whirlpool.appliance import Appliance
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
@@ -28,6 +31,22 @@ async def test_fetch_appliances_calls_owned_and_shared_methods(
     aiointercept_mock.assert_called_with(
         backend_selector.shared_appliances_url, "GET", headers=shared_headers
     )
+
+
+async def test_appliances_from_both_backends_are_merged(
+    appliances_manager: AppliancesManager,
+):
+    def saids(appliances: Sequence[Appliance]) -> list[str]:
+        return [appliance.said for appliance in appliances]
+
+    # HTTP API appliances
+    assert saids(appliances_manager.aircons) == ["SAIDAIRCON1", "SAIDAIRCON2"]
+    assert saids(appliances_manager.dryers) == ["SAIDDRYER1"]
+    assert saids(appliances_manager.washers) == ["SAIDWASHER1"]
+    assert saids(appliances_manager.ovens) == ["SAIDOVEN1", "SAIDOVEN2", "SAIDOVEN3"]
+    assert saids(appliances_manager.refrigerators) == ["SAIDFRIDGE1", "SAIDFRIDGE2"]
+    # AWS IoT appliances
+    assert saids(appliances_manager.microwaves) == [MWO_SAID]
 
 
 async def test_keepalive_periodically_fetches_an_appliance(
