@@ -99,6 +99,11 @@ def has_microwave_cavity(raw: dict[str, Any]) -> bool:
     return any(meta.get("cavityType") == "microwaveOven" for meta in _cavity_metas(raw))
 
 
+def has_oven_cavity(raw: dict[str, Any]) -> bool:
+    """Whether the capability file declares a conventional oven cavity."""
+    return any(meta.get("cavityType") == "oven" for meta in _cavity_metas(raw))
+
+
 def _option_range(option: Any) -> OptionRange | None:
     if not isinstance(option, dict):
         return None
