@@ -1,0 +1,53 @@
+{
+  "washer": {
+    "applianceState": "standby",
+    "cycleName": "regularNormal",
+    "cycleType": "standard",
+    "specialName": "",
+    "currentPhase": "",
+    "soilLevel": "heavy",
+    "spinSpeed": "fast",
+    "dispenser": "off",
+    "extraPower": "off",
+    "pets": "on",
+    "waterLevel": "auto",
+    "extraRinse": "off",
+    "washTemperature": "warm",
+    "cycleTime": {
+      "state": "idle",
+      "time": 4375,
+      "timeComplete": 1776089429,
+      "timePaused": 1776089337
+    },
+    "delayTime": {
+      "state": "idle",
+      "time": 0,
+      "timeComplete": 0,
+      "timePaused": 0
+    },
+    "sessionId": "",
+    "cleanWasher": false,
+    "doorStatus": "open",
+    "doorLockStatus": false
+  },
+  "remoteStartEnable": false,
+  "faultHistory": [
+    "F0E3",
+    "F8E6",
+    "F0E5",
+    "none",
+    "none"
+  ],
+  "activeFault": "none",
+  "faucet": {
+    "faucetState": "FAUCET_IDLE",
+    "soakDuration": {
+      "timeComplete": 1776127229
+    }
+  },
+  "sound": {
+    "cycleSignal": "max"
+  },
+  "capabilityPartNumber": "W11771387",
+  "systemVersion": "0.0.0"
+}
