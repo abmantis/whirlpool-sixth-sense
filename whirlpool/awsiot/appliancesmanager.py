@@ -165,20 +165,27 @@ class AppliancesManager:
         elif appliance_data.category == "laundry":
             # Washers and dryers both report category "laundry"; the capability
             # file's cavity tells them apart.
-            if has_washer_cavity(raw_capabilities) and not has_dryer_cavity(
-                raw_capabilities
-            ):
+            washer = has_washer_cavity(raw_capabilities)
+            dryer = has_dryer_cavity(raw_capabilities)
+            if washer and not dryer:
                 appliance = Washer(
                     self._mqtt,
                     appliance_data,
                     parse_laundry_capability_profile(raw_capabilities, "washer"),
                 )
                 self._washers[appliance_data.said] = appliance
+            elif dryer and not washer:
+                appliance = Dryer(
+                    self._mqtt,
+                    appliance_data,
+                    parse_laundry_capability_profile(raw_capabilities, "dryer"),
+                )
+                self._dryers[appliance_data.said] = appliance
             else:
                 cavities = raw_capabilities.get("cavities")
                 LOGGER.warning(
                     "Laundry appliance %s skipped: capability file %s declares "
-                    "cavities %s, not a washer alone",
+                    "cavities %s, not exactly one of washer or dryer",
                     appliance_data.said,
                     cap_part,
                     sorted(cavities) if isinstance(cavities, dict) else [],
