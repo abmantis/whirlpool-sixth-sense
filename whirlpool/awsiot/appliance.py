@@ -90,7 +90,7 @@ class Appliance(BaseAppliance):
             callback()
 
     def update_online(self, online: bool):
-        """Update presence state and call callbacks."""
+        """Update the online state; call callbacks only when it changes."""
         if self._online == online:
             return
         self._online = online
@@ -112,7 +112,10 @@ class Appliance(BaseAppliance):
     def get_online(self) -> bool | None:
         """Get online state for appliance.
 
-        Returns None until the first AWS IoT presence event is received.
+        Returns None until the appliance is first heard from. A getState reply
+        that carries state, a state push or a "connected" presence event sets
+        it True. A "disconnected" presence event sets it False until one of
+        those arrives again.
         """
         return self._online
 
