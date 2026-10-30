@@ -15,6 +15,7 @@ from ..types import ApplianceInfo
 from .aircon import Aircon
 from .appliance import Appliance
 from .dryer import Dryer
+from .microwave import Microwave
 from .oven import Oven
 from .refrigerator import Refrigerator
 from .washer import Washer
@@ -44,6 +45,7 @@ class AppliancesManager:
         self._dryers: dict[str, Any] = {}
         self._washers: dict[str, Any] = {}
         self._ovens: dict[str, Any] = {}
+        self._microwaves: dict[str, Any] = {}
         self._refrigerators: dict[str, Any] = {}
 
     @cached_property
@@ -53,6 +55,7 @@ class AppliancesManager:
             **self._dryers,
             **self._washers,
             **self._ovens,
+            **self._microwaves,
             **self._refrigerators,
         }
 
@@ -71,6 +74,10 @@ class AppliancesManager:
     @property
     def ovens(self) -> list[Oven]:
         return list(self._ovens.values())
+
+    @property
+    def microwaves(self) -> list[Microwave]:
+        return list(self._microwaves.values())
 
     @property
     def refrigerators(self) -> list[Refrigerator]:
@@ -96,7 +103,6 @@ class AppliancesManager:
             "ddm_cooking_bio_g3evo_pyro_bk_v1",
             "ddm_cooking_bio_self_clean_meat_probe_tourmaline_bk_v1",
             "ddm_cooking_bio_self_clean_steam_tourmaline_v2",  # <-- W9 Ovens
-            "ddm_cooking_bi_mwo_self_clean_steam_tourmaline_v2",  # <-- W9 MWOs
             "ddm_cooking_bio_std_meat_probe_indigo_v2",
             "ddm_cooking_bio_std_meat_probe_indigo_bk_v2",
             "ddm_cooking_ka_trs_bio_single_v1",
@@ -114,6 +120,12 @@ class AppliancesManager:
             )
         elif "washer" in data_model:
             self._washers[appliance_data.said] = Washer(
+                self._backend_selector, self._auth, self._session, appliance_data
+            )
+        elif "_mwo_" in data_model:
+            # e.g. ddm_cooking_bi_mwo_self_clean_steam_tourmaline_v2 (W9 MWOs):
+            # same layout as the ovens but with Mwo_ attributes
+            self._microwaves[appliance_data.said] = Microwave(
                 self._backend_selector, self._auth, self._session, appliance_data
             )
         elif any(model in data_model for model in oven_models):

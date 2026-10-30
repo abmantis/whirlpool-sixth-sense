@@ -1019,6 +1019,262 @@
       }
     }
   },
+  "SAIDMWO1": {
+    "_id": "SAIDMWO1",
+    "applianceId": "SAIDMWO1",
+    "lastFullSyncTime": 1755096356305,
+    "lastModified": 1793386347360,
+    "attributes": {
+      "KitchenTimer01_SetOperations": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "KitchenTimer01_SetTimeSet": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "KitchenTimer01_StatusState": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "KitchenTimer01_StatusTimeRemaining": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CulinaryCtrSetId": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CulinaryCtrSetQuantity": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CustomCycleSetId": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CustomCycleSetStep": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetBreadProof": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetBroilLevel": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetBrowning": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetCookPowerWatts": {
+        "value": "750",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetDoneness": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetExtraCookingTime": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetMeatProbeTargetTemp": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetPreheatOn": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetSteamLevel": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetTargetTemp": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleSetTurntable": {
+        "value": "1",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleStatusLimitedCycle": {
+        "value": "1",
+        "updateTime": 1793324246512
+      },
+      "Mwo_CycleStatusOdometer": {
+        "value": "31",
+        "updateTime": 1793324246512
+      },
+      "Mwo_DisplaySetLightOn": {
+        "value": "1",
+        "updateTime": 1793324246512
+      },
+      "Mwo_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_DisplayStatusDisplayTemp": {
+        "value": "650",
+        "updateTime": 1793324246512
+      },
+      "Mwo_DisplayStatusMeatProbeDisplayTemp": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetBroilAndGrill": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetBrowningPan": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetConvectBake": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetConvectRoast": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetCook": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetKeepWarm": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetRegularBake": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetRegularBakeAndMw": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetRegularConvectBake": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetRegularConvectBakeAndMw": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeSetSteamCook": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_ModeStatusIdle": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_OperationSetCookTimeCompleteAction": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_OperationSetOperations": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_OperationSetSabbathModeActive": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_OperationStatusCookTimeState": {
+        "value": "1",
+        "updateTime": 1793324246512
+      },
+      "Mwo_OperationStatusDoorOpen": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_OperationStatusMeatProbePluggedIn": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_OperationStatusMeatProbeRawTemp": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_OperationStatusState": {
+        "value": "4",
+        "updateTime": 1793324246512
+      },
+      "Mwo_TimeSetCookTimeSet": {
+        "value": "120",
+        "updateTime": 1793324246512
+      },
+      "Mwo_TimeSetDelayTime": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Mwo_TimeStatusCookTimeRemaining": {
+        "value": "90",
+        "updateTime": 1793324246512
+      },
+      "Mwo_TimeStatusCycleTimeElapsed": {
+        "value": "30",
+        "updateTime": 1793324246512
+      },
+      "Mwo_TimeStatusDelayTimeRemaining": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1793324246512
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "00,00",
+        "updateTime": 1793324246512
+      },
+      "Sys_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Sys_DisplaySetBrightnessPercent": {
+        "value": "90",
+        "updateTime": 1793324246512
+      },
+      "Sys_DisplaySetEnable24Hour": {
+        "value": "1",
+        "updateTime": 1793324246512
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "17",
+        "updateTime": 1793324246512
+      },
+      "Sys_DisplaySetTempUnits": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Sys_OperationSetAlertToneVolume": {
+        "value": "4",
+        "updateTime": 1793324246512
+      },
+      "Sys_OperationSetControlLock": {
+        "value": "0",
+        "updateTime": 1793324246512
+      },
+      "Sys_OperationSetKeyPressToneVolume": {
+        "value": "1",
+        "updateTime": 1793324246512
+      },
+      "Sys_OperationSetMaxCurrentLimit": {
+        "value": "2",
+        "updateTime": 1793324246512
+      },
+      "Sys_OperationSetSabbathModeEnabled": {
+        "value": "0",
+        "updateTime": 1793324246512
+      }
+    }
+  },
   "SAIDOVEN1": {
     "_id": "SAIDOVEN1",
     "applianceId": "SAIDOVEN1",
