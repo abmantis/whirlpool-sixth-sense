@@ -1,0 +1,2303 @@
+{
+  "capabilityFileSchemaVersion": "0.4.0",
+  "partNumber": "W11738987",
+  "generatorInfo": {
+    "capabilityGeneratorVersion": "0.4.0.0",
+    "hash": "e7ff5469dda310939a5387a5d32eac6d239382c47300b29c6324524b36ba8856",
+    "partNumber": "P01394600",
+    "status": "committed",
+    "version": 20
+  },
+  "productVariant": 2,
+  "pushNotifications": [
+    "cleanWasherReminder",
+    "controlLockDisabled",
+    "controlLockEnabled",
+    "cycleCompleted",
+    "error",
+    "remoteStartStatusDisabled",
+    "remoteStartStatusEnabled"
+  ],
+  "cavities": {
+    "washer": {
+      "cycles": {
+        "normal": {
+          "etr": 3120,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "normal",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 120,
+                  "normal": 300,
+                  "heavy": 2760,
+                  "extraHeavy": 2760
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "warm",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool",
+                  "extraHot"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0,
+                  "extraHot": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "fast",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium"
+                ],
+                "etr": {
+                  "off": -1200,
+                  "fast": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "extraRinse",
+                  "rinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "wrinkle": {
+          "etr": 2400,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "normal",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 360,
+                  "normal": 540,
+                  "heavy": 720,
+                  "extraHeavy": 720
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "warm",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool",
+                  "extraHot"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0,
+                  "extraHot": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "medium",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -420,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse",
+                  "extraRinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "heavyDuty": {
+          "etr": 3480,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "extraHeavy",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 3360,
+                  "normal": 3720,
+                  "heavy": 4080,
+                  "extraHeavy": 4440
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "hot",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool",
+                  "extraHot"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0,
+                  "extraHot": 900
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "fast",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -960,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse",
+                  "extraRinse",
+                  "spin",
+                  "coolDown"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "sanitize": {
+          "etr": 3480,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "extraHeavy",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 2700,
+                  "normal": 3059,
+                  "heavy": 3660,
+                  "extraHeavy": 3780
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "extraHot",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "extraHot"
+                ],
+                "etr": {
+                  "extraHot": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "fast",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "fast",
+                  "medium"
+                ],
+                "etr": {
+                  "fast": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse",
+                  "extraRinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "coldWash": {
+          "etr": 2940,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "normal",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 840,
+                  "normal": 1020,
+                  "heavy": 1200,
+                  "extraHeavy": 1380
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "cold",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "medium",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -900,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "intermediateSpin"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "intermediateSpin",
+                  "extraRinse",
+                  "rinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "quick": {
+          "etr": 1380,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "normal",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 60,
+                  "normal": 120,
+                  "heavy": 210,
+                  "extraHeavy": 360
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "warm",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool",
+                  "extraHot"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0,
+                  "extraHot": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "fast",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -840,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "extraRinse",
+                  "rinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "whites": {
+          "etr": 2640,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "normal",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 3600,
+                  "normal": 4680,
+                  "heavy": 5940,
+                  "extraHeavy": 6840
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "hot",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool",
+                  "extraHot"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0,
+                  "extraHot": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "fast",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -540,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse",
+                  "extraRinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "towels": {
+          "etr": 3120,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "heavy",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 1920,
+                  "normal": 2280,
+                  "heavy": 2640,
+                  "extraHeavy": 3000
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "hot",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool",
+                  "extraHot"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0,
+                  "extraHot": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "fast",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -960,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse",
+                  "extraRinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "bulky": {
+          "etr": 3120,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "normal",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 1800,
+                  "normal": 2520,
+                  "heavy": 3240,
+                  "extraHeavy": 3240
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "warm",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool",
+                  "extraHot"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0,
+                  "extraHot": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "medium",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -960,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "intermediateSpin",
+                  "rinse",
+                  "extraRinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "delicates": {
+          "etr": 1980,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "light",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 540,
+                  "normal": 720,
+                  "heavy": 1020,
+                  "extraHeavy": 1020
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "cool",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "slow",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -600,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "rinse"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "rinse",
+                  "extraRinse",
+                  "spin",
+                  "end"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "drainAndSpin": {
+          "etr": 1020,
+          "whrOptions": {
+            "requiredOptions": {
+              "spinSpeed": {
+                "default": "fast",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "extraRinse"
+                ],
+                "enumeration": [
+                  "off",
+                  "slow",
+                  "fast",
+                  "medium"
+                ],
+                "etr": {
+                  "off": -960,
+                  "slow": 0,
+                  "fast": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "extraRinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "cleanWasher1": {
+          "etr": 5280,
+          "whrOptions": {
+            "requiredOptions": {
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "rinse",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "refresh": {
+          "etr": 14400,
+          "whrOptions": {
+            "requiredOptions": {},
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "myProgram": {
+          "etr": 0,
+          "whrOptions": {
+            "requiredOptions": {},
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "synthetic": {
+          "etr": 2940,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "light",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 840,
+                  "normal": 1020,
+                  "heavy": 1200,
+                  "extraHeavy": 1380
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "cool",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "slow",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -900,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "intermediateSpin"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "intermediateSpin",
+                  "extraRinse",
+                  "rinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "activeWear": {
+          "etr": 3720,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "heavy",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 420,
+                  "normal": 600,
+                  "heavy": 2760,
+                  "extraHeavy": 2760
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "warm",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "medium",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -600,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "+1",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "warmUp",
+                  "extraRinse",
+                  "rinse",
+                  "spin",
+                  "end"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2400
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "jeans": {
+          "etr": 2940,
+          "whrOptions": {
+            "requiredOptions": {
+              "soilLevel": {
+                "default": "normal",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "light",
+                  "normal",
+                  "heavy",
+                  "extraHeavy"
+                ],
+                "etr": {
+                  "light": 840,
+                  "normal": 1020,
+                  "heavy": 1200,
+                  "extraHeavy": 1380
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "washTemperature": {
+                "default": "cool",
+                "changeable": [
+                  "default",
+                  "sense"
+                ],
+                "enumeration": [
+                  "warm",
+                  "cold",
+                  "hot",
+                  "cool",
+                  "extraHot"
+                ],
+                "etr": {
+                  "warm": 0,
+                  "cold": 0,
+                  "hot": 0,
+                  "cool": 0,
+                  "extraHot": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "spinSpeed": {
+                "default": "fast",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash"
+                ],
+                "enumeration": [
+                  "off",
+                  "fast",
+                  "medium",
+                  "slow"
+                ],
+                "etr": {
+                  "off": -900,
+                  "fast": 0,
+                  "medium": 0,
+                  "slow": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraRinse": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "intermediateSpin"
+                ],
+                "enumeration": [
+                  "off",
+                  "+1"
+                ],
+                "etr": {
+                  "off": 0,
+                  "+1": 420
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "preSoak": {
+                "default": "0",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment"
+                ],
+                "enumeration": [
+                  "0",
+                  "15"
+                ],
+                "etr": {
+                  "0": 0,
+                  "15": 2280
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "postCare": {
+                "default": "off",
+                "changeable": [
+                  "default",
+                  "sense",
+                  "addGarment",
+                  "preWash",
+                  "wash",
+                  "intermediateSpin",
+                  "extraRinse",
+                  "rinse",
+                  "spin"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedGlobalKeyReset",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        }
+      },
+      "presentationTree": {
+        "presentationTree": {}
+      },
+      "cleanWasher": {
+        "numberOfCycles": 30,
+        "repeatConfig": 3
+      },
+      "startCycleAttempt": {
+        "numberOfAttempts": 3
+      }
+    }
+  },
+  "appliance": {
+    "features": {
+      "remoteStart": true,
+      "cycleSignal": {
+        "default": "med",
+        "enumeration": [
+          "off",
+          "min",
+          "med",
+          "max"
+        ]
+      },
+      "faults": [
+        {
+          "errorCode": "F0E2",
+          "type": "showAndContinue"
+        },
+        {
+          "errorCode": "F0E5",
+          "type": "showAndContinue"
+        },
+        {
+          "errorCode": "F0E7",
+          "type": "showAndContinue"
+        },
+        {
+          "errorCode": "F1E1",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F3E2",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F3E7",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F4E3",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F5E3",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F5E2",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F5E4",
+          "type": "showAndContinue"
+        },
+        {
+          "errorCode": "F6E1",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F6E2",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F7E1",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F7E2",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F7E8",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F7E9",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F7EA",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F7EC",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F8E1",
+          "type": "showAndContinue"
+        },
+        {
+          "errorCode": "F8E3",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F9E1",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F1E3",
+          "type": "hardStop"
+        }
+      ],
+      "hmiControlLockout": true,
+      "dispenser": {
+        "type": "singleDose"
+      },
+      "delayTime": [
+        {
+          "min": 0,
+          "max": 43200,
+          "step": 3600
+        }
+      ],
+      "faucet": {
+        "dispensing": {
+          "default": "none",
+          "enumeration": [
+            "detergent",
+            "none"
+          ]
+        },
+        "temperature": {
+          "default": "cold",
+          "enumeration": [
+            "cold",
+            "hot"
+          ]
+        }
+      }
+    }
+  },
+  "brand": "whirlpool",
+  "series": 5
+}
