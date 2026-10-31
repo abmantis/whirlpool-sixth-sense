@@ -440,7 +440,7 @@ async def test_capability_profile_exposed_on_appliance(
     assert mwo.capability_profile.supports_quiet_mode
 
 
-async def test_cooking_without_microwave_feature_skips_appliance(
+async def test_cooking_without_microwave_feature_adds_unsupported_appliance(
     connect_aws_manager: ConnectAwsManager,
 ) -> None:
     oven_part = "W99999999"
@@ -455,7 +455,10 @@ async def test_cooking_without_microwave_feature_skips_appliance(
 
     manager = await connect_aws_manager([oven_thing], {oven_part: oven_profile})
     assert manager.microwaves == []
-    assert manager.all_appliances == {}
+    assert [appliance.said for appliance in manager.unsupported_appliances] == [
+        MWO_SAID
+    ]
+    assert manager.unsupported_appliances[0].get_raw_data() == STATE
 
 
 async def test_missing_capability_part_number_skips_appliance(

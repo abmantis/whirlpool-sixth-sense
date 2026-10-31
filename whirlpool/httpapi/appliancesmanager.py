@@ -45,6 +45,7 @@ class AppliancesManager:
         self._washers: dict[str, Any] = {}
         self._ovens: dict[str, Any] = {}
         self._refrigerators: dict[str, Any] = {}
+        self._unsupported_appliances: dict[str, Any] = {}
 
     @cached_property
     def all_appliances(self) -> dict[str, Appliance]:
@@ -54,6 +55,7 @@ class AppliancesManager:
             **self._washers,
             **self._ovens,
             **self._refrigerators,
+            **self._unsupported_appliances,
         }
 
     @property
@@ -76,6 +78,10 @@ class AppliancesManager:
     def refrigerators(self) -> list[Refrigerator]:
         return list(self._refrigerators.values())
 
+    @property
+    def unsupported_appliances(self) -> list[Appliance]:
+        return list(self._unsupported_appliances.values())
+
     def _add_appliance(self, appliance: dict[str, Any]) -> None:
         appliance_data = ApplianceInfo(
             said=appliance["SAID"],
@@ -83,6 +89,7 @@ class AppliancesManager:
             category=appliance["CATEGORY_NAME"],
             model_number=appliance.get("MODEL_NO", ""),
             serial_number=appliance.get("SERIAL", ""),
+            raw_info=appliance,
         )
 
         data_model = appliance["DATA_MODEL_KEY"].lower()
@@ -126,7 +133,9 @@ class AppliancesManager:
             )
         else:
             LOGGER.warning("Unsupported appliance data model %s", data_model)
-            return
+            self._unsupported_appliances[appliance_data.said] = Appliance(
+                self._backend_selector, self._auth, self._session, appliance_data
+            )
 
         # Invalidate cached property
         self.__dict__.pop("all_appliances", None)

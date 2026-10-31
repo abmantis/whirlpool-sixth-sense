@@ -4210,5 +4210,17 @@
         "updateTime": 1690565765080
       }
     }
+  },
+  "SAIDUNSUPPORTED1": {
+    "_id": "SAIDUNSUPPORTED1",
+    "applianceId": "SAIDUNSUPPORTED1",
+    "lastFullSyncTime": 1592663948975,
+    "lastModified": 1642475181685,
+    "attributes": {
+      "Online": {
+        "value": "1",
+        "updateTime": 1642475181685
+      }
+    }
   }
 }

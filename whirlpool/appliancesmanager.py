@@ -4,6 +4,7 @@ from collections.abc import Sequence
 import aiohttp
 
 from .aircon import Aircon
+from .appliance import Appliance
 from .auth import Auth
 from .awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
 from .backendselector import BackendSelector
@@ -68,6 +69,14 @@ class AppliancesManager:
         return (
             self._http_appliances_manager.refrigerators
             + self._aws_appliances_manager.refrigerators
+        )
+
+    # TODO: use cached_property
+    @property
+    def unsupported_appliances(self) -> Sequence[Appliance]:
+        return (
+            self._http_appliances_manager.unsupported_appliances
+            + self._aws_appliances_manager.unsupported_appliances
         )
 
     def _update_appliances(self) -> None:
