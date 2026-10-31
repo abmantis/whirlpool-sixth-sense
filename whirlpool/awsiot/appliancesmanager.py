@@ -46,6 +46,7 @@ class AppliancesManager:
         self._ovens: dict[str, Any] = {}
         self._microwaves: dict[str, Any] = {}
         self._refrigerators: dict[str, Any] = {}
+        self._unsupported_appliances: dict[str, Any] = {}
 
         self._aws_auth = Auth(self._whirlpool_auth, self._session)
         self._mqtt = MqttClient(self._aws_auth, self._handle_mqtt_message)
@@ -60,6 +61,7 @@ class AppliancesManager:
             **self._ovens,
             **self._microwaves,
             **self._refrigerators,
+            **self._unsupported_appliances,
         }
 
     @property
@@ -85,6 +87,10 @@ class AppliancesManager:
     @property
     def refrigerators(self) -> list[Refrigerator]:
         return list(self._refrigerators.values())
+
+    @property
+    def unsupported_appliances(self) -> list[Appliance]:
+        return list(self._unsupported_appliances.values())
 
     async def connect(self) -> bool:
         """Connect to MQTT"""
@@ -129,6 +135,7 @@ class AppliancesManager:
             category=thing_attrs.get("Category", "").lower(),
             model_number=thing["thingTypeName"],
             serial_number=thing_attrs.get("Serial", ""),
+            raw_info=thing,
         )
 
         cap_part = thing_attrs.get("CapabilityPartNumber")
@@ -165,7 +172,8 @@ class AppliancesManager:
                 appliance_data.category,
                 thing["thingName"],
             )
-            return
+            appliance = Appliance(self._mqtt, appliance_data)
+            self._unsupported_appliances[appliance_data.said] = appliance
 
         await appliance.subscribe_topics()
 
