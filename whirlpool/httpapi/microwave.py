@@ -52,6 +52,8 @@ ATTRVAL_STATE_PROGRAMMING = "2"  # cycle being set up, a few seconds before star
 ATTRVAL_STATE_COOKING = "4"
 ATTRVAL_STATE_PAUSED = "7"  # e.g. door opened during a cycle
 ATTRVAL_STATE_COMPLETED = "13"  # shown for a few seconds at the end of a cycle
+# Reported as "complete" by an over-the-range MHC76 in #121
+ATTRVAL_STATE_COMPLETED_ALT = "3"
 ATTRVAL_OPERATION_CANCEL = "1"  # same code as the HTTP oven cavity
 
 CAVITY_STATE_MAP = {
@@ -60,6 +62,7 @@ CAVITY_STATE_MAP = {
     ATTRVAL_STATE_COOKING: MicrowaveCavityState.Cooking,
     ATTRVAL_STATE_PAUSED: MicrowaveCavityState.Paused,
     ATTRVAL_STATE_COMPLETED: MicrowaveCavityState.Completed,
+    ATTRVAL_STATE_COMPLETED_ALT: MicrowaveCavityState.Completed,
 }
 
 COOK_TIMER_STATE_MAP = {

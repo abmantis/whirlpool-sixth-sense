@@ -132,6 +132,7 @@ async def test_unsupported_setters_send_nothing(
         ("4", MicrowaveCavityState.Cooking),
         ("7", MicrowaveCavityState.Paused),
         ("13", MicrowaveCavityState.Completed),
+        ("3", MicrowaveCavityState.Completed),
         ("9", None),
     ],
 )
@@ -157,3 +158,86 @@ async def test_cavity_state_values(
     caplog.clear()
     assert mwo.get_cavity_state() == expected
     assert not caplog.records
+
+
+@pytest.mark.parametrize(
+    ["snapshot", "cavity", "door", "timer", "remaining", "watts", "light"],
+    [
+        (
+            "IDLE",
+            MicrowaveCavityState.Idle,
+            MicrowaveDoorStatus.Closed,
+            "idle",
+            0,
+            0,
+            False,
+        ),
+        (
+            "DOOR_OPEN",
+            MicrowaveCavityState.Idle,
+            MicrowaveDoorStatus.Open,
+            "idle",
+            0,
+            0,
+            True,
+        ),
+        (
+            "RUNNING",
+            MicrowaveCavityState.Cooking,
+            MicrowaveDoorStatus.Closed,
+            "running",
+            17,
+            900,
+            True,
+        ),
+        (
+            "PAUSED",
+            MicrowaveCavityState.Paused,
+            MicrowaveDoorStatus.Open,
+            "paused",
+            12,
+            900,
+            True,
+        ),
+        (
+            "COMPLETED",
+            MicrowaveCavityState.Completed,
+            MicrowaveDoorStatus.Closed,
+            "completed",
+            2,
+            900,
+            True,
+        ),
+    ],
+)
+async def test_real_appliance_snapshots(
+    appliances_manager: AppliancesManager,
+    backend_selector: BackendSelector,
+    aiointercept_mock: aiointercept,
+    snapshot: str,
+    cavity: MicrowaveCavityState,
+    door: MicrowaveDoorStatus,
+    timer: str,
+    remaining: int,
+    watts: int,
+    light: bool,
+):
+    """Snapshots of a real W9 MWO (identifiers redacted), see microwave_data.json."""
+    mwo = _microwave(appliances_manager)
+    with open(DATA_DIR / "microwave_data.json") as f:
+        payload = json.load(f)[snapshot]
+
+    aiointercept_mock.get(
+        backend_selector.get_appliance_data_url(mwo.said), payload=payload
+    )
+    assert await mwo.fetch_data()
+
+    assert mwo.get_online() is True
+    assert mwo.get_cavity_state() == cavity
+    assert mwo.get_door_status() == door
+    assert mwo.get_cook_timer_state() == timer
+    assert mwo.get_cook_time_remaining() == remaining
+    assert mwo.get_cook_power_watts() == watts
+    assert mwo.get_cavity_light() is light
+    assert mwo.get_display_temperature_unit() == "C"
+    assert mwo.get_cycle_count() == 33
