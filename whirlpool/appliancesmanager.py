@@ -60,7 +60,10 @@ class AppliancesManager:
     # TODO: use cached_property
     @property
     def microwaves(self) -> Sequence[Microwave]:
-        return self._aws_appliances_manager.microwaves
+        return (
+            self._http_appliances_manager.microwaves
+            + self._aws_appliances_manager.microwaves
+        )
 
     # TODO: use cached_property
     @property
