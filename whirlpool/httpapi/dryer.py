@@ -42,6 +42,7 @@ ATTRVAL_MACHINE_STATE_CANCELLED = "19"
 ATTR_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
 ATTR_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
 ATTR_DRUM_LIGHT_ON = "Cavity_DisplaySetDrumLightOn"
+ATTR_REMOTE_CONTROL_ENABLE = "XCat_RemoteSetRemoteControlEnable"
 
 ATTR_EXTRA_POWER_CHANGEABLE = "Cavity_ChangeStatusExtraPowerChangeable"
 ATTR_STEAM_CHANGEABLE = "Cavity_ChangeStatusSteamChangeable"
@@ -122,6 +123,45 @@ CYCLE_MAP = {
     ATTRVAL_CYCLE_TOWELS: Cycle.Towels,
     ATTRVAL_CYCLE_WHITES: Cycle.Whites,
     ATTRVAL_CYCLE_NORMAL: Cycle.Normal,
+}
+
+DRY_CYCLE_PAIR_SUPPORTED_MODEL = "WED9620HBK2"
+DRY_CYCLE_PAIRS: dict[str, tuple[str, str]] = {
+    "1": ("regular", "normal"),
+    "2": ("regular", "heavy_duty"),
+    "4": ("delicates", "normal"),
+    "5": ("regular", "wrinkle_control"),
+    "6": ("bulky", "normal"),
+    "7": ("regular", "quick"),
+    "9": ("regular", "sanitize"),
+    "11": ("regular", "timed_dry"),
+    "13": ("colors", "normal"),
+    "15": ("towels", "normal"),
+    "16": ("whites", "normal"),
+    "17": ("colors", "heavy_duty"),
+    "18": ("colors", "quick"),
+    "19": ("colors", "sanitize"),
+    "20": ("colors", "timed_dry"),
+    "21": ("colors", "wrinkle_control"),
+    "22": ("bulky", "heavy_duty"),
+    "23": ("bulky", "quick"),
+    "24": ("bulky", "sanitize"),
+    "25": ("bulky", "timed_dry"),
+    "26": ("bulky", "wrinkle_control"),
+    "27": ("delicates", "heavy_duty"),
+    "28": ("delicates", "quick"),
+    "29": ("delicates", "timed_dry"),
+    "30": ("delicates", "wrinkle_control"),
+    "31": ("towels", "heavy_duty"),
+    "32": ("towels", "quick"),
+    "33": ("towels", "sanitize"),
+    "34": ("towels", "timed_dry"),
+    "35": ("towels", "wrinkle_control"),
+    "36": ("whites", "heavy_duty"),
+    "37": ("whites", "quick"),
+    "38": ("whites", "sanitize"),
+    "39": ("whites", "timed_dry"),
+    "40": ("whites", "wrinkle_control"),
 }
 
 DRYNESS_MAP = {
@@ -312,3 +352,22 @@ class Dryer(BaseDryer, Appliance):
         if shield_raw is None:
             return None
         return WRINKLE_SHIELD_MAP.get(shield_raw, None)
+
+    @override
+    def get_remote_control_enabled(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_REMOTE_CONTROL_ENABLE))
+
+    @override
+    def get_dry_cycle_pair(self) -> tuple[str, str] | None:
+        if self.appliance_info.model_number != DRY_CYCLE_PAIR_SUPPORTED_MODEL:
+            return None
+        cycle = self._get_attribute(ATTR_CYCLE)
+        return None if cycle is None else DRY_CYCLE_PAIRS.get(cycle)
+
+    @override
+    def get_utility_cycle(self) -> str | None:
+        if self.appliance_info.model_number != DRY_CYCLE_PAIR_SUPPORTED_MODEL:
+            return None
+        if self._get_attribute(ATTR_CYCLE) == ATTRVAL_CYCLE_STEAM_REFRESH:
+            return "steam_refresh"
+        return None
