@@ -7,7 +7,7 @@ NAME
 SYNOPSIS
     python -m tools.capture_fixtures --email EMAIL --password PASSWORD
         [--brand BRAND] [--region REGION] (--said SAID | --all)
-        [--output-dir DIR] [--redact] [--verbose]
+        [--output-dir DIR] [--no-redact] [--verbose]
 
     python -m tools.capture_fixtures --email EMAIL --password PASSWORD
         [--brand BRAND] [--region REGION] --list [--verbose]
@@ -15,20 +15,21 @@ SYNOPSIS
 OPTIONS
     --email EMAIL       Whirlpool account email (required)
     --password PASSWORD Whirlpool account password (required)
-    --brand BRAND       One of: KitchenAid, Whirlpool, Maytag
-                        (default: KitchenAid)
-    --region REGION     One of: US, EU (default: US)
+    --brand BRAND       One of: KitchenAid, Whirlpool, Maytag (required)
+    --region REGION     One of: US, EU (required)
     --said SAID         SAID of a single appliance to capture
     --all               Capture fixtures for every discovered appliance
                         (one of --said or --all is required unless --list)
     --list              List all discovered appliances and exit
     --output-dir DIR    Base directory for output files
-                        (default: tests/data/)
-    --redact            Scrub SAID, serial, wifi MAC, and user IDs from
-                        the dumped JSON. SAID values are replaced with
-                        the same short hash used in filenames so the
-                        fixtures remain cross-referenceable.
-    --verbose           Enable debug logging
+                        (default: tools/capture_fixtures_data/)
+    --no-redact         Keep SAID, serial, wifi MAC, and user IDs in the
+                        dumped JSON. By default they are scrubbed, and
+                        SAID values are replaced with the same short hash
+                        used in filenames so the fixtures remain
+                        cross-referenceable.
+    --verbose           Enable debug logging for all modules (by default
+                        only this tool's own messages are logged)
 
 OUTPUT FILES
     Each backend's files go in its own subdirectory of the output
@@ -50,7 +51,7 @@ EXAMPLES
     python -m tools.capture_fixtures \\
         --email you@example.com --password secret --list
 
-    # Capture one appliance's fixtures to the default test data dir:
+    # Capture one appliance's fixtures to the default capture dir:
     python -m tools.capture_fixtures \\
         --email you@example.com --password secret \\
         --said WPR1A00000001
@@ -61,15 +62,15 @@ EXAMPLES
         --brand Whirlpool --region EU \\
         --said WPR2B00000002 --output-dir /tmp/fixtures
 
-    # Capture with sensitive identifiers scrubbed, safe to share:
+    # Capture with raw identifiers kept (not safe to share):
     python -m tools.capture_fixtures \\
         --email you@example.com --password secret \\
-        --said WPR1A00000001 --redact
+        --said WPR1A00000001 --no-redact
 
     # Capture every appliance on the account in one pass:
     python -m tools.capture_fixtures \\
         --email you@example.com --password secret \\
-        --brand Maytag --all --redact --output-dir /tmp/fixtures
+        --brand Maytag --all --output-dir /tmp/fixtures
 """
 
 from __future__ import annotations
@@ -93,7 +94,7 @@ from whirlpool.types import Brand, Region
 
 LOGGER = logging.getLogger("capture_fixtures")
 
-DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent.parent / "tests" / "data"
+DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent / "capture_fixtures_data"
 
 _HTTPAPI = "httpapi"
 _AWSIOT = "awsiot"
@@ -212,10 +213,8 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--email", required=True)
     parser.add_argument("--password", required=True)
-    parser.add_argument(
-        "--brand", default="KitchenAid", choices=[b.name for b in Brand]
-    )
-    parser.add_argument("--region", default="US", choices=[r.name for r in Region])
+    parser.add_argument("--brand", choices=[b.name for b in Brand], required=True)
+    parser.add_argument("--region", choices=[r.name for r in Region], required=True)
     parser.add_argument(
         "--said",
         help="SAID of the appliance to capture (required unless --list)",
@@ -241,16 +240,21 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument(
         "--redact",
-        action="store_true",
+        action=argparse.BooleanOptionalAction,
+        default=True,
         help="Scrub SAID, serial, wifi MAC, and user IDs from dumped JSON",
     )
     return parser.parse_args()
 
 
 async def _amain(args: argparse.Namespace) -> int:
+    handler = logging.StreamHandler()
+    if not args.verbose:
+        handler.addFilter(logging.Filter(LOGGER.name))
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
+        handlers=[handler],
     )
 
     brand = Brand[args.brand]
