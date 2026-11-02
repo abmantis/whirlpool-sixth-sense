@@ -460,7 +460,7 @@ async def test_cooking_without_microwave_feature_registers_oven(
     assert set(manager.all_appliances) == {MWO_SAID}
 
 
-async def test_cooking_without_oven_or_microwave_cavity_is_skipped(
+async def test_cooking_without_oven_or_microwave_cavity_is_unsupported(
     connect_aws_manager: ConnectAwsManager,
 ) -> None:
     other_part = "W88888888"
@@ -476,7 +476,10 @@ async def test_cooking_without_oven_or_microwave_cavity_is_skipped(
     manager = await connect_aws_manager([other_thing], {other_part: other_profile})
     assert manager.microwaves == []
     assert manager.ovens == []
-    assert manager.all_appliances == {}
+    assert [appliance.said for appliance in manager.unsupported_appliances] == [
+        MWO_SAID
+    ]
+    assert manager.unsupported_appliances[0].get_raw_data() == STATE
 
 
 async def test_missing_capability_part_number_skips_appliance(
