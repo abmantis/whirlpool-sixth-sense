@@ -39,7 +39,7 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Test with pytest
         run: |
-          pytest -x -vv --tb=short
+          pytest --log-cli-level=debug
 
   zizmor:
     runs-on: ubuntu-latest
