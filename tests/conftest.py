@@ -1,6 +1,5 @@
 import json
 from collections.abc import AsyncGenerator
-from http import HTTPStatus
 
 import aiohttp
 import pytest
@@ -13,6 +12,13 @@ from whirlpool.backendselector import BackendSelector
 from whirlpool.types import Brand, Region
 
 from . import ACCOUNT_ID, DATA_DIR
+from .awsiot.mocks import (
+    MWO_CAP_PART,
+    MWO_CAPABILITY_PROFILE,
+    THING,
+    FakePahoBroker,
+    mock_aws_api,
+)
 
 
 @pytest_asyncio.fixture
@@ -40,13 +46,11 @@ def auth_fixture(
     return Auth(backend_selector, "email", "secretpass", client_session_fixture)
 
 
-@pytest.fixture(name="appliances_manager")
-async def appliances_manager_fixture(
-    auth: Auth,
-    backend_selector: BackendSelector,
-    client_session_fixture: aiohttp.ClientSession,
-    aiointercept_mock: aiointercept,
-) -> AsyncGenerator[AppliancesManager]:
+@pytest.fixture
+def http_api_mock(
+    backend_selector: BackendSelector, aiointercept_mock: aiointercept
+) -> aiointercept:
+    """Mock the HTTP API at the wire, serving the appliances in `tests/data`."""
     with open(DATA_DIR / "owned_appliances.json") as f:
         owned_appliance_data = json.load(f)
 
@@ -55,15 +59,6 @@ async def appliances_manager_fixture(
 
     with open(DATA_DIR / "mock_data.json") as f:
         mock_data = json.load(f)
-
-    # The shared fixture only mocks the HTTP API; the AWS IoT path is expected
-    # to be absent, so let its token renewal fail and connect() degrade
-    # gracefully ("No AWS IoT connection. This is expected on some accounts.").
-    aiointercept_mock.post(
-        backend_selector.oauth_token_url,
-        status=HTTPStatus.BAD_REQUEST,
-        repeat=True,
-    )
 
     aiointercept_mock.get(
         backend_selector.user_details_url,
@@ -95,6 +90,44 @@ async def appliances_manager_fixture(
             payload=data,
         )
 
+    return aiointercept_mock
+
+
+@pytest.fixture
+def fake_paho_broker(monkeypatch: pytest.MonkeyPatch) -> FakePahoBroker:
+    """Replace paho's MQTT client with a fake broker; nothing is preloaded."""
+    broker = FakePahoBroker()
+    monkeypatch.setattr("whirlpool.awsiot.mqttclient.mqtt.Client", broker)
+    return broker
+
+
+@pytest.fixture
+def aws_api_mock(
+    backend_selector: BackendSelector,
+    aiointercept_mock: aiointercept,
+    fake_paho_broker: FakePahoBroker,
+) -> FakePahoBroker:
+    """Mock the AWS IoT API, serving the microwave in `tests/data/awsiot`."""
+    mock_aws_api(
+        aiointercept_mock,
+        backend_selector,
+        fake_paho_broker,
+        [THING],
+        {MWO_CAP_PART: MWO_CAPABILITY_PROFILE},
+    )
+    return fake_paho_broker
+
+
+@pytest.fixture(name="appliances_manager")
+async def appliances_manager_fixture(
+    auth: Auth,
+    backend_selector: BackendSelector,
+    client_session_fixture: aiohttp.ClientSession,
+    http_api_mock: aiointercept,
+    aws_api_mock: FakePahoBroker,
+) -> AsyncGenerator[AppliancesManager]:
+    """A manager connected to both the HTTP API and AWS IoT."""
+    assert await auth.do_auth()
     appliances_manager = AppliancesManager(
         backend_selector, auth, client_session_fixture
     )

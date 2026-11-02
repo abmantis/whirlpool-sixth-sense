@@ -1,5 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 
 class Brand(Enum):
@@ -21,3 +22,4 @@ class ApplianceInfo:
     category: str
     model_number: str
     serial_number: str
+    raw_info: dict[str, Any] = field(default_factory=dict, repr=False)

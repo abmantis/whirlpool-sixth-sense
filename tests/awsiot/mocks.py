@@ -1,18 +1,17 @@
-"""Shared fakes, wire mocks, and manager-builder helpers for AWS IoT tests."""
+"""Shared fakes and wire mocks for AWS IoT tests."""
 
+import asyncio
 import json
+import threading
 import time
-from collections.abc import Callable, Generator
-from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch
 
-import aiohttp
+import paho.mqtt.client as mqtt
 from aiointercept import aiointercept
+from paho.mqtt.packettypes import PacketTypes
+from paho.mqtt.reasoncodes import ReasonCode
 
-from whirlpool.auth import Auth
-from whirlpool.awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
 from whirlpool.awsiot.auth import COGNITO_URL, WHIRLPOOL_COGNITO_URL
 from whirlpool.awsiot.things import AWS_IOT_ENDPOINT
 from whirlpool.backendselector import BackendSelector
@@ -37,82 +36,168 @@ THING: dict[str, Any] = json.loads((_DATA_DIR / "microwave_thing.json").read_tex
 STATE: dict[str, Any] = json.loads((_DATA_DIR / "microwave_state.json").read_text())
 
 
-class FakeMqttClient:
-    """In-memory MQTT stand-in.
+class FakePahoClient:
+    """Stand-in for `paho.mqtt.client.Client`, attached to a `FakePahoBroker`."""
 
-    Captures `publish()` calls and lets tests `inject()` incoming messages
-    through the same callback that `AwsAppliancesManager` registers on the
-    real `MqttClient`. Automatically replies to a published `getState`
-    with a preconfigured payload so that `Appliance.fetch_data()` resolves.
-    """
+    def __init__(self, broker: FakePahoBroker, **kwargs: Any) -> None:
+        self.kwargs = kwargs
+        self._broker = broker
+        self.on_connect: Any = None
+        self.on_message: Any = None
+        self.on_disconnect: Any = None
+        self.on_subscribe: Any = None
+        self.subscribed: set[str] = set()
+        self.loop_stopped = False
+        self.disconnected = False
 
-    def __init__(
-        self,
-        _aws_auth: Any = None,
-        message_callback: Callable[[str, dict[str, Any]], None] | None = None,
-    ) -> None:
-        self._message_callback = message_callback
-        self.client_id: str | None = "fake-client-id"
-        self.subscribed_topics: set[str] = set()
-        self.published: list[tuple[str, dict[str, Any]]] = []
-        self._connected = True
-        self._getstate_reply: dict[str, Any] | None = None
-        self._capability_replies: dict[str, dict[str, Any] | None] = {}
+    def ws_set_options(self, **_kwargs: Any) -> None:
+        pass
 
-    def set_getstate_reply(self, payload: dict[str, Any]) -> None:
-        self._getstate_reply = payload
+    def username_pw_set(self, **_kwargs: Any) -> None:
+        pass
 
-    def set_capability_reply(
-        self, part_number: str, payload: dict[str, Any] | None
-    ) -> None:
-        """Configure the inline profile JSON returned for a capability request.
+    def tls_set(self, **_kwargs: Any) -> None:
+        pass
 
-        Pass `None` to simulate no response (retry/timeout path).
-        """
-        self._capability_replies[part_number] = payload
+    def connect(self, *_args: Any, **_kwargs: Any) -> None:
+        pass
 
-    async def connect(self) -> bool:
+    def loop_start(self) -> None:
+        # The CONNACK comes from a background thread, as from paho's network
+        # thread.
+        if self._broker.connack:
+            threading.Thread(
+                target=self.on_connect,
+                args=(
+                    self,
+                    None,
+                    mqtt.ConnectFlags(session_present=False),
+                    ReasonCode(PacketTypes.CONNACK, "Success"),
+                    None,
+                ),
+                daemon=True,
+            ).start()
+
+    def loop_stop(self) -> None:
+        self.loop_stopped = True
+
+    def disconnect(self) -> None:
+        self.disconnected = True
+
+    def subscribe(self, topic: str, qos: int = 0) -> None:
+        self.subscribed.add(topic)
+
+    def unsubscribe(self, topic: str) -> None:
+        self.subscribed.discard(topic)
+
+    def publish(self, topic: str, payload: str, qos: int = 0) -> None:
+        self._broker.handle_publish(topic, json.loads(payload))
+
+    def fire_disconnect(self, *, is_failure: bool) -> None:
+        """Simulate the broker dropping the connection."""
+        reason = "Unspecified error" if is_failure else "Normal disconnection"
+        self.on_disconnect(
+            self,
+            None,
+            mqtt.DisconnectFlags(is_disconnect_packet_from_server=True),
+            ReasonCode(PacketTypes.DISCONNECT, reason),
+            None,
+        )
+
+    def deliver(
+        self, topic: str, payload: dict[str, Any], *, unsolicited: bool = False
+    ) -> bool:
+        """Hand a message to paho's `on_message` if subscribed to `topic`."""
+        if self.disconnected:
+            return False
+        if not unsolicited and not any(
+            mqtt.topic_matches_sub(sub, topic) for sub in self.subscribed
+        ):
+            return False
+        message = mqtt.MQTTMessage(topic=topic.encode())
+        message.payload = json.dumps(payload).encode()
+        self.on_message(self, None, message)
         return True
 
-    async def disconnect(self) -> None:
-        self._connected = False
 
-    def is_connected(self) -> bool:
-        return self._connected
+class FakePahoBroker:
+    """Installed in place of `paho.mqtt.client.Client`: plays the AWS IoT broker
+    and the appliances behind it.
 
-    async def subscribe(self, topic: str) -> None:
-        self.subscribed_topics.add(topic)
+    Every paho client `MqttClient` builds attaches here. Publishes are recorded
+    and answered the way the cloud would: a `getState` with the appliance's
+    entry in `states`, a capability download with the part's entry in
+    `capabilities` (`None` sends no reply, for the retry/timeout path).
+    """
 
-    async def unsubscribe(self, topic: str) -> None:
-        self.subscribed_topics.discard(topic)
+    def __init__(self) -> None:
+        self.clients: list[FakePahoClient] = []
+        self.connack = True
+        self.published: list[tuple[str, dict[str, Any]]] = []
+        self.states: dict[str, dict[str, Any]] = {}
+        self.capabilities: dict[str, dict[str, Any] | None] = {}
 
-    async def publish(self, topic: str, payload: dict[str, Any]) -> None:
+    def __call__(self, **kwargs: Any) -> FakePahoClient:
+        client = FakePahoClient(self, **kwargs)
+        self.clients.append(client)
+        return client
+
+    @property
+    def client_id(self) -> str:
+        """The MQTT client ID of the latest paho client."""
+        return self.clients[-1].kwargs["client_id"]
+
+    @property
+    def subscribed_topics(self) -> set[str]:
+        """The topics the latest paho client is subscribed to."""
+        return self.clients[-1].subscribed
+
+    async def inject(
+        self, topic: str, payload: dict[str, Any], *, unsolicited: bool = False
+    ) -> None:
+        """Deliver an incoming message and let the event loop process it.
+
+        `unsolicited` delivers it to the latest client even when no client is
+        subscribed to `topic`, as a broker never would, to exercise defensive
+        routing.
+        """
+        if unsolicited:
+            delivered = self.clients[-1].deliver(topic, payload, unsolicited=True)
+        else:
+            delivered = self._deliver(topic, payload)
+        assert delivered, f"No client subscribed to {topic}"
+        # `MqttClient` hands messages to the event loop with call_soon_threadsafe.
+        await asyncio.sleep(0)
+
+    def handle_publish(self, topic: str, payload: dict[str, Any]) -> None:
         self.published.append((topic, payload))
-        cmd = payload.get("payload", {}).get("command")
-        if cmd == "getState" and self._getstate_reply is not None:
-            parts = topic.split("/")
-            # cmd/{model}/{said}/request/{client_id}
-            if len(parts) >= 5 and parts[0] == "cmd" and parts[3] == "request":
-                model, said, cid = parts[1], parts[2], parts[4]
-                response_topic = f"cmd/{model}/{said}/response/{cid}"
-                self.inject(
-                    response_topic,
-                    {
-                        "requestId": payload.get("requestId"),
-                        "response": "accepted",
-                        "payload": self._getstate_reply,
-                    },
-                )
-        # Capability download: api/capability/download/{model}/{said}
+        parts = topic.split("/")
+        # cmd/{model}/{said}/request/{client_id}
+        if (
+            len(parts) == 5
+            and parts[0] == "cmd"
+            and parts[3] == "request"
+            and payload.get("payload", {}).get("command") == "getState"
+            and (state := self.states.get(parts[2])) is not None
+        ):
+            self._deliver(
+                f"cmd/{parts[1]}/{parts[2]}/response/{parts[4]}",
+                {
+                    "requestId": payload.get("requestId"),
+                    "response": "accepted",
+                    "payload": state,
+                },
+            )
+        # api/capability/download/{model}/{said}
         if topic.startswith("api/capability/download/"):
-            part = payload.get("capabilityPartNumber", "")
-            reply = self._capability_replies.get(part)
+            reply = self.capabilities.get(payload.get("capabilityPartNumber", ""))
             if reply is not None:
-                self.inject(f"{topic}/response", reply)
+                self._deliver(f"{topic}/response", reply)
 
-    def inject(self, topic: str, payload: dict[str, Any]) -> None:
-        if self._message_callback is not None:
-            self._message_callback(topic, payload)
+    def _deliver(self, topic: str, payload: dict[str, Any]) -> bool:
+        # A list, not a generator: every subscribed client gets the message.
+        delivered = [client.deliver(topic, payload) for client in self.clients]
+        return any(delivered)
 
 
 def mock_aws_http_api(
@@ -170,75 +255,17 @@ def mock_aws_http_api(
         )
 
 
-def make_mqtt_factory(
-    getstate_reply: dict[str, Any],
-    capability_replies: dict[str, dict[str, Any] | None],
-    holder: dict[str, FakeMqttClient] | None = None,
-) -> Callable[..., FakeMqttClient]:
-    """Build a `MqttClient` factory preloaded with canned replies.
-
-    Every created `FakeMqttClient` replies to `getState` with
-    `getstate_reply` and to capability downloads with `capability_replies`.
-    When `holder` is given, the created client is stored under
-    `holder["client"]` so tests can reach it after the manager connects.
-    """
-
-    def _factory(
-        aws_auth: Any,
-        message_callback: Callable[[str, dict[str, Any]], None] | None = None,
-    ) -> FakeMqttClient:
-        fake = FakeMqttClient(aws_auth, message_callback)
-        fake.set_getstate_reply(getstate_reply)
-        for part, reply in capability_replies.items():
-            fake.set_capability_reply(part, reply)
-        if holder is not None:
-            holder["client"] = fake
-        return fake
-
-    return _factory
-
-
-@contextmanager
-def patch_aws_manager_mqtt(
-    mqtt_factory: Callable[..., FakeMqttClient],
-) -> Generator[None]:
-    """Patch the manager's `MqttClient` internal with a fake."""
-    with patch(
-        "whirlpool.awsiot.appliancesmanager.MqttClient",
-        side_effect=mqtt_factory,
-    ):
-        yield
-
-
-async def build_manager_with_things(
-    auth: Auth,
-    session: aiohttp.ClientSession,
+def mock_aws_api(
     http_mock: aiointercept,
     backend_selector: BackendSelector,
+    broker: FakePahoBroker,
     things: list[dict[str, Any]],
-    capability_replies: dict[str, dict[str, Any] | None],
-) -> AwsAppliancesManager:
-    """A connected manager over the given things and capability replies."""
+    capabilities: dict[str, dict[str, Any] | None],
+    state: dict[str, Any] = STATE,
+) -> None:
+    """Mock the whole AWS side: HTTP endpoints at the wire, and broker replies
+    with `state` for every thing and `capabilities` for capability downloads."""
     mock_aws_http_api(http_mock, backend_selector, things)
-    mqtt_factory = make_mqtt_factory(STATE, capability_replies)
-    with patch_aws_manager_mqtt(mqtt_factory):
-        manager = AwsAppliancesManager(auth, session, lambda: None)
-        await manager.connect()
-    return manager
-
-
-async def build_manager_with_profile(
-    auth: Auth,
-    session: aiohttp.ClientSession,
-    http_mock: aiointercept,
-    backend_selector: BackendSelector,
-    profile: dict[str, Any],
-) -> tuple[AwsAppliancesManager, FakeMqttClient]:
-    """A connected manager whose microwave capability reply is `profile`."""
-    mock_aws_http_api(http_mock, backend_selector, [THING])
-    holder: dict[str, FakeMqttClient] = {}
-    mqtt_factory = make_mqtt_factory(STATE, {MWO_CAP_PART: profile}, holder)
-    with patch_aws_manager_mqtt(mqtt_factory):
-        manager = AwsAppliancesManager(auth, session, lambda: None)
-        await manager.connect()
-    return manager, holder["client"]
+    for thing in things:
+        broker.states[thing["thingName"]] = state
+    broker.capabilities.update(capabilities)
