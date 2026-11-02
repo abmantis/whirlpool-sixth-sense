@@ -45,6 +45,7 @@ async def test_appliances_from_both_backends_are_merged(
     assert saids(appliances_manager.washers) == ["SAIDWASHER1"]
     assert saids(appliances_manager.ovens) == ["SAIDOVEN1", "SAIDOVEN2", "SAIDOVEN3"]
     assert saids(appliances_manager.refrigerators) == ["SAIDFRIDGE1", "SAIDFRIDGE2"]
+    assert saids(appliances_manager.unsupported_appliances) == ["SAIDUNSUPPORTED1"]
     # AWS IoT appliances
     assert saids(appliances_manager.microwaves) == [MWO_SAID]
 
