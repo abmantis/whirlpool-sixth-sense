@@ -28,6 +28,6 @@ repos:
       - id: mixed-line-ending
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.31.1
+    rev: v1.32.0
     hooks:
       - id: zizmor
