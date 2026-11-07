@@ -4,7 +4,8 @@ Built-in microwaves such as the W9 MWO (``ddm_cooking_bi_mwo_*`` data models)
 report the same attribute layout as the HTTP ovens, but with the ``Mwo_``
 prefix instead of ``OvenUpperCavity_``. The status codes below were captured
 on a real W9 MWO (DDM_COOKING_BI_MWO_SELF_CLEAN_STEAM_TOURMALINE_V2) while
-starting, pausing (door opened), resuming and finishing a cycle. Recipes,
+starting, pausing (door opened), resuming and finishing a cycle; codes 1 and 8
+come from the W11I MW161 (DDM_COOKING_BI_MWO_SELF_CLEAN_STEAM_INDIGO_V2, #191). Recipes,
 hood and quiet mode are not exposed by this API, so those parts of the
 contract report unsupported.
 """
@@ -48,9 +49,13 @@ ATTR_ODOMETER = ATTR_PREFIX + "CycleStatusOdometer"
 ATTR_SET_OPERATIONS = ATTR_PREFIX + "OperationSetOperations"
 
 ATTRVAL_STATE_IDLE = "0"
+ATTRVAL_STATE_STARTING = "1"  # starting / preheating (W11I MW161)
 ATTRVAL_STATE_PROGRAMMING = "2"  # cycle being set up, a few seconds before start
 ATTRVAL_STATE_COOKING = "4"
-ATTRVAL_STATE_PAUSED = "7"  # e.g. door opened during a cycle
+# Door open, with or without a cycle in progress: see get_cavity_state()
+ATTRVAL_STATE_DOOR_OPEN = "7"
+# Waiting for the user, e.g. preheat target reached (W11I MW161)
+ATTRVAL_STATE_WAITING = "8"
 ATTRVAL_STATE_COMPLETED = "13"  # shown for a few seconds at the end of a cycle
 # Reported as "complete" by an over-the-range MHC76 in #121
 ATTRVAL_STATE_COMPLETED_ALT = "3"
@@ -58,12 +63,18 @@ ATTRVAL_OPERATION_CANCEL = "1"  # same code as the HTTP oven cavity
 
 CAVITY_STATE_MAP = {
     ATTRVAL_STATE_IDLE: MicrowaveCavityState.Idle,
+    ATTRVAL_STATE_STARTING: MicrowaveCavityState.Cooking,
     ATTRVAL_STATE_PROGRAMMING: MicrowaveCavityState.Idle,
     ATTRVAL_STATE_COOKING: MicrowaveCavityState.Cooking,
-    ATTRVAL_STATE_PAUSED: MicrowaveCavityState.Paused,
+    ATTRVAL_STATE_WAITING: MicrowaveCavityState.Paused,
     ATTRVAL_STATE_COMPLETED: MicrowaveCavityState.Completed,
     ATTRVAL_STATE_COMPLETED_ALT: MicrowaveCavityState.Completed,
 }
+
+# Cook timer states that mean a cycle is in progress. With the door open (state 7)
+# the cook timer tells a paused cycle from an idle microwave. The W9 keeps the
+# timer at "1" (running) for one poll after the door opens, before "2" (paused).
+COOK_TIMER_IN_CYCLE = {"1", "2"}
 
 COOK_TIMER_STATE_MAP = {
     "0": "idle",
@@ -72,7 +83,10 @@ COOK_TIMER_STATE_MAP = {
     "3": "completed",
 }
 
-TEMP_UNITS_MAP = {"0": "C", "1": "F"}
+# Only "0" (Celsius) has been seen on microwaves. The HTTP oven fixture with "1"
+# still reports tenths of a degree Celsius (target 1766 = 176.6 °C = 350 °F), so
+# "1" looks like a panel preference, not the unit of the reported values.
+TEMP_UNITS_MAP = {"0": "C"}
 
 
 class Microwave(BaseMicrowave, Appliance):
@@ -81,6 +95,11 @@ class Microwave(BaseMicrowave, Appliance):
         state_raw = self._get_attribute(ATTR_STATUS_STATE)
         if state_raw is None:
             return None
+        if state_raw == ATTRVAL_STATE_DOOR_OPEN:
+            in_cycle = self._get_attribute(ATTR_COOK_TIME_STATE) in COOK_TIMER_IN_CYCLE
+            return (
+                MicrowaveCavityState.Paused if in_cycle else MicrowaveCavityState.Idle
+            )
         state = CAVITY_STATE_MAP.get(state_raw)
         if state is None:
             LOGGER.debug(f"Unknown microwave state: {state_raw}")

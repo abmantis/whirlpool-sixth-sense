@@ -1,0 +1,5938 @@
+{
+  "IDLE": {
+    "_id": "REDACTED_ID_01",
+    "applianceId": "REDACTED_APPLIANCEID_02",
+    "lastFullSyncTime": 1678456060348,
+    "lastModified": 1793006129124,
+    "attributes": {
+      "Mwo_OperationSetSabbathModeActive": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeSetCookTimeOperations": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetCookPower": {
+        "value": "0",
+        "updateTime": 1674676067973
+      },
+      "Sys_OperationSetGlobalToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusMeatProbeRawTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetDefrost": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_AlertStatusCustomerFaultCodeNotification": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_PowerStatusRealTimePower": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetNumberEntry": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationSetOperations": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerStatusRealTimeCurrent": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISPReasonCode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "UtilityID": {
+        "value": "REDACTED_UTILITYID_03",
+        "updateTime": 1678456060348
+      },
+      "Mwo_DisplaySetImageFolderUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "sys-parser-type": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_CycleRecentCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "17",
+        "updateTime": 1792980981958
+      },
+      "version": {
+        "value": "1",
+        "updateTime": 1793000374136
+      },
+      "trid": {
+        "value": "REDACTED_TRID_04",
+        "updateTime": 1678456060348
+      },
+      "XCat_PersistentInfoVersion": {
+        "value": "55",
+        "updateTime": 1792980981953
+      },
+      "SetDNSNames": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_SmartGridStatusSmartGridCompliant": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_RebootTime": {
+        "value": "3544",
+        "updateTime": 1790892181000
+      },
+      "Relational_to_Appliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeAction": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBreadProof": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetKidsMenu": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusTotalHours": {
+        "value": "30245",
+        "updateTime": 1793006129008
+      },
+      "Mwo_ModeSetPopcorn": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetBrightnessPercent": {
+        "value": "90",
+        "updateTime": 1792980981958
+      },
+      "ISP_CurrentProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_SmartGridSetSmartGridEnable": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Relational_EntityId": {
+        "value": "REDACTED_RELATIONALENTITYID_05",
+        "updateTime": 1602408178584
+      },
+      "XCat_PersistentInfoSaid": {
+        "value": "REDACTED_XCATPERSISTENTINFOSAID_06",
+        "updateTime": 1792980981953
+      },
+      "uid": {
+        "value": "REDACTED_UID_07",
+        "updateTime": 1602408178584
+      },
+      "PushTrigger": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetClockOn": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetImage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetControlLock": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Sys_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiStatusIspCheck": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetConvectRoast": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "KitchenTimer01_SetTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_WifiSetRebootWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_CurrentModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_PersistentInfoMacAddress": {
+        "value": "REDACTED_XCATPERSISTENTINFOMACADDRESS_08",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetKeyPressToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "M2MSubList": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EntityClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusCycleCount": {
+        "value": "1141",
+        "updateTime": 1792980981953
+      },
+      "Mwo_TimeStatusDelayTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetSpeedCookConvenienceFoods": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "MAC_Address": {
+        "value": "REDACTED_MACADDRESS_09",
+        "updateTime": 1793000367000
+      },
+      "ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_TimeSetCookTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeStatusCycleTimeElapsed": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Generic_Zip": {
+        "value": "REDACTED_GENERICZIP_10",
+        "updateTime": 1602408178584
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "00,00",
+        "updateTime": 1792980981958
+      },
+      "XCat_TimeZoneId": {
+        "value": "REDACTED_XCATTIMEZONEID_11",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetId": {
+        "value": "REDACTED_MWOCUSTOMCYCLESETID_12",
+        "updateTime": 1674676067973
+      },
+      "Mwo_ModeSetRegularBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetPreheatOn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_DisplaySetLightOn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetMaxCurrentLimit": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "XCat_WifiSetDeprovisionWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetEcoModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "GetSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBroilLevel": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetSteamCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSoften": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetEndOfCycleToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusRunningHours": {
+        "value": "66",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetSteamLevel": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_DateTimeSetDateFormat": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "ccuri": {
+        "value": "API144_COOKING_V55",
+        "updateTime": 1793000367000
+      },
+      "Sys_DisplaySetAutoShutOff": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeStatusPreheatTimeRemaining": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "SerialNumber": {
+        "value": "REDACTED_SERIALNUMBER_13",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleStatusLimitedCycle": {
+        "value": "1",
+        "updateTime": 1792980981969
+      },
+      "XCat_UtcOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiSetDisableWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "KitchenTimer01_SetOperations": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "Hood_OperationSetSurfaceLight": {
+        "value": "0",
+        "updateTime": 1674676067991
+      },
+      "Mwo_TimeStatusCookTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_DateTimeMode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTargetTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetBakedPotato": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetBrowningPan": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSpeedCookVegetables": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetTempUnits": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetSpeedCookPoultry": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetRegularConvectBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerSetRealTimePowerPublishTiming": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_InServiceDate": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusState": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_ConfigSetMaxCustomCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeSetDelayTime": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_REASON_CODE": {
+        "value": "0",
+        "updateTime": 1790892180000
+      },
+      "Mwo_ModeSetRegularConvectBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Sys_OperationSetQuietModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "M2MSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusDoorOpen": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_CulinaryCtrSetQuantity": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "TimeZoneId": {
+        "value": "REDACTED_TIMEZONEID_14",
+        "updateTime": 1793000374137
+      },
+      "Relational_EntityOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "GetApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetStep": {
+        "value": "0",
+        "updateTime": 1792865964801
+      },
+      "Mwo_CulinaryCtrSetVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetAutoCook": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_ApplianceInfoSetSerialNumber": {
+        "value": "REDACTED_XCATAPPLIANCEINFOSETSERIALNUMBER_15",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetMeatProbeTargetTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetEndOfCycleReminderToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_PowerStatusEnergyMeasurementResults": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_DstOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_UtilityID": {
+        "value": "REDACTED_GENERICUTILITYID_16",
+        "updateTime": 1602408178584
+      },
+      "Generic_SmartID": {
+        "value": "REDACTED_GENERICSMARTID_17",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookDesserts": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "ISP_PART_NUMBER": {
+        "value": "W11682700",
+        "updateTime": 1793000373000
+      },
+      "Generic_EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ISP_DownloadEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_UpdateNotification": {
+        "value": "1790895871",
+        "updateTime": 1790892181000
+      },
+      "Relational_EntityName": {
+        "value": "REDACTED_RELATIONALENTITYNAME_18",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTurntable": {
+        "value": "1",
+        "updateTime": 1792980981969
+      },
+      "ISP_InstallEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Mwo_ModeSetConvectBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "ISP_TotalProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Sys_OperationSetPowerKeyToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplayStatusBroilDisplayType": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_trid": {
+        "value": "REDACTED_XCATTRID_19",
+        "updateTime": 1602408178584
+      },
+      "XCat_RemoteSetRemoteControlEnable": {
+        "value": "1",
+        "updateTime": 1792980981953
+      },
+      "UtcOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_ModeSetReheat": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRebootAppliance": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_OperationSetCookTimeCompleteAction": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_trid_result": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookFish": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Generic_RatePlanID": {
+        "value": "REDACTED_GENERICRATEPLANID_20",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetGreaseFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_PowerStatusEnergyConsumption": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusState": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_DateTimeSetDateTimeSet": {
+        "value": "2026-10-26T09:15:27+00:00",
+        "updateTime": 1793002527039
+      },
+      "Relational_EnvelopeClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1793000363997
+      },
+      "Mwo_CulinaryCtrSetId": {
+        "value": "REDACTED_MWOCULINARYCTRSETID_21",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerSetRealTimePowerPublishStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetExtraCookingTime": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISPStep": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetMelt": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Sys_OperationSetSabbathModeEnabled": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_DisplayStatusMeatProbeDisplayTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetAlertToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetBeverage": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetClockThemes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "OvenUpperCavity_OpStatusWaterTankAction": {
+        "value": "0",
+        "updateTime": 1792865965141
+      },
+      "OvenUpperCavity_CycleStatusOdometer": {
+        "value": "769",
+        "updateTime": 1675104261182
+      },
+      "Mwo_CycleSetCookPowerWatts": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeStatusIdle": {
+        "value": "1",
+        "updateTime": 1792980981974
+      },
+      "ModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleSetDoneness": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_DisplayStatusDisplayTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_OperationStatusSensorEnabled": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ApplianceVersionNumber": {
+        "value": "49",
+        "updateTime": 1793000373000
+      },
+      "ProjectReleaseNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetRegularBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetBoilAndSimmer": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRemoteDiagnosticsEnable": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_ModeSetBroilAndGrill": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerStatusRealTimeVoltage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiStatusRssiAntennaDiversity": {
+        "value": "-49",
+        "updateTime": 1792980981953
+      },
+      "Sys_AlertStatusControlLockChangedByAppliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookCasserole": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_PowerStatusPowerOutage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusCookTimeState": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerSetEnergyMeasurementStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetPublishApplianceState": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_DisplaySetEnable24Hour": {
+        "value": "1",
+        "updateTime": 1792980981958
+      },
+      "SAID": {
+        "value": "REDACTED_SAID_22",
+        "updateTime": 1793000367000
+      },
+      "XCat_WifiSetIspFirmwareDescriptionUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "RatePlanID": {
+        "value": "REDACTED_RATEPLANID_23",
+        "updateTime": 1678456060348
+      },
+      "Relational_CycleMyCreation": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetAmount": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Generic_ApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "DstOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "DateTimeMode": {
+        "value": "0",
+        "updateTime": 1606823658483
+      },
+      "XCat_ApplianceInfoSetModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetIspAuthorized": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetSpeedCookMeats": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetSpeedCookBreads": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetCharcoalFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "Mwo_ModeSetKeepWarm": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetBrowning": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_WIFI_VERSION": {
+        "value": "1.cd.0",
+        "updateTime": 1793000373000
+      },
+      "Mwo_CycleStatusOdometer": {
+        "value": "1141",
+        "updateTime": 1792980981969
+      },
+      "Mwo_OperationStatusMeatProbePluggedIn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_DownloadStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_WIFI_PART_NUMBER": {
+        "value": "W10835199",
+        "updateTime": 1793000373000
+      },
+      "Mwo_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1675104143359
+      },
+      "ISP_InstallStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Hood_OperationSetExhaustFanSpeed": {
+        "value": "0",
+        "updateTime": 1674676067980
+      }
+    }
+  },
+  "DOOR_OPEN": {
+    "_id": "REDACTED_ID_01",
+    "applianceId": "REDACTED_APPLIANCEID_02",
+    "lastFullSyncTime": 1678456060348,
+    "lastModified": 1793024128195,
+    "attributes": {
+      "Mwo_OperationSetSabbathModeActive": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeSetCookTimeOperations": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetCookPower": {
+        "value": "0",
+        "updateTime": 1674676067973
+      },
+      "Sys_OperationSetGlobalToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusMeatProbeRawTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetDefrost": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_AlertStatusCustomerFaultCodeNotification": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_PowerStatusRealTimePower": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetNumberEntry": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationSetOperations": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerStatusRealTimeCurrent": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISPReasonCode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "UtilityID": {
+        "value": "REDACTED_UTILITYID_03",
+        "updateTime": 1678456060348
+      },
+      "Mwo_DisplaySetImageFolderUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "sys-parser-type": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_CycleRecentCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "17",
+        "updateTime": 1792980981958
+      },
+      "version": {
+        "value": "1",
+        "updateTime": 1793000374136
+      },
+      "trid": {
+        "value": "REDACTED_TRID_04",
+        "updateTime": 1678456060348
+      },
+      "XCat_PersistentInfoVersion": {
+        "value": "55",
+        "updateTime": 1792980981953
+      },
+      "SetDNSNames": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_SmartGridStatusSmartGridCompliant": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_RebootTime": {
+        "value": "3544",
+        "updateTime": 1790892181000
+      },
+      "Relational_to_Appliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeAction": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBreadProof": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetKidsMenu": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusTotalHours": {
+        "value": "30250",
+        "updateTime": 1793024127891
+      },
+      "Mwo_ModeSetPopcorn": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetBrightnessPercent": {
+        "value": "90",
+        "updateTime": 1792980981958
+      },
+      "ISP_CurrentProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_SmartGridSetSmartGridEnable": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Relational_EntityId": {
+        "value": "REDACTED_RELATIONALENTITYID_05",
+        "updateTime": 1602408178584
+      },
+      "XCat_PersistentInfoSaid": {
+        "value": "REDACTED_XCATPERSISTENTINFOSAID_06",
+        "updateTime": 1792980981953
+      },
+      "uid": {
+        "value": "REDACTED_UID_07",
+        "updateTime": 1602408178584
+      },
+      "PushTrigger": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetClockOn": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetImage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetControlLock": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Sys_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiStatusIspCheck": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetConvectRoast": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "KitchenTimer01_SetTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_WifiSetRebootWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_CurrentModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_PersistentInfoMacAddress": {
+        "value": "REDACTED_XCATPERSISTENTINFOMACADDRESS_08",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetKeyPressToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "M2MSubList": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EntityClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusCycleCount": {
+        "value": "1141",
+        "updateTime": 1792980981953
+      },
+      "Mwo_TimeStatusDelayTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetSpeedCookConvenienceFoods": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "MAC_Address": {
+        "value": "REDACTED_MACADDRESS_09",
+        "updateTime": 1793000367000
+      },
+      "ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_TimeSetCookTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeStatusCycleTimeElapsed": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Generic_Zip": {
+        "value": "REDACTED_GENERICZIP_10",
+        "updateTime": 1602408178584
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "00,00",
+        "updateTime": 1792980981958
+      },
+      "XCat_TimeZoneId": {
+        "value": "REDACTED_XCATTIMEZONEID_11",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetId": {
+        "value": "REDACTED_MWOCUSTOMCYCLESETID_12",
+        "updateTime": 1674676067973
+      },
+      "Mwo_ModeSetRegularBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetPreheatOn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_DisplaySetLightOn": {
+        "value": "1",
+        "updateTime": 1793026894604
+      },
+      "Sys_OperationSetMaxCurrentLimit": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "XCat_WifiSetDeprovisionWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetEcoModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "GetSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBroilLevel": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetSteamCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSoften": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetEndOfCycleToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusRunningHours": {
+        "value": "66",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetSteamLevel": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_DateTimeSetDateFormat": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "ccuri": {
+        "value": "API144_COOKING_V55",
+        "updateTime": 1793000367000
+      },
+      "Sys_DisplaySetAutoShutOff": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeStatusPreheatTimeRemaining": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "SerialNumber": {
+        "value": "REDACTED_SERIALNUMBER_13",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleStatusLimitedCycle": {
+        "value": "1",
+        "updateTime": 1792980981969
+      },
+      "XCat_UtcOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiSetDisableWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "KitchenTimer01_SetOperations": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "Hood_OperationSetSurfaceLight": {
+        "value": "0",
+        "updateTime": 1674676067991
+      },
+      "Mwo_TimeStatusCookTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_DateTimeMode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTargetTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetBakedPotato": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetBrowningPan": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSpeedCookVegetables": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetTempUnits": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetSpeedCookPoultry": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetRegularConvectBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerSetRealTimePowerPublishTiming": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_InServiceDate": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusState": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_ConfigSetMaxCustomCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeSetDelayTime": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_REASON_CODE": {
+        "value": "0",
+        "updateTime": 1790892180000
+      },
+      "Mwo_ModeSetRegularConvectBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Sys_OperationSetQuietModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "M2MSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusDoorOpen": {
+        "value": "1",
+        "updateTime": 1793026894261
+      },
+      "Mwo_CulinaryCtrSetQuantity": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "TimeZoneId": {
+        "value": "REDACTED_TIMEZONEID_14",
+        "updateTime": 1793000374137
+      },
+      "Relational_EntityOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "GetApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetStep": {
+        "value": "0",
+        "updateTime": 1792865964801
+      },
+      "Mwo_CulinaryCtrSetVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetAutoCook": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_ApplianceInfoSetSerialNumber": {
+        "value": "REDACTED_XCATAPPLIANCEINFOSETSERIALNUMBER_15",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetMeatProbeTargetTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetEndOfCycleReminderToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_PowerStatusEnergyMeasurementResults": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_DstOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_UtilityID": {
+        "value": "REDACTED_GENERICUTILITYID_16",
+        "updateTime": 1602408178584
+      },
+      "Generic_SmartID": {
+        "value": "REDACTED_GENERICSMARTID_17",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookDesserts": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "ISP_PART_NUMBER": {
+        "value": "W11682700",
+        "updateTime": 1793000373000
+      },
+      "Generic_EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ISP_DownloadEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_UpdateNotification": {
+        "value": "1790895871",
+        "updateTime": 1790892181000
+      },
+      "Relational_EntityName": {
+        "value": "REDACTED_RELATIONALENTITYNAME_18",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTurntable": {
+        "value": "1",
+        "updateTime": 1792980981969
+      },
+      "ISP_InstallEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Mwo_ModeSetConvectBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "ISP_TotalProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Sys_OperationSetPowerKeyToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplayStatusBroilDisplayType": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_trid": {
+        "value": "REDACTED_XCATTRID_19",
+        "updateTime": 1602408178584
+      },
+      "XCat_RemoteSetRemoteControlEnable": {
+        "value": "1",
+        "updateTime": 1792980981953
+      },
+      "UtcOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_ModeSetReheat": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRebootAppliance": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_OperationSetCookTimeCompleteAction": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_trid_result": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookFish": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Generic_RatePlanID": {
+        "value": "REDACTED_GENERICRATEPLANID_20",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetGreaseFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_PowerStatusEnergyConsumption": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusState": {
+        "value": "7",
+        "updateTime": 1793026894261
+      },
+      "XCat_DateTimeSetDateTimeSet": {
+        "value": "2026-10-26T15:15:26+00:00",
+        "updateTime": 1793024125966
+      },
+      "Relational_EnvelopeClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1793000363997
+      },
+      "Mwo_CulinaryCtrSetId": {
+        "value": "REDACTED_MWOCULINARYCTRSETID_21",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerSetRealTimePowerPublishStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetExtraCookingTime": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISPStep": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetMelt": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Sys_OperationSetSabbathModeEnabled": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_DisplayStatusMeatProbeDisplayTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetAlertToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetBeverage": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetClockThemes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "OvenUpperCavity_OpStatusWaterTankAction": {
+        "value": "0",
+        "updateTime": 1792865965141
+      },
+      "OvenUpperCavity_CycleStatusOdometer": {
+        "value": "769",
+        "updateTime": 1675104261182
+      },
+      "Mwo_CycleSetCookPowerWatts": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeStatusIdle": {
+        "value": "1",
+        "updateTime": 1792980981974
+      },
+      "ModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleSetDoneness": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_DisplayStatusDisplayTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_OperationStatusSensorEnabled": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ApplianceVersionNumber": {
+        "value": "49",
+        "updateTime": 1793000373000
+      },
+      "ProjectReleaseNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetRegularBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetBoilAndSimmer": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRemoteDiagnosticsEnable": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_ModeSetBroilAndGrill": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerStatusRealTimeVoltage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiStatusRssiAntennaDiversity": {
+        "value": "-49",
+        "updateTime": 1792980981953
+      },
+      "Sys_AlertStatusControlLockChangedByAppliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookCasserole": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_PowerStatusPowerOutage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusCookTimeState": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerSetEnergyMeasurementStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetPublishApplianceState": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_DisplaySetEnable24Hour": {
+        "value": "1",
+        "updateTime": 1792980981958
+      },
+      "SAID": {
+        "value": "REDACTED_SAID_22",
+        "updateTime": 1793000367000
+      },
+      "XCat_WifiSetIspFirmwareDescriptionUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "RatePlanID": {
+        "value": "REDACTED_RATEPLANID_23",
+        "updateTime": 1678456060348
+      },
+      "Relational_CycleMyCreation": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetAmount": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Generic_ApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "DstOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "DateTimeMode": {
+        "value": "0",
+        "updateTime": 1606823658483
+      },
+      "XCat_ApplianceInfoSetModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetIspAuthorized": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetSpeedCookMeats": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetSpeedCookBreads": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetCharcoalFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "Mwo_ModeSetKeepWarm": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetBrowning": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_WIFI_VERSION": {
+        "value": "1.cd.0",
+        "updateTime": 1793000373000
+      },
+      "Mwo_CycleStatusOdometer": {
+        "value": "1141",
+        "updateTime": 1792980981969
+      },
+      "Mwo_OperationStatusMeatProbePluggedIn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_DownloadStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_WIFI_PART_NUMBER": {
+        "value": "W10835199",
+        "updateTime": 1793000373000
+      },
+      "Mwo_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1675104143359
+      },
+      "ISP_InstallStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Hood_OperationSetExhaustFanSpeed": {
+        "value": "0",
+        "updateTime": 1674676067980
+      }
+    }
+  },
+  "WAITING": {
+    "_id": "REDACTED_ID_01",
+    "applianceId": "REDACTED_APPLIANCEID_02",
+    "lastFullSyncTime": 1678456060348,
+    "lastModified": 1793027066890,
+    "attributes": {
+      "Mwo_OperationSetSabbathModeActive": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeSetCookTimeOperations": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetCookPower": {
+        "value": "0",
+        "updateTime": 1674676067973
+      },
+      "Sys_OperationSetGlobalToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusMeatProbeRawTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetDefrost": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_AlertStatusCustomerFaultCodeNotification": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_PowerStatusRealTimePower": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetNumberEntry": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationSetOperations": {
+        "value": "2",
+        "updateTime": 1793027066474
+      },
+      "XCat_PowerStatusRealTimeCurrent": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISPReasonCode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "UtilityID": {
+        "value": "REDACTED_UTILITYID_03",
+        "updateTime": 1678456060348
+      },
+      "Mwo_DisplaySetImageFolderUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "sys-parser-type": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_CycleRecentCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "17",
+        "updateTime": 1792980981958
+      },
+      "version": {
+        "value": "1",
+        "updateTime": 1793000374136
+      },
+      "trid": {
+        "value": "REDACTED_TRID_04",
+        "updateTime": 1678456060348
+      },
+      "XCat_PersistentInfoVersion": {
+        "value": "55",
+        "updateTime": 1792980981953
+      },
+      "SetDNSNames": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_SmartGridStatusSmartGridCompliant": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_RebootTime": {
+        "value": "3544",
+        "updateTime": 1790892181000
+      },
+      "Relational_to_Appliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeAction": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBreadProof": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetKidsMenu": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusTotalHours": {
+        "value": "30250",
+        "updateTime": 1793024127891
+      },
+      "Mwo_ModeSetPopcorn": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetBrightnessPercent": {
+        "value": "90",
+        "updateTime": 1792980981958
+      },
+      "ISP_CurrentProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_SmartGridSetSmartGridEnable": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Relational_EntityId": {
+        "value": "REDACTED_RELATIONALENTITYID_05",
+        "updateTime": 1602408178584
+      },
+      "XCat_PersistentInfoSaid": {
+        "value": "REDACTED_XCATPERSISTENTINFOSAID_06",
+        "updateTime": 1792980981953
+      },
+      "uid": {
+        "value": "REDACTED_UID_07",
+        "updateTime": 1602408178584
+      },
+      "PushTrigger": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetClockOn": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetImage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetControlLock": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Sys_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiStatusIspCheck": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetConvectRoast": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "KitchenTimer01_SetTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_WifiSetRebootWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_CurrentModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_PersistentInfoMacAddress": {
+        "value": "REDACTED_XCATPERSISTENTINFOMACADDRESS_08",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetKeyPressToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "M2MSubList": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EntityClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusCycleCount": {
+        "value": "1141",
+        "updateTime": 1792980981953
+      },
+      "Mwo_TimeStatusDelayTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetSpeedCookConvenienceFoods": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "MAC_Address": {
+        "value": "REDACTED_MACADDRESS_09",
+        "updateTime": 1793000367000
+      },
+      "ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_TimeSetCookTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeStatusCycleTimeElapsed": {
+        "value": "150",
+        "updateTime": 1793027216410
+      },
+      "Generic_Zip": {
+        "value": "REDACTED_GENERICZIP_10",
+        "updateTime": 1602408178584
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "00,00",
+        "updateTime": 1792980981958
+      },
+      "XCat_TimeZoneId": {
+        "value": "REDACTED_XCATTIMEZONEID_11",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetId": {
+        "value": "REDACTED_MWOCUSTOMCYCLESETID_12",
+        "updateTime": 1674676067973
+      },
+      "Mwo_ModeSetRegularBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetPreheatOn": {
+        "value": "1",
+        "updateTime": 1793027066472
+      },
+      "Mwo_DisplaySetLightOn": {
+        "value": "1",
+        "updateTime": 1793027066487
+      },
+      "Sys_OperationSetMaxCurrentLimit": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "XCat_WifiSetDeprovisionWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetEcoModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "GetSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBroilLevel": {
+        "value": "0",
+        "updateTime": 1793027066468
+      },
+      "Sys_AlertStatusNotification": {
+        "value": "2",
+        "updateTime": 1793027213220
+      },
+      "Mwo_ModeSetSteamCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSoften": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetEndOfCycleToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusRunningHours": {
+        "value": "66",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetSteamLevel": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_DateTimeSetDateFormat": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "ccuri": {
+        "value": "API144_COOKING_V55",
+        "updateTime": 1793000367000
+      },
+      "Sys_DisplaySetAutoShutOff": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeStatusPreheatTimeRemaining": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "SerialNumber": {
+        "value": "REDACTED_SERIALNUMBER_13",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleStatusLimitedCycle": {
+        "value": "0",
+        "updateTime": 1793027049641
+      },
+      "XCat_UtcOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiSetDisableWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "KitchenTimer01_SetOperations": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "Hood_OperationSetSurfaceLight": {
+        "value": "0",
+        "updateTime": 1674676067991
+      },
+      "Mwo_TimeStatusCookTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_DateTimeMode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTargetTemp": {
+        "value": "1000",
+        "updateTime": 1793027066470
+      },
+      "Mwo_ModeSetBakedPotato": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetBrowningPan": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSpeedCookVegetables": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetTempUnits": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetSpeedCookPoultry": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetRegularConvectBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerSetRealTimePowerPublishTiming": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_InServiceDate": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusState": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_ConfigSetMaxCustomCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeSetDelayTime": {
+        "value": "0",
+        "updateTime": 1793027066466
+      },
+      "ISP_REASON_CODE": {
+        "value": "0",
+        "updateTime": 1790892180000
+      },
+      "Mwo_ModeSetRegularConvectBake": {
+        "value": "1",
+        "updateTime": 1793027066465
+      },
+      "Sys_OperationSetQuietModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "M2MSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusDoorOpen": {
+        "value": "0",
+        "updateTime": 1793027049634
+      },
+      "Mwo_CulinaryCtrSetQuantity": {
+        "value": "0",
+        "updateTime": 1793027066469
+      },
+      "TimeZoneId": {
+        "value": "REDACTED_TIMEZONEID_14",
+        "updateTime": 1793000374137
+      },
+      "Relational_EntityOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "GetApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetStep": {
+        "value": "0",
+        "updateTime": 1793027213265
+      },
+      "Mwo_CulinaryCtrSetVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetAutoCook": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_ApplianceInfoSetSerialNumber": {
+        "value": "REDACTED_XCATAPPLIANCEINFOSETSERIALNUMBER_15",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetMeatProbeTargetTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetEndOfCycleReminderToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_PowerStatusEnergyMeasurementResults": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_DstOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_UtilityID": {
+        "value": "REDACTED_GENERICUTILITYID_16",
+        "updateTime": 1602408178584
+      },
+      "Generic_SmartID": {
+        "value": "REDACTED_GENERICSMARTID_17",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookDesserts": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "ISP_PART_NUMBER": {
+        "value": "W11682700",
+        "updateTime": 1793000373000
+      },
+      "Generic_EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ISP_DownloadEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_UpdateNotification": {
+        "value": "1790895871",
+        "updateTime": 1790892181000
+      },
+      "Relational_EntityName": {
+        "value": "REDACTED_RELATIONALENTITYNAME_18",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTurntable": {
+        "value": "1",
+        "updateTime": 1792980981969
+      },
+      "ISP_InstallEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Mwo_ModeSetConvectBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "ISP_TotalProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Sys_OperationSetPowerKeyToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplayStatusBroilDisplayType": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_trid": {
+        "value": "REDACTED_XCATTRID_19",
+        "updateTime": 1602408178584
+      },
+      "XCat_RemoteSetRemoteControlEnable": {
+        "value": "1",
+        "updateTime": 1792980981953
+      },
+      "UtcOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_ModeSetReheat": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRebootAppliance": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_OperationSetCookTimeCompleteAction": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_trid_result": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookFish": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Generic_RatePlanID": {
+        "value": "REDACTED_GENERICRATEPLANID_20",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetGreaseFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_PowerStatusEnergyConsumption": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusState": {
+        "value": "8",
+        "updateTime": 1793027213548
+      },
+      "XCat_DateTimeSetDateTimeSet": {
+        "value": "2026-10-26T15:15:26+00:00",
+        "updateTime": 1793024125966
+      },
+      "Relational_EnvelopeClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1793000363997
+      },
+      "Mwo_CulinaryCtrSetId": {
+        "value": "REDACTED_MWOCULINARYCTRSETID_21",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerSetRealTimePowerPublishStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetExtraCookingTime": {
+        "value": "0",
+        "updateTime": 1793027066474
+      },
+      "ISPStep": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetMelt": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Sys_OperationSetSabbathModeEnabled": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_DisplayStatusMeatProbeDisplayTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetAlertToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetBeverage": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetClockThemes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "OvenUpperCavity_OpStatusWaterTankAction": {
+        "value": "0",
+        "updateTime": 1792865965141
+      },
+      "OvenUpperCavity_CycleStatusOdometer": {
+        "value": "769",
+        "updateTime": 1675104261182
+      },
+      "Mwo_CycleSetCookPowerWatts": {
+        "value": "0",
+        "updateTime": 1793027066473
+      },
+      "Mwo_ModeStatusIdle": {
+        "value": "0",
+        "updateTime": 1793027066471
+      },
+      "ModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleSetDoneness": {
+        "value": "0",
+        "updateTime": 1793027066468
+      },
+      "Mwo_ModeSetCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_DisplayStatusDisplayTemp": {
+        "value": "910",
+        "updateTime": 1793027216414
+      },
+      "Mwo_OperationStatusSensorEnabled": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ApplianceVersionNumber": {
+        "value": "49",
+        "updateTime": 1793000373000
+      },
+      "ProjectReleaseNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetRegularBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetBoilAndSimmer": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRemoteDiagnosticsEnable": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_ModeSetBroilAndGrill": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerStatusRealTimeVoltage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiStatusRssiAntennaDiversity": {
+        "value": "-49",
+        "updateTime": 1792980981953
+      },
+      "Sys_AlertStatusControlLockChangedByAppliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookCasserole": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_PowerStatusPowerOutage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusCookTimeState": {
+        "value": "1",
+        "updateTime": 1793027066485
+      },
+      "XCat_PowerSetEnergyMeasurementStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetPublishApplianceState": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_DisplaySetEnable24Hour": {
+        "value": "1",
+        "updateTime": 1792980981958
+      },
+      "SAID": {
+        "value": "REDACTED_SAID_22",
+        "updateTime": 1793000367000
+      },
+      "XCat_WifiSetIspFirmwareDescriptionUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "RatePlanID": {
+        "value": "REDACTED_RATEPLANID_23",
+        "updateTime": 1678456060348
+      },
+      "Relational_CycleMyCreation": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetAmount": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Generic_ApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "DstOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "DateTimeMode": {
+        "value": "0",
+        "updateTime": 1606823658483
+      },
+      "XCat_ApplianceInfoSetModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetIspAuthorized": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetSpeedCookMeats": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetSpeedCookBreads": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetCharcoalFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "Mwo_ModeSetKeepWarm": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetBrowning": {
+        "value": "0",
+        "updateTime": 1793027066465
+      },
+      "ISP_WIFI_VERSION": {
+        "value": "1.cd.0",
+        "updateTime": 1793000373000
+      },
+      "Mwo_CycleStatusOdometer": {
+        "value": "1141",
+        "updateTime": 1792980981969
+      },
+      "Mwo_OperationStatusMeatProbePluggedIn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_DownloadStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_WIFI_PART_NUMBER": {
+        "value": "W10835199",
+        "updateTime": 1793000373000
+      },
+      "Mwo_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1675104143359
+      },
+      "ISP_InstallStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Hood_OperationSetExhaustFanSpeed": {
+        "value": "0",
+        "updateTime": 1674676067980
+      }
+    }
+  },
+  "COOKING": {
+    "_id": "REDACTED_ID_01",
+    "applianceId": "REDACTED_APPLIANCEID_02",
+    "lastFullSyncTime": 1678456060348,
+    "lastModified": 1793027066890,
+    "attributes": {
+      "Mwo_OperationSetSabbathModeActive": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeSetCookTimeOperations": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetCookPower": {
+        "value": "0",
+        "updateTime": 1674676067973
+      },
+      "Sys_OperationSetGlobalToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusMeatProbeRawTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetDefrost": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_AlertStatusCustomerFaultCodeNotification": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_PowerStatusRealTimePower": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetNumberEntry": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationSetOperations": {
+        "value": "4",
+        "updateTime": 1793027313441
+      },
+      "XCat_PowerStatusRealTimeCurrent": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISPReasonCode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "UtilityID": {
+        "value": "REDACTED_UTILITYID_03",
+        "updateTime": 1678456060348
+      },
+      "Mwo_DisplaySetImageFolderUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "sys-parser-type": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_CycleRecentCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "17",
+        "updateTime": 1792980981958
+      },
+      "version": {
+        "value": "1",
+        "updateTime": 1793000374136
+      },
+      "trid": {
+        "value": "REDACTED_TRID_04",
+        "updateTime": 1678456060348
+      },
+      "XCat_PersistentInfoVersion": {
+        "value": "55",
+        "updateTime": 1792980981953
+      },
+      "SetDNSNames": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_SmartGridStatusSmartGridCompliant": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_RebootTime": {
+        "value": "3544",
+        "updateTime": 1790892181000
+      },
+      "Relational_to_Appliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeAction": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBreadProof": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetKidsMenu": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusTotalHours": {
+        "value": "30250",
+        "updateTime": 1793024127891
+      },
+      "Mwo_ModeSetPopcorn": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetBrightnessPercent": {
+        "value": "90",
+        "updateTime": 1792980981958
+      },
+      "ISP_CurrentProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_SmartGridSetSmartGridEnable": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Relational_EntityId": {
+        "value": "REDACTED_RELATIONALENTITYID_05",
+        "updateTime": 1602408178584
+      },
+      "XCat_PersistentInfoSaid": {
+        "value": "REDACTED_XCATPERSISTENTINFOSAID_06",
+        "updateTime": 1792980981953
+      },
+      "uid": {
+        "value": "REDACTED_UID_07",
+        "updateTime": 1602408178584
+      },
+      "PushTrigger": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetClockOn": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetImage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetControlLock": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Sys_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiStatusIspCheck": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetConvectRoast": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "KitchenTimer01_SetTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_WifiSetRebootWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_CurrentModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_PersistentInfoMacAddress": {
+        "value": "REDACTED_XCATPERSISTENTINFOMACADDRESS_08",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetKeyPressToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "M2MSubList": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EntityClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusCycleCount": {
+        "value": "1141",
+        "updateTime": 1792980981953
+      },
+      "Mwo_TimeStatusDelayTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetSpeedCookConvenienceFoods": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "MAC_Address": {
+        "value": "REDACTED_MACADDRESS_09",
+        "updateTime": 1793000367000
+      },
+      "ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_TimeSetCookTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeStatusCycleTimeElapsed": {
+        "value": "251",
+        "updateTime": 1793027317889
+      },
+      "Generic_Zip": {
+        "value": "REDACTED_GENERICZIP_10",
+        "updateTime": 1602408178584
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "00,00",
+        "updateTime": 1792980981958
+      },
+      "XCat_TimeZoneId": {
+        "value": "REDACTED_XCATTIMEZONEID_11",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetId": {
+        "value": "REDACTED_MWOCUSTOMCYCLESETID_12",
+        "updateTime": 1674676067973
+      },
+      "Mwo_ModeSetRegularBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetPreheatOn": {
+        "value": "1",
+        "updateTime": 1793027313479
+      },
+      "Mwo_DisplaySetLightOn": {
+        "value": "1",
+        "updateTime": 1793027066487
+      },
+      "Sys_OperationSetMaxCurrentLimit": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "XCat_WifiSetDeprovisionWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetEcoModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "GetSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBroilLevel": {
+        "value": "0",
+        "updateTime": 1793027313483
+      },
+      "Sys_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1793027269879
+      },
+      "Mwo_ModeSetSteamCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSoften": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetEndOfCycleToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusRunningHours": {
+        "value": "66",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetSteamLevel": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_DateTimeSetDateFormat": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "ccuri": {
+        "value": "API144_COOKING_V55",
+        "updateTime": 1793000367000
+      },
+      "Sys_DisplaySetAutoShutOff": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeStatusPreheatTimeRemaining": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "SerialNumber": {
+        "value": "REDACTED_SERIALNUMBER_13",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleStatusLimitedCycle": {
+        "value": "0",
+        "updateTime": 1793027049641
+      },
+      "XCat_UtcOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiSetDisableWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "KitchenTimer01_SetOperations": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "Hood_OperationSetSurfaceLight": {
+        "value": "0",
+        "updateTime": 1674676067991
+      },
+      "Mwo_TimeStatusCookTimeRemaining": {
+        "value": "175",
+        "updateTime": 1793027317889
+      },
+      "XCat_DateTimeMode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTargetTemp": {
+        "value": "1000",
+        "updateTime": 1793027313461
+      },
+      "Mwo_ModeSetBakedPotato": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetBrowningPan": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSpeedCookVegetables": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetTempUnits": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetSpeedCookPoultry": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetRegularConvectBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerSetRealTimePowerPublishTiming": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_InServiceDate": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusState": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_ConfigSetMaxCustomCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeSetDelayTime": {
+        "value": "0",
+        "updateTime": 1793027313466
+      },
+      "ISP_REASON_CODE": {
+        "value": "0",
+        "updateTime": 1790892180000
+      },
+      "Mwo_ModeSetRegularConvectBake": {
+        "value": "1",
+        "updateTime": 1793027313439
+      },
+      "Sys_OperationSetQuietModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "M2MSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusDoorOpen": {
+        "value": "0",
+        "updateTime": 1793027303671
+      },
+      "Mwo_CulinaryCtrSetQuantity": {
+        "value": "0",
+        "updateTime": 1793027313449
+      },
+      "TimeZoneId": {
+        "value": "REDACTED_TIMEZONEID_14",
+        "updateTime": 1793000374137
+      },
+      "Relational_EntityOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "GetApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetStep": {
+        "value": "0",
+        "updateTime": 1793027313488
+      },
+      "Mwo_CulinaryCtrSetVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetAutoCook": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_ApplianceInfoSetSerialNumber": {
+        "value": "REDACTED_XCATAPPLIANCEINFOSETSERIALNUMBER_15",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetMeatProbeTargetTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetEndOfCycleReminderToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_PowerStatusEnergyMeasurementResults": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_DstOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_UtilityID": {
+        "value": "REDACTED_GENERICUTILITYID_16",
+        "updateTime": 1602408178584
+      },
+      "Generic_SmartID": {
+        "value": "REDACTED_GENERICSMARTID_17",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookDesserts": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "ISP_PART_NUMBER": {
+        "value": "W11682700",
+        "updateTime": 1793000373000
+      },
+      "Generic_EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ISP_DownloadEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_UpdateNotification": {
+        "value": "1790895871",
+        "updateTime": 1790892181000
+      },
+      "Relational_EntityName": {
+        "value": "REDACTED_RELATIONALENTITYNAME_18",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTurntable": {
+        "value": "1",
+        "updateTime": 1792980981969
+      },
+      "ISP_InstallEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Mwo_ModeSetConvectBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "ISP_TotalProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Sys_OperationSetPowerKeyToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplayStatusBroilDisplayType": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_trid": {
+        "value": "REDACTED_XCATTRID_19",
+        "updateTime": 1602408178584
+      },
+      "XCat_RemoteSetRemoteControlEnable": {
+        "value": "1",
+        "updateTime": 1792980981953
+      },
+      "UtcOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_ModeSetReheat": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRebootAppliance": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_OperationSetCookTimeCompleteAction": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_trid_result": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookFish": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Generic_RatePlanID": {
+        "value": "REDACTED_GENERICRATEPLANID_20",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetGreaseFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_PowerStatusEnergyConsumption": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusState": {
+        "value": "4",
+        "updateTime": 1793027313753
+      },
+      "XCat_DateTimeSetDateTimeSet": {
+        "value": "2026-10-26T15:15:26+00:00",
+        "updateTime": 1793024125966
+      },
+      "Relational_EnvelopeClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1793000363997
+      },
+      "Mwo_CulinaryCtrSetId": {
+        "value": "REDACTED_MWOCULINARYCTRSETID_21",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerSetRealTimePowerPublishStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetExtraCookingTime": {
+        "value": "0",
+        "updateTime": 1793027313750
+      },
+      "ISPStep": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetMelt": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Sys_OperationSetSabbathModeEnabled": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_DisplayStatusMeatProbeDisplayTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetAlertToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetBeverage": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetClockThemes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "OvenUpperCavity_OpStatusWaterTankAction": {
+        "value": "0",
+        "updateTime": 1792865965141
+      },
+      "OvenUpperCavity_CycleStatusOdometer": {
+        "value": "769",
+        "updateTime": 1675104261182
+      },
+      "Mwo_CycleSetCookPowerWatts": {
+        "value": "0",
+        "updateTime": 1793027313456
+      },
+      "Mwo_ModeStatusIdle": {
+        "value": "0",
+        "updateTime": 1793027313445
+      },
+      "ModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleSetDoneness": {
+        "value": "0",
+        "updateTime": 1793027313469
+      },
+      "Mwo_ModeSetCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_DisplayStatusDisplayTemp": {
+        "value": "1050",
+        "updateTime": 1793027313747
+      },
+      "Mwo_OperationStatusSensorEnabled": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ApplianceVersionNumber": {
+        "value": "49",
+        "updateTime": 1793000373000
+      },
+      "ProjectReleaseNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetRegularBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetBoilAndSimmer": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRemoteDiagnosticsEnable": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_ModeSetBroilAndGrill": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerStatusRealTimeVoltage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiStatusRssiAntennaDiversity": {
+        "value": "-49",
+        "updateTime": 1792980981953
+      },
+      "Sys_AlertStatusControlLockChangedByAppliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookCasserole": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_PowerStatusPowerOutage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusCookTimeState": {
+        "value": "1",
+        "updateTime": 1793027303671
+      },
+      "XCat_PowerSetEnergyMeasurementStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetPublishApplianceState": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_DisplaySetEnable24Hour": {
+        "value": "1",
+        "updateTime": 1792980981958
+      },
+      "SAID": {
+        "value": "REDACTED_SAID_22",
+        "updateTime": 1793000367000
+      },
+      "XCat_WifiSetIspFirmwareDescriptionUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "RatePlanID": {
+        "value": "REDACTED_RATEPLANID_23",
+        "updateTime": 1678456060348
+      },
+      "Relational_CycleMyCreation": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetAmount": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Generic_ApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "DstOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "DateTimeMode": {
+        "value": "0",
+        "updateTime": 1606823658483
+      },
+      "XCat_ApplianceInfoSetModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetIspAuthorized": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetSpeedCookMeats": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetSpeedCookBreads": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetCharcoalFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "Mwo_ModeSetKeepWarm": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetBrowning": {
+        "value": "0",
+        "updateTime": 1793027313473
+      },
+      "ISP_WIFI_VERSION": {
+        "value": "1.cd.0",
+        "updateTime": 1793000373000
+      },
+      "Mwo_CycleStatusOdometer": {
+        "value": "1141",
+        "updateTime": 1792980981969
+      },
+      "Mwo_OperationStatusMeatProbePluggedIn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_DownloadStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_WIFI_PART_NUMBER": {
+        "value": "W10835199",
+        "updateTime": 1793000373000
+      },
+      "Mwo_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1675104143359
+      },
+      "ISP_InstallStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Hood_OperationSetExhaustFanSpeed": {
+        "value": "0",
+        "updateTime": 1674676067980
+      }
+    }
+  },
+  "COMPLETED": {
+    "_id": "REDACTED_ID_01",
+    "applianceId": "REDACTED_APPLIANCEID_02",
+    "lastFullSyncTime": 1678456060348,
+    "lastModified": 1793027368553,
+    "attributes": {
+      "Mwo_OperationSetSabbathModeActive": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeSetCookTimeOperations": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetCookPower": {
+        "value": "0",
+        "updateTime": 1674676067973
+      },
+      "Sys_OperationSetGlobalToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusMeatProbeRawTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetDefrost": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_AlertStatusCustomerFaultCodeNotification": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_PowerStatusRealTimePower": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetNumberEntry": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationSetOperations": {
+        "value": "0",
+        "updateTime": 1793027496313
+      },
+      "XCat_PowerStatusRealTimeCurrent": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISPReasonCode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "UtilityID": {
+        "value": "REDACTED_UTILITYID_03",
+        "updateTime": 1678456060348
+      },
+      "Mwo_DisplaySetImageFolderUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "sys-parser-type": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_CycleRecentCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "17",
+        "updateTime": 1792980981958
+      },
+      "version": {
+        "value": "1",
+        "updateTime": 1793000374136
+      },
+      "trid": {
+        "value": "REDACTED_TRID_04",
+        "updateTime": 1678456060348
+      },
+      "XCat_PersistentInfoVersion": {
+        "value": "55",
+        "updateTime": 1792980981953
+      },
+      "SetDNSNames": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_SmartGridStatusSmartGridCompliant": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_RebootTime": {
+        "value": "3544",
+        "updateTime": 1790892181000
+      },
+      "Relational_to_Appliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeAction": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBreadProof": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetKidsMenu": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusTotalHours": {
+        "value": "30250",
+        "updateTime": 1793024127891
+      },
+      "Mwo_ModeSetPopcorn": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetBrightnessPercent": {
+        "value": "90",
+        "updateTime": 1792980981958
+      },
+      "ISP_CurrentProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_SmartGridSetSmartGridEnable": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Relational_EntityId": {
+        "value": "REDACTED_RELATIONALENTITYID_05",
+        "updateTime": 1602408178584
+      },
+      "XCat_PersistentInfoSaid": {
+        "value": "REDACTED_XCATPERSISTENTINFOSAID_06",
+        "updateTime": 1792980981953
+      },
+      "uid": {
+        "value": "REDACTED_UID_07",
+        "updateTime": 1602408178584
+      },
+      "PushTrigger": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetClockOn": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetImage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetControlLock": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Sys_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiStatusIspCheck": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetConvectRoast": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "KitchenTimer01_SetTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_WifiSetRebootWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_CurrentModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_PersistentInfoMacAddress": {
+        "value": "REDACTED_XCATPERSISTENTINFOMACADDRESS_08",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetKeyPressToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "M2MSubList": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EntityClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusCycleCount": {
+        "value": "1141",
+        "updateTime": 1792980981953
+      },
+      "Mwo_TimeStatusDelayTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetSpeedCookConvenienceFoods": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "MAC_Address": {
+        "value": "REDACTED_MACADDRESS_09",
+        "updateTime": 1793000367000
+      },
+      "ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_TimeSetCookTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeStatusCycleTimeElapsed": {
+        "value": "422",
+        "updateTime": 1793027489958
+      },
+      "Generic_Zip": {
+        "value": "REDACTED_GENERICZIP_10",
+        "updateTime": 1602408178584
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "00,00",
+        "updateTime": 1792980981958
+      },
+      "XCat_TimeZoneId": {
+        "value": "REDACTED_XCATTIMEZONEID_11",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetId": {
+        "value": "REDACTED_MWOCUSTOMCYCLESETID_12",
+        "updateTime": 1674676067973
+      },
+      "Mwo_ModeSetRegularBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetPreheatOn": {
+        "value": "1",
+        "updateTime": 1793027313479
+      },
+      "Mwo_DisplaySetLightOn": {
+        "value": "1",
+        "updateTime": 1793027066487
+      },
+      "Sys_OperationSetMaxCurrentLimit": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "XCat_WifiSetDeprovisionWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetEcoModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "GetSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBroilLevel": {
+        "value": "0",
+        "updateTime": 1793027496314
+      },
+      "Sys_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1793027269879
+      },
+      "Mwo_ModeSetSteamCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSoften": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetEndOfCycleToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusRunningHours": {
+        "value": "66",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetSteamLevel": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_DateTimeSetDateFormat": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "ccuri": {
+        "value": "API144_COOKING_V55",
+        "updateTime": 1793000367000
+      },
+      "Sys_DisplaySetAutoShutOff": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeStatusPreheatTimeRemaining": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "SerialNumber": {
+        "value": "REDACTED_SERIALNUMBER_13",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleStatusLimitedCycle": {
+        "value": "0",
+        "updateTime": 1793027049641
+      },
+      "XCat_UtcOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiSetDisableWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "KitchenTimer01_SetOperations": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "Hood_OperationSetSurfaceLight": {
+        "value": "0",
+        "updateTime": 1674676067991
+      },
+      "Mwo_TimeStatusCookTimeRemaining": {
+        "value": "4",
+        "updateTime": 1793027489958
+      },
+      "XCat_DateTimeMode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTargetTemp": {
+        "value": "1000",
+        "updateTime": 1793027313461
+      },
+      "Mwo_ModeSetBakedPotato": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetBrowningPan": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSpeedCookVegetables": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetTempUnits": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetSpeedCookPoultry": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetRegularConvectBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerSetRealTimePowerPublishTiming": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_InServiceDate": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusState": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_ConfigSetMaxCustomCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeSetDelayTime": {
+        "value": "0",
+        "updateTime": 1793027313466
+      },
+      "ISP_REASON_CODE": {
+        "value": "0",
+        "updateTime": 1790892180000
+      },
+      "Mwo_ModeSetRegularConvectBake": {
+        "value": "1",
+        "updateTime": 1793027313439
+      },
+      "Sys_OperationSetQuietModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "M2MSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusDoorOpen": {
+        "value": "0",
+        "updateTime": 1793027303671
+      },
+      "Mwo_CulinaryCtrSetQuantity": {
+        "value": "0",
+        "updateTime": 1793027313449
+      },
+      "TimeZoneId": {
+        "value": "REDACTED_TIMEZONEID_14",
+        "updateTime": 1793000374137
+      },
+      "Relational_EntityOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "GetApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetStep": {
+        "value": "0",
+        "updateTime": 1793027496314
+      },
+      "Mwo_CulinaryCtrSetVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetAutoCook": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_ApplianceInfoSetSerialNumber": {
+        "value": "REDACTED_XCATAPPLIANCEINFOSETSERIALNUMBER_15",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetMeatProbeTargetTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetEndOfCycleReminderToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_PowerStatusEnergyMeasurementResults": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_DstOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_UtilityID": {
+        "value": "REDACTED_GENERICUTILITYID_16",
+        "updateTime": 1602408178584
+      },
+      "Generic_SmartID": {
+        "value": "REDACTED_GENERICSMARTID_17",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookDesserts": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "ISP_PART_NUMBER": {
+        "value": "W11682700",
+        "updateTime": 1793000373000
+      },
+      "Generic_EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ISP_DownloadEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_UpdateNotification": {
+        "value": "1790895871",
+        "updateTime": 1790892181000
+      },
+      "Relational_EntityName": {
+        "value": "REDACTED_RELATIONALENTITYNAME_18",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTurntable": {
+        "value": "1",
+        "updateTime": 1792980981969
+      },
+      "ISP_InstallEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Mwo_ModeSetConvectBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "ISP_TotalProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Sys_OperationSetPowerKeyToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplayStatusBroilDisplayType": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_trid": {
+        "value": "REDACTED_XCATTRID_19",
+        "updateTime": 1602408178584
+      },
+      "XCat_RemoteSetRemoteControlEnable": {
+        "value": "1",
+        "updateTime": 1792980981953
+      },
+      "UtcOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_ModeSetReheat": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRebootAppliance": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_OperationSetCookTimeCompleteAction": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_trid_result": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookFish": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Generic_RatePlanID": {
+        "value": "REDACTED_GENERICRATEPLANID_20",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetGreaseFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_PowerStatusEnergyConsumption": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusState": {
+        "value": "13",
+        "updateTime": 1793027496318
+      },
+      "XCat_DateTimeSetDateTimeSet": {
+        "value": "2026-10-26T15:15:26+00:00",
+        "updateTime": 1793024125966
+      },
+      "Relational_EnvelopeClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1793000363997
+      },
+      "Mwo_CulinaryCtrSetId": {
+        "value": "REDACTED_MWOCULINARYCTRSETID_21",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerSetRealTimePowerPublishStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetExtraCookingTime": {
+        "value": "0",
+        "updateTime": 1793027496312
+      },
+      "ISPStep": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetMelt": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Sys_OperationSetSabbathModeEnabled": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_DisplayStatusMeatProbeDisplayTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetAlertToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetBeverage": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetClockThemes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "OvenUpperCavity_OpStatusWaterTankAction": {
+        "value": "0",
+        "updateTime": 1792865965141
+      },
+      "OvenUpperCavity_CycleStatusOdometer": {
+        "value": "769",
+        "updateTime": 1675104261182
+      },
+      "Mwo_CycleSetCookPowerWatts": {
+        "value": "0",
+        "updateTime": 1793027313456
+      },
+      "Mwo_ModeStatusIdle": {
+        "value": "1",
+        "updateTime": 1793027496317
+      },
+      "ModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleSetDoneness": {
+        "value": "0",
+        "updateTime": 1793027496313
+      },
+      "Mwo_ModeSetCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_DisplayStatusDisplayTemp": {
+        "value": "1050",
+        "updateTime": 1793027313747
+      },
+      "Mwo_OperationStatusSensorEnabled": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ApplianceVersionNumber": {
+        "value": "49",
+        "updateTime": 1793000373000
+      },
+      "ProjectReleaseNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetRegularBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetBoilAndSimmer": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRemoteDiagnosticsEnable": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_ModeSetBroilAndGrill": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerStatusRealTimeVoltage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiStatusRssiAntennaDiversity": {
+        "value": "-49",
+        "updateTime": 1792980981953
+      },
+      "Sys_AlertStatusControlLockChangedByAppliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookCasserole": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_PowerStatusPowerOutage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusCookTimeState": {
+        "value": "3",
+        "updateTime": 1793027496318
+      },
+      "XCat_PowerSetEnergyMeasurementStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetPublishApplianceState": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_DisplaySetEnable24Hour": {
+        "value": "1",
+        "updateTime": 1792980981958
+      },
+      "SAID": {
+        "value": "REDACTED_SAID_22",
+        "updateTime": 1793000367000
+      },
+      "XCat_WifiSetIspFirmwareDescriptionUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "RatePlanID": {
+        "value": "REDACTED_RATEPLANID_23",
+        "updateTime": 1678456060348
+      },
+      "Relational_CycleMyCreation": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetAmount": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Generic_ApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "DstOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "DateTimeMode": {
+        "value": "0",
+        "updateTime": 1606823658483
+      },
+      "XCat_ApplianceInfoSetModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetIspAuthorized": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetSpeedCookMeats": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetSpeedCookBreads": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetCharcoalFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "Mwo_ModeSetKeepWarm": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetBrowning": {
+        "value": "0",
+        "updateTime": 1793027496315
+      },
+      "ISP_WIFI_VERSION": {
+        "value": "1.cd.0",
+        "updateTime": 1793000373000
+      },
+      "Mwo_CycleStatusOdometer": {
+        "value": "1141",
+        "updateTime": 1792980981969
+      },
+      "Mwo_OperationStatusMeatProbePluggedIn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_DownloadStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_WIFI_PART_NUMBER": {
+        "value": "W10835199",
+        "updateTime": 1793000373000
+      },
+      "Mwo_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1675104143359
+      },
+      "ISP_InstallStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Hood_OperationSetExhaustFanSpeed": {
+        "value": "0",
+        "updateTime": 1674676067980
+      }
+    }
+  },
+  "EXTENDED": {
+    "_id": "REDACTED_ID_01",
+    "applianceId": "REDACTED_APPLIANCEID_02",
+    "lastFullSyncTime": 1678456060348,
+    "lastModified": 1793027368553,
+    "attributes": {
+      "Mwo_OperationSetSabbathModeActive": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeSetCookTimeOperations": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetCookPower": {
+        "value": "0",
+        "updateTime": 1674676067973
+      },
+      "Sys_OperationSetGlobalToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusMeatProbeRawTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetDefrost": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_AlertStatusCustomerFaultCodeNotification": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_PowerStatusRealTimePower": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetNumberEntry": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationSetOperations": {
+        "value": "2",
+        "updateTime": 1793027524098
+      },
+      "XCat_PowerStatusRealTimeCurrent": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISPReasonCode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "UtilityID": {
+        "value": "REDACTED_UTILITYID_03",
+        "updateTime": 1678456060348
+      },
+      "Mwo_DisplaySetImageFolderUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "sys-parser-type": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_CycleRecentCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "17",
+        "updateTime": 1792980981958
+      },
+      "version": {
+        "value": "1",
+        "updateTime": 1793000374136
+      },
+      "trid": {
+        "value": "REDACTED_TRID_04",
+        "updateTime": 1678456060348
+      },
+      "XCat_PersistentInfoVersion": {
+        "value": "55",
+        "updateTime": 1792980981953
+      },
+      "SetDNSNames": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_SmartGridStatusSmartGridCompliant": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_RebootTime": {
+        "value": "3544",
+        "updateTime": 1790892181000
+      },
+      "Relational_to_Appliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeAction": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBreadProof": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetKidsMenu": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusTotalHours": {
+        "value": "30250",
+        "updateTime": 1793024127891
+      },
+      "Mwo_ModeSetPopcorn": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetBrightnessPercent": {
+        "value": "90",
+        "updateTime": 1792980981958
+      },
+      "ISP_CurrentProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_SmartGridSetSmartGridEnable": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Relational_EntityId": {
+        "value": "REDACTED_RELATIONALENTITYID_05",
+        "updateTime": 1602408178584
+      },
+      "XCat_PersistentInfoSaid": {
+        "value": "REDACTED_XCATPERSISTENTINFOSAID_06",
+        "updateTime": 1792980981953
+      },
+      "uid": {
+        "value": "REDACTED_UID_07",
+        "updateTime": 1602408178584
+      },
+      "PushTrigger": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetClockOn": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetImage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetControlLock": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Sys_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiStatusIspCheck": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetConvectRoast": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "KitchenTimer01_SetTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_WifiSetRebootWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_CurrentModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_PersistentInfoMacAddress": {
+        "value": "REDACTED_XCATPERSISTENTINFOMACADDRESS_08",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetKeyPressToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "M2MSubList": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EntityClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusCycleCount": {
+        "value": "1141",
+        "updateTime": 1792980981953
+      },
+      "Mwo_TimeStatusDelayTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetSpeedCookConvenienceFoods": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "MAC_Address": {
+        "value": "REDACTED_MACADDRESS_09",
+        "updateTime": 1793000367000
+      },
+      "ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_TimeSetCookTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeStatusCycleTimeElapsed": {
+        "value": "443",
+        "updateTime": 1793027540573
+      },
+      "Generic_Zip": {
+        "value": "REDACTED_GENERICZIP_10",
+        "updateTime": 1602408178584
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "00,00",
+        "updateTime": 1792980981958
+      },
+      "XCat_TimeZoneId": {
+        "value": "REDACTED_XCATTIMEZONEID_11",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetId": {
+        "value": "REDACTED_MWOCUSTOMCYCLESETID_12",
+        "updateTime": 1674676067973
+      },
+      "Mwo_ModeSetRegularBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetPreheatOn": {
+        "value": "0",
+        "updateTime": 1793027524146
+      },
+      "Mwo_DisplaySetLightOn": {
+        "value": "1",
+        "updateTime": 1793027066487
+      },
+      "Sys_OperationSetMaxCurrentLimit": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "XCat_WifiSetDeprovisionWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetEcoModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "GetSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBroilLevel": {
+        "value": "0",
+        "updateTime": 1793027524146
+      },
+      "Sys_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1793027269879
+      },
+      "Mwo_ModeSetSteamCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSoften": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetEndOfCycleToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusRunningHours": {
+        "value": "66",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetSteamLevel": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_DateTimeSetDateFormat": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "ccuri": {
+        "value": "API144_COOKING_V55",
+        "updateTime": 1793000367000
+      },
+      "Sys_DisplaySetAutoShutOff": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeStatusPreheatTimeRemaining": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "SerialNumber": {
+        "value": "REDACTED_SERIALNUMBER_13",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleStatusLimitedCycle": {
+        "value": "0",
+        "updateTime": 1793027049641
+      },
+      "XCat_UtcOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiSetDisableWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "KitchenTimer01_SetOperations": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "Hood_OperationSetSurfaceLight": {
+        "value": "0",
+        "updateTime": 1674676067991
+      },
+      "Mwo_TimeStatusCookTimeRemaining": {
+        "value": "43",
+        "updateTime": 1793027540573
+      },
+      "XCat_DateTimeMode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTargetTemp": {
+        "value": "1000",
+        "updateTime": 1793027524121
+      },
+      "Mwo_ModeSetBakedPotato": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetBrowningPan": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSpeedCookVegetables": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetTempUnits": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetSpeedCookPoultry": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetRegularConvectBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerSetRealTimePowerPublishTiming": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_InServiceDate": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusState": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_ConfigSetMaxCustomCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeSetDelayTime": {
+        "value": "0",
+        "updateTime": 1793027524126
+      },
+      "ISP_REASON_CODE": {
+        "value": "0",
+        "updateTime": 1790892180000
+      },
+      "Mwo_ModeSetRegularConvectBake": {
+        "value": "1",
+        "updateTime": 1793027524089
+      },
+      "Sys_OperationSetQuietModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "M2MSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusDoorOpen": {
+        "value": "0",
+        "updateTime": 1793027303671
+      },
+      "Mwo_CulinaryCtrSetQuantity": {
+        "value": "0",
+        "updateTime": 1793027524109
+      },
+      "TimeZoneId": {
+        "value": "REDACTED_TIMEZONEID_14",
+        "updateTime": 1793000374137
+      },
+      "Relational_EntityOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "GetApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetStep": {
+        "value": "0",
+        "updateTime": 1793027524149
+      },
+      "Mwo_CulinaryCtrSetVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetAutoCook": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_ApplianceInfoSetSerialNumber": {
+        "value": "REDACTED_XCATAPPLIANCEINFOSETSERIALNUMBER_15",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetMeatProbeTargetTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetEndOfCycleReminderToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_PowerStatusEnergyMeasurementResults": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_DstOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_UtilityID": {
+        "value": "REDACTED_GENERICUTILITYID_16",
+        "updateTime": 1602408178584
+      },
+      "Generic_SmartID": {
+        "value": "REDACTED_GENERICSMARTID_17",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookDesserts": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "ISP_PART_NUMBER": {
+        "value": "W11682700",
+        "updateTime": 1793000373000
+      },
+      "Generic_EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ISP_DownloadEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_UpdateNotification": {
+        "value": "1790895871",
+        "updateTime": 1790892181000
+      },
+      "Relational_EntityName": {
+        "value": "REDACTED_RELATIONALENTITYNAME_18",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTurntable": {
+        "value": "1",
+        "updateTime": 1792980981969
+      },
+      "ISP_InstallEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Mwo_ModeSetConvectBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "ISP_TotalProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Sys_OperationSetPowerKeyToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplayStatusBroilDisplayType": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_trid": {
+        "value": "REDACTED_XCATTRID_19",
+        "updateTime": 1602408178584
+      },
+      "XCat_RemoteSetRemoteControlEnable": {
+        "value": "1",
+        "updateTime": 1792980981953
+      },
+      "UtcOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_ModeSetReheat": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRebootAppliance": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_OperationSetCookTimeCompleteAction": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_trid_result": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookFish": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Generic_RatePlanID": {
+        "value": "REDACTED_GENERICRATEPLANID_20",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetGreaseFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_PowerStatusEnergyConsumption": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusState": {
+        "value": "4",
+        "updateTime": 1793027524431
+      },
+      "XCat_DateTimeSetDateTimeSet": {
+        "value": "2026-10-26T15:15:26+00:00",
+        "updateTime": 1793024125966
+      },
+      "Relational_EnvelopeClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1793000363997
+      },
+      "Mwo_CulinaryCtrSetId": {
+        "value": "REDACTED_MWOCULINARYCTRSETID_21",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerSetRealTimePowerPublishStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetExtraCookingTime": {
+        "value": "60",
+        "updateTime": 1793027524155
+      },
+      "ISPStep": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetMelt": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Sys_OperationSetSabbathModeEnabled": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_DisplayStatusMeatProbeDisplayTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetAlertToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetBeverage": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetClockThemes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "OvenUpperCavity_OpStatusWaterTankAction": {
+        "value": "0",
+        "updateTime": 1792865965141
+      },
+      "OvenUpperCavity_CycleStatusOdometer": {
+        "value": "769",
+        "updateTime": 1675104261182
+      },
+      "Mwo_CycleSetCookPowerWatts": {
+        "value": "0",
+        "updateTime": 1793027524113
+      },
+      "Mwo_ModeStatusIdle": {
+        "value": "0",
+        "updateTime": 1793027524102
+      },
+      "ModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleSetDoneness": {
+        "value": "0",
+        "updateTime": 1793027524129
+      },
+      "Mwo_ModeSetCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_DisplayStatusDisplayTemp": {
+        "value": "1050",
+        "updateTime": 1793027524152
+      },
+      "Mwo_OperationStatusSensorEnabled": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ApplianceVersionNumber": {
+        "value": "49",
+        "updateTime": 1793000373000
+      },
+      "ProjectReleaseNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetRegularBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetBoilAndSimmer": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRemoteDiagnosticsEnable": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_ModeSetBroilAndGrill": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerStatusRealTimeVoltage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiStatusRssiAntennaDiversity": {
+        "value": "-49",
+        "updateTime": 1792980981953
+      },
+      "Sys_AlertStatusControlLockChangedByAppliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookCasserole": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_PowerStatusPowerOutage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusCookTimeState": {
+        "value": "1",
+        "updateTime": 1793027524431
+      },
+      "XCat_PowerSetEnergyMeasurementStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetPublishApplianceState": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_DisplaySetEnable24Hour": {
+        "value": "1",
+        "updateTime": 1792980981958
+      },
+      "SAID": {
+        "value": "REDACTED_SAID_22",
+        "updateTime": 1793000367000
+      },
+      "XCat_WifiSetIspFirmwareDescriptionUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "RatePlanID": {
+        "value": "REDACTED_RATEPLANID_23",
+        "updateTime": 1678456060348
+      },
+      "Relational_CycleMyCreation": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetAmount": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Generic_ApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "DstOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "DateTimeMode": {
+        "value": "0",
+        "updateTime": 1606823658483
+      },
+      "XCat_ApplianceInfoSetModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetIspAuthorized": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetSpeedCookMeats": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetSpeedCookBreads": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetCharcoalFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "Mwo_ModeSetKeepWarm": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetBrowning": {
+        "value": "0",
+        "updateTime": 1793027524134
+      },
+      "ISP_WIFI_VERSION": {
+        "value": "1.cd.0",
+        "updateTime": 1793000373000
+      },
+      "Mwo_CycleStatusOdometer": {
+        "value": "1141",
+        "updateTime": 1792980981969
+      },
+      "Mwo_OperationStatusMeatProbePluggedIn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_DownloadStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_WIFI_PART_NUMBER": {
+        "value": "W10835199",
+        "updateTime": 1793000373000
+      },
+      "Mwo_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1675104143359
+      },
+      "ISP_InstallStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Hood_OperationSetExhaustFanSpeed": {
+        "value": "0",
+        "updateTime": 1674676067980
+      }
+    }
+  },
+  "INTERRUPTED": {
+    "_id": "REDACTED_ID_01",
+    "applianceId": "REDACTED_APPLIANCEID_02",
+    "lastFullSyncTime": 1678456060348,
+    "lastModified": 1793027368553,
+    "attributes": {
+      "Mwo_OperationSetSabbathModeActive": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeSetCookTimeOperations": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetCookPower": {
+        "value": "0",
+        "updateTime": 1674676067973
+      },
+      "Sys_OperationSetGlobalToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusMeatProbeRawTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetDefrost": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_AlertStatusCustomerFaultCodeNotification": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_PowerStatusRealTimePower": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetNumberEntry": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationSetOperations": {
+        "value": "0",
+        "updateTime": 1793027558626
+      },
+      "XCat_PowerStatusRealTimeCurrent": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISPReasonCode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "UtilityID": {
+        "value": "REDACTED_UTILITYID_03",
+        "updateTime": 1678456060348
+      },
+      "Mwo_DisplaySetImageFolderUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "sys-parser-type": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_CycleRecentCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetLanguage": {
+        "value": "17",
+        "updateTime": 1792980981958
+      },
+      "version": {
+        "value": "1",
+        "updateTime": 1793000374136
+      },
+      "trid": {
+        "value": "REDACTED_TRID_04",
+        "updateTime": 1678456060348
+      },
+      "XCat_PersistentInfoVersion": {
+        "value": "55",
+        "updateTime": 1792980981953
+      },
+      "SetDNSNames": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_SmartGridStatusSmartGridCompliant": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_RebootTime": {
+        "value": "3544",
+        "updateTime": 1790892181000
+      },
+      "Relational_to_Appliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeAction": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBreadProof": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetKidsMenu": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusTotalHours": {
+        "value": "30250",
+        "updateTime": 1793024127891
+      },
+      "Mwo_ModeSetPopcorn": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetBrightnessPercent": {
+        "value": "90",
+        "updateTime": 1792980981958
+      },
+      "ISP_CurrentProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_SmartGridSetSmartGridEnable": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Relational_EntityId": {
+        "value": "REDACTED_RELATIONALENTITYID_05",
+        "updateTime": 1602408178584
+      },
+      "XCat_PersistentInfoSaid": {
+        "value": "REDACTED_XCATPERSISTENTINFOSAID_06",
+        "updateTime": 1792980981953
+      },
+      "uid": {
+        "value": "REDACTED_UID_07",
+        "updateTime": 1602408178584
+      },
+      "PushTrigger": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetClockOn": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetImage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetControlLock": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Sys_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiStatusIspCheck": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetConvectRoast": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "KitchenTimer01_SetTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_WifiSetRebootWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "ISP_CurrentModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "XCat_PersistentInfoMacAddress": {
+        "value": "REDACTED_XCATPERSISTENTINFOMACADDRESS_08",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetKeyPressToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "M2MSubList": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_EntityClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusCycleCount": {
+        "value": "1142",
+        "updateTime": 1793027559240
+      },
+      "Mwo_TimeStatusDelayTimeRemaining": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_ModeSetSpeedCookConvenienceFoods": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "MAC_Address": {
+        "value": "REDACTED_MACADDRESS_09",
+        "updateTime": 1793000367000
+      },
+      "ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_TimeSetCookTimeSet": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Mwo_TimeStatusCycleTimeElapsed": {
+        "value": "0",
+        "updateTime": 1793027560807
+      },
+      "Generic_Zip": {
+        "value": "REDACTED_GENERICZIP_10",
+        "updateTime": 1602408178584
+      },
+      "Sys_AlertStatusCustomerFaultCode": {
+        "value": "00,00",
+        "updateTime": 1792980981958
+      },
+      "XCat_TimeZoneId": {
+        "value": "REDACTED_XCATTIMEZONEID_11",
+        "updateTime": 1602408178584
+      },
+      "Relational_EnvelopeOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetId": {
+        "value": "REDACTED_MWOCUSTOMCYCLESETID_12",
+        "updateTime": 1674676067973
+      },
+      "Mwo_ModeSetRegularBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetPreheatOn": {
+        "value": "0",
+        "updateTime": 1793027558912
+      },
+      "Mwo_DisplaySetLightOn": {
+        "value": "0",
+        "updateTime": 1793027566543
+      },
+      "Sys_OperationSetMaxCurrentLimit": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "XCat_WifiSetDeprovisionWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_OperationSetEcoModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "GetSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetBroilLevel": {
+        "value": "0",
+        "updateTime": 1793027558913
+      },
+      "Sys_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1793027269879
+      },
+      "Mwo_ModeSetSteamCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSoften": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetEndOfCycleToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_OdometerStatusRunningHours": {
+        "value": "66",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetSteamLevel": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_DateTimeSetDateFormat": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "ccuri": {
+        "value": "API144_COOKING_V55",
+        "updateTime": 1793000367000
+      },
+      "Sys_DisplaySetAutoShutOff": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeStatusPreheatTimeRemaining": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "SerialNumber": {
+        "value": "REDACTED_SERIALNUMBER_13",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleStatusLimitedCycle": {
+        "value": "0",
+        "updateTime": 1793027049641
+      },
+      "XCat_UtcOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_WifiSetDisableWifiCommModule": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "KitchenTimer01_SetOperations": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "Hood_OperationSetSurfaceLight": {
+        "value": "0",
+        "updateTime": 1674676067991
+      },
+      "Mwo_TimeStatusCookTimeRemaining": {
+        "value": "0",
+        "updateTime": 1793027560807
+      },
+      "XCat_DateTimeMode": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTargetTemp": {
+        "value": "0",
+        "updateTime": 1793027558649
+      },
+      "Mwo_ModeSetBakedPotato": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetBrowningPan": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetSpeedCookVegetables": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetTempUnits": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetSpeedCookPoultry": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetRegularConvectBakeAndMw": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerSetRealTimePowerPublishTiming": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_InServiceDate": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "KitchenTimer01_StatusState": {
+        "value": "0",
+        "updateTime": 1792980981980
+      },
+      "XCat_ConfigSetMaxCustomCycles": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_TimeSetDelayTime": {
+        "value": "0",
+        "updateTime": 1793027558894
+      },
+      "ISP_REASON_CODE": {
+        "value": "0",
+        "updateTime": 1790892180000
+      },
+      "Mwo_ModeSetRegularConvectBake": {
+        "value": "0",
+        "updateTime": 1793027558620
+      },
+      "Sys_OperationSetQuietModeEnabled": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "M2MSubscribeListVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_DisplaySetCycleCompleteMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_OperationStatusDoorOpen": {
+        "value": "0",
+        "updateTime": 1793027561777
+      },
+      "Mwo_CulinaryCtrSetQuantity": {
+        "value": "0",
+        "updateTime": 1793027558641
+      },
+      "TimeZoneId": {
+        "value": "REDACTED_TIMEZONEID_14",
+        "updateTime": 1793000374137
+      },
+      "Relational_EntityOpen": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "GetApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CustomCycleSetStep": {
+        "value": "0",
+        "updateTime": 1793027558914
+      },
+      "Mwo_CulinaryCtrSetVersion": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetAutoCook": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_ApplianceInfoSetSerialNumber": {
+        "value": "REDACTED_XCATAPPLIANCEINFOSETSERIALNUMBER_15",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetMeatProbeTargetTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetEndOfCycleReminderToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplaySetZonedMessage": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "XCat_PowerStatusEnergyMeasurementResults": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_DstOffset": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_UtilityID": {
+        "value": "REDACTED_GENERICUTILITYID_16",
+        "updateTime": 1602408178584
+      },
+      "Generic_SmartID": {
+        "value": "REDACTED_GENERICSMARTID_17",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookDesserts": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "ISP_PART_NUMBER": {
+        "value": "W11682700",
+        "updateTime": 1793000373000
+      },
+      "Generic_EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ISP_DownloadEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_UpdateNotification": {
+        "value": "1790895871",
+        "updateTime": 1790892181000
+      },
+      "Relational_EntityName": {
+        "value": "REDACTED_RELATIONALENTITYNAME_18",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetTurntable": {
+        "value": "1",
+        "updateTime": 1792980981969
+      },
+      "ISP_InstallEnd": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Mwo_ModeSetConvectBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "ISP_TotalProcessInModule": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Sys_OperationSetPowerKeyToneVolume": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Generic_ISPBundleAttributes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Sys_DisplayStatusBroilDisplayType": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_trid": {
+        "value": "REDACTED_XCATTRID_19",
+        "updateTime": 1602408178584
+      },
+      "XCat_RemoteSetRemoteControlEnable": {
+        "value": "1",
+        "updateTime": 1792980981953
+      },
+      "UtcOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Mwo_ModeSetReheat": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRebootAppliance": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_OperationSetCookTimeCompleteAction": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "XCat_trid_result": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookFish": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Generic_RatePlanID": {
+        "value": "REDACTED_GENERICRATEPLANID_20",
+        "updateTime": 1602408178584
+      },
+      "Sys_OperationSetGreaseFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "XCat_PowerStatusEnergyConsumption": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusState": {
+        "value": "0",
+        "updateTime": 1793027561777
+      },
+      "XCat_DateTimeSetDateTimeSet": {
+        "value": "2026-10-26T15:15:26+00:00",
+        "updateTime": 1793024125966
+      },
+      "Relational_EnvelopeClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Online": {
+        "value": "1",
+        "updateTime": 1793000363997
+      },
+      "Mwo_CulinaryCtrSetId": {
+        "value": "REDACTED_MWOCULINARYCTRSETID_21",
+        "updateTime": 1792980981969
+      },
+      "XCat_PowerSetRealTimePowerPublishStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_CycleSetExtraCookingTime": {
+        "value": "0",
+        "updateTime": 1793027558921
+      },
+      "ISPStep": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Relational_ArrayClose": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetMelt": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "EnergyProfileSetting": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "Sys_OperationSetSabbathModeEnabled": {
+        "value": "0",
+        "updateTime": 1792980981958
+      },
+      "Mwo_DisplayStatusMeatProbeDisplayTemp": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Sys_OperationSetAlertToneVolume": {
+        "value": "4",
+        "updateTime": 1792980981958
+      },
+      "Mwo_ModeSetBeverage": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_DisplaySetClockThemes": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "OvenUpperCavity_OpStatusWaterTankAction": {
+        "value": "0",
+        "updateTime": 1793027559557
+      },
+      "OvenUpperCavity_CycleStatusOdometer": {
+        "value": "769",
+        "updateTime": 1675104261182
+      },
+      "Mwo_CycleSetCookPowerWatts": {
+        "value": "0",
+        "updateTime": 1793027558642
+      },
+      "Mwo_ModeStatusIdle": {
+        "value": "1",
+        "updateTime": 1793027558590
+      },
+      "ModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1793000367000
+      },
+      "Mwo_CycleSetDoneness": {
+        "value": "0",
+        "updateTime": 1793027558902
+      },
+      "Mwo_ModeSetCook": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_DisplayStatusDisplayTemp": {
+        "value": "0",
+        "updateTime": 1793027560814
+      },
+      "Mwo_OperationStatusSensorEnabled": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "ApplianceVersionNumber": {
+        "value": "49",
+        "updateTime": 1793000373000
+      },
+      "ProjectReleaseNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetRegularBake": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_ModeSetBoilAndSimmer": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_RemoteSetRemoteDiagnosticsEnable": {
+        "value": "0",
+        "updateTime": 1674676067939
+      },
+      "Mwo_ModeSetBroilAndGrill": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "XCat_PowerStatusRealTimeVoltage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiStatusRssiAntennaDiversity": {
+        "value": "-49",
+        "updateTime": 1792980981953
+      },
+      "Sys_AlertStatusControlLockChangedByAppliance": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_ModeSetSpeedCookCasserole": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "XCat_PowerStatusPowerOutage": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_OperationStatusCookTimeState": {
+        "value": "0",
+        "updateTime": 1793027558925
+      },
+      "XCat_PowerSetEnergyMeasurementStart": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetPublishApplianceState": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Sys_DisplaySetEnable24Hour": {
+        "value": "1",
+        "updateTime": 1792980981958
+      },
+      "SAID": {
+        "value": "REDACTED_SAID_22",
+        "updateTime": 1793000367000
+      },
+      "XCat_WifiSetIspFirmwareDescriptionUrl": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "RatePlanID": {
+        "value": "REDACTED_RATEPLANID_23",
+        "updateTime": 1678456060348
+      },
+      "Relational_CycleMyCreation": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "Mwo_CycleSetAmount": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "Generic_ApplianceVersionNumber": {
+        "value": "0",
+        "updateTime": 1602408178584
+      },
+      "DstOffset": {
+        "value": "0",
+        "updateTime": 1678456060348
+      },
+      "DateTimeMode": {
+        "value": "0",
+        "updateTime": 1606823658483
+      },
+      "XCat_ApplianceInfoSetModelNumber": {
+        "value": "859991539470",
+        "updateTime": 1792980981953
+      },
+      "XCat_WifiSetIspAuthorized": {
+        "value": "0",
+        "updateTime": 1792980981953
+      },
+      "Mwo_ModeSetSpeedCookMeats": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Mwo_ModeSetSpeedCookBreads": {
+        "value": "0",
+        "updateTime": 1674676067977
+      },
+      "Sys_OperationSetCharcoalFilter": {
+        "value": "0",
+        "updateTime": 1674676067962
+      },
+      "Mwo_ModeSetKeepWarm": {
+        "value": "0",
+        "updateTime": 1792980981974
+      },
+      "Mwo_CycleSetBrowning": {
+        "value": "0",
+        "updateTime": 1793027558903
+      },
+      "ISP_WIFI_VERSION": {
+        "value": "1.cd.0",
+        "updateTime": 1793000373000
+      },
+      "Mwo_CycleStatusOdometer": {
+        "value": "1142",
+        "updateTime": 1793027558933
+      },
+      "Mwo_OperationStatusMeatProbePluggedIn": {
+        "value": "0",
+        "updateTime": 1792980981969
+      },
+      "ISP_DownloadStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "ISP_WIFI_PART_NUMBER": {
+        "value": "W10835199",
+        "updateTime": 1793000373000
+      },
+      "Mwo_AlertStatusNotification": {
+        "value": "0",
+        "updateTime": 1675104143359
+      },
+      "ISP_InstallStart": {
+        "value": "0",
+        "updateTime": 1790892181000
+      },
+      "Hood_OperationSetExhaustFanSpeed": {
+        "value": "0",
+        "updateTime": 1674676067980
+      }
+    }
+  }
+}

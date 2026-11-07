@@ -40,16 +40,17 @@ async def test_attributes(appliances_manager: AppliancesManager):
     assert mwo.get_door_status() == MicrowaveDoorStatus.Closed
     assert mwo.get_door_locked() is None
     assert mwo.get_cavity_light() is True
-    assert mwo.get_display_temperature() == 65.0
+    # microwave-only cycle: the W9 reports a display temperature of 0
+    assert mwo.get_display_temperature() is None
     assert mwo.get_display_temperature_unit() == "C"
     assert mwo.get_turntable_enabled() is True
     assert mwo.get_mwo_power_level() is None
-    assert mwo.get_cook_power_watts() == 750
+    assert mwo.get_cook_power_watts() == 900
     assert mwo.get_cook_timer_state() == "running"
-    assert mwo.get_cook_timer_total_seconds() == 120
-    assert mwo.get_cook_time_remaining() == 90
-    assert mwo.get_cook_time_elapsed() == 30
-    assert mwo.get_cycle_count() == 31
+    assert mwo.get_cook_timer_total_seconds() == 30
+    assert mwo.get_cook_time_remaining() == 17
+    assert mwo.get_cook_time_elapsed() == 14
+    assert mwo.get_cycle_count() == 32
     assert mwo.get_control_locked() is False
     assert mwo.get_sabbath_mode() is False
     assert mwo.get_kitchen_timer().get_remaining_time() == 0
@@ -128,9 +129,10 @@ async def test_unsupported_setters_send_nothing(
     ["state_raw", "expected"],
     [
         ("0", MicrowaveCavityState.Idle),
+        ("1", MicrowaveCavityState.Cooking),
         ("2", MicrowaveCavityState.Idle),
         ("4", MicrowaveCavityState.Cooking),
-        ("7", MicrowaveCavityState.Paused),
+        ("8", MicrowaveCavityState.Paused),
         ("13", MicrowaveCavityState.Completed),
         ("3", MicrowaveCavityState.Completed),
         ("9", None),
@@ -161,7 +163,37 @@ async def test_cavity_state_values(
 
 
 @pytest.mark.parametrize(
-    ["snapshot", "cavity", "door", "timer", "remaining", "watts", "light"],
+    ["cook_timer_raw", "expected"],
+    [
+        ("0", MicrowaveCavityState.Idle),
+        ("1", MicrowaveCavityState.Paused),
+        ("2", MicrowaveCavityState.Paused),
+        ("3", MicrowaveCavityState.Idle),
+    ],
+)
+async def test_door_open_state_uses_cook_timer(
+    appliances_manager: AppliancesManager,
+    backend_selector: BackendSelector,
+    aiointercept_mock: aiointercept,
+    cook_timer_raw: str,
+    expected: MicrowaveCavityState,
+):
+    """State 7 means the door is open; only a cycle in progress is paused."""
+    mwo = _microwave(appliances_manager)
+    with open(DATA_DIR / "mock_data.json") as f:
+        payload = json.load(f)[mwo.said]
+    payload["attributes"]["Mwo_OperationStatusState"]["value"] = "7"
+    payload["attributes"]["Mwo_OperationStatusCookTimeState"]["value"] = cook_timer_raw
+
+    aiointercept_mock.get(
+        backend_selector.get_appliance_data_url(mwo.said), payload=payload
+    )
+    assert await mwo.fetch_data()
+    assert mwo.get_cavity_state() == expected
+
+
+@pytest.mark.parametrize(
+    ["snapshot", "cavity", "door", "timer", "remaining", "watts", "light", "cycles"],
     [
         (
             "IDLE",
@@ -171,6 +203,7 @@ async def test_cavity_state_values(
             0,
             0,
             False,
+            33,
         ),
         (
             "DOOR_OPEN",
@@ -180,6 +213,7 @@ async def test_cavity_state_values(
             0,
             0,
             True,
+            33,
         ),
         (
             "RUNNING",
@@ -189,6 +223,7 @@ async def test_cavity_state_values(
             17,
             900,
             True,
+            32,
         ),
         (
             "PAUSED",
@@ -198,6 +233,17 @@ async def test_cavity_state_values(
             12,
             900,
             True,
+            32,
+        ),
+        (
+            "PAUSED_DOOR_CLOSED",
+            MicrowaveCavityState.Paused,
+            MicrowaveDoorStatus.Closed,
+            "paused",
+            12,
+            900,
+            True,
+            32,
         ),
         (
             "COMPLETED",
@@ -207,6 +253,7 @@ async def test_cavity_state_values(
             2,
             900,
             True,
+            32,
         ),
     ],
 )
@@ -221,6 +268,7 @@ async def test_real_appliance_snapshots(
     remaining: int,
     watts: int,
     light: bool,
+    cycles: int,
 ):
     """Snapshots of a real W9 MWO (identifiers redacted), see microwave_data.json."""
     mwo = _microwave(appliances_manager)
@@ -240,4 +288,79 @@ async def test_real_appliance_snapshots(
     assert mwo.get_cook_power_watts() == watts
     assert mwo.get_cavity_light() is light
     assert mwo.get_display_temperature_unit() == "C"
-    assert mwo.get_cycle_count() == 33
+    assert mwo.get_cycle_count() == cycles
+
+
+@pytest.mark.parametrize(
+    ["snapshot", "cavity", "door", "timer", "display_temp"],
+    [
+        ("IDLE", MicrowaveCavityState.Idle, MicrowaveDoorStatus.Closed, "idle", None),
+        (
+            "DOOR_OPEN",
+            MicrowaveCavityState.Idle,
+            MicrowaveDoorStatus.Open,
+            "idle",
+            None,
+        ),
+        (
+            "WAITING",
+            MicrowaveCavityState.Paused,
+            MicrowaveDoorStatus.Closed,
+            "running",
+            91.0,
+        ),
+        (
+            "COOKING",
+            MicrowaveCavityState.Cooking,
+            MicrowaveDoorStatus.Closed,
+            "running",
+            105.0,
+        ),
+        (
+            "COMPLETED",
+            MicrowaveCavityState.Completed,
+            MicrowaveDoorStatus.Closed,
+            "completed",
+            105.0,
+        ),
+        (
+            "EXTENDED",
+            MicrowaveCavityState.Cooking,
+            MicrowaveDoorStatus.Closed,
+            "running",
+            105.0,
+        ),
+        (
+            "INTERRUPTED",
+            MicrowaveCavityState.Idle,
+            MicrowaveDoorStatus.Closed,
+            "idle",
+            None,
+        ),
+    ],
+)
+async def test_w11i_mw161_snapshots(
+    appliances_manager: AppliancesManager,
+    backend_selector: BackendSelector,
+    aiointercept_mock: aiointercept,
+    snapshot: str,
+    cavity: MicrowaveCavityState,
+    door: MicrowaveDoorStatus,
+    timer: str,
+    display_temp: float | None,
+):
+    """W11I MW161 snapshots from #191 (data model ..._MWO_..._INDIGO_V2)."""
+    mwo = _microwave(appliances_manager)
+    with open(DATA_DIR / "microwave_w11i_data.json") as f:
+        payload = json.load(f)[snapshot]
+
+    aiointercept_mock.get(
+        backend_selector.get_appliance_data_url(mwo.said), payload=payload
+    )
+    assert await mwo.fetch_data()
+
+    assert mwo.get_cavity_state() == cavity
+    assert mwo.get_door_status() == door
+    assert mwo.get_cook_timer_state() == timer
+    assert mwo.get_display_temperature() == display_temp
+    assert mwo.get_display_temperature_unit() == "C"
