@@ -14,7 +14,8 @@ SYNOPSIS
 
 OPTIONS
     --email EMAIL       Whirlpool account email (required)
-    --password PASSWORD Whirlpool account password (required)
+    --password PASSWORD Whirlpool account password (prompted without echo if
+                        omitted; explicit arguments may appear in process lists)
     --brand BRAND       One of: KitchenAid, Whirlpool, Maytag (required)
     --region REGION     One of: US, EU (required)
     --said SAID         SAID of a single appliance to capture
@@ -29,7 +30,9 @@ OPTIONS
                         used in filenames so the fixtures remain
                         cross-referenceable.
     --verbose           Enable debug logging for all modules (by default
-                        only this tool's own messages are logged)
+                        only this tool's own messages are logged). Library
+                        logging requires --no-redact because it may contain
+                        appliance identifiers and API payloads.
 
 OUTPUT FILES
     Each backend's files go in its own subdirectory of the output
@@ -77,10 +80,12 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import getpass
 import hashlib
 import json
 import logging
 import sys
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -158,12 +163,14 @@ _REDACTED_KEYS = frozenset(
         "LOCATION_ID",
         "Zip",
         "Generic_Zip",
+        "Name",
+        "sessionId",
     }
 )
 
 
 def _said_token(said: str) -> str:
-    """Short, non-reversible identifier for a SAID (8 hex chars)."""
+    """Short pseudonymous identifier for a SAID (8 hex chars)."""
     return hashlib.sha256(said.encode("utf-8")).hexdigest()[:8]
 
 
@@ -174,8 +181,20 @@ def _fixture_suffix(model: str, said: str) -> str:
 
 
 def _redact(obj: Any, said: str) -> Any:
-    """Recursively scrub sensitive keys from a JSON-like structure."""
+    """Recursively scrub known sensitive fields, not arbitrary unknown PII."""
     token = _said_token(said)
+
+    def _scrub_sensitive(value: Any, replacement: str) -> Any:
+        if isinstance(value, dict):
+            return {
+                k.replace(said, token) if said else k: v
+                if k == "updateTime" and isinstance(v, int | float)
+                else _scrub_sensitive(v, replacement)
+                for k, v in value.items()
+            }
+        if isinstance(value, list):
+            return [_scrub_sensitive(v, replacement) for v in value]
+        return replacement
 
     def _redact_key_value(key: str, value: Any) -> Any:
         replacement = (
@@ -187,21 +206,18 @@ def _redact(obj: Any, said: str) -> Any:
         )
         if replacement is None:
             return _walk(value)
-        if isinstance(value, dict):
-            return {
-                k: replacement if k == "value" else _walk(v) for k, v in value.items()
-            }
-        if isinstance(value, list):
-            return [
-                _walk(v) if isinstance(v, dict | list) else replacement for v in value
-            ]
-        return replacement
+        return _scrub_sensitive(value, replacement)
 
     def _walk(value: Any) -> Any:
         if isinstance(value, dict):
-            return {k: _redact_key_value(k, v) for k, v in value.items()}
+            return {
+                k.replace(said, token) if said else k: _redact_key_value(k, v)
+                for k, v in value.items()
+            }
         if isinstance(value, list):
             return [_walk(v) for v in value]
+        if isinstance(value, str) and said:
+            return value.replace(said, token)
         return value
 
     return _walk(obj)
@@ -212,7 +228,7 @@ def _parse_args() -> argparse.Namespace:
         description="Capture HTTP API and AWS IoT fixture data for any appliance."
     )
     parser.add_argument("--email", required=True)
-    parser.add_argument("--password", required=True)
+    parser.add_argument("--password", help="Omit to enter the password without echo")
     parser.add_argument("--brand", choices=[b.name for b in Brand], required=True)
     parser.add_argument("--region", choices=[r.name for r in Region], required=True)
     parser.add_argument(
@@ -244,12 +260,22 @@ def _parse_args() -> argparse.Namespace:
         default=True,
         help="Scrub SAID, serial, wifi MAC, and user IDs from dumped JSON",
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.password is None:
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("error", getpass.GetPassWarning)
+                args.password = getpass.getpass("Whirlpool account password: ")
+        except getpass.GetPassWarning, EOFError:
+            parser.error("A terminal with hidden password input is required")
+    if not args.password:
+        parser.error("The password must not be empty")
+    return args
 
 
 async def _amain(args: argparse.Namespace) -> int:
     handler = logging.StreamHandler()
-    if not args.verbose:
+    if not args.verbose or args.redact:
         handler.addFilter(logging.Filter(LOGGER.name))
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -295,7 +321,9 @@ def _capture(args: argparse.Namespace, manager: AppliancesManager) -> int:
         print(f"\nDiscovered {len(all_appliances)} appliance(s):\n")
         for app in all_appliances:
             tag = _appliance_tag(app)
-            print(f"  {app.said}  {_backend_name(app):<8} {tag:<15} {app.name}")
+            identifier = _said_token(app.said) if args.redact else app.said
+            name = "REDACTED" if args.redact else app.name
+            print(f"  {identifier}  {_backend_name(app):<8} {tag:<15} {name}")
         print()
         return 0
 
@@ -314,7 +342,7 @@ def _capture(args: argparse.Namespace, manager: AppliancesManager) -> int:
         if not targets:
             LOGGER.error(
                 "SAID %s not found. Use --list to see available appliances.",
-                args.said,
+                _said_token(args.said) if args.redact else args.said,
             )
             return 4
 
@@ -324,7 +352,12 @@ def _capture(args: argparse.Namespace, manager: AppliancesManager) -> int:
             _capture_one(appliance, args.output_dir, redact=args.redact)
         except Exception:
             capture_failures += 1
-            LOGGER.exception("Failed to capture fixtures for %s", appliance.said)
+            if args.redact:
+                LOGGER.error(
+                    "Failed to capture fixtures for %s", _said_token(appliance.said)
+                )
+            else:
+                LOGGER.exception("Failed to capture fixtures for %s", appliance.said)
 
     if capture_failures:
         LOGGER.error("Fixture capture failed for %d appliance(s)", capture_failures)
@@ -339,8 +372,8 @@ def _capture_one(appliance: Any, output_dir: Path, *, redact: bool) -> None:
     LOGGER.info(
         "Capturing %s fixtures for %s (%s, type=%s)",
         backend_name,
-        appliance.said,
-        appliance.name,
+        _said_token(appliance.said) if redact else appliance.said,
+        "REDACTED" if redact else appliance.name,
         tag,
     )
 
@@ -367,12 +400,19 @@ def _capture_one(appliance: Any, output_dir: Path, *, redact: bool) -> None:
             + "\n",
             encoding="utf-8",
         )
-        LOGGER.info("Wrote %s", path)
+        LOGGER.info("Wrote %s", path.name if redact else path)
 
 
 def main() -> None:
     args = _parse_args()
-    sys.exit(asyncio.run(_amain(args)))
+    try:
+        result = asyncio.run(_amain(args))
+    except Exception:
+        if not args.redact:
+            raise
+        LOGGER.error("Capture failed; details suppressed while redaction is enabled")
+        result = 1
+    sys.exit(result)
 
 
 if __name__ == "__main__":
