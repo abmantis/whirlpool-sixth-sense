@@ -259,7 +259,7 @@ async def test_non_oven_cavity_is_not_exposed_or_commanded(
         "partNumber": OVEN_CAP_PART,
         "cavities": {
             "primaryCavity": {"cavityType": "oven"},
-            "secondaryCavity": {"cavityType": "microwaveOven"},
+            "secondaryCavity": {"cavityType": "cooktop"},
         },
     }
     oven, broker = await connect_oven(capabilities)
