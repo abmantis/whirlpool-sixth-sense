@@ -54,3 +54,11 @@ class Washer(BaseWasher, Appliance):
     @override
     def get_time_remaining(self) -> int | None:
         raise NotImplementedError()
+
+    @override
+    def get_remote_control_enabled(self) -> bool | None:
+        raise NotImplementedError()
+
+    @override
+    def get_dispense_2_level(self) -> int | None:
+        raise NotImplementedError()

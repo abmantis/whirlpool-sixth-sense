@@ -1,6 +1,10 @@
-from typing import cast
+from unittest.mock import Mock
+
+import pytest
 
 from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.awsiot.dryer import Dryer as AwsDryer
+from whirlpool.awsiot.mqttclient import MqttClient
 from whirlpool.dryer import (
     Cycle,
     Dryness,
@@ -9,6 +13,7 @@ from whirlpool.dryer import (
     WrinkleShield,
 )
 from whirlpool.httpapi.dryer import Dryer
+from whirlpool.types import ApplianceInfo
 
 
 async def test_attributes(appliances_manager: AppliancesManager):
@@ -46,17 +51,24 @@ async def test_remote_control_enabled(appliances_manager: AppliancesManager):
     dryer = appliances_manager.dryers[0]
     assert dryer.get_remote_control_enabled() is False
 
+    raw_data = dryer.get_raw_data()
+    assert raw_data is not None
+    raw_data["attributes"].pop("XCat_RemoteSetRemoteControlEnable")
+    assert dryer.get_remote_control_enabled() is None
 
-async def test_model_specific_cycle_identity(appliances_manager: AppliancesManager):
-    dryer = cast(Dryer, appliances_manager.dryers[0])
 
-    assert dryer.get_dry_cycle_pair() is None
-    assert dryer.get_utility_cycle() is None
-
-    dryer.appliance_info.model_number = "WED9620HBK2"
-    assert dryer.get_dry_cycle_pair() == ("regular", "timed_dry")
-    assert dryer.get_utility_cycle() is None
-
+async def test_steam_refresh_cycle(appliances_manager: AppliancesManager):
+    dryer = appliances_manager.dryers[0]
+    assert isinstance(dryer, Dryer)
     dryer.update_attributes({"DryCavity_CycleSetCycleSelect": 10}, 0)
-    assert dryer.get_dry_cycle_pair() is None
-    assert dryer.get_utility_cycle() == "steam_refresh"
+    assert dryer.get_cycle() == Cycle.SteamRefresh
+
+
+def test_awsiot_dryer_unsupported_getter():
+    dryer = AwsDryer(
+        Mock(spec=MqttClient),
+        ApplianceInfo("said", "name", "dryer", "model", "serial"),
+    )
+
+    with pytest.raises(NotImplementedError):
+        dryer.get_remote_control_enabled()

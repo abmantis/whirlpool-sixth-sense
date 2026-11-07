@@ -67,14 +67,10 @@ class Washer(Appliance, ABC):
     def get_time_remaining(self) -> int | None:
         pass
 
+    @abstractmethod
     def get_remote_control_enabled(self) -> bool | None:
-        return None
+        pass
 
+    @abstractmethod
     def get_dispense_2_level(self) -> int | None:
-        return None
-
-    def get_wash_cycle_pair(self) -> tuple[str, str] | None:
-        return None
-
-    def get_utility_cycle(self) -> str | None:
-        return None
+        pass
