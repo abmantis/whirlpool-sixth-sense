@@ -13,7 +13,7 @@ from whirlpool.auth import Auth
 from whirlpool.awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
 from whirlpool.awsiot.oven import Oven
 from whirlpool.backendselector import BackendSelector
-from whirlpool.oven import Cavity, CavityState, CookMode
+from whirlpool.oven import Cavity, CavityState, CookMode, CookOperation
 
 OVEN_SAID = "OVEN1"
 OVEN_MODEL = "KOED730SBE00"
@@ -46,7 +46,8 @@ STATE: dict[str, Any] = {
         "cavityLight": False,
         "ovenDisplayTemperature": 24.0,
         "targetTemperature": 0,
-        "recipeID": "standby",
+        "recipeId": "",
+        "cookTimer": {"time": 0},
         "sessionId": "upper-session",
     },
     "secondaryCavity": {
@@ -55,7 +56,8 @@ STATE: dict[str, Any] = {
         "cavityLight": True,
         "ovenDisplayTemperature": 180.0,
         "targetTemperature": 176.7,
-        "recipeID": "bake",
+        "recipeId": "bake",
+        "cookTimer": {"time": 120},
         "sessionId": "lower-session",
     },
 }
@@ -100,9 +102,6 @@ async def connect_oven(
         assert manager.microwaves == []
         assert len(manager.ovens) == 1
         oven = manager.ovens[0]
-        # Command tests validate the immediate publish. Shared appliance tests
-        # cover delayed state refreshes, so avoid background sleepers here.
-        oven._schedule_state_refresh = lambda: None  # type: ignore[method-assign]
         return oven, fake_paho_broker
 
     yield _connect
@@ -192,6 +191,101 @@ async def test_discrete_temperature_recipes_snap_to_capability_values(
     assert "broilLevelTemperature" not in body
     assert "cookTimer" not in body
 
+async def test_set_cook_rejects_unsupported_optional_arguments(
+    connect_oven: ConnectOven,
+) -> None:
+    oven, broker = await connect_oven()
+    before = len(broker.published)
+
+    with pytest.raises(ValueError, match="rapid_preheat"):
+        await oven.set_cook(176.7, CookMode.Bake, rapid_preheat=True)
+    with pytest.raises(ValueError, match="meat_probe_target_temp"):
+        await oven.set_cook(
+            176.7, CookMode.Bake, meat_probe_target_temp=70
+        )
+    with pytest.raises(ValueError, match="delay_cook"):
+        await oven.set_cook(176.7, CookMode.Bake, delay_cook=3600)
+    with pytest.raises(ValueError, match="operation_type"):
+        await oven.set_cook(
+            176.7,
+            CookMode.Bake,
+            operation_type=CookOperation.Cancel,
+        )
+
+    assert len(broker.published) == before
+
+
+@pytest.mark.parametrize("target", [float("nan"), -100, 5000])
+async def test_set_cook_rejects_invalid_broil_temperatures(
+    connect_oven: ConnectOven,
+    target: float,
+) -> None:
+    oven, broker = await connect_oven()
+    before = len(broker.published)
+
+    with pytest.raises(ValueError):
+        await oven.set_cook(target, CookMode.Broil)
+
+    assert len(broker.published) == before
+
+
+async def test_cook_time_reads_cook_timer_time(connect_oven: ConnectOven) -> None:
+    oven, _ = await connect_oven()
+
+    assert oven.get_cook_time(Cavity.Upper) == 0
+    assert oven.get_cook_time(Cavity.Lower) == 120
+
+
+async def test_zero_temperatures_are_reported_as_none(
+    connect_oven: ConnectOven,
+) -> None:
+    oven, _ = await connect_oven(
+        state={
+            **STATE,
+            "primaryCavity": {
+                **STATE["primaryCavity"],
+                "ovenDisplayTemperature": 0,
+                "targetTemperature": 0,
+            },
+        }
+    )
+
+    assert oven.get_temp(Cavity.Upper) is None
+    assert oven.get_target_temp(Cavity.Upper) is None
+
+
+async def test_non_oven_cavity_is_not_exposed_or_commanded(
+    connect_oven: ConnectOven,
+) -> None:
+    capabilities = {
+        "partNumber": OVEN_CAP_PART,
+        "cavities": {
+            "primaryCavity": {"cavityType": "oven"},
+            "secondaryCavity": {"cavityType": "microwaveOven"},
+        },
+    }
+    oven, broker = await connect_oven(capabilities)
+    before = len(broker.published)
+
+    assert oven.get_oven_cavity_exists(Cavity.Upper)
+    assert not oven.get_oven_cavity_exists(Cavity.Lower)
+    assert await oven.set_light(True, Cavity.Lower) is False
+    assert await oven.set_cook(176.7, CookMode.Bake, Cavity.Lower) is False
+    assert await oven.stop_cook(Cavity.Lower) is False
+    assert len(broker.published) == before
+
+
+async def test_unvalidated_capability_blocks_all_commands(
+    connect_oven: ConnectOven,
+) -> None:
+    oven, broker = await connect_oven(_unvalidated_capabilities())
+    before = len(broker.published)
+
+    assert await oven.set_light(True, Cavity.Upper) is False
+    assert await oven.set_cook(176.7, CookMode.Bake, Cavity.Upper) is False
+    assert await oven.stop_cook(Cavity.Upper) is False
+    assert len(broker.published) == before
+
 
 async def test_remote_start_disabled_prevents_cook_command(
     connect_oven: ConnectOven,
@@ -214,7 +308,7 @@ async def test_stop_uses_session_id_when_reported(connect_oven: ConnectOven) -> 
     }
 
 
-async def test_disconnected_presence_event_does_not_mark_oven_offline(
+async def test_disconnected_presence_event_marks_oven_offline(
     connect_oven: ConnectOven,
 ) -> None:
     oven, _ = await connect_oven()
@@ -222,7 +316,7 @@ async def test_disconnected_presence_event_does_not_mark_oven_offline(
     oven.update_online(True)
     assert oven.get_online() is True
     oven.update_online(False)
-    assert oven.get_online() is True
+    assert oven.get_online() is False
 
 
 async def test_unsupported_controls_remain_explicitly_unsupported(
