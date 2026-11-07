@@ -185,6 +185,8 @@ class Oven(BaseOven, Appliance):
         if name is None:
             return None
         value = self._get_path_str(name, "cavityState")
+        if value is None:
+            return None
         return {
             "idle": CavityState.Standby,
             "preheating": CavityState.Preheating,
@@ -205,6 +207,8 @@ class Oven(BaseOven, Appliance):
         if name is None:
             return None
         value = self._get_path_str(name, "recipeId")
+        if value is None:
+            return None
         return {
             "": CookMode.Standby,
             "standby": CookMode.Standby,
