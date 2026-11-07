@@ -191,6 +191,7 @@ async def test_discrete_temperature_recipes_snap_to_capability_values(
     assert "broilLevelTemperature" not in body
     assert "cookTimer" not in body
 
+
 async def test_set_cook_rejects_unsupported_optional_arguments(
     connect_oven: ConnectOven,
 ) -> None:
