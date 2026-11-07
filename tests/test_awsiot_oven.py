@@ -200,9 +200,7 @@ async def test_set_cook_rejects_unsupported_optional_arguments(
     with pytest.raises(ValueError, match="rapid_preheat"):
         await oven.set_cook(176.7, CookMode.Bake, rapid_preheat=True)
     with pytest.raises(ValueError, match="meat_probe_target_temp"):
-        await oven.set_cook(
-            176.7, CookMode.Bake, meat_probe_target_temp=70
-        )
+        await oven.set_cook(176.7, CookMode.Bake, meat_probe_target_temp=70)
     with pytest.raises(ValueError, match="delay_cook"):
         await oven.set_cook(176.7, CookMode.Bake, delay_cook=3600)
     with pytest.raises(ValueError, match="operation_type"):
