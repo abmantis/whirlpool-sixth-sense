@@ -117,7 +117,7 @@ class Oven(BaseOven, Appliance):
         value = self._get_path_str(name, "doorStatus")
         if value == "open":
             return True
-        if value == "closed":
+        if value == "close":
             return False
         return None
 

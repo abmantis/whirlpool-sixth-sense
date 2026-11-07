@@ -133,6 +133,7 @@ _SAID_KEYS = frozenset(
 )
 _REDACTED_KEYS = frozenset(
     {
+        "Name",
         "Serial",
         "serial",
         "SERIAL",

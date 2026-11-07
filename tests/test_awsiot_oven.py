@@ -1,6 +1,8 @@
 """Tests for the AWS IoT oven implementation."""
 
+import json
 from collections.abc import AsyncGenerator, Awaitable, Callable
+from pathlib import Path
 from typing import Any
 
 import aiohttp
@@ -8,59 +10,28 @@ import pytest
 import pytest_asyncio
 from aiointercept import aiointercept
 
-from tests.awsiot.mocks import THING, FakePahoBroker, mock_aws_api
+from tests.awsiot.mocks import FakePahoBroker, mock_aws_api
 from whirlpool.auth import Auth
 from whirlpool.awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
 from whirlpool.awsiot.oven import Oven
 from whirlpool.backendselector import BackendSelector
 from whirlpool.oven import Cavity, CavityState, CookMode, CookOperation
 
-OVEN_SAID = "OVEN1"
-OVEN_MODEL = "KOED730SBE00"
-OVEN_CAP_PART = "W11779688"
+_FIXTURE_DIR = Path(__file__).parent / "data" / "awsiot"
 
-OVEN_THING: dict[str, Any] = {
-    **THING,
-    "thingName": OVEN_SAID,
-    "thingTypeName": OVEN_MODEL,
-    "attributes": {
-        **THING["attributes"],
-        "Name": b"My Oven".hex(),
-        "CapabilityPartNumber": OVEN_CAP_PART,
-    },
-}
+OVEN_THING: dict[str, Any] = json.loads(
+    (_FIXTURE_DIR / "oven_thing.json").read_text(encoding="utf-8")
+)
+CAPABILITIES: dict[str, Any] = json.loads(
+    (_FIXTURE_DIR / "capability_oven.json").read_text(encoding="utf-8")
+)
+STATE: dict[str, Any] = json.loads(
+    (_FIXTURE_DIR / "oven_state.json").read_text(encoding="utf-8")
+)
 
-CAPABILITIES: dict[str, Any] = {
-    "partNumber": OVEN_CAP_PART,
-    "cavities": {
-        "primaryCavity": {"cavityType": "oven"},
-        "secondaryCavity": {"cavityType": "oven"},
-    },
-}
-
-STATE: dict[str, Any] = {
-    "remoteStartEnable": True,
-    "primaryCavity": {
-        "cavityState": "idle",
-        "doorStatus": "closed",
-        "cavityLight": False,
-        "ovenDisplayTemperature": 24.0,
-        "targetTemperature": 0,
-        "recipeId": "",
-        "cookTimer": {"time": 0},
-        "sessionId": "upper-session",
-    },
-    "secondaryCavity": {
-        "cavityState": "cooking",
-        "doorStatus": "open",
-        "cavityLight": True,
-        "ovenDisplayTemperature": 180.0,
-        "targetTemperature": 176.7,
-        "recipeId": "bake",
-        "cookTimer": {"time": 120},
-        "sessionId": "lower-session",
-    },
-}
+OVEN_SAID = OVEN_THING["thingName"]
+OVEN_MODEL = OVEN_THING["thingTypeName"]
+OVEN_CAP_PART = OVEN_THING["attributes"]["CapabilityPartNumber"]
 
 type ConnectOven = Callable[..., Awaitable[tuple[Oven, FakePahoBroker]]]
 
@@ -119,14 +90,17 @@ async def test_two_cavities_and_state_getters(connect_oven: ConnectOven) -> None
     assert oven.get_oven_cavity_exists(Cavity.Upper)
     assert oven.get_oven_cavity_exists(Cavity.Lower)
     assert oven.get_cavity_state(Cavity.Upper) == CavityState.Standby
-    assert oven.get_cavity_state(Cavity.Lower) == CavityState.Cooking
+    assert oven.get_cavity_state(Cavity.Lower) == CavityState.Standby
     assert oven.get_door_opened(Cavity.Upper) is False
-    assert oven.get_door_opened(Cavity.Lower) is True
+    assert oven.get_door_opened(Cavity.Lower) is False
     assert oven.get_light(Cavity.Upper) is False
-    assert oven.get_light(Cavity.Lower) is True
-    assert oven.get_temp(Cavity.Lower) == 180.0
-    assert oven.get_target_temp(Cavity.Lower) == 176.7
-    assert oven.get_cook_mode(Cavity.Lower) == CookMode.Bake
+    assert oven.get_light(Cavity.Lower) is False
+    assert oven.get_temp(Cavity.Upper) is None
+    assert oven.get_temp(Cavity.Lower) is None
+    assert oven.get_target_temp(Cavity.Upper) is None
+    assert oven.get_target_temp(Cavity.Lower) is None
+    assert oven.get_cook_mode(Cavity.Upper) == CookMode.Standby
+    assert oven.get_cook_mode(Cavity.Lower) == CookMode.Standby
 
 
 async def test_light_command_uses_cavity_addressee(
@@ -232,7 +206,7 @@ async def test_cook_time_reads_cook_timer_time(connect_oven: ConnectOven) -> Non
     oven, _ = await connect_oven()
 
     assert oven.get_cook_time(Cavity.Upper) == 0
-    assert oven.get_cook_time(Cavity.Lower) == 120
+    assert oven.get_cook_time(Cavity.Lower) == 0
 
 
 async def test_zero_temperatures_are_reported_as_none(
@@ -297,7 +271,15 @@ async def test_remote_start_disabled_prevents_cook_command(
 
 
 async def test_stop_uses_session_id_when_reported(connect_oven: ConnectOven) -> None:
-    oven, broker = await connect_oven()
+    oven, broker = await connect_oven(
+        state={
+            **STATE,
+            "secondaryCavity": {
+                **STATE["secondaryCavity"],
+                "sessionId": "lower-session",
+            },
+        }
+    )
 
     assert await oven.stop_cook(Cavity.Lower) is True
     assert _body(broker) == {
