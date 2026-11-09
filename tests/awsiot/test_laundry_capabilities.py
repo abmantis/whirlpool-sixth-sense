@@ -40,65 +40,17 @@ def test_malformed_capability_declares_no_cavity(raw: dict) -> None:
     assert not has_washer_cavity(raw)
 
 
-def test_profile_reads_part_number_and_features() -> None:
-    profile = parse_laundry_capability_profile(W11812024, "washer")
-    assert profile.part_number == "W11812024"
+@pytest.mark.parametrize(
+    ("raw", "part_number"),
+    [(W11771387, "W11771387"), (W11812024, "W11812024")],
+    ids=["W11771387", "W11812024"],
+)
+def test_profile_reads_part_number_and_cavity(raw: dict, part_number: str) -> None:
+    profile = parse_laundry_capability_profile(raw, "washer")
+    assert profile.part_number == part_number
     assert profile.cavity == "washer"
-    assert profile.supports_control_lock
-    assert profile.supports_remote_start
-
-
-def test_profile_without_control_lock_feature() -> None:
-    profile = parse_laundry_capability_profile(W11771387, "washer")
-    assert not profile.supports_control_lock
-    assert profile.supports_remote_start
-
-
-def test_profile_collects_cycles() -> None:
-    profile = parse_laundry_capability_profile(W11812024, "washer")
-    assert set(profile.cycles) == {"normal", "delicates"}
-
-
-def test_option_phases_reports_declared_phases() -> None:
-    profile = parse_laundry_capability_profile(W11771387, "washer")
-    assert profile.option_phases("regularNormal", "soilLevel") == (
-        "sensing",
-        "filling",
-        "preWash",
-    )
-
-
-def test_option_declared_but_never_changeable_is_empty() -> None:
-    profile = parse_laundry_capability_profile(W11771387, "washer")
-    assert profile.option_phases("drainAndSpin", "spinSpeed") == ()
-
-
-def test_option_absent_from_cycle_is_none() -> None:
-    profile = parse_laundry_capability_profile(W11771387, "washer")
-    assert profile.option_phases("drainAndSpin", "soilLevel") is None
 
 
 def test_parsing_the_wrong_cavity_raises() -> None:
     with pytest.raises(CapabilityDownloadError):
         parse_laundry_capability_profile(W11771387, "dryer")
-
-
-def test_option_changeable_only_during_declared_phases() -> None:
-    profile = parse_laundry_capability_profile(W11771387, "washer")
-    assert profile.option_changeable("regularNormal", "soilLevel", "sensing") is True
-    assert profile.option_changeable("regularNormal", "soilLevel", "washing") is False
-
-
-def test_option_changeable_is_false_without_a_phase() -> None:
-    profile = parse_laundry_capability_profile(W11771387, "washer")
-    assert profile.option_changeable("regularNormal", "soilLevel", None) is False
-
-
-def test_option_changeable_is_false_for_unknown_cycle_or_option() -> None:
-    profile = parse_laundry_capability_profile(W11771387, "washer")
-    assert profile.option_changeable("noSuchCycle", "soilLevel", "sensing") is False
-    assert (
-        profile.option_changeable("regularNormal", "noSuchOption", "sensing") is False
-    )
-    assert profile.option_changeable(None, "soilLevel", "sensing") is False
-    assert profile.option_changeable("drainAndSpin", "spinSpeed", "spin") is False

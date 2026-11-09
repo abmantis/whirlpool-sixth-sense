@@ -61,7 +61,7 @@ class Washer(BaseWasher, Appliance):
     @override
     def get_cycle_status_soaking(self) -> bool | None:
         """No reported phase is known to mean soaking."""
-        return False
+        return self._phase_is()
 
     @override
     def get_cycle_status_washing(self) -> bool | None:
@@ -94,11 +94,25 @@ class Washer(BaseWasher, Appliance):
 
     @override
     def get_time_remaining(self) -> int | None:
-        """Seconds until the running cycle's predicted end, never below 0."""
-        time_complete = self.get_cycle_time_complete()
-        if time_complete is None:
+        """Seconds left in the cycle, never below 0.
+
+        While the cycle time runs, this counts down to its predicted end. While
+        it holds (a user pause, or a fill hold under a running cycle), it is
+        frozen at what was left when the hold started: `timePaused` is the
+        moment of the pause, and `timeComplete` stays the end predicted then.
+        """
+        state = self._get_path_str("washer", "cycleTime", "state")
+        time_complete = self._get_path_int("washer", "cycleTime", "timeComplete")
+        if not time_complete:
             return None
-        return max(0, time_complete - int(time.time()))
+        if state == "running":
+            return max(0, time_complete - int(time.time()))
+        if state == "paused":
+            time_paused = self._get_path_int("washer", "cycleTime", "timePaused")
+            if not time_paused:
+                return None
+            return max(0, time_complete - time_paused)
+        return None
 
     @override
     def get_cycle_time_complete(self) -> int | None:

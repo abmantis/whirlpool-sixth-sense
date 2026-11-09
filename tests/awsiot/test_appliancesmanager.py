@@ -77,12 +77,11 @@ def _laundry_thing(category: str, cap_part: str) -> dict[str, Any]:
     }
 
 
-def _skip_warning(caplog: pytest.LogCaptureFixture, *words: str) -> bool:
+def _unsupported_warning(caplog: pytest.LogCaptureFixture) -> bool:
     return any(
         record.levelname == "WARNING"
         and WASHER_SAID in record.getMessage()
-        and "skipped" in record.getMessage()
-        and all(word in record.getMessage() for word in words)
+        and "Unsupported appliance" in record.getMessage()
         for record in caplog.records
     )
 
@@ -111,25 +110,25 @@ async def test_washer_reads_its_state(connect_laundry: ConnectLaundry) -> None:
 
 
 @pytest.mark.parametrize(
-    ("cavities", "named"),
+    "cavities",
     [
-        pytest.param({}, "[]", id="none"),
-        pytest.param({"dryer": {}}, "['dryer']", id="dryer"),
-        pytest.param({"washer": {}, "dryer": {}}, "['dryer', 'washer']", id="both"),
+        pytest.param({}, id="none"),
+        pytest.param({"dryer": {}}, id="dryer"),
+        pytest.param({"washer": {}, "dryer": {}}, id="both"),
     ],
 )
-async def test_laundry_without_a_washer_alone_is_skipped(
+async def test_laundry_without_a_washer_alone_is_unsupported(
     connect_laundry: ConnectLaundry,
     caplog: pytest.LogCaptureFixture,
     cavities: dict[str, Any],
-    named: str,
 ) -> None:
     thing = _laundry_thing("Laundry", "X")
     manager = await connect_laundry(
         [thing], {"X": {"partNumber": "X", "cavities": cavities}}
     )
-    assert manager.all_appliances == {}
-    assert _skip_warning(caplog, "X", named)
+    assert manager.washers == []
+    assert [a.said for a in manager.unsupported_appliances] == [thing["thingName"]]
+    assert _unsupported_warning(caplog)
 
 
 async def test_fabriccare_category_is_not_routed(
@@ -138,4 +137,5 @@ async def test_fabriccare_category_is_not_routed(
     # The HTTP backend's category name; no AWS thing has reported it.
     thing = _laundry_thing("FabricCare", WASHER_CAP_PART)
     manager = await connect_laundry([thing], {WASHER_CAP_PART: WASHER_CAPABILITY})
-    assert manager.all_appliances == {}
+    assert manager.washers == []
+    assert [a.said for a in manager.unsupported_appliances] == [thing["thingName"]]

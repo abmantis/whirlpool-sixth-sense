@@ -173,9 +173,7 @@ def test_phase_flags_are_unknown_without_a_phase() -> None:
     washer = _make_washer(
         {"washer": {"applianceState": "running"}}, _W11738987, "WFW5720RR0"
     )
-    assert _phase_flags(washer) == {
-        name: False if name == "soaking" else None for name in _FLAGS
-    }
+    assert _phase_flags(washer) == dict.fromkeys(_FLAGS, None)
 
 
 def test_empty_phase_sets_no_flag() -> None:
@@ -256,13 +254,22 @@ def test_time_remaining_stops_at_zero_past_the_predicted_end(
     assert washer.get_cycle_time_complete() == _MTW7205RR0_PREDICTED_END
 
 
-def test_time_is_unknown_while_paused(monkeypatch: pytest.MonkeyPatch) -> None:
-    _freeze_clock(monkeypatch, _MTW7205RR0_PREDICTED_END - 600)
+def test_time_remaining_freezes_while_paused(monkeypatch: pytest.MonkeyPatch) -> None:
+    paused_at = _MTW7205RR0_PREDICTED_END - 600
+    _freeze_clock(monkeypatch, paused_at)
     washer = _running_top_load()
     washer.update_state(
-        {"washer": {"applianceState": "paused", "cycleTime": {"state": "paused"}}}
+        {
+            "washer": {
+                "applianceState": "paused",
+                "cycleTime": {"state": "paused", "timePaused": paused_at},
+            }
+        }
     )
-    assert washer.get_time_remaining() is None
+    assert washer.get_time_remaining() == 600
+    _freeze_clock(monkeypatch, paused_at + 300)
+    assert washer.get_time_remaining() == 600
+    # The end moves while paused, so no predicted end is reported.
     assert washer.get_cycle_time_complete() is None
 
 
@@ -365,16 +372,25 @@ def test_live_time_remaining_counts_down_while_the_cycle_time_runs(
     assert washer.get_cycle_time_complete() == predicted_end
 
 
-def test_live_time_is_unknown_while_the_cycle_time_holds(
-    monkeypatch: pytest.MonkeyPatch,
+@pytest.mark.parametrize(
+    "moment",
+    [
+        # cycleTime.state "paused" under a running applianceState, during a fill.
+        pytest.param("cycle_time_paused", id="fill_hold"),
+        pytest.param("paused", id="user_pause"),
+    ],
+)
+def test_live_time_remaining_holds_at_the_pause(
+    monkeypatch: pytest.MonkeyPatch, moment: str
 ) -> None:
-    # cycleTime.state "paused" under a running applianceState, during a fill.
-    state = _mtw7205rf1_state("cycle_time_paused")
-    assert state["washer"]["cycleTime"]["state"] == "paused"
-    _freeze_clock(monkeypatch, state["washer"]["cycleTime"]["timeComplete"] - 600)
-    washer = _mtw7205rf1("cycle_time_paused")
-    assert washer.get_machine_state() == MachineState.RunningMainCycle
-    assert washer.get_time_remaining() is None
+    cycle_time = _mtw7205rf1_state(moment)["washer"]["cycleTime"]
+    assert cycle_time["state"] == "paused"
+    _freeze_clock(monkeypatch, cycle_time["timeComplete"] - 60)
+    washer = _mtw7205rf1(moment)
+    assert (
+        washer.get_time_remaining()
+        == cycle_time["timeComplete"] - cycle_time["timePaused"]
+    )
     assert washer.get_cycle_time_complete() is None
 
 
