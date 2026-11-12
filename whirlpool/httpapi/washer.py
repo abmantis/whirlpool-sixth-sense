@@ -17,7 +17,9 @@ ATTR_CYCLE_STATUS_MACHINE_STATE = "Cavity_CycleStatusMachineState"
 ATTR_CYCLE_STATUS_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
 
 ATTR_DISPENSE_1_LEVEL = "WashCavity_OpStatusBulkDispense1Level"
+ATTR_DISPENSE_2_LEVEL = "WashCavity_OpStatusBulkDispense2Level"
 ATTR_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
+ATTR_REMOTE_CONTROL_ENABLE = "XCat_RemoteSetRemoteControlEnable"
 
 ATTRVAL_MACHINE_STATE_STANDBY = "0"
 ATTRVAL_MACHINE_STATE_SETTING = "1"
@@ -105,3 +107,11 @@ class Washer(BaseWasher, Appliance):
     @override
     def get_time_remaining(self) -> int | None:
         return self._get_int_attribute(ATTR_CYCLE_STATUS_TIME_REMAINING)
+
+    @override
+    def get_remote_control_enabled(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_REMOTE_CONTROL_ENABLE))
+
+    @override
+    def get_dispense_2_level(self) -> int | None:
+        return self._get_int_attribute(ATTR_DISPENSE_2_LEVEL)
