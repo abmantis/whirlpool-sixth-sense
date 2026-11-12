@@ -1,0 +1,2366 @@
+{
+  "capabilityFileSchemaVersion": "0.4.0",
+  "partNumber": "W11771436",
+  "generatorInfo": {
+    "capabilityGeneratorVersion": "0.9.0.0",
+    "hash": "9435560c04ab68b1d0c415be2b07ab2767be34023a8b71b827aa5f2649505f98",
+    "partNumber": "P07356157",
+    "status": "committed",
+    "version": 63
+  },
+  "productVariant": 2,
+  "pushNotifications": [
+    "cycleCompleted",
+    "error",
+    "remoteStartStatusDisabled",
+    "remoteStartStatusEnabled",
+    "powerFailure",
+    "airVentBlocked"
+  ],
+  "cavities": {
+    "dryer": {
+      "cycles": {
+        "quickDryCottons": {
+          "etr": 0,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryTemperature": {
+                "default": "high",
+                "changeable": [
+                  "dry",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "extraLow",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "extraLow": 0,
+                  "low": 0,
+                  "medium": 0,
+                  "high": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "timedDry": {
+                "default": "30",
+                "changeable": [
+                  "dry",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "5",
+                  "10",
+                  "15",
+                  "20",
+                  "25",
+                  "30",
+                  "35",
+                  "40",
+                  "45",
+                  "50",
+                  "55",
+                  "60",
+                  "65",
+                  "70",
+                  "75",
+                  "80",
+                  "85",
+                  "90",
+                  "95",
+                  "100",
+                  "105",
+                  "110",
+                  "115",
+                  "120",
+                  "125",
+                  "130",
+                  "135",
+                  "140",
+                  "145",
+                  "150"
+                ],
+                "etr": {
+                  "5": 300,
+                  "10": 600,
+                  "15": 900,
+                  "20": 1200,
+                  "25": 1500,
+                  "30": 1800,
+                  "35": 2100,
+                  "40": 2400,
+                  "45": 2700,
+                  "50": 3000,
+                  "55": 3300,
+                  "60": 3600,
+                  "65": 3900,
+                  "70": 4200,
+                  "75": 4500,
+                  "80": 4800,
+                  "85": 5100,
+                  "90": 5400,
+                  "95": 5700,
+                  "100": 6000,
+                  "105": 6300,
+                  "110": 6600,
+                  "115": 6900,
+                  "120": 7200,
+                  "125": 7500,
+                  "130": 7800,
+                  "135": 8100,
+                  "140": 8400,
+                  "145": 8700,
+                  "150": 9000
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "dry"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "dry",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "ecoEnergy": {
+          "etr": 3600,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryLevel": {
+                "default": "normalDry",
+                "changeable": [
+                  "sensing",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "lessDry",
+                  "normalDry",
+                  "extraDry"
+                ],
+                "etr": {
+                  "lessDry": -960,
+                  "normalDry": 0,
+                  "extraDry": 1140
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "dryTemperature": {
+                "default": "medium",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "extraLow",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "extraLow": 0,
+                  "high": 0,
+                  "low": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "onWithSteam"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0,
+                  "onWithSteam": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "reduceStatic",
+                  "steamAndReduceStatic"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 900,
+                  "reduceStatic": 180,
+                  "steamAndReduceStatic": 1080
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "on": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "reduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "steamAndReduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              },
+              "dampDry": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [
+                  "sensing"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2100
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "mixed": {
+          "etr": 2700,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryLevel": {
+                "default": "normalDry",
+                "changeable": [
+                  "sensing",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "lessDry",
+                  "normalDry",
+                  "extraDry"
+                ],
+                "etr": {
+                  "lessDry": -720,
+                  "normalDry": 0,
+                  "extraDry": 840
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "dryTemperature": {
+                "default": "medium",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "extraLow",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "extraLow": 0,
+                  "high": 0,
+                  "low": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "reduceStatic",
+                  "steamAndReduceStatic"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 900,
+                  "reduceStatic": 180,
+                  "steamAndReduceStatic": 1080
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "on": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "reduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "steamAndReduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              },
+              "dampDry": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [
+                  "sensing"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2100
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "onWithSteam"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0,
+                  "onWithSteam": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "heavyLarge1": {
+          "etr": 3960,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryLevel": {
+                "default": "normalDry",
+                "changeable": [
+                  "sensing",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "lessDry",
+                  "normalDry",
+                  "extraDry"
+                ],
+                "etr": {
+                  "lessDry": -1080,
+                  "normalDry": 0,
+                  "extraDry": 1260
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "dryTemperature": {
+                "default": "medium",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "extraLow",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "extraLow": 0,
+                  "high": 0,
+                  "low": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "onWithSteam"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0,
+                  "onWithSteam": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "reduceStatic",
+                  "steamAndReduceStatic"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 900,
+                  "reduceStatic": 180,
+                  "steamAndReduceStatic": 1080
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "on": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "reduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "steamAndReduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              },
+              "dampDry": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [
+                  "sensing"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2100
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "bulky": {
+          "etr": 4140,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryLevel": {
+                "default": "normalDry",
+                "changeable": [
+                  "sensing",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "lessDry",
+                  "normalDry",
+                  "extraDry"
+                ],
+                "etr": {
+                  "lessDry": -900,
+                  "normalDry": 0,
+                  "extraDry": 900
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "dryTemperature": {
+                "default": "medium",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "extraLow",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "extraLow": 0,
+                  "high": 0,
+                  "low": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "onWithSteam"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0,
+                  "onWithSteam": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "reduceStatic",
+                  "steamAndReduceStatic"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 900,
+                  "reduceStatic": 180,
+                  "steamAndReduceStatic": 1080
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "on": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "reduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "steamAndReduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              },
+              "dampDry": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [
+                  "sensing"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2100
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "towels": {
+          "etr": 3780,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryLevel": {
+                "default": "normalDry",
+                "changeable": [
+                  "sensing",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "lessDry",
+                  "normalDry",
+                  "extraDry"
+                ],
+                "etr": {
+                  "lessDry": -1020,
+                  "normalDry": 0,
+                  "extraDry": 1200
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "dryTemperature": {
+                "default": "high",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "extraLow",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "extraLow": 0,
+                  "high": 0,
+                  "low": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "onWithSteam"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0,
+                  "onWithSteam": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "reduceStatic",
+                  "steamAndReduceStatic"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 900,
+                  "reduceStatic": 180,
+                  "steamAndReduceStatic": 1080
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "on": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "reduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "steamAndReduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              },
+              "dampDry": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [
+                  "sensing"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2100
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "delicates": {
+          "etr": 2880,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryLevel": {
+                "default": "normalDry",
+                "changeable": [
+                  "sensing",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "lessDry",
+                  "normalDry",
+                  "extraDry"
+                ],
+                "etr": {
+                  "lessDry": -780,
+                  "normalDry": 0,
+                  "extraDry": 900
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "dryTemperature": {
+                "default": "extraLow",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "extraLow",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "extraLow": 0,
+                  "high": 0,
+                  "low": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "petsCare",
+                  "dry",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "reduceStatic"
+                ],
+                "etr": {
+                  "off": 0,
+                  "reduceStatic": 180
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "sensing",
+                        "petsCare",
+                        "dry",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "reduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "extraPower",
+                        "dry",
+                        "sensing",
+                        "petsCare"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              },
+              "dampDry": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [
+                  "sensing"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2100
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "ultraLightWeight": {
+          "etr": 0,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryTemperature": {
+                "default": "airOnly",
+                "changeable": [],
+                "enumeration": [
+                  "airOnly"
+                ],
+                "etr": {
+                  "airOnly": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "timedDry": {
+                "default": "60",
+                "changeable": [
+                  "dry"
+                ],
+                "enumeration": [
+                  "5",
+                  "10",
+                  "15",
+                  "20",
+                  "25",
+                  "30",
+                  "35",
+                  "40",
+                  "45",
+                  "50",
+                  "55",
+                  "60",
+                  "65",
+                  "70",
+                  "75",
+                  "80",
+                  "85",
+                  "90",
+                  "95",
+                  "100",
+                  "105",
+                  "110",
+                  "115",
+                  "120",
+                  "125",
+                  "130",
+                  "135",
+                  "140",
+                  "145",
+                  "150"
+                ],
+                "etr": {
+                  "5": 300,
+                  "10": 600,
+                  "15": 900,
+                  "20": 1200,
+                  "25": 1500,
+                  "30": 1800,
+                  "35": 2100,
+                  "40": 2400,
+                  "45": 2700,
+                  "50": 3000,
+                  "55": 3300,
+                  "60": 3600,
+                  "65": 3900,
+                  "70": 4200,
+                  "75": 4500,
+                  "80": 4800,
+                  "85": 5100,
+                  "90": 5400,
+                  "95": 5700,
+                  "100": 6000,
+                  "105": 6300,
+                  "110": 6600,
+                  "115": 6900,
+                  "120": 7200,
+                  "125": 7500,
+                  "130": 7800,
+                  "135": 8100,
+                  "140": 8400,
+                  "145": 8700,
+                  "150": 9000
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "dry"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "steamRefresh": {
+          "etr": 1980,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryTemperature": {
+                "default": "high",
+                "changeable": [],
+                "enumeration": [
+                  "high"
+                ],
+                "etr": {
+                  "high": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "sanitize1": {
+          "etr": 5940,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryLevel": {
+                "default": "extraDry",
+                "changeable": [],
+                "enumeration": [
+                  "extraDry"
+                ],
+                "etr": {
+                  "extraDry": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "dryTemperature": {
+                "default": "high",
+                "changeable": [],
+                "enumeration": [
+                  "high"
+                ],
+                "etr": {
+                  "high": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "myProgram": {
+          "etr": 0,
+          "whrOptions": {
+            "requiredOptions": {},
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "timed40": {
+          "etr": 0,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryTemperature": {
+                "default": "medium",
+                "changeable": [
+                  "dry",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "extraLow",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "extraLow": 0,
+                  "low": 0,
+                  "medium": 0,
+                  "high": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "timedDry": {
+                "default": "40",
+                "changeable": [
+                  "dry",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "5",
+                  "10",
+                  "15",
+                  "20",
+                  "25",
+                  "30",
+                  "35",
+                  "40",
+                  "45",
+                  "50",
+                  "55",
+                  "60",
+                  "65",
+                  "70",
+                  "75",
+                  "80",
+                  "85",
+                  "90",
+                  "95",
+                  "100",
+                  "105",
+                  "110",
+                  "115",
+                  "120",
+                  "125",
+                  "130",
+                  "135",
+                  "140",
+                  "145",
+                  "150"
+                ],
+                "etr": {
+                  "5": 300,
+                  "10": 600,
+                  "15": 900,
+                  "20": 1200,
+                  "25": 1500,
+                  "30": 1800,
+                  "35": 2100,
+                  "40": 2400,
+                  "45": 2700,
+                  "50": 3000,
+                  "55": 3300,
+                  "60": 3600,
+                  "65": 3900,
+                  "70": 4200,
+                  "75": 4500,
+                  "80": 4800,
+                  "85": 5100,
+                  "90": 5400,
+                  "95": 5700,
+                  "100": 6000,
+                  "105": 6300,
+                  "110": 6600,
+                  "115": 6900,
+                  "120": 7200,
+                  "125": 7500,
+                  "130": 7800,
+                  "135": 8100,
+                  "140": 8400,
+                  "145": 8700,
+                  "150": 9000
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "dry"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "dry",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [],
+                "enumeration": [
+                  "off"
+                ],
+                "etr": {
+                  "off": 0
+                },
+                "retention": "retained",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        },
+        "whitesNormal": {
+          "etr": 3120,
+          "whrOptions": {
+            "requiredOptions": {
+              "dryLevel": {
+                "default": "normalDry",
+                "changeable": [
+                  "sensing",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "lessDry",
+                  "normalDry",
+                  "extraDry"
+                ],
+                "etr": {
+                  "lessDry": -840,
+                  "normalDry": 0,
+                  "extraDry": 960
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "dryTemperature": {
+                "default": "high",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "extraLow",
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "etr": {
+                  "extraLow": 0,
+                  "high": 0,
+                  "low": 0,
+                  "medium": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "wrinkleShield": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "onWithSteam"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0,
+                  "onWithSteam": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {},
+                "isVisibleEndState": true
+              },
+              "steam": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on",
+                  "reduceStatic",
+                  "steamAndReduceStatic"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 900,
+                  "reduceStatic": 180,
+                  "steamAndReduceStatic": 1080
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {
+                  "off": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "on": {
+                    "staticGuardEnable": {
+                      "default": "off",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "off"
+                      ],
+                      "etr": {
+                        "off": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "reduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  },
+                  "steamAndReduceStatic": {
+                    "staticGuardEnable": {
+                      "default": "on",
+                      "changeable": [
+                        "dry",
+                        "petsCare",
+                        "sensing",
+                        "extraPower"
+                      ],
+                      "enumeration": [
+                        "on"
+                      ],
+                      "etr": {
+                        "on": 0
+                      },
+                      "retention": "retainedPowerLoss",
+                      "optionModifiers": {}
+                    }
+                  }
+                }
+              },
+              "dampDry": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "steaming",
+                  "staticReduce",
+                  "petsCare",
+                  "coolDown",
+                  "extraPower"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 0
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "extraPower": {
+                "default": "off",
+                "changeable": [
+                  "sensing",
+                  "dry",
+                  "petsCare"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 600
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              },
+              "pets": {
+                "default": "off",
+                "changeable": [
+                  "sensing"
+                ],
+                "enumeration": [
+                  "off",
+                  "on"
+                ],
+                "etr": {
+                  "off": 0,
+                  "on": 2100
+                },
+                "retention": "retainedPowerLoss",
+                "optionModifiers": {}
+              }
+            },
+            "nonEditableOptions": {},
+            "optionalOptions": {}
+          }
+        }
+      }
+    }
+  },
+  "appliance": {
+    "features": {
+      "remoteStart": true,
+      "cycleSignal": {
+        "default": "med",
+        "enumeration": [
+          "off",
+          "min",
+          "med",
+          "max"
+        ]
+      },
+      "faults": [
+        {
+          "errorCode": "F7E1",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F2E2",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F3E1",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F3E3",
+          "type": "hardStop"
+        },
+        {
+          "errorCode": "F6E1",
+          "type": "hardStop"
+        }
+      ],
+      "etrFilter": {
+        "threshold": 300,
+        "debounce": 1,
+        "endOfCycleTime": 300
+      }
+    }
+  },
+  "brand": "maytag",
+  "series": 7
+}
