@@ -40,6 +40,7 @@ def test_redact_preserves_nested_identifier_structure() -> None:
     redacted = capture_fixtures._redact(
         {
             "thingName": "WPR1XYZABC123",
+            "Name": b"Private Oven Name".hex(),
             "SAID": {"value": "WPR1XYZABC123", "updateTime": 123},
             "serialNumber": "SERIAL123",
             "WifiMacAddress": ["aa:bb:cc:dd:ee:ff"],
@@ -50,6 +51,7 @@ def test_redact_preserves_nested_identifier_structure() -> None:
 
     token = capture_fixtures._said_token("WPR1XYZABC123")
     assert redacted["thingName"] == token
+    assert redacted["Name"] == "REDACTED"
     assert redacted["SAID"] == {"value": token, "updateTime": 123}
     assert redacted["serialNumber"] == "REDACTED"
     assert redacted["WifiMacAddress"] == ["REDACTED"]
