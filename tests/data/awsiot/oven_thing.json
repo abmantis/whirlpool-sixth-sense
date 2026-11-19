@@ -1,0 +1,21 @@
+{
+  "attributes": {
+    "Brand": "KITCHENAID",
+    "CapabilityPartNumber": "W11779688",
+    "Category": "COOKING",
+    "CreatedDate": "2026-01-29_23:46:13",
+    "Name": "REDACTED",
+    "Serial": "REDACTED",
+    "UserId": "REDACTED",
+    "WifiMacAddress": "REDACTED",
+    "supportsRemoteRecipes": "FALSE",
+    "supportsVision": "false"
+  },
+  "billingGroupName": null,
+  "defaultClientId": "c418a268",
+  "thingArn": "REDACTED",
+  "thingId": "REDACTED",
+  "thingName": "c418a268",
+  "thingTypeName": "KOED730SBE00",
+  "version": 6
+}
