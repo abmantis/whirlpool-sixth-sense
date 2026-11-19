@@ -1,6 +1,9 @@
 import argparse
 import json
+import logging
+import sys
 from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import aiohttp
 import pytest
@@ -197,3 +200,189 @@ async def test_amain_returns_nonzero_when_any_capture_fails(
     assert result == 5
     assert DummyManager.last_instance is not None
     assert DummyManager.last_instance.disconnected is True
+
+
+@pytest.mark.parametrize("name", ["Private Household", b"Private Household".hex()])
+def test_redact_aws_name_and_laundry_session(name: str) -> None:
+    data = {"attributes": {"Name": name}, "washer": {"sessionId": "private-session"}}
+    result = capture_fixtures._redact(data, "TEST_SAID")
+    assert result == {
+        "attributes": {"Name": "REDACTED"},
+        "washer": {"sessionId": "REDACTED"},
+    }
+
+
+def test_redact_sensitive_nested_containers() -> None:
+    data = {
+        "Serial": {"nested": [{"raw": "private-serial"}], "updateTime": 123},
+        "WifiMacAddress": [{"raw": "private-mac"}],
+    }
+    result = capture_fixtures._redact(data, "TEST_SAID")
+    assert result == {
+        "Serial": {"nested": [{"raw": "REDACTED"}], "updateTime": 123},
+        "WifiMacAddress": [{"raw": "REDACTED"}],
+    }
+
+
+def test_redact_embedded_said_in_strings_and_keys() -> None:
+    said = "TEST_SAID"
+    result = capture_fixtures._redact(
+        {f"dt/MODEL/{said}/state": [f"cmd/MODEL/{said}/request/client"]}, said
+    )
+    token = capture_fixtures._said_token(said)
+    assert result == {f"dt/MODEL/{token}/state": [f"cmd/MODEL/{token}/request/client"]}
+    assert said not in json.dumps(result)
+
+
+def test_redacted_capture_logs_do_not_disclose_names_or_local_paths(
+    tmp_path, caplog: pytest.LogCaptureFixture
+) -> None:
+    appliance = _make_appliance(name="Private Household", said="TEST_SAID")
+    caplog.set_level(logging.INFO, logger=capture_fixtures.LOGGER.name)
+    capture_fixtures._capture_one(appliance, tmp_path, redact=True)
+    assert "TEST_SAID" not in caplog.text
+    assert "Private Household" not in caplog.text
+    assert str(tmp_path) not in caplog.text
+    assert capture_fixtures._said_token("TEST_SAID") in caplog.text
+
+
+@pytest.mark.parametrize("redact", [True, False])
+def test_list_respects_redaction(redact: bool, capsys: pytest.CaptureFixture) -> None:
+    manager = MagicMock(
+        spec=capture_fixtures.AppliancesManager,
+        aircons=[],
+        dryers=[],
+        washers=[],
+        ovens=[],
+        microwaves=[],
+        refrigerators=[],
+        unsupported_appliances=[
+            _make_appliance(said="TEST_SAID", name="Private Household")
+        ],
+    )
+    args = argparse.Namespace(list_only=True, redact=redact)
+    assert capture_fixtures._capture(args, manager) == 0
+    output = capsys.readouterr().out
+    assert ("TEST_SAID" in output) is not redact
+    assert ("Private Household" in output) is not redact
+
+
+def test_redacted_failure_does_not_log_exception_payload(
+    tmp_path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    manager = MagicMock(
+        spec=capture_fixtures.AppliancesManager,
+        aircons=[],
+        dryers=[],
+        washers=[],
+        ovens=[],
+        microwaves=[],
+        refrigerators=[],
+        unsupported_appliances=[
+            _make_appliance(said="TEST_SAID", name="Private Household")
+        ],
+    )
+    args = argparse.Namespace(
+        list_only=False, redact=True, capture_all=True, said=None, output_dir=tmp_path
+    )
+
+    def fail(*_args, **_kwargs):
+        raise RuntimeError("PRIVATE_TOKEN TEST_SAID Private Household")
+
+    monkeypatch.setattr(capture_fixtures, "_capture_one", fail)
+    assert capture_fixtures._capture(args, manager) == 5
+    assert "PRIVATE_TOKEN" not in caplog.text
+    assert "TEST_SAID" not in caplog.text
+    assert "Private Household" not in caplog.text
+    assert all(record.exc_info is None for record in caplog.records)
+
+
+def _capture_argv() -> list[str]:
+    return [
+        "capture_fixtures",
+        "--email",
+        "user@example.com",
+        "--brand",
+        "Whirlpool",
+        "--region",
+        "US",
+        "--all",
+    ]
+
+
+def test_missing_password_uses_hidden_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(sys, "argv", _capture_argv())
+    monkeypatch.setattr(
+        capture_fixtures.getpass, "getpass", lambda _prompt: "test-secret"
+    )
+    args = capture_fixtures._parse_args()
+    assert args.password == "test-secret"
+
+
+def test_explicit_password_does_not_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(sys, "argv", [*_capture_argv(), "--password", "test-secret"])
+    monkeypatch.setattr(
+        capture_fixtures.getpass, "getpass", lambda _prompt: pytest.fail("prompted")
+    )
+    assert capture_fixtures._parse_args().password == "test-secret"
+
+
+def test_nonhidden_fallback_is_rejected_before_reading(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
+    import warnings
+
+    def unsafe_prompt(_prompt):
+        warnings.warn(
+            "Echo unavailable", capture_fixtures.getpass.GetPassWarning, stacklevel=2
+        )
+        pytest.fail("Must not continue to echoing input")
+
+    monkeypatch.setattr(sys, "argv", _capture_argv())
+    monkeypatch.setattr(capture_fixtures.getpass, "getpass", unsafe_prompt)
+    with pytest.raises(SystemExit) as exc:
+        capture_fixtures._parse_args()
+    assert exc.value.code == 2
+    assert "hidden password input is required" in capsys.readouterr().err
+
+
+def test_redact_said_in_sensitive_subtree_keys() -> None:
+    data = {"Serial": {"reference/TEST_SAID": [{"path/TEST_SAID": "private"}]}}
+    result = capture_fixtures._redact(data, "TEST_SAID")
+    token = capture_fixtures._said_token("TEST_SAID")
+    assert result == {"Serial": {f"reference/{token}": [{f"path/{token}": "REDACTED"}]}}
+    assert "TEST_SAID" not in json.dumps(result)
+
+
+@pytest.mark.parametrize("stage", ["authentication", "connection", "disconnect"])
+def test_redacted_cli_failure_suppresses_provider_payload(
+    stage: str, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    monkeypatch.setattr(
+        capture_fixtures, "_parse_args", lambda: argparse.Namespace(redact=True)
+    )
+
+    async def fail(_args):
+        raise RuntimeError(f"PRIVATE_PROVIDER_TOKEN {stage}")
+
+    monkeypatch.setattr(capture_fixtures, "_amain", fail)
+    with pytest.raises(SystemExit) as exc:
+        capture_fixtures.main()
+    assert exc.value.code == 1
+    assert "PRIVATE_PROVIDER_TOKEN" not in caplog.text
+    assert all(record.exc_info is None for record in caplog.records)
+
+
+def test_unredacted_cli_retains_diagnostic_exception(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        capture_fixtures, "_parse_args", lambda: argparse.Namespace(redact=False)
+    )
+
+    async def fail(_args):
+        raise RuntimeError("synthetic diagnostic")
+
+    monkeypatch.setattr(capture_fixtures, "_amain", fail)
+    with pytest.raises(RuntimeError, match="synthetic diagnostic"):
+        capture_fixtures.main()
