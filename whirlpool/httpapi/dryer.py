@@ -42,6 +42,7 @@ ATTRVAL_MACHINE_STATE_CANCELLED = "19"
 ATTR_DOOR_OPEN = "Cavity_OpStatusDoorOpen"
 ATTR_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
 ATTR_DRUM_LIGHT_ON = "Cavity_DisplaySetDrumLightOn"
+ATTR_REMOTE_CONTROL_ENABLE = "XCat_RemoteSetRemoteControlEnable"
 
 ATTR_EXTRA_POWER_CHANGEABLE = "Cavity_ChangeStatusExtraPowerChangeable"
 ATTR_STEAM_CHANGEABLE = "Cavity_ChangeStatusSteamChangeable"
@@ -312,3 +313,7 @@ class Dryer(BaseDryer, Appliance):
         if shield_raw is None:
             return None
         return WRINKLE_SHIELD_MAP.get(shield_raw, None)
+
+    @override
+    def get_remote_control_enabled(self) -> bool | None:
+        return self.attr_value_to_bool(self._get_attribute(ATTR_REMOTE_CONTROL_ENABLE))
