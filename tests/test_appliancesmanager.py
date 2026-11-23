@@ -42,6 +42,7 @@ async def test_appliances_from_both_backends_are_merged(
     # HTTP API appliances
     assert saids(appliances_manager.aircons) == ["SAIDAIRCON1", "SAIDAIRCON2"]
     assert saids(appliances_manager.dryers) == ["SAIDDRYER1"]
+    assert saids(appliances_manager.dishwashers) == ["SAIDDISHWASHER1"]
     assert saids(appliances_manager.washers) == ["SAIDWASHER1"]
     assert saids(appliances_manager.ovens) == ["SAIDOVEN1", "SAIDOVEN2", "SAIDOVEN3"]
     assert saids(appliances_manager.refrigerators) == ["SAIDFRIDGE1", "SAIDFRIDGE2"]

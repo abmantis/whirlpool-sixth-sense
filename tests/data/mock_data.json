@@ -4211,6 +4211,29 @@
       }
     }
   },
+  "SAIDDISHWASHER1": {
+    "_id": "SAIDDISHWASHER1",
+    "applianceId": "SAIDDISHWASHER1",
+    "attributes": {
+      "Online": {
+        "value": "1",
+        "updateTime": 1626536325968
+      },
+      "Cavity_OperationStatusMachineState": {"value": "1", "updateTime": 1626536325968},
+      "Cavity_OperationStatusDoorOpen": {
+        "value": "0",
+        "updateTime": 1626536325968
+      },
+      "Cavity_TimeStatusEstTimeRemaining": {
+        "value": "4593",
+        "updateTime": 1626536325968
+      },
+      "SAID": {
+        "value": "SAIDDISHWASHER1",
+        "updateTime": 1626536325968
+      }
+    }
+  },
   "SAIDUNSUPPORTED1": {
     "_id": "SAIDUNSUPPORTED1",
     "applianceId": "SAIDUNSUPPORTED1",
