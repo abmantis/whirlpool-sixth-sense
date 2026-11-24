@@ -6,8 +6,14 @@ prefix instead of ``OvenUpperCavity_``. The status codes below were captured
 on a real W9 MWO (DDM_COOKING_BI_MWO_SELF_CLEAN_STEAM_TOURMALINE_V2) while
 starting, pausing (door opened), resuming and finishing a cycle; codes 1 and 8
 come from the W11I MW161 (DDM_COOKING_BI_MWO_SELF_CLEAN_STEAM_INDIGO_V2, #191). Recipes,
-hood and quiet mode are not exposed by this API, so those parts of the
-contract report unsupported.
+hood light color and quiet mode are not exposed by this API, so those parts of
+the contract report unsupported.
+
+Over-the-range microwaves (DDM_COOKING_MHC76_V1, e.g. Whirlpool WMH78019HZ, #243)
+also report the hood fan and cooktop light as ``Hood_*`` attributes. Built-in
+microwaves have no hood and don't report them, so hood support is detected from
+the appliance data. The values were captured from a WMH78019HZ05 with each
+level set on the appliance panel.
 """
 
 import logging
@@ -47,6 +53,29 @@ ATTR_COOK_TIME_REMAINING = ATTR_PREFIX + "TimeStatusCookTimeRemaining"
 ATTR_COOK_TIME_ELAPSED = ATTR_PREFIX + "TimeStatusCycleTimeElapsed"
 ATTR_ODOMETER = ATTR_PREFIX + "CycleStatusOdometer"
 ATTR_SET_OPERATIONS = ATTR_PREFIX + "OperationSetOperations"
+
+ATTR_HOOD_FAN_SPEED = "Hood_OperationSetExhaustFanSpeed"
+ATTR_HOOD_LIGHT = "Hood_OperationSetSurfaceLight"
+
+# WMH78019HZ05 (#243): the panel has four fan speeds. "1" and "3" were never
+# reported. The top speed maps to Boost because the contract has no
+# medium-high step, so the four speeds stay distinct.
+HOOD_FAN_SPEED_MAP = {
+    "0": HoodFanSpeed.Off,
+    "2": HoodFanSpeed.Low,
+    "4": HoodFanSpeed.Medium,
+    "5": HoodFanSpeed.High,
+    "6": HoodFanSpeed.Boost,
+}
+HOOD_FAN_SPEED_TO_ATTR = {v: k for k, v in HOOD_FAN_SPEED_MAP.items()}
+
+# WMH78019HZ05 (#243): the cooktop light has two levels
+HOOD_LIGHT_LEVEL_MAP = {
+    "0": HoodLightLevel.Off,
+    "2": HoodLightLevel.Low,
+    "4": HoodLightLevel.High,
+}
+HOOD_LIGHT_LEVEL_TO_ATTR = {v: k for k, v in HOOD_LIGHT_LEVEL_MAP.items()}
 
 ATTRVAL_STATE_IDLE = "0"
 ATTRVAL_STATE_STARTING = "1"  # starting / preheating (W11I MW161)
@@ -204,12 +233,24 @@ class Microwave(BaseMicrowave, Appliance):
 
     @override
     def get_hood_light_level(self) -> HoodLightLevel | None:
-        return None
+        level_raw = self._get_attribute(ATTR_HOOD_LIGHT)
+        if level_raw is None:
+            return None
+        level = HOOD_LIGHT_LEVEL_MAP.get(level_raw)
+        if level is None:
+            LOGGER.debug(f"Unknown hood light level: {level_raw}")
+        return level
 
     @override
     async def set_hood_light_level(self, level: HoodLightLevel) -> bool:
-        LOGGER.error("Hood light is not supported on the HTTP API")
-        return False
+        if not self.supports_hood_light_level():
+            LOGGER.error("This microwave has no hood light")
+            return False
+        level_raw = HOOD_LIGHT_LEVEL_TO_ATTR.get(level)
+        if level_raw is None:
+            LOGGER.error(f"Unsupported hood light level: {level}")
+            return False
+        return await self.send_attributes({ATTR_HOOD_LIGHT: level_raw})
 
     @override
     def get_hood_light_color(self) -> HoodLightColor | None:
@@ -222,12 +263,24 @@ class Microwave(BaseMicrowave, Appliance):
 
     @override
     def get_hood_fan_speed(self) -> HoodFanSpeed | None:
-        return None
+        speed_raw = self._get_attribute(ATTR_HOOD_FAN_SPEED)
+        if speed_raw is None:
+            return None
+        speed = HOOD_FAN_SPEED_MAP.get(speed_raw)
+        if speed is None:
+            LOGGER.debug(f"Unknown hood fan speed: {speed_raw}")
+        return speed
 
     @override
     async def set_hood_fan_speed(self, speed: HoodFanSpeed) -> bool:
-        LOGGER.error("Hood fan is not supported on the HTTP API")
-        return False
+        if not self.supports_hood_fan():
+            LOGGER.error("This microwave has no hood fan")
+            return False
+        speed_raw = HOOD_FAN_SPEED_TO_ATTR.get(speed)
+        if speed_raw is None:
+            LOGGER.error(f"Unsupported hood fan speed: {speed}")
+            return False
+        return await self.send_attributes({ATTR_HOOD_FAN_SPEED: speed_raw})
 
     @override
     def get_remote_start_enabled(self) -> bool | None:
@@ -264,11 +317,12 @@ class Microwave(BaseMicrowave, Appliance):
 
     @override
     def supports_hood_fan(self) -> bool:
-        return False
+        # Only over-the-range models report the hood attributes
+        return self._get_attribute(ATTR_HOOD_FAN_SPEED) is not None
 
     @override
     def supports_hood_light_level(self) -> bool:
-        return False
+        return self._get_attribute(ATTR_HOOD_LIGHT) is not None
 
     @override
     def supports_hood_light_color(self) -> bool:

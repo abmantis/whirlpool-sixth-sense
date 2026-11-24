@@ -46,7 +46,11 @@ async def test_appliances_from_both_backends_are_merged(
     assert saids(appliances_manager.ovens) == ["SAIDOVEN1", "SAIDOVEN2", "SAIDOVEN3"]
     assert saids(appliances_manager.refrigerators) == ["SAIDFRIDGE1", "SAIDFRIDGE2"]
     # Microwaves come from both backends: HTTP API first, then AWS IoT
-    assert saids(appliances_manager.microwaves) == ["SAIDMWO1", MWO_SAID]
+    assert saids(appliances_manager.microwaves) == [
+        "SAIDMWO1",
+        "SAIDMHC76",
+        MWO_SAID,
+    ]
 
 
 async def test_keepalive_periodically_fetches_an_appliance(

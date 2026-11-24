@@ -122,8 +122,9 @@ class AppliancesManager:
             self._washers[appliance_data.said] = Washer(
                 self._backend_selector, self._auth, self._session, appliance_data
             )
-        elif "_mwo_" in data_model:
-            # e.g. ddm_cooking_bi_mwo_self_clean_steam_tourmaline_v2 (W9 MWOs):
+        elif "_mwo_" in data_model or "ddm_cooking_mhc76" in data_model:
+            # e.g. ddm_cooking_bi_mwo_self_clean_steam_tourmaline_v2 (W9 MWOs) and
+            # ddm_cooking_mhc76_v1 (US over-the-range microwaves with a hood):
             # same layout as the ovens but with Mwo_ attributes
             self._microwaves[appliance_data.said] = Microwave(
                 self._backend_selector, self._auth, self._session, appliance_data
