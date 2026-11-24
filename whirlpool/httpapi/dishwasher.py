@@ -1,3 +1,4 @@
+import logging
 from typing import override
 
 from ..dishwasher import Dishwasher as BaseDishwasher
@@ -7,6 +8,8 @@ from .appliance import Appliance
 ATTR_MACHINE_STATE = "Cavity_OperationStatusMachineState"
 ATTR_DOOR_OPEN = "Cavity_OperationStatusDoorOpen"
 ATTR_TIME_REMAINING = "Cavity_TimeStatusEstTimeRemaining"
+
+LOGGER = logging.getLogger(__name__)
 
 MACHINE_STATE_MAP = {
     "1": MachineState.Standby,
@@ -21,7 +24,13 @@ class Dishwasher(BaseDishwasher, Appliance):
     def get_machine_state(self) -> MachineState | None:
         if (state_raw := self._get_attribute(ATTR_MACHINE_STATE)) is None:
             return None
-        return MACHINE_STATE_MAP.get(state_raw)
+        state = MACHINE_STATE_MAP.get(state_raw)
+        if state is None:
+            # Keep unobserved codes unmapped, but make new device samples discoverable.
+            LOGGER.debug(
+                "Unmapped dishwasher machine state %s for %s", state_raw, self.said
+            )
+        return state
 
     @override
     def get_door_open(self) -> bool | None:

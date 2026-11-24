@@ -1,14 +1,20 @@
 import pytest
 
 from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.httpapi.dishwasher import Dishwasher as HttpDishwasher
 from whirlpool.washer import MachineState
+
+
+def http_dishwasher(appliances_manager: AppliancesManager) -> HttpDishwasher:
+    """Return the concrete HTTP API dishwasher for tests of private internals."""
+    return appliances_manager._http_appliances_manager.dishwashers[0]
 
 
 async def test_running_attributes_from_diagnostic_sample(
     appliances_manager: AppliancesManager,
 ) -> None:
     """Parse the running snapshot captured from JennAir JDTSS246GS0."""
-    dishwasher = appliances_manager.dishwashers[0]
+    dishwasher = http_dishwasher(appliances_manager)
 
     assert dishwasher.get_machine_state() == MachineState.RunningMainCycle
     assert dishwasher.get_door_open() is False
@@ -19,7 +25,7 @@ async def test_idle_machine_state_from_diagnostic_sample(
     appliances_manager: AppliancesManager,
 ) -> None:
     """Map state 1 observed in the idle JennAir diagnostic snapshot."""
-    dishwasher = appliances_manager.dishwashers[0]
+    dishwasher = http_dishwasher(appliances_manager)
     dishwasher._set_attribute("Cavity_OperationStatusMachineState", "1", 1795221095917)
 
     assert dishwasher.get_machine_state() == MachineState.Standby
@@ -30,14 +36,27 @@ async def test_unconfirmed_machine_states_are_unknown(
     appliances_manager: AppliancesManager,
     raw_state: str | None,
 ) -> None:
-    """States without diagnostic evidence stay unmapped."""
-    dishwasher = appliances_manager.dishwashers[0]
+    """Missing or unobserved states stay unmapped (unobserved values are logged)."""
+    dishwasher = http_dishwasher(appliances_manager)
     if raw_state is None:
         dishwasher._data_dict["attributes"].pop("Cavity_OperationStatusMachineState")
     else:
         dishwasher._set_attribute("Cavity_OperationStatusMachineState", raw_state, 0)
 
     assert dishwasher.get_machine_state() is None
+
+
+async def test_unmapped_machine_state_is_logged(
+    appliances_manager: AppliancesManager,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Unknown state codes are logged to make new samples discoverable."""
+    dishwasher = http_dishwasher(appliances_manager)
+    caplog.set_level("DEBUG", logger="whirlpool.httpapi.dishwasher")
+    dishwasher._set_attribute("Cavity_OperationStatusMachineState", "99", 0)
+
+    assert dishwasher.get_machine_state() is None
+    assert f"Unmapped dishwasher machine state 99 for {dishwasher.said}" in caplog.text
 
 
 async def test_dishwasher_model_is_not_classified_as_washer(
