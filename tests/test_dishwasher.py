@@ -24,14 +24,16 @@ async def test_running_attributes_from_diagnostic_sample(
 async def test_idle_machine_state_from_diagnostic_sample(
     appliances_manager: AppliancesManager,
 ) -> None:
-    """Map state 1 observed in the idle JennAir diagnostic snapshot."""
+    """Map idle state 1 and open door observed in the JennAir report."""
     dishwasher = http_dishwasher(appliances_manager)
     dishwasher._set_attribute("Cavity_OperationStatusMachineState", "1", 1795221095917)
+    dishwasher._set_attribute("Cavity_OperationStatusDoorOpen", "1", 1795221095917)
 
     assert dishwasher.get_machine_state() == MachineState.Standby
+    assert dishwasher.get_door_open() is True
 
 
-@pytest.mark.parametrize("raw_state", [None, "", "0", "2", "99"])
+@pytest.mark.parametrize("raw_state", [None, "", "0", "2", "7", "99"])
 async def test_unconfirmed_machine_states_are_unknown(
     appliances_manager: AppliancesManager,
     raw_state: str | None,
@@ -66,7 +68,10 @@ async def test_dishwasher_model_is_not_classified_as_washer(
     dishwasher = appliances_manager.dishwashers[0]
 
     assert dishwasher.appliance_info.category == "Dishwasher"
-    assert "dishwasher" in dishwasher.appliance_info.raw_info["DATA_MODEL_KEY"].lower()
+    assert (
+        dishwasher.appliance_info.raw_info["DATA_MODEL_KEY"]
+        == "DDM_DISHWASHER_JA_DISH17_246_V1"
+    )
     assert dishwasher not in appliances_manager.washers
 
 
@@ -77,6 +82,20 @@ async def test_dishwasher_category_classification_when_model_key_is_generic(
     manager = appliances_manager._http_appliances_manager
     appliance = dict(manager.all_appliances["SAIDDISHWASHER1"].appliance_info.raw_info)
     appliance["DATA_MODEL_KEY"] = "DDM_GENERIC_V1"
+
+    manager._add_appliance(appliance)
+
+    assert manager.dishwashers[-1].said == "SAIDDISHWASHER1"
+    assert all(washer.said != "SAIDDISHWASHER1" for washer in manager.washers)
+
+
+async def test_real_dishwasher_model_key_is_classified_as_dishwasher(
+    appliances_manager: AppliancesManager,
+) -> None:
+    """The live JennAir model key is classified as a dishwasher, not washer."""
+    manager = appliances_manager._http_appliances_manager
+    appliance = dict(manager.all_appliances["SAIDDISHWASHER1"].appliance_info.raw_info)
+    appliance["CATEGORY_NAME"] = "Other"
 
     manager._add_appliance(appliance)
 

@@ -12,7 +12,6 @@ from cli_microwave_menu import show_microwave_menu
 from cli_oven_menu import show_oven_menu
 from cli_refrigerator_menu import show_refrigerator_menu
 from cli_washer_menu import show_washer_menu
-from whirlpool.appliance import Appliance
 from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector, Brand, Region
@@ -90,14 +89,7 @@ async def start():
         appliance_manager = AppliancesManager(backend_selector, auth, session)
 
         async with ConnectionManager(appliance_manager):
-            all_appliances: list[Appliance] = [
-                *appliance_manager.aircons,
-                *appliance_manager.dryers,
-                *appliance_manager.washers,
-                *appliance_manager.ovens,
-                *appliance_manager.refrigerators,
-                *appliance_manager.microwaves,
-            ]
+            all_appliances = list(appliance_manager.all_appliances.values())
             if args.list:
                 print("\n".join(map(str, all_appliances)))
                 return

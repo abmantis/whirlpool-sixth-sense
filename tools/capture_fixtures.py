@@ -278,15 +278,7 @@ async def _amain(args: argparse.Namespace) -> int:
 
 def _capture(args: argparse.Namespace, manager: AppliancesManager) -> int:
     """List or capture the appliances discovered by the manager."""
-    all_appliances = [
-        *manager.aircons,
-        *manager.dryers,
-        *manager.washers,
-        *manager.ovens,
-        *manager.microwaves,
-        *manager.refrigerators,
-        *manager.unsupported_appliances,
-    ]
+    all_appliances = list(manager.all_appliances.values())
     if not all_appliances:
         LOGGER.error("No appliances discovered")
         return 2

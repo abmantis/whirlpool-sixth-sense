@@ -50,6 +50,20 @@ async def test_appliances_from_both_backends_are_merged(
     # AWS IoT appliances
     assert saids(appliances_manager.microwaves) == [MWO_SAID]
 
+    assert set(appliances_manager.all_appliances) == {
+        appliance.said
+        for appliance in [
+            *appliances_manager.aircons,
+            *appliances_manager.dryers,
+            *appliances_manager.dishwashers,
+            *appliances_manager.washers,
+            *appliances_manager.ovens,
+            *appliances_manager.refrigerators,
+            *appliances_manager.microwaves,
+            *appliances_manager.unsupported_appliances,
+        ]
+    }
+
 
 async def test_keepalive_periodically_fetches_an_appliance(
     appliances_manager: AppliancesManager,

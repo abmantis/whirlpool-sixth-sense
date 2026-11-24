@@ -33,6 +33,14 @@ class AppliancesManager:
             auth, session, self._update_appliances
         )
 
+    @property
+    def all_appliances(self) -> dict[str, Appliance]:
+        """Return all discovered appliances across both backends."""
+        return {
+            **self._http_appliances_manager.all_appliances,
+            **self._aws_appliances_manager.all_appliances,
+        }
+
     # TODO: use cached_property
     @property
     def aircons(self) -> Sequence[Aircon]:
