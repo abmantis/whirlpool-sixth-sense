@@ -124,7 +124,7 @@
         "APPLIANCE_MODE": 2
       },
       {
-        "DATA_MODEL_KEY": "DDM_DISHWASHER_V1",
+        "DATA_MODEL_KEY": "DDM_TEST_DISHWASHER_CONTAINS_WASHER",
         "CATEGORY_NAME": "Dishwasher",
         "MODEL_NO": "JDTSS246GS0",
         "APPLIANCE_NAME": "Dishwasher",

@@ -49,7 +49,7 @@ class AppliancesManager:
 
     @property
     def dishwashers(self) -> Sequence[Dishwasher]:
-        """Return dishwashers from the HTTP API."""
+        """Return HTTP API dishwashers; AWS IoT dishwasher support is out of scope."""
         return self._http_appliances_manager.dishwashers
 
     # TODO: use cached_property

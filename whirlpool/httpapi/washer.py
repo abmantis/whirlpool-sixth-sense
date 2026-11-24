@@ -63,6 +63,8 @@ MACHINE_STATE_MAP = {
 
 
 class Washer(BaseWasher, Appliance):
+    """HTTP API support for clothes washers (laundry), not dishwashers."""
+
     @override
     def get_machine_state(self) -> MachineState | None:
         state_raw = self._get_attribute(ATTR_CYCLE_STATUS_MACHINE_STATE)

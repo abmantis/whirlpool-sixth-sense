@@ -15,6 +15,8 @@ MACHINE_STATE_MAP = {
 
 
 class Dishwasher(BaseDishwasher, Appliance):
+    """HTTP API support based on idle and running JennAir JDTSS246GS0 samples."""
+
     @override
     def get_machine_state(self) -> MachineState | None:
         if (state_raw := self._get_attribute(ATTR_MACHINE_STATE)) is None:

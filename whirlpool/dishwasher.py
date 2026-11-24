@@ -5,6 +5,13 @@ from .washer import MachineState
 
 
 class Dishwasher(Appliance, ABC):
+    """Base interface for dishwashers.
+
+    Initial HTTP attribute mappings are observed in idle and running diagnostics
+    from JennAir JDTSS246GS0. Other models may expose different attributes or
+    state values.
+    """
+
     @abstractmethod
     def get_machine_state(self) -> MachineState | None:
         pass

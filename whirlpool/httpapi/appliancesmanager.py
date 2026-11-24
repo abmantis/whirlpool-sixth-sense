@@ -126,6 +126,7 @@ class AppliancesManager:
             self._dryers[appliance_data.said] = Dryer(
                 self._backend_selector, self._auth, self._session, appliance_data
             )
+        # Match dishwashers before clothes washers: "dishwasher" contains "washer".
         elif (
             "dishwasher" in data_model
             or appliance_data.category.lower() == "dishwasher"

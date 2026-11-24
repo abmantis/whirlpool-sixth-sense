@@ -4219,14 +4219,25 @@
         "value": "1",
         "updateTime": 1626536325968
       },
-      "Cavity_OperationStatusMachineState": {"value": "1", "updateTime": 1626536325968},
+      "Cavity_OperationStatusMachineState": {
+        "value": "3",
+        "updateTime": 1795393951173
+      },
       "Cavity_OperationStatusDoorOpen": {
         "value": "0",
-        "updateTime": 1626536325968
+        "updateTime": 1795393951173
       },
       "Cavity_TimeStatusEstTimeRemaining": {
         "value": "4593",
-        "updateTime": 1626536325968
+        "updateTime": 1795397716617
+      },
+      "Cavity_CycleStatusCycleState": {
+        "value": "2",
+        "updateTime": 1795397448789
+      },
+      "Cavity_CycleSetCycleId": {
+        "value": "10",
+        "updateTime": 1795391722362
       },
       "SAID": {
         "value": "SAIDDISHWASHER1",
