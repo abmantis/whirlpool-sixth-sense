@@ -6,10 +6,25 @@ import aiohttp
 import pytest
 
 from tools import capture_fixtures
+from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
 from whirlpool.httpapi.appliance import Appliance as HttpAppliance
 from whirlpool.types import ApplianceInfo
+
+
+class StubAppliancesManager(AppliancesManager):
+    """Minimal manager for exercising capture against arbitrary appliance types."""
+
+    def __init__(self, all_appliances: dict[str, object]) -> None:
+        self._http_appliances_manager = SimpleNamespace(all_appliances=all_appliances)
+        self._aws_appliances_manager = SimpleNamespace(all_appliances={})
+
+    async def connect(self) -> bool:
+        return True
+
+    async def disconnect(self) -> None:
+        pass
 
 
 def _make_appliance(
@@ -212,7 +227,7 @@ def test_capture_uses_everything_from_canonical_appliance_collection(
 ) -> None:
     """New appliance types are included without adding another bucket list."""
     foobar = _make_appliance(said="foobar", name="Foobar appliance")
-    manager = SimpleNamespace(all_appliances={"foobar": foobar})
+    manager = StubAppliancesManager({"foobar": foobar})
     args = argparse.Namespace(
         list_only=True,
         capture_all=False,
