@@ -19,7 +19,8 @@ _MACHINE_STATE_MAP: dict[str, MachineState] = {
 }
 
 # `washer.currentPhase` values behind each cycle status flag. Front-loads
-# report the stem (sense, wash), top-loads the gerund (sensing, washing).
+# report the stem (sense, wash, rinse, spin); top-loads the gerund for some
+# phases (sensing, filling, washing) and the stem for others (rinse, spin).
 _PHASES_SENSING = ("sense", "sensing")
 _PHASES_FILLING = ("fill", "filling")
 _PHASES_WASHING = ("wash", "washing")
