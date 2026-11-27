@@ -45,10 +45,9 @@ def test_malformed_capability_declares_no_cavity(raw: dict) -> None:
     [(W11771387, "W11771387"), (W11812024, "W11812024")],
     ids=["W11771387", "W11812024"],
 )
-def test_profile_reads_part_number_and_cavity(raw: dict, part_number: str) -> None:
+def test_profile_reads_part_number(raw: dict, part_number: str) -> None:
     profile = parse_laundry_capability_profile(raw, "washer")
     assert profile.part_number == part_number
-    assert profile.cavity == "washer"
 
 
 def test_parsing_the_wrong_cavity_raises() -> None:

@@ -178,10 +178,9 @@ def parse_microwave_capability_profile(
 
 @dataclass(frozen=True)
 class LaundryCapabilityProfile:
-    """The capability switches the Washer and Dryer classes use."""
+    """The parsed laundry capability file; only the part number for now."""
 
     part_number: str
-    cavity: str
 
 
 def _has_cavity(raw: dict[str, Any], name: str) -> bool:
@@ -210,10 +209,7 @@ def parse_laundry_capability_profile(
             f"Capability file declares no '{cavity_name}' cavity"
         )
 
-    return LaundryCapabilityProfile(
-        part_number=_read_part_number(raw),
-        cavity=cavity_name,
-    )
+    return LaundryCapabilityProfile(part_number=_read_part_number(raw))
 
 
 class CapabilityDownloader:

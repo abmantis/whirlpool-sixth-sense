@@ -96,7 +96,6 @@ async def test_washer_cavity_routes_to_washer(
     (washer,) = manager.washers
     assert isinstance(washer, Washer)
     assert washer.said == WASHER_SAID
-    assert washer.capability_profile.cavity == "washer"
     assert washer.capability_profile.part_number == WASHER_CAP_PART
 
 
