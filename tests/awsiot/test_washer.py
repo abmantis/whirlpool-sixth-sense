@@ -20,7 +20,8 @@ def _load(name: str) -> dict[str, Any]:
     return json.loads((_DATA_DIR / name).read_text())
 
 
-# MFW7020RF0 front-load, with a trimmed W11812024 file.
+# MFW7020RF0 front-load, with a trimmed W11812024 file: the file for this
+# capture's own part (W11723751) is unpublished.
 _STATE = _load("washer_state.json")
 _CAPABILITY = _load("washer_capability.json")
 # MTW7205RR0 top-load in standby, with its W11771387 file.
