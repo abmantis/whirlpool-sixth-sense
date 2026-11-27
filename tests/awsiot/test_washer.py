@@ -356,7 +356,7 @@ def test_live_top_load_phase_sets_only_its_flag(phase: str) -> None:
 
 
 @pytest.mark.parametrize(("moment", "phase"), [("prewash", "preWash"), ("end", "done")])
-def test_live_phase_without_a_flag_sets_none(moment: str, phase: str) -> None:
+def test_live_phase_without_a_flag_sets_no_flag(moment: str, phase: str) -> None:
     assert _mtw7205rf1_state(moment)["washer"]["currentPhase"] == phase
     assert _phase_flags(_mtw7205rf1(moment)) == dict.fromkeys(_FLAGS, False)
 
