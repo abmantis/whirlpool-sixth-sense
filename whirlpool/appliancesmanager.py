@@ -8,6 +8,7 @@ from .appliance import Appliance
 from .auth import Auth
 from .awsiot.appliancesmanager import AppliancesManager as AwsAppliancesManager
 from .backendselector import BackendSelector
+from .dishwasher import Dishwasher
 from .dryer import Dryer
 from .httpapi.appliancesmanager import AppliancesManager as HttpAppliancesManager
 from .microwave import Microwave
@@ -32,6 +33,14 @@ class AppliancesManager:
             auth, session, self._update_appliances
         )
 
+    @property
+    def all_appliances(self) -> dict[str, Appliance]:
+        """Return all discovered appliances across both backends."""
+        return {
+            **self._http_appliances_manager.all_appliances,
+            **self._aws_appliances_manager.all_appliances,
+        }
+
     # TODO: use cached_property
     @property
     def aircons(self) -> Sequence[Aircon]:
@@ -45,6 +54,11 @@ class AppliancesManager:
         return (
             self._http_appliances_manager.dryers + self._aws_appliances_manager.dryers
         )
+
+    @property
+    def dishwashers(self) -> Sequence[Dishwasher]:
+        """Return HTTP API dishwashers; AWS IoT dishwasher support is out of scope."""
+        return self._http_appliances_manager.dishwashers
 
     # TODO: use cached_property
     @property

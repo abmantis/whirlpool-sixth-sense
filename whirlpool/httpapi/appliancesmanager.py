@@ -14,6 +14,7 @@ from ..eventsocket import EventSocket
 from ..types import ApplianceInfo
 from .aircon import Aircon
 from .appliance import Appliance
+from .dishwasher import Dishwasher
 from .dryer import Dryer
 from .oven import Oven
 from .refrigerator import Refrigerator
@@ -42,6 +43,7 @@ class AppliancesManager:
         self._keepalive_task: asyncio.Task[None] | None = None
         self._aircons: dict[str, Any] = {}
         self._dryers: dict[str, Any] = {}
+        self._dishwashers: dict[str, Any] = {}
         self._washers: dict[str, Any] = {}
         self._ovens: dict[str, Any] = {}
         self._refrigerators: dict[str, Any] = {}
@@ -52,6 +54,7 @@ class AppliancesManager:
         return {
             **self._aircons,
             **self._dryers,
+            **self._dishwashers,
             **self._washers,
             **self._ovens,
             **self._refrigerators,
@@ -65,6 +68,10 @@ class AppliancesManager:
     @property
     def dryers(self) -> list[Dryer]:
         return list(self._dryers.values())
+
+    @property
+    def dishwashers(self) -> list[Dishwasher]:
+        return list(self._dishwashers.values())
 
     @property
     def washers(self) -> list[Washer]:
@@ -117,6 +124,14 @@ class AppliancesManager:
             )
         elif "dryer" in data_model:
             self._dryers[appliance_data.said] = Dryer(
+                self._backend_selector, self._auth, self._session, appliance_data
+            )
+        # Match dishwashers before clothes washers: "dishwasher" contains "washer".
+        elif (
+            "dishwasher" in data_model
+            or appliance_data.category.lower() == "dishwasher"
+        ):
+            self._dishwashers[appliance_data.said] = Dishwasher(
                 self._backend_selector, self._auth, self._session, appliance_data
             )
         elif "washer" in data_model:

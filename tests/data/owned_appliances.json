@@ -124,6 +124,14 @@
         "APPLIANCE_MODE": 2
       },
       {
+        "DATA_MODEL_KEY": "DDM_DISHWASHER_JA_DISH17_246_V1",
+        "CATEGORY_NAME": "Dishwasher",
+        "MODEL_NO": "JDTSS246GS0",
+        "APPLIANCE_NAME": "Dishwasher",
+        "SAID": "SAIDDISHWASHER1",
+        "SERIAL": "DW12345678"
+      },
+      {
         "APPLIANCE_ID": 1033050,
         "APPLIANCE_MASTER_ID": 3721,
         "MODEL_SKU_ID": null,

@@ -27,6 +27,8 @@ class MachineState(Enum):
 
 
 class Washer(Appliance, ABC):
+    """Base interface for clothes washers (laundry), not dishwashers."""
+
     @abstractmethod
     def get_machine_state(self) -> MachineState | None:
         pass

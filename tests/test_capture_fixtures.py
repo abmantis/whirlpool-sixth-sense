@@ -6,10 +6,25 @@ import aiohttp
 import pytest
 
 from tools import capture_fixtures
+from whirlpool.appliancesmanager import AppliancesManager
 from whirlpool.auth import Auth
 from whirlpool.backendselector import BackendSelector
 from whirlpool.httpapi.appliance import Appliance as HttpAppliance
 from whirlpool.types import ApplianceInfo
+
+
+class StubAppliancesManager(AppliancesManager):
+    """Minimal manager for exercising capture against arbitrary appliance types."""
+
+    def __init__(self, all_appliances: dict[str, object]) -> None:
+        self._http_appliances_manager = SimpleNamespace(all_appliances=all_appliances)
+        self._aws_appliances_manager = SimpleNamespace(all_appliances={})
+
+    async def connect(self) -> bool:
+        return True
+
+    async def disconnect(self) -> None:
+        pass
 
 
 def _make_appliance(
@@ -151,15 +166,22 @@ async def test_amain_returns_nonzero_when_any_capture_fails(
 
         def __init__(self, *_args):
             self.__class__.last_instance = self
+            self.all_appliances = {
+                "dishwasher": _make_appliance(said="dishwasher"),
+                "ok": _make_appliance(said="ok"),
+                "bad": _make_appliance(said="bad"),
+                "foobar": _make_appliance(said="foobar"),
+            }
             self.aircons = []
             self.dryers = []
+            self.dishwashers = [self.all_appliances["dishwasher"]]
             self.washers = []
             self.ovens = []
             self.microwaves = []
             self.refrigerators = []
             self.unsupported_appliances = [
-                _make_appliance(said="ok"),
-                _make_appliance(said="bad"),
+                self.all_appliances["ok"],
+                self.all_appliances["bad"],
             ]
             self.disconnected = False
 
@@ -197,3 +219,24 @@ async def test_amain_returns_nonzero_when_any_capture_fails(
     assert result == 5
     assert DummyManager.last_instance is not None
     assert DummyManager.last_instance.disconnected is True
+    assert "dishwasher" in DummyManager.last_instance.all_appliances
+
+
+def test_capture_uses_everything_from_canonical_appliance_collection(
+    tmp_path, capsys
+) -> None:
+    """New appliance types are included without adding another bucket list."""
+    foobar = _make_appliance(said="foobar", name="Foobar appliance")
+    manager = StubAppliancesManager({"foobar": foobar})
+    args = argparse.Namespace(
+        list_only=True,
+        capture_all=False,
+        said=None,
+        output_dir=tmp_path,
+        redact=False,
+    )
+
+    result = capture_fixtures._capture(args, manager)
+
+    assert result == 0
+    assert "Foobar appliance" in capsys.readouterr().out

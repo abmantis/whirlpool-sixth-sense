@@ -42,12 +42,27 @@ async def test_appliances_from_both_backends_are_merged(
     # HTTP API appliances
     assert saids(appliances_manager.aircons) == ["SAIDAIRCON1", "SAIDAIRCON2"]
     assert saids(appliances_manager.dryers) == ["SAIDDRYER1"]
+    assert saids(appliances_manager.dishwashers) == ["SAIDDISHWASHER1"]
     assert saids(appliances_manager.washers) == ["SAIDWASHER1"]
     assert saids(appliances_manager.ovens) == ["SAIDOVEN1", "SAIDOVEN2", "SAIDOVEN3"]
     assert saids(appliances_manager.refrigerators) == ["SAIDFRIDGE1", "SAIDFRIDGE2"]
     assert saids(appliances_manager.unsupported_appliances) == ["SAIDUNSUPPORTED1"]
     # AWS IoT appliances
     assert saids(appliances_manager.microwaves) == [MWO_SAID]
+
+    assert set(appliances_manager.all_appliances) == {
+        appliance.said
+        for appliance in [
+            *appliances_manager.aircons,
+            *appliances_manager.dryers,
+            *appliances_manager.dishwashers,
+            *appliances_manager.washers,
+            *appliances_manager.ovens,
+            *appliances_manager.refrigerators,
+            *appliances_manager.microwaves,
+            *appliances_manager.unsupported_appliances,
+        ]
+    }
 
 
 async def test_keepalive_periodically_fetches_an_appliance(
