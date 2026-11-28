@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from whirlpool.appliancesmanager import AppliancesManager
+from whirlpool.awsiot.capabilities import LaundryCapabilityProfile
 from whirlpool.awsiot.mqttclient import MqttClient
 from whirlpool.awsiot.washer import Washer as AwsWasher
 from whirlpool.httpapi.washer import Washer
@@ -58,9 +59,14 @@ def test_awsiot_washer_unsupported_getters():
     washer = AwsWasher(
         Mock(spec=MqttClient),
         ApplianceInfo("said", "name", "washer", "model", "serial"),
+        LaundryCapabilityProfile(part_number="test"),
     )
 
     with pytest.raises(NotImplementedError):
         washer.get_remote_control_enabled()
     with pytest.raises(NotImplementedError):
         washer.get_dispense_2_level()
+
+
+async def test_supports_dispense_level(appliances_manager: AppliancesManager):
+    assert appliances_manager.washers[0].supports_dispense_level() is True
