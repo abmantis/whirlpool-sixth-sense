@@ -16,8 +16,11 @@ from .auth import Auth, AuthException
 from .capabilities import (
     CapabilityDownloader,
     CapabilityDownloadError,
+    has_dryer_cavity,
     has_microwave_cavity,
     has_oven_cavity,
+    has_washer_cavity,
+    parse_laundry_capability_profile,
     parse_microwave_capability_profile,
 )
 from .dryer import Dryer
@@ -170,6 +173,19 @@ class AppliancesManager:
             elif has_oven_cavity(raw_capabilities):
                 appliance = Oven(self._mqtt, appliance_data, raw_capabilities)
                 self._ovens[appliance_data.said] = appliance
+        elif appliance_data.category == "laundry":
+            # Washers and dryers both report category "laundry"; the capability
+            # file's cavity tells them apart. Anything else falls through to an
+            # unsupported appliance.
+            if has_washer_cavity(raw_capabilities) and not has_dryer_cavity(
+                raw_capabilities
+            ):
+                appliance = Washer(
+                    self._mqtt,
+                    appliance_data,
+                    parse_laundry_capability_profile(raw_capabilities, "washer"),
+                )
+                self._washers[appliance_data.said] = appliance
         if appliance is None:
             LOGGER.warning(
                 "Unsupported appliance category %s for %s",

@@ -181,6 +181,42 @@ def parse_microwave_capability_profile(
     )
 
 
+@dataclass(frozen=True)
+class LaundryCapabilityProfile:
+    """The parsed laundry capability file; only the part number for now."""
+
+    part_number: str
+
+
+def _has_cavity(raw: dict[str, Any], name: str) -> bool:
+    cavities = raw.get("cavities")
+    return isinstance(cavities, dict) and isinstance(cavities.get(name), dict)
+
+
+def has_dryer_cavity(raw: dict[str, Any]) -> bool:
+    """Whether the capability file declares a dryer cavity."""
+    return _has_cavity(raw, "dryer")
+
+
+def has_washer_cavity(raw: dict[str, Any]) -> bool:
+    """Whether the capability file declares a washer cavity."""
+    return _has_cavity(raw, "washer")
+
+
+def parse_laundry_capability_profile(
+    raw: dict[str, Any], cavity_name: str
+) -> LaundryCapabilityProfile:
+    """Extract the laundry-relevant switches from a raw capability file."""
+    cavities = raw.get("cavities")
+    cavity = cavities.get(cavity_name) if isinstance(cavities, dict) else None
+    if not isinstance(cavity, dict):
+        raise CapabilityDownloadError(
+            f"Capability file declares no '{cavity_name}' cavity"
+        )
+
+    return LaundryCapabilityProfile(part_number=_read_part_number(raw))
+
+
 class CapabilityDownloader:
     """Fetches and caches raw capability files per model (part number).
 
