@@ -130,3 +130,7 @@ class Dryer(BaseDryer, Appliance):
     @override
     def get_wrinkle_shield(self) -> WrinkleShield | None:
         raise NotImplementedError()
+
+    @override
+    def get_remote_control_enabled(self) -> bool | None:
+        raise NotImplementedError()

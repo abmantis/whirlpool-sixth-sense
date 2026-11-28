@@ -81,3 +81,11 @@ class Washer(Appliance, ABC):
         ``None`` when no cycle is running or the backend does not report it.
         """
         return None
+
+    @abstractmethod
+    def get_remote_control_enabled(self) -> bool | None:
+        pass
+
+    @abstractmethod
+    def get_dispense_2_level(self) -> int | None:
+        pass

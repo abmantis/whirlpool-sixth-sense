@@ -121,3 +121,11 @@ class Washer(BaseWasher, Appliance):
         if self._get_path_str("washer", "cycleTime", "state") != "running":
             return None
         return self._get_path_int("washer", "cycleTime", "timeComplete")
+
+    @override
+    def get_remote_control_enabled(self) -> bool | None:
+        raise NotImplementedError()
+
+    @override
+    def get_dispense_2_level(self) -> int | None:
+        raise NotImplementedError()
