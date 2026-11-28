@@ -18,6 +18,7 @@ from .capabilities import (
     CapabilityDownloadError,
     has_dryer_cavity,
     has_microwave_cavity,
+    has_oven_cavity,
     has_washer_cavity,
     parse_laundry_capability_profile,
     parse_microwave_capability_profile,
@@ -169,6 +170,9 @@ class AppliancesManager:
                     parse_microwave_capability_profile(raw_capabilities),
                 )
                 self._microwaves[appliance_data.said] = appliance
+            elif has_oven_cavity(raw_capabilities):
+                appliance = Oven(self._mqtt, appliance_data, raw_capabilities)
+                self._ovens[appliance_data.said] = appliance
         elif appliance_data.category == "laundry":
             # Washers and dryers both report category "laundry"; the capability
             # file's cavity tells them apart. Anything else falls through to an
